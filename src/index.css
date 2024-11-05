@@ -1,0 +1,46 @@
+@font-face {
+  font-family: 'ArialGrotesk';
+  src: url('./assets/fonts/arial-grotesk-regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'ArialGrotesk';
+  src: url('./assets/fonts/arial-grotesk-medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'ArialGrotesk';
+  src: url('./assets/fonts/arial-grotesk-bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+html,
+body {
+  font-family: 'ArialGrotesk', sans-serif !important;
+}
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-weight: 700;
+}
+p {
+  font-weight: 500;
+}
+input:focus,
+textarea:focus {
+  box-shadow: none !important;
+  border-color: teal !important;
+}
+
+.section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh !important;
+  font-size: 3rem;
+  color: #000;
+}

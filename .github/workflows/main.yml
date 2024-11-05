@@ -28,7 +28,7 @@ jobs:
         with:
           args: '--follow-symlinks'
         env:
-          AWS_S3_BUCKET: dev.bae-tg-app
+          AWS_S3_BUCKET: dev.ditto-app
           AWS_ACCESS_KEY_ID: '${{ secrets.TOMO_AWS_KEY_ID }}'
           AWS_SECRET_ACCESS_KEY: '${{ secrets.TOMO_AWS_SECRET_ACCESS_KEY }}'
           AWS_REGION: us-west-1
@@ -62,7 +62,7 @@ jobs:
         with:
           args: '--follow-symlinks'
         env:
-          AWS_S3_BUCKET: main.bae-tg-app
+          AWS_S3_BUCKET: main.ditto-app
           AWS_ACCESS_KEY_ID: '${{ secrets.TOMO_AWS_KEY_ID }}'
           AWS_SECRET_ACCESS_KEY: '${{ secrets.TOMO_AWS_SECRET_ACCESS_KEY }}'
           AWS_REGION: us-west-1

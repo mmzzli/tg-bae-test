@@ -21,7 +21,7 @@ export type ViewListReq = { page_num: number; records: number }
 
 export type PostResourceReq = {
   media: string
-  title: string
+  title?: string
   type: number
   currency: number
   price: number

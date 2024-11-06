@@ -68,7 +68,7 @@ export const NewPost: FC = () => {
     }
     await postResources({
       media: imgList.join(','),
-      title,
+      ...(title ? { title } : {}),
       type: 1,
       currency: 0,
       price,
@@ -76,9 +76,9 @@ export const NewPost: FC = () => {
     navigate('/profile')
   }
   const handleUpload = async () => {
-    if (!title) {
-      return
-    }
+    // if (!title) {
+    //   return
+    // }
     if (firstFileType === 'image') {
       setIsLoading(true)
       imgUpload(files)
@@ -112,7 +112,7 @@ export const NewPost: FC = () => {
       await checkVideoURL(url)
       await postResources({
         media: url,
-        title,
+        ...(title ? { title } : {}),
         type: 0,
         currency: 0,
         price,
@@ -192,7 +192,7 @@ export const NewPost: FC = () => {
           h="35px"
           onClick={handleUpload}
           isLoading={isLoading}
-          isDisabled={(title.length == 0) || (firstFileType === 'image' ? files.length === 0 : videoFile == null)}
+          isDisabled={(firstFileType === 'image' ? files.length === 0 : videoFile == null)}
         >
           <Image src={PostIcon} mr="5px" /> Post
         </Button>

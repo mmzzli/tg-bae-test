@@ -6,7 +6,8 @@ import { profileEdit, putProfile } from '@/api'
 
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useStore } from '@/store/store'
-import {UserInfoProfile} from '@/types'
+import { UserInfoProfile } from '@/types'
+import { CameraIcon } from '@/assets/icons'
 
 
 const ProfileEdit: FC = () => {
@@ -23,15 +24,15 @@ const ProfileEdit: FC = () => {
   const changeEve = (
     e: React.ChangeEvent<HTMLInputElement>,
     field: keyof UserInfoProfile
-  )=>{
+  ) => {
     const value = e.target.value;
     setProfileData((prevData) => ({
       ...prevData,
       [field]: value,
     }));
   }
-  useEffect(()=>{
-    const load = async()=>{
+  useEffect(() => {
+    const load = async () => {
       const res = await profileEdit(uid)
       setProfileData({
         username: res.username,
@@ -39,18 +40,19 @@ const ProfileEdit: FC = () => {
         avatar: res.avatar
       })
     }
-    if(token){
+    if (token) {
       load()
     }
-  },[token])
+  }, [token])
   return (
     <div className='pt-[10px] px-[16px]'>
       <h2 className='text-[20px] text-[#E0E2F6]'>
         Profile
       </h2>
       <div className='mt-[44px]'>
-        <p className='w-[88px] h-[88px] bg-[#333] m-[auto] rounded-[50px]'>
-          <img src={profileData?.avatar}/>
+        <p className='w-[88px] h-[88px] bg-[#333] m-[auto] rounded-[50px] relative'>
+          <img src={profileData?.avatar} />
+          <img className='absolute bottom-[0px] right-[0px]' src={CameraIcon}/>
         </p>
       </div>
       <div className='px-[8px] mt-[48px]'>
@@ -59,15 +61,15 @@ const ProfileEdit: FC = () => {
         </h3>
         <input className='w-[100%] rounded-[10px] text-[#E0E2F6] text-[14px] bg-[#19191E] px-[16px] py-[15px]'
           value={profileData?.username}
-          onChange={(e)=>changeEve(e,'username')}
-         />
+          onChange={(e) => changeEve(e, 'username')}
+        />
         <div className='mt-[24px]'>
           <h3 className='text-[16px] text-[#E0E2F6] mb-[16px]'>
             Bio
           </h3>
           <textarea className='w-[100%] rounded-[10px] text-[#E0E2F6] text-[14px] bg-[#19191E] px-[16px] py-[15px]'
             value={profileData?.bio}
-           />
+          />
         </div>
       </div>
       <div className='mt-[20px] px-[18px]'>
@@ -75,7 +77,7 @@ const ProfileEdit: FC = () => {
           text="Done"
           width="100%"
           height="12"
-          handler={async() => {
+          handler={async () => {
             await putProfile(profileData)
             navigate('/profile')
           }}

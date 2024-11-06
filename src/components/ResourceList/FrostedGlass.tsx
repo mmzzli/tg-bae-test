@@ -28,6 +28,7 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
     try{
       const viewUrl = await viewPid(post_id)
       resourcesEve(post_id,viewUrl)
+      return
     } catch (error) {
       const url = await botInvoice({
         amount: price,

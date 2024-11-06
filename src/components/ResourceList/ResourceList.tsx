@@ -270,7 +270,7 @@ const ResourceList = ({ resources:initialResources }: { resources: FormatterList
                     />
                   ))}
                 </div>
-                {data.media.length === 0 && (
+                {data.media?.[0] == "" && (
                   <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} />
                 )}
               </Box>
@@ -348,7 +348,7 @@ const ResourceList = ({ resources:initialResources }: { resources: FormatterList
               </Flex>
               <Box minH="200px">
                 {data.type === 1 ? (
-                  data.media.length === 0 ? (
+                  data.media?.[0] == "" ? (
                     <Box position="relative">
                       <Image
                         src={data.media?.[0] ?? data?.media ?? ''}
@@ -372,7 +372,7 @@ const ResourceList = ({ resources:initialResources }: { resources: FormatterList
                       onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
                     />
                   )
-                ) : data.media.length === 0 ? (
+                ) : data.media?.[0] == "" ? (
                   <Box position="relative">
                     <video
                       ref={(el) => (videoRefs.current[index] = el)}

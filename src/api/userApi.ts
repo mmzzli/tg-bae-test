@@ -18,10 +18,10 @@ export const botInvoice = (params: {
   post_id: string
   user_id: string
 }) => {
-  return post(`/api/v1/bot/invoice`, params)
+  return post<string>(`/api/v1/bot/invoice`, params)
 }
 export const viewPid = (pid: number) => {
-  return get(`/api/v1/view/${pid}`)
+  return get<string>(`/api/v1/view/${pid}`)
 }
 export const profileEdit = (uid: number) => {
   return get<UserInfoProfile>(`/api/v1/profile/${uid}`)

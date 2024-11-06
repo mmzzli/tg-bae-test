@@ -27,7 +27,8 @@ interface Like {
   like: number
 }
 
-const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
+const ResourceList = ({ resources:initialResources }: { resources: FormatterListItem[] }) => {
+  const [resources, setResources] = useState<FormatterListItem[]>([]);
   const [likes, setLikes] = useSafeState<Like[]>([])
   const { shareLink, launchParams } = useTMAUtils()
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
@@ -62,6 +63,11 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
     },
   })
 
+  useEffect(()=>{
+    if(initialResources.length){
+      setResources(initialResources)
+    }
+  },[initialResources])
   useEffect(() => {
     if (resources.length > 0) {
       setLikes(resources.map((item) => ({ id: item.id, liked: item.is_liked, like: item.like })))
@@ -168,15 +174,15 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
     const shareLink = `https://t.me/share/url?url=${copyLink}&text=${shareText}`
     setLinks({ shareLink, copyLink: decodeURIComponent(copyLink) })
   })
-  const resourcesEve = (post_id: number) => {
+  const resourcesEve = (post_id: number, url:string) => {
     setPostId(post_id)
-    // const updatedUsers = resources.map(user => {
-    //   if (user.id === post_id) {
-    //     return { ...user, price: 0 };
-    //   }
-    //   return user;
-    // });
-    // updatedUsers
+    const updatedUsers = resources.map(item => {
+      if (item.id === post_id) {
+        return { ...item, media: url.split(',') };
+      }
+      return item;
+    });
+    setResources(updatedUsers)
   }
 
   const renderBaseModal = () => (
@@ -264,7 +270,7 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
                     />
                   ))}
                 </div>
-                {data.price > 0 && data.id != postId && (
+                {data.media?.[0] == "" && (
                   <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} />
                 )}
               </Box>
@@ -342,7 +348,7 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
               </Flex>
               <Box minH="200px">
                 {data.type === 1 ? (
-                  data.price > 0 ? (
+                  data.media?.[0] == "" ? (
                     <Box position="relative">
                       <Image
                         src={data.media?.[0] ?? data?.media ?? ''}
@@ -351,13 +357,11 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
                         height={387}
                         onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
                       />
-                      {data.id != postId && (
-                        <FrostedGlass
-                          price={data.price}
-                          post_id={data.id}
-                          resourcesEve={resourcesEve}
-                        />
-                      )}
+                      <FrostedGlass
+                        price={data.price}
+                        post_id={data.id}
+                        resourcesEve={resourcesEve}
+                      />
                     </Box>
                   ) : (
                     <Image
@@ -368,7 +372,7 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
                       onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
                     />
                   )
-                ) : data.price > 0 ? (
+                ) : data.media?.[0] == "" ? (
                   <Box position="relative">
                     <video
                       ref={(el) => (videoRefs.current[index] = el)}
@@ -379,13 +383,11 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
                       playsInline
                       onPlay={() => handlePlay(index)}
                     />
-                    {data.id != postId && (
-                      <FrostedGlass
-                        price={data.price}
-                        post_id={data.id}
-                        resourcesEve={resourcesEve}
-                      />
-                    )}
+                    <FrostedGlass
+                      price={data.price}
+                      post_id={data.id}
+                      resourcesEve={resourcesEve}
+                    />
                   </Box>
                 ) : (
                   <video

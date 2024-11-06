@@ -14,27 +14,33 @@ import { botInvoice, logIn, viewPid } from '@/api'
 type FrostedGlassProps = {
   price: number
   post_id: number
-  resourcesEve: (post_id: number) => void
+  resourcesEve: (post_id: number, url:string) => void
 }
 
 const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) => {
   const userInfo = useStore((state) => state.userInfo)
-  const { launchParams } = useTMAUtils()
+  const { launchParams, shareLink } = useTMAUtils()
   const { initData } = launchParams
 
+
   const invoiceEve = async () => {
-    try {
-      await viewPid(post_id)
-      resourcesEve(post_id)
-    } catch (error) {
-      resourcesEve(post_id)
-      await botInvoice({
-        amount: price,
-        memo: String(post_id),
-        post_id: String(post_id),
-        user_id: String(initData?.user?.id)
-      })
-    }
+    const url = await botInvoice({
+      amount: price,
+      memo: String(post_id),
+      post_id: String(post_id),
+      user_id: String(initData?.user?.id)
+    })
+    window.open(url)
+    const items = setInterval(async()=>{
+      try{
+        // const viewUrl = "https://baedev.anyconn.org/2022-01-27_17-32-20_UTC_2.jpg,https://baedev.anyconn.org/2022-01-27_17-32-20_UTC_3.jpg,https://baedev.anyconn.org/2022-01-27_17-32-20_UTC_4.jpg,https://baedev.anyconn.org/2022-01-27_17-32-20_UTC_5.jpg"
+        const viewUrl = await viewPid(post_id)
+        resourcesEve(post_id,viewUrl)
+        clearInterval(items)
+      } catch (error) {
+        console.log(error,'payment')
+      }
+    },3000)
 
   }
   return (

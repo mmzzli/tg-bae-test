@@ -1,16 +1,10 @@
 import { FC, useState, useEffect } from 'react'
 import BaseButton from '@/components/BaseButton/BaseButton'
-import { profileEdit } from '@/api'
+import { profileEdit, putProfile } from '@/api'
+
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useStore } from '@/store/store'
-
-
-interface ProfileEditProps {
-  uid: number;
-  username: string;
-  bio: string;
-  avatar: string;
-}
+import {UserInfoProfile} from '@/types'
 
 
 const ProfileEdit: FC = () => {
@@ -18,11 +12,29 @@ const ProfileEdit: FC = () => {
   const { launchParams } = useTMAUtils()
   const uid = launchParams.initData?.user?.id ?? 0
 
-  const [profileData, setProfileData] = useState<ProfileEditProps | null>(null);
+  const [profileData, setProfileData] = useState<UserInfoProfile>({
+    username: '',
+    bio: '',
+    avatar: '',
+  });
+  const changeEve = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: keyof UserInfoProfile
+  )=>{
+    const value = e.target.value;
+    setProfileData((prevData) => ({
+      ...prevData,
+      [field]: value,
+    }));
+  }
   useEffect(()=>{
     const load = async()=>{
       const res = await profileEdit(uid)
-      setProfileData(res)
+      setProfileData({
+        username: res.username,
+        bio: res.bio,
+        avatar: res.avatar
+      })
     }
     if(token){
       load()
@@ -44,6 +56,7 @@ const ProfileEdit: FC = () => {
         </h3>
         <input className='w-[100%] rounded-[10px] text-[#E0E2F6] text-[14px] bg-[#19191E] px-[16px] py-[15px]'
           value={profileData?.username}
+          onChange={(e)=>changeEve(e,'username')}
          />
         <div className='mt-[24px]'>
           <h3 className='text-[16px] text-[#E0E2F6] mb-[16px]'>
@@ -59,7 +72,8 @@ const ProfileEdit: FC = () => {
           text="Done"
           width="100%"
           height="12"
-          handler={() => {
+          handler={async() => {
+            await putProfile(profileData)
           }}
         />
       </div>

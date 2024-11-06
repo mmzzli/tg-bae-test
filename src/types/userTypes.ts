@@ -15,7 +15,6 @@ export interface IUserLogIn {
 }
 
 export interface UserInfoProfile {
-  uid: number;
   username: string;
   bio: string;
   avatar: string;

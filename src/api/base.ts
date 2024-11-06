@@ -117,6 +117,9 @@ class HttpClient {
   post = async <T>(url: string, data?: any, config: RequestConfig = {}): Promise<T> => {
     return this.request<T>({ ...config, method: 'POST', url, data })
   }
+  put = async <T>(url: string, data?: any, config: RequestConfig = {}): Promise<T> => {
+    return this.request<T>({ ...config, method: 'PUT', url, data })
+  }
 
   delete = async <T>(
     url: string,
@@ -139,6 +142,7 @@ const httpClient = new HttpClient(import.meta.env.VITE_API_URL, getStoreToken)
 
 export const get = httpClient.get.bind(httpClient)
 export const post = httpClient.post.bind(httpClient)
+export const put = httpClient.put.bind(httpClient)
 export const deleteRequest = httpClient.delete.bind(httpClient)
 export const patch = httpClient.patch.bind(httpClient)
 export const del = httpClient.delete.bind(httpClient)

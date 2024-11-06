@@ -1,5 +1,6 @@
 import React, { FC, useState } from 'react'
 import { Box, Flex, Text, IconButton, useBoolean } from '@chakra-ui/react'
+import { useTMAUtils } from '@/hooks/useTMAUtils'
 
 import BaseButton from '@/components/BaseButton/BaseButton'
 import Image from '@/components/Image/Image'
@@ -8,7 +9,7 @@ import { useStore } from '@/store/store'
 
 
 import { LockIcon } from '@/assets/icons'
-import { botInvoice, logIn } from '@/api'
+import { botInvoice, logIn, viewPid } from '@/api'
 
 type FrostedGlassProps = {
   price: number
@@ -16,16 +17,25 @@ type FrostedGlassProps = {
   resourcesEve: (post_id: number) => void
 }
 
-const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id }) => {
+const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) => {
   const userInfo = useStore((state) => state.userInfo)
+  const { launchParams } = useTMAUtils()
+  const { initData } = launchParams
+
   const invoiceEve = async () => {
-    console.log(price, post_id, userInfo.user_id)
-    await botInvoice({
-      amount: price,
-      memo: String(post_id),
-      post_id: String(post_id),
-      user_id: String(userInfo.user_id),
-    })
+    try {
+      await viewPid(post_id)
+      resourcesEve(post_id)
+    } catch (error) {
+      resourcesEve(post_id)
+      await botInvoice({
+        amount: price,
+        memo: String(post_id),
+        post_id: String(post_id),
+        user_id: String(initData?.user?.id)
+      })
+    }
+
   }
   return (
     <>

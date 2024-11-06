@@ -19,6 +19,8 @@ import FrostedGlass from '@/components/ResourceList/FrostedGlass'
 import SecondaryMenu from '../SecondaryMenu/SecondaryMenu'
 import { getLink } from '@/api/list'
 import { ImagePreview } from '../Image/ImagePreview'
+import { useProfileNavigation } from '@/hooks/useProfileNavigation'
+
 interface Like {
   id: number
   liked: boolean
@@ -44,6 +46,8 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
   const [previewImages, setPreviewImages] = useState<string[]>([])
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
+
+  const jumpToProfilePage = useProfileNavigation()
 
   const handleImageClick = (images: string[], index: number) => {
     setPreviewImages(images)
@@ -233,6 +237,7 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
                       width={48}
                       height={48}
                       className="rounded-full"
+                      onClick={() => jumpToProfilePage(data.uid)}
                       src={data.avatar}
                       alt={data.username}
                     />
@@ -319,7 +324,15 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
               <Flex px={4} py={3} alignItems={'center'} justifyContent={'space-between'}>
                 <Flex alignItems={'center'}>
                   <div className="flex items-center justify-between gap-2">
-                    <Image rect width={48} height={48} src={data.avatar} alt={data.username} />
+                    <Image
+                      rect
+                      width={48}
+                      height={48}
+                      className="rounded-full"
+                      src={data.avatar}
+                      alt={data.username}
+                      onClick={() => jumpToProfilePage(data.uid)}
+                    />
                     <div className="text-[#E0E2F6] font-medium">{data.username}</div>
                   </div>
                 </Flex>

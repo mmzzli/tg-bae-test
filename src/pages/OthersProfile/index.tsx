@@ -9,14 +9,14 @@ import { getSomeoneProfile } from '@/api'
 const OthersProfile: FC = () => {
   const { uid } = useParams()
   const { list, hasMore, fetchMoreData } = useOthersViewList()
-  const { othersUserInfo, resetOthersViewList, resetOthersUserInfo, setOthersUserInfo } = useStore(
-    (state) => ({
+  const { othersUserInfo, resetOthersViewList, resetOthersUserInfo, setOthersUserInfo, token } =
+    useStore((state) => ({
       resetOthersViewList: state.resetOthersViewList,
       resetOthersUserInfo: state.resetOthersUserInfo,
       setOthersUserInfo: state.setOthersUserInfo,
       othersUserInfo: state.othersUserInfo,
-    })
-  )
+      token: state.token,
+    }))
 
   const getUserInfo = async (uid: string) => {
     const user = await getSomeoneProfile(Number(uid))
@@ -24,8 +24,8 @@ const OthersProfile: FC = () => {
   }
 
   useEffect(() => {
-    if (uid && othersUserInfo.uid === -1) getUserInfo(uid)
-  }, [uid])
+    if (uid && token && othersUserInfo.uid === -1) getUserInfo(uid)
+  }, [uid, token])
 
   useEffect(() => {
     return () => {

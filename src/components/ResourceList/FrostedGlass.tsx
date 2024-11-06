@@ -24,13 +24,20 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
 
 
   const invoiceEve = async () => {
-    const url = await botInvoice({
-      amount: price,
-      memo: String(post_id),
-      post_id: String(post_id),
-      user_id: String(initData?.user?.id)
-    })
-    window.open(url)
+
+    try{
+      const viewUrl = await viewPid(post_id)
+      resourcesEve(post_id,viewUrl)
+    } catch (error) {
+      const url = await botInvoice({
+        amount: price,
+        memo: String(post_id),
+        post_id: String(post_id),
+        user_id: String(initData?.user?.id)
+      })
+      window.open(url)
+    }
+
     const items = setInterval(async()=>{
       try{
         // const viewUrl = "https://baedev.anyconn.org/2022-01-27_17-32-20_UTC_2.jpg,https://baedev.anyconn.org/2022-01-27_17-32-20_UTC_3.jpg,https://baedev.anyconn.org/2022-01-27_17-32-20_UTC_4.jpg,https://baedev.anyconn.org/2022-01-27_17-32-20_UTC_5.jpg"

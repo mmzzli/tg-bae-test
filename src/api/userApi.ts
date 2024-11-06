@@ -1,5 +1,5 @@
 import { post, get } from './base'
-import { IUserLogIn, OthersUserInfo, PostItem } from '@/types'
+import { IUserLogIn, OthersUserInfo, PostItem, UserInfoProfile } from '@/types'
 
 export const logIn = (params: { user: string }) => {
   return post<IUserLogIn>(`/api/v1/login`, params)
@@ -24,5 +24,5 @@ export const viewPid = (pid: number) => {
   return get(`/api/v1/view/${pid}`)
 }
 export const profileEdit = (uid: number) => {
-  return get(`/api/v1/profile/${uid}`)
+  return get<UserInfoProfile>(`/api/v1/profile/${uid}`)
 }

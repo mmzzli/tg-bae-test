@@ -46,7 +46,7 @@ const ProfileEdit: FC = () => {
         Profile
       </h2>
       <div className='mt-[44px]'>
-        <p className='w-[88px] h-[88px] bg-[#fff] m-[auto] rounded-[50px]'>
+        <p className='w-[88px] h-[88px] bg-[#333] m-[auto] rounded-[50px]'>
           <img src={profileData?.avatar}/>
         </p>
       </div>

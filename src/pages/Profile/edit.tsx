@@ -1,4 +1,6 @@
 import { FC, useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { profileEdit, putProfile } from '@/api'
 
@@ -8,6 +10,7 @@ import {UserInfoProfile} from '@/types'
 
 
 const ProfileEdit: FC = () => {
+  const navigate = useNavigate()
   const token = useStore((state) => state.token)
   const { launchParams } = useTMAUtils()
   const uid = launchParams.initData?.user?.id ?? 0
@@ -74,6 +77,7 @@ const ProfileEdit: FC = () => {
           height="12"
           handler={async() => {
             await putProfile(profileData)
+            navigate('/profile')
           }}
         />
       </div>

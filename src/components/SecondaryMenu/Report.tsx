@@ -10,7 +10,7 @@ interface ReportProps {
 const options = [
   'I don’t like this post',
   'Violates terms of service',
-  'Comtains copyrighted material(DMCA)',
+  'Contains copyrighted material(DMCA)',
   'Child sexual abuse material(CSAM)',
   'Report spam',
   'Report Abuse',
@@ -45,7 +45,7 @@ const Report: React.FC<ReportProps> = ({ isOpen, onClose }) => {
       showHandle={false}
     >
       <div className="mt-4 w-full">
-        <h3 className="font-bold text-2xl mb-[20px]">Report the poster</h3>
+        <h3 className="font-bold text-2xl mb-[20px]">Report the post</h3>
         <div className="flex flex-col gap-4">
           {options.map((option) => (
             <label key={option} className="flex items-center gap-2">

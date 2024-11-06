@@ -12,7 +12,6 @@ import BaseButton from '../BaseButton/BaseButton'
 import useCopy from '@/hooks/useCopy'
 import { useMemoizedFn, useRequest, useSafeState, useSetState } from 'ahooks'
 import dayjs from 'dayjs'
-import { isLocalEnv } from '@/utils/env'
 import { LinkIcon, TelegramIcon } from '@/assets/icons'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import Image from '../Image/Image'
@@ -20,13 +19,16 @@ import FrostedGlass from '@/components/ResourceList/FrostedGlass'
 import SecondaryMenu from '../SecondaryMenu/SecondaryMenu'
 import { getLink } from '@/api/list'
 import { ImagePreview } from '../Image/ImagePreview'
+import { useProfileNavigation } from '@/hooks/useProfileNavigation'
+
 interface Like {
   id: number
   liked: boolean
   like: number
 }
 
-const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
+const ResourceList = ({ resources:initialResources }: { resources: FormatterListItem[] }) => {
+  const [resources, setResources] = useState<FormatterListItem[]>([]);
   const [likes, setLikes] = useSafeState<Like[]>([])
   const { shareLink, launchParams } = useTMAUtils()
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
@@ -46,6 +48,8 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
 
+  const jumpToProfilePage = useProfileNavigation()
+
   const handleImageClick = (images: string[], index: number) => {
     setPreviewImages(images)
     setCurrentIndex(index)
@@ -59,6 +63,11 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
     },
   })
 
+  useEffect(()=>{
+    if(initialResources.length){
+      setResources(initialResources)
+    }
+  },[initialResources])
   useEffect(() => {
     if (resources.length > 0) {
       setLikes(resources.map((item) => ({ id: item.id, liked: item.is_liked, like: item.like })))
@@ -70,65 +79,65 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
       root: null,
       rootMargin: '0px',
       threshold: 0.5,
-    };
+    }
 
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        const videoElement = entry.target as HTMLVideoElement;
+        const videoElement = entry.target as HTMLVideoElement
         if (entry.isIntersecting) {
-          videoElement.play().catch((error) => console.error('Video play failed:', error));
+          videoElement.play().catch((error) => console.error('Video play failed:', error))
         } else {
-          videoElement.pause();
+          videoElement.pause()
         }
-      });
-    }, options);
+      })
+    }, options)
 
     resources.forEach((item, index) => {
       if (Hls.isSupported() && item.type === 0) {
-        const hls = new Hls();
-        hls.loadSource(item.media[0]);
-        hls.attachMedia(videoRefs.current[index]!);
+        const hls = new Hls()
+        hls.loadSource(item.media[0])
+        hls.attachMedia(videoRefs.current[index]!)
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          const maxLevel = hls.levels.length - 1;
-          hls.startLevel = maxLevel;
-          hls.currentLevel = maxLevel;
-        });
+          const maxLevel = hls.levels.length - 1
+          hls.startLevel = maxLevel
+          hls.currentLevel = maxLevel
+        })
 
-        const videoElement = videoRefs.current[index];
+        const videoElement = videoRefs.current[index]
         if (videoElement) {
           videoElement.addEventListener('canplaythrough', () => {
             setPreloaded((prev) => {
-              const updated = [...prev];
-              updated[index] = true;
-              return updated;
-            });
-          });
+              const updated = [...prev]
+              updated[index] = true
+              return updated
+            })
+          })
 
-          observer.observe(videoElement);
+          observer.observe(videoElement)
         }
 
         return () => {
-          hls.destroy();
-          observer.unobserve(videoRefs.current[index]!);
-        };
+          hls.destroy()
+          observer.unobserve(videoRefs.current[index]!)
+        }
       }
-    });
+    })
 
     const handleTouchStart = () => {
-      setIsMuted(false);
+      setIsMuted(false)
       videoRefs.current.forEach((video) => {
         if (video && !video.paused) {
-          video.play().catch((error) => console.error('Video play failed:', error));
+          video.play().catch((error) => console.error('Video play failed:', error))
         }
-      });
-    };
+      })
+    }
 
-    window.addEventListener('touchstart', handleTouchStart, { once: true });
+    window.addEventListener('touchstart', handleTouchStart, { once: true })
 
     return () => {
-      window.removeEventListener('touchstart', handleTouchStart);
-    };
-  }, [resources]);
+      window.removeEventListener('touchstart', handleTouchStart)
+    }
+  }, [resources])
 
   const handlePlay = (index: number) => {
     if (playingIndex !== null && playingIndex !== index) {
@@ -154,32 +163,26 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
     })
   }
 
-  const getShareLink = useMemoizedFn(
-    async (title: string, pid: number, uid: number, type: 'shares' | 'profile') => {
-      const shareText = encodeURIComponent(title)
-      const { host, ref } = await getLinkHandlerAsync({ pid, uid })
-      console.log(host, ref, 'getLinkResult')
+  const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
+    const shareText = encodeURIComponent(title)
+    const { host, ref } = await getLinkHandlerAsync({ pid, uid })
+    console.log(host, ref, 'getLinkResult')
 
-      const copyLink = encodeURIComponent(
-        !isLocalEnv
-          ? `https://t.me/BaeDevBot/BAE?startapp=type=${type}_ref=${ref}_uid=${uid}`
-          : ` https://t.me/ditto_gray_tes_bot/ditto_gray_tes?startapp=type=${type}_ref=${ref}_uid=${uid}`
-      )
-      console.log('copyLink', decodeURIComponent(copyLink))
+    const copyLink = encodeURIComponent(`${import.meta.env.VITE_API_URL}link/${ref}?startapp`)
+    console.log('copyLink', decodeURIComponent(copyLink))
 
-      const shareLink = `https://t.me/share/url?url=${copyLink}&text=${shareText}`
-      setLinks({ shareLink, copyLink: decodeURIComponent(copyLink) })
-    }
-  )
-  const resourcesEve = (post_id: number) => {
+    const shareLink = `https://t.me/share/url?url=${copyLink}&text=${shareText}`
+    setLinks({ shareLink, copyLink: decodeURIComponent(copyLink) })
+  })
+  const resourcesEve = (post_id: number, url:string) => {
     setPostId(post_id)
-    // const updatedUsers = resources.map(user => {
-    //   if (user.id === post_id) {
-    //     return { ...user, price: 0 };
-    //   }
-    //   return user;
-    // });
-    // updatedUsers
+    const updatedUsers = resources.map(item => {
+      if (item.id === post_id) {
+        return { ...item, media: url.split(',') };
+      }
+      return item;
+    });
+    setResources(updatedUsers)
   }
 
   const renderBaseModal = () => (
@@ -240,6 +243,7 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
                       width={48}
                       height={48}
                       className="rounded-full"
+                      onClick={() => jumpToProfilePage(data.uid)}
                       src={data.avatar}
                       alt={data.username}
                     />
@@ -261,14 +265,12 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
                       width={128}
                       height={128}
                       key={i}
-                      images={data.media}
-                      currentIndex={ind}
                       onClick={() => handleImageClick(data.media, ind)}
                       rect
                     />
                   ))}
                 </div>
-                {data.price > 0 && data.id != postId && (
+                {data.media?.[0] == "" && (
                   <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} />
                 )}
               </Box>
@@ -290,16 +292,16 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
                       {likes.find((like) => like.id === data.id)?.like}
                     </Text>
                   </Flex>
-                  <Flex as={'button'} alignItems={'center'} ml={4} borderRadius={5}>
+                  {/* <Flex as={'button'} alignItems={'center'} ml={4} borderRadius={5}>
                     <IconCommit />
                     <Text fontSize={'sm'} color={'#E0E2F6'} pl={1}>
                       {data.comment ?? 0}
                     </Text>
-                  </Flex>
+                  </Flex> */}
                 </Flex>
                 <IconButton
                   onClick={() => {
-                    getShareLink(data.title, data.id, data.uid, 'shares')
+                    getShareLink(data.title, data.id, data.uid)
                     toggle()
                   }}
                   aria-label="share"
@@ -326,7 +328,15 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
               <Flex px={4} py={3} alignItems={'center'} justifyContent={'space-between'}>
                 <Flex alignItems={'center'}>
                   <div className="flex items-center justify-between gap-2">
-                    <Image rect width={48} height={48} src={data.avatar} alt={data.username} />
+                    <Image
+                      rect
+                      width={48}
+                      height={48}
+                      className="rounded-full"
+                      src={data.avatar}
+                      alt={data.username}
+                      onClick={() => jumpToProfilePage(data.uid)}
+                    />
                     <div className="text-[#E0E2F6] font-medium">{data.username}</div>
                   </div>
                 </Flex>
@@ -338,7 +348,7 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
               </Flex>
               <Box minH="200px">
                 {data.type === 1 ? (
-                  data.price > 0 ? (
+                  data.media?.[0] == "" ? (
                     <Box position="relative">
                       <Image
                         src={data.media?.[0] ?? data?.media ?? ''}
@@ -347,13 +357,11 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
                         height={387}
                         onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
                       />
-                      {data.id != postId && (
-                        <FrostedGlass
-                          price={data.price}
-                          post_id={data.id}
-                          resourcesEve={resourcesEve}
-                        />
-                      )}
+                      <FrostedGlass
+                        price={data.price}
+                        post_id={data.id}
+                        resourcesEve={resourcesEve}
+                      />
                     </Box>
                   ) : (
                     <Image
@@ -364,7 +372,7 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
                       onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
                     />
                   )
-                ) : data.price > 0 ? (
+                ) : data.media?.[0] == "" ? (
                   <Box position="relative">
                     <video
                       ref={(el) => (videoRefs.current[index] = el)}
@@ -375,13 +383,11 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
                       playsInline
                       onPlay={() => handlePlay(index)}
                     />
-                    {data.id != postId && (
-                      <FrostedGlass
-                        price={data.price}
-                        post_id={data.id}
-                        resourcesEve={resourcesEve}
-                      />
-                    )}
+                    <FrostedGlass
+                      price={data.price}
+                      post_id={data.id}
+                      resourcesEve={resourcesEve}
+                    />
                   </Box>
                 ) : (
                   <video
@@ -414,16 +420,16 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
                       {likes.find((like) => like.id === data.id)?.like}
                     </Text>
                   </Flex>
-                  <Flex as={'button'} alignItems={'center'} ml={4} borderRadius={5}>
+                  {/* <Flex as={'button'} alignItems={'center'} ml={4} borderRadius={5}>
                     <IconCommit />
                     <Text fontSize={'sm'} color={'#E0E2F6'} pl={1}>
                       {data.comment ?? 0}
                     </Text>
-                  </Flex>
+                  </Flex> */}
                 </Flex>
                 <IconButton
                   onClick={() => {
-                    getShareLink(data.title, data.id, data.uid, 'shares')
+                    getShareLink(data.title, data.id, data.uid)
                     toggle()
                   }}
                   aria-label="share"
@@ -434,7 +440,6 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
                   icon={<IconShare />}
                 />
               </Flex>
-
               <Box px={4}>
                 <Text color={'#62636F'} fontSize={'sm'} lineHeight={6}>
                   {data.title}

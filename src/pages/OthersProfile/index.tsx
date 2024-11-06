@@ -2,25 +2,37 @@ import { FC, useEffect } from 'react'
 import OtherUserProfile from '@/components/PersonalDetails/OtherUserProfile'
 import { useOthersViewList } from '@/store/hook/useResourceList'
 import PostList from '@/components/PostList/PostList'
+import { useStore } from '@/store'
 import { useParams } from 'react-router-dom'
-import { getSomeoneProfile } from '../../api'
-import { useStore } from '../../store'
+import { getSomeoneProfile } from '@/api'
 
 const OthersProfile: FC = () => {
   const { uid } = useParams()
-  const { setOthersUserInfo, token } = useStore((state) => ({
-    token: state.token,
-    setOthersUserInfo: state.setOthersUserInfo,
-  }))
   const { list, hasMore, fetchMoreData } = useOthersViewList()
+  const { othersUserInfo, resetOthersViewList, resetOthersUserInfo, setOthersUserInfo, token } =
+    useStore((state) => ({
+      resetOthersViewList: state.resetOthersViewList,
+      resetOthersUserInfo: state.resetOthersUserInfo,
+      setOthersUserInfo: state.setOthersUserInfo,
+      othersUserInfo: state.othersUserInfo,
+      token: state.token,
+    }))
 
   const getUserInfo = async (uid: string) => {
     const user = await getSomeoneProfile(Number(uid))
     setOthersUserInfo(user)
   }
+
   useEffect(() => {
-    if (uid && token) getUserInfo(uid)
+    if (uid && token && othersUserInfo.uid === -1) getUserInfo(uid)
   }, [uid, token])
+
+  useEffect(() => {
+    return () => {
+      resetOthersUserInfo()
+      resetOthersViewList()
+    }
+  }, [])
 
   return (
     <>

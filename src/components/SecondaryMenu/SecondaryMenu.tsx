@@ -5,6 +5,7 @@ import { DeleteIcon, ReportIcon } from '@/assets/icons'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import { deletePost } from '@/api'
 import { useStore } from '@/store'
+import Report from './Report'
 
 type Props = {
   mediaData: FormatterListItem
@@ -15,6 +16,7 @@ const SecondaryMenu = ({ mediaData, currentUid }: Props) => {
   const { uid, id } = mediaData
   const [visible, setVisible] = useSafeState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+  const [reportVisible, setReportVisible] = useSafeState(false)
 
   const { runAsync: deleteHandlerAsync } = useRequest(deletePost, { manual: true })
   const deleteViewList = useStore((state) => state.deleteViewList)
@@ -38,6 +40,9 @@ const SecondaryMenu = ({ mediaData, currentUid }: Props) => {
     await deleteHandlerAsync(id)
     deleteViewList(mediaData)
   }
+  const handleReport = () => {
+    console.log('report')
+  }
   const handleOptionClick = useCallback(
     async (option: 'delete' | 'report') => {
       switch (option) {
@@ -45,6 +50,7 @@ const SecondaryMenu = ({ mediaData, currentUid }: Props) => {
           await handleDelete()
           break
         case 'report':
+          setReportVisible(true)
           break
         default:
           break
@@ -88,6 +94,7 @@ const SecondaryMenu = ({ mediaData, currentUid }: Props) => {
           )}
         </div>
       )}
+      <Report isOpen={reportVisible} onClose={setReportVisible} />
     </div>
   )
 }

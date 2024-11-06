@@ -4,10 +4,10 @@ import { BaseModal } from '@/components/Modal/BaseModal'
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { ShareIcon, LinkIcon, TelegramIcon } from '@/assets/icons'
-import { isLocalEnv } from '@/utils/env'
-import { useMemoizedFn, useSetState } from 'ahooks'
+import { useMemoizedFn, useRequest, useSetState } from 'ahooks'
 import { IUserInfo } from '@/types'
 import useCopy from '@/hooks/useCopy'
+import { getLink } from '@/api/list'
 
 const ShareUser = ({ userInfo }: { userInfo: IUserInfo }) => {
   const { shareLink, launchParams } = useTMAUtils()
@@ -17,16 +17,20 @@ const ShareUser = ({ userInfo }: { userInfo: IUserInfo }) => {
     copyLink: '',
   })
   const { copy } = useCopy()
+  const { runAsync: getLinkHandlerAsync } = useRequest(getLink, {
+    manual: true,
+    onSuccess(res) {
+      console.log(res)
+    },
+  })
 
-  const getShareLink = useMemoizedFn((title: string, type: 'shares' | 'profile') => {
+  const getShareLink = useMemoizedFn(async (title: string) => {
     const shareText = encodeURIComponent(title)
     const uid = launchParams.initData?.user?.id ?? 0
 
-    const copyLink = encodeURIComponent(
-      !isLocalEnv
-        ? `https://t.me/BaeDevBot/BAE?startapp=type=${type}_ref=_uid=${uid}`
-        : ` https://t.me/ditto_gray_tes_bot/ditto_gray_tes?startapp=type=${type}_ref=_uid=${uid}`
-    )
+    const { ref } = await getLinkHandlerAsync({ pid: uid, uid })
+
+    const copyLink = encodeURIComponent(`${import.meta.env.VITE_API_URL}link/${ref}?startapp`)
     console.log('copyLink', decodeURIComponent(copyLink))
 
     const shareLink = `https://t.me/share/url?url=${copyLink}&text=${shareText}`
@@ -37,13 +41,12 @@ const ShareUser = ({ userInfo }: { userInfo: IUserInfo }) => {
       <div
         className="flex items-center justify-center w-[36px] h-[36px] rounded-full ml-[10px] bg-[#CFCBFF20]"
         onClick={() => {
-          getShareLink(userInfo.username, 'profile')
+          getShareLink(userInfo.username)
           toggle()
         }}
       >
         <Image src={ShareIcon} />
       </div>
-
       <BaseModal
         isOpen={isBaseModalOpen}
         onClose={off}

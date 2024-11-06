@@ -15,8 +15,8 @@ import Profile from '@/pages/Profile'
 import ProfileEdit from '@/pages/Profile/edit'
 import OthersProfile from '@/pages/OthersProfile'
 import EarningsHistory from '@/components/PersonalDetails/Earnings/History'
-// import { mockTelegramEnv, parseInitData } from '@tma.js/sdk'
-// import { DEV_INIT_DATA_RAW } from './utils/constants'
+import { mockTelegramEnv, parseInitData } from '@tma.js/sdk'
+import { DEV_INIT_DATA_RAW } from './utils/constants'
 
 // mockTelegramEnv({
 //   themeParams: {

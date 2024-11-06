@@ -21,7 +21,7 @@ export type ViewListReq = { page_num: number; records: number }
 
 export type PostResourceReq = {
   media: string
-  title: string
+  title?: string
   type: number
   currency: number
   price: number
@@ -63,3 +63,5 @@ export type UserPostsReq = { page_num: number; records: number; uid: number }
 export type UserPostsRes = { posts: Array<PostItem> }
 
 export type OthersUserInfo = UserItem & { bio: string; followers: number; following: number }
+
+export type ShareInfo = { type: number; media: ListItem[]; userInfo: OthersUserInfo }

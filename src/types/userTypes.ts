@@ -13,3 +13,9 @@ export interface IUserLogIn {
   token: string
   user_info: IUserInfo
 }
+
+export interface UserInfoProfile {
+  username: string;
+  bio: string;
+  avatar: string;
+}

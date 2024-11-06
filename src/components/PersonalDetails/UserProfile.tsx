@@ -1,27 +1,40 @@
 import { FC } from 'react'
-import { Heading, HStack, Image, Box, Text, Link } from '@chakra-ui/react'
+import { Heading, HStack, Box, Text } from '@chakra-ui/react'
+import { useNavigate } from 'react-router-dom'
 import { useStore } from '@/store'
-
+import Image from '../Image/Image'
 import EarningsPage from '@/components/PersonalDetails/Earnings'
 import ShareUser from './ShareUser'
+import { EditIcon } from '@/assets/icons'
 
 const UserProfile: FC = () => {
   const userInfo = useStore((state) => state.userInfo)
+  const navigate = useNavigate()
 
   console.log('userInfo', userInfo)
 
   return (
     <Box p="0px 16px" pt="30px">
       <HStack gap="16px" pl="8px" justifyContent="space-between">
-        {userInfo.avatar && <Image w="64px" h="64px" borderRadius="50%" src={userInfo.avatar} />}
+        <Image
+          rect
+          width={64}
+          height={64}
+          className="rounded-full"
+          src={userInfo.avatar}
+          alt={userInfo.username}
+        />
         <div className="flex items-center">
           <EarningsPage />
           <ShareUser userInfo={userInfo} />
         </div>
       </HStack>
-      <Heading as="h3" color="#E0E2F6" fontWeight="500" className="mt-4">
-        {userInfo.username}
-      </Heading>
+      <HStack className="mt-4">
+        <Heading as="h3" color="#E0E2F6" fontWeight="500">
+          {userInfo.username}
+        </Heading>
+        <Image onClick={() => navigate('/profile/edit')} src={EditIcon} />
+      </HStack>
       <HStack pt="24px" gap="56px">
         <Box>
           <Heading fontSize="20px" color="#E0E2F6" lineHeight="24px">

@@ -61,6 +61,10 @@ export interface ResourceListSlice {
   setOthersViewHasMore: (hasMore: boolean) => void
   resetOthersViewList: () => void
   loadOthersViewList: (page: number) => Promise<void>
+
+  sharedPostList: FormatterListItem[]
+  setSharedPostList: (list: ListItem[]) => void
+  resetSharedPostList: () => void
 }
 
 const initialListState: BaseListState = {
@@ -279,6 +283,23 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       get().setOthersViewLoading(false)
     }
   },
+
+  sharedPostList: [],
+  setSharedPostList: (posts) => {
+    const updatedPosts = posts.map(({ post, user }: ListItem) => ({
+      ...user,
+      ...post,
+      media:
+        post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
+    }))
+    set(() => ({
+      sharedPostList: updatedPosts,
+    }))
+  },
+  resetSharedPostList: () =>
+    set(() => ({
+      sharedPostList: [],
+    })),
 
   resetAllLists: () =>
     set({

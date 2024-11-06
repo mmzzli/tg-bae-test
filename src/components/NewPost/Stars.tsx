@@ -16,7 +16,7 @@ import {
   GridItem,
 } from '@chakra-ui/react'
 
-import { StarsIcon, BottomIcon, Remove1Icon } from '@/assets/icons'
+import { StarsIcon, BottomIcon, Remove1Icon, RightIcon } from '@/assets/icons'
 
 type StarsProps = {
   price: StarValue
@@ -54,11 +54,14 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
           justifyContent="space-between"
           onClick={onOpen}
         >
-          <HStack gap="12px">
-            <Image src={StarsIcon} />
-            <Text color="#E0E2F6">Stars to unlock this post {price} Stars</Text>
+          <HStack gap="12px" w="100%" justifyContent="space-between">
+            <Text color="#E0E2F6" w="100%">Stars to unlock this post</Text>
+            <HStack w="100%" justifyContent="flex-end">
+              <Image src={StarsIcon} />
+              <Text color="#E0E2F6" fontSize="14px">{price}</Text>
+            </HStack>
           </HStack>
-          <Image src={BottomIcon} />
+          <Image src={RightIcon} />
         </HStack>
       </Box>
 

@@ -3,7 +3,6 @@ import InfiniteScroll from 'react-infinite-scroll-component'
 import ResourceList from '../ResourceList/ResourceList'
 import { cn } from '@/utils/utils'
 import { useViewList } from '@/store/hook/useResourceList'
-import { ListType } from '@/store/slices/resourceListSlice'
 
 interface PostListProps {
   className?: string

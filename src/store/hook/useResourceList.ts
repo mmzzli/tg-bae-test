@@ -153,3 +153,20 @@ export const useOthersViewList = () => {
     },
   }
 }
+
+export const useSharedList = () => {
+  const { sharedPostList, setSharedPostList, resetSharedPostList } = useStore(
+    (state) => ({
+      sharedPostList: state.sharedPostList,
+      setSharedPostList: state.setSharedPostList,
+      resetSharedPostList: state.resetSharedPostList,
+    }),
+    shallow
+  )
+
+  return {
+    sharedPostList,
+    setSharedPostList,
+    resetSharedPostList,
+  }
+}

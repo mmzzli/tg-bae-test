@@ -22,3 +22,5 @@ export { default as DeleteIcon } from './delete.svg'
 export { default as ReportIcon } from './report.svg'
 export { default as EditIcon } from './edit.svg'
 export { default as ShareIcon } from './share.svg'
+export { default as CameraIcon } from './camera.svg'
+

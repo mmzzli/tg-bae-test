@@ -130,7 +130,7 @@ export const BaseModal: FC<BottomSheetProps> = ({
         )}
 
         <div
-          className="p-4 overflow-y-auto  bg-[#1C1C1C] text-[#E0E2F6] rounded-l-2xl rounded-r-2xl rounded-b-none"
+          className="p-4 overflow-y-auto  bg-[#1C1C1C] text-[#E0E2F6] rounded-t-2xl rounded-b-none"
           style={{ height: 'calc(100%)' }}
         >
           <Image src={CloseIcon} className="cursor-pointer" onClick={handleBackdropClick} />

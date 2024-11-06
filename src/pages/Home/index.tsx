@@ -1,5 +1,5 @@
 import { useEffect, type FC } from 'react'
-import { HStack, Heading, Image, Button } from '@chakra-ui/react'
+import { HStack, Heading, Image } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { Menu } from '@/components/Menu'
 import { AddIcon1 } from '@/assets/icons'
@@ -9,37 +9,56 @@ import { retrieveLaunchParams } from '@tma.js/sdk'
 import { useStore } from '@/store'
 import RecommendList from '@/components/RecommendList/RecommendList'
 import BaseButton from '@/components/BaseButton/BaseButton'
+import { getSingleMedia } from '@/api/list'
 
+const SHARE_POST = 1
+const SHARE_PROFILE = 2
 export const HomePage: FC = () => {
   const navigate = useNavigate()
   const { shareLink, isInTMA } = useTMAUtils()
   const token = useStore((state) => state.token)
   const { startParam } = retrieveLaunchParams()
+  const { setSharedPostList, setOthersUserInfo } = useStore((state) => ({
+    setSharedPostList: state.setSharedPostList,
+    setOthersUserInfo: state.setOthersUserInfo,
+  }))
 
-  const handleNavigate = (type: string, ref: string, uid: string) => {
+  const handleNavigate = async (ref: string) => {
     if (!token) {
       console.log('waiting for token...')
       setTimeout(() => {
-        handleNavigate(type, ref, uid)
+        handleNavigate(ref)
       }, 100)
       return
     }
     console.log('token ready, navigating...')
-    if (type === 'profile') {
-      navigate(`/${type}/${uid}`)
-    } else {
-      navigate(`/${type}?ref=${ref}`)
+    // Get Ref Data
+    try {
+      const data = await getSingleMedia(ref)
+      console.log('getSingleMedia', data)
+      if (data.type === SHARE_POST) {
+        setSharedPostList(data.media)
+        navigate(`/shares?ref=${ref}`)
+      } else if (data.type === SHARE_PROFILE) {
+        setOthersUserInfo(data.userInfo)
+        navigate(`/profile/${data.userInfo.uid}`)
+      }
+    } catch (error) {
+      console.warn('API ERROR', error)
     }
   }
 
   useEffect(() => {
     if (!isInTMA || !startParam || history.length > 2) return
-    const [typeParam, refParam, uidParam] = startParam.split('_')
-    const type = typeParam.split('=')[1]
-    const ref = refParam.split('=')[1]
-    const uid = uidParam.split('=')[1]
-    console.log('home pages', type, ref)
-    handleNavigate(type, ref, uid)
+    const params = startParam.split('_')
+    console.log('startParam', params)
+
+    params.forEach((p) => {
+      const pairs = p.split('=')
+      if (pairs[0] === 'ref' && pairs[1]) {
+        handleNavigate(pairs[1])
+      }
+    })
   }, [startParam, isInTMA])
   return (
     <>
@@ -52,7 +71,7 @@ export const HomePage: FC = () => {
           icon={<Image src={AddIcon1} />}
           width="104px"
           height="9"
-          handler={()=>navigate('/post')}
+          handler={() => navigate('/post')}
         />
         {/* <Button
           size="xl"

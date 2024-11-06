@@ -1,4 +1,4 @@
-import { ListItem, RecommendListReq, ListRes } from '@/types'
+import { ListItem, RecommendListReq, ListRes, ShareInfo } from '@/types'
 import { get, post } from './base'
 
 export const getLink = (params: { pid: number; uid: number }) => {
@@ -9,7 +9,7 @@ export const getLink = (params: { pid: number; uid: number }) => {
 }
 
 export const getSingleMedia = (ref: string) => {
-  return get<ListItem>(`/api/v1/post/${ref}`)
+  return get<ShareInfo>(`/api/v1/post/${ref}`)
 }
 
 export const getRecommendMedia = (params: RecommendListReq) => {

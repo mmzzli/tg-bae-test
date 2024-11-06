@@ -288,12 +288,12 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
                       {likes.find((like) => like.id === data.id)?.like}
                     </Text>
                   </Flex>
-                  <Flex as={'button'} alignItems={'center'} ml={4} borderRadius={5}>
+                  {/* <Flex as={'button'} alignItems={'center'} ml={4} borderRadius={5}>
                     <IconCommit />
                     <Text fontSize={'sm'} color={'#E0E2F6'} pl={1}>
                       {data.comment ?? 0}
                     </Text>
-                  </Flex>
+                  </Flex> */}
                 </Flex>
                 <IconButton
                   onClick={() => {
@@ -420,12 +420,12 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
                       {likes.find((like) => like.id === data.id)?.like}
                     </Text>
                   </Flex>
-                  <Flex as={'button'} alignItems={'center'} ml={4} borderRadius={5}>
+                  {/* <Flex as={'button'} alignItems={'center'} ml={4} borderRadius={5}>
                     <IconCommit />
                     <Text fontSize={'sm'} color={'#E0E2F6'} pl={1}>
                       {data.comment ?? 0}
                     </Text>
-                  </Flex>
+                  </Flex> */}
                 </Flex>
                 <IconButton
                   onClick={() => {

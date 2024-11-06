@@ -1,9 +1,8 @@
 import { FC } from 'react'
-import { Heading, HStack, Image, Box, Text, Link } from '@chakra-ui/react'
+import { Heading, HStack, Box, Text } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
-
 import { useStore } from '@/store'
-
+import Image from '../Image/Image'
 import EarningsPage from '@/components/PersonalDetails/Earnings'
 import ShareUser from './ShareUser'
 import { EditIcon } from '@/assets/icons'
@@ -17,7 +16,14 @@ const UserProfile: FC = () => {
   return (
     <Box p="0px 16px" pt="30px">
       <HStack gap="16px" pl="8px" justifyContent="space-between">
-        {userInfo.avatar && <Image w="64px" h="64px" borderRadius="50%" src={userInfo.avatar} />}
+        <Image
+          rect
+          width={64}
+          height={64}
+          className="rounded-full"
+          src={userInfo.avatar}
+          alt={userInfo.username}
+        />
         <div className="flex items-center">
           <EarningsPage />
           <ShareUser userInfo={userInfo} />

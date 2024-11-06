@@ -1,5 +1,6 @@
 import { FC } from 'react'
-import { Heading, HStack, Image, Box, Text } from '@chakra-ui/react'
+import { Heading, HStack, Box, Text } from '@chakra-ui/react'
+import Image from '../Image/Image'
 
 import BaseButton from '../BaseButton/BaseButton'
 import { useStore } from '../../store'
@@ -16,7 +17,16 @@ const OtherUserProfile: FC = () => {
   return (
     <Box p="0px 16px" pt="30px">
       <HStack gap="16px" pl="8px" justifyContent="space-between">
-        {userInfo.avatar && <Image w="64px" h="64px" borderRadius="50%" src={userInfo.avatar} />}
+        {
+          <Image
+            rect
+            width={64}
+            height={64}
+            className="rounded-full"
+            src={userInfo.avatar}
+            alt={userInfo.username}
+          />
+        }
         <BaseButton
           text="Follow"
           width="104px"

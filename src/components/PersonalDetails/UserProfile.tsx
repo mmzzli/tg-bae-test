@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { Heading, HStack, Box, Text } from '@chakra-ui/react'
+import { Heading, HStack, Box, Text, Link } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '@/store'
 import Image from '../Image/Image'
@@ -33,7 +33,9 @@ const UserProfile: FC = () => {
         <Heading as="h3" color="#E0E2F6" fontWeight="500">
           {userInfo.username}
         </Heading>
-        <Image onClick={() => navigate('/profile/edit')} src={EditIcon} />
+        <Link onClick={() => navigate('/profile/edit')}>
+          <Image src={EditIcon} />
+        </Link>
       </HStack>
       <HStack pt="24px" gap="56px">
         <Box>

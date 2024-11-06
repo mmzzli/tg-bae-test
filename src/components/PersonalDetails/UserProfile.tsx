@@ -1,12 +1,16 @@
 import { FC } from 'react'
 import { Heading, HStack, Image, Box, Text, Link } from '@chakra-ui/react'
+import { useNavigate } from 'react-router-dom'
+
 import { useStore } from '@/store'
 
 import EarningsPage from '@/components/PersonalDetails/Earnings'
 import ShareUser from './ShareUser'
+import { EditIcon } from '@/assets/icons'
 
 const UserProfile: FC = () => {
   const userInfo = useStore((state) => state.userInfo)
+  const navigate = useNavigate()
 
   console.log('userInfo', userInfo)
 
@@ -19,9 +23,12 @@ const UserProfile: FC = () => {
           <ShareUser userInfo={userInfo} />
         </div>
       </HStack>
-      <Heading as="h3" color="#E0E2F6" fontWeight="500" className="mt-4">
-        {userInfo.username}
-      </Heading>
+      <HStack className="mt-4">
+        <Heading as="h3" color="#E0E2F6" fontWeight="500">
+          {userInfo.username}
+        </Heading>
+        <Image onClick={() => navigate('/profile/edit')} src={EditIcon} />
+      </HStack>
       <HStack pt="24px" gap="56px">
         <Box>
           <Heading fontSize="20px" color="#E0E2F6" lineHeight="24px">

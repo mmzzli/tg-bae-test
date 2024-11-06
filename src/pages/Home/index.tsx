@@ -1,5 +1,5 @@
 import { useEffect, type FC } from 'react'
-import { HStack, Heading, Image, Button } from '@chakra-ui/react'
+import { HStack, Heading, Image } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { Menu } from '@/components/Menu'
 import { AddIcon1 } from '@/assets/icons'
@@ -10,7 +10,6 @@ import { useStore } from '@/store'
 import RecommendList from '@/components/RecommendList/RecommendList'
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { getSingleMedia } from '@/api/list'
-import { useSharedList } from '@/store/hook/useResourceList'
 
 const SHARE_POST = 1
 const SHARE_PROFILE = 2
@@ -19,7 +18,10 @@ export const HomePage: FC = () => {
   const { shareLink, isInTMA } = useTMAUtils()
   const token = useStore((state) => state.token)
   const { startParam } = retrieveLaunchParams()
-  const { setSharedPostList } = useSharedList()
+  const { setSharedPostList, setOthersUserInfo } = useStore((state) => ({
+    setSharedPostList: state.setSharedPostList,
+    setOthersUserInfo: state.setOthersUserInfo,
+  }))
 
   const handleNavigate = async (ref: string) => {
     if (!token) {
@@ -38,6 +40,7 @@ export const HomePage: FC = () => {
         setSharedPostList(data.media)
         navigate(`/shares?ref=${ref}`)
       } else if (data.type === SHARE_PROFILE) {
+        setOthersUserInfo(data.userInfo)
         navigate(`/profile/${data.userInfo.uid}`)
       }
     } catch (error) {

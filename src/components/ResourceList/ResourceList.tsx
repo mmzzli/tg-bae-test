@@ -12,7 +12,6 @@ import BaseButton from '../BaseButton/BaseButton'
 import useCopy from '@/hooks/useCopy'
 import { useMemoizedFn, useRequest, useSafeState, useSetState } from 'ahooks'
 import dayjs from 'dayjs'
-import { isLocalEnv } from '@/utils/env'
 import { LinkIcon, TelegramIcon } from '@/assets/icons'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import Image from '../Image/Image'
@@ -70,65 +69,65 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
       root: null,
       rootMargin: '0px',
       threshold: 0.5,
-    };
+    }
 
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        const videoElement = entry.target as HTMLVideoElement;
+        const videoElement = entry.target as HTMLVideoElement
         if (entry.isIntersecting) {
-          videoElement.play().catch((error) => console.error('Video play failed:', error));
+          videoElement.play().catch((error) => console.error('Video play failed:', error))
         } else {
-          videoElement.pause();
+          videoElement.pause()
         }
-      });
-    }, options);
+      })
+    }, options)
 
     resources.forEach((item, index) => {
       if (Hls.isSupported() && item.type === 0) {
-        const hls = new Hls();
-        hls.loadSource(item.media[0]);
-        hls.attachMedia(videoRefs.current[index]!);
+        const hls = new Hls()
+        hls.loadSource(item.media[0])
+        hls.attachMedia(videoRefs.current[index]!)
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          const maxLevel = hls.levels.length - 1;
-          hls.startLevel = maxLevel;
-          hls.currentLevel = maxLevel;
-        });
+          const maxLevel = hls.levels.length - 1
+          hls.startLevel = maxLevel
+          hls.currentLevel = maxLevel
+        })
 
-        const videoElement = videoRefs.current[index];
+        const videoElement = videoRefs.current[index]
         if (videoElement) {
           videoElement.addEventListener('canplaythrough', () => {
             setPreloaded((prev) => {
-              const updated = [...prev];
-              updated[index] = true;
-              return updated;
-            });
-          });
+              const updated = [...prev]
+              updated[index] = true
+              return updated
+            })
+          })
 
-          observer.observe(videoElement);
+          observer.observe(videoElement)
         }
 
         return () => {
-          hls.destroy();
-          observer.unobserve(videoRefs.current[index]!);
-        };
+          hls.destroy()
+          observer.unobserve(videoRefs.current[index]!)
+        }
       }
-    });
+    })
 
     const handleTouchStart = () => {
-      setIsMuted(false);
+      setIsMuted(false)
       videoRefs.current.forEach((video) => {
         if (video && !video.paused) {
-          video.play().catch((error) => console.error('Video play failed:', error));
+          video.play().catch((error) => console.error('Video play failed:', error))
         }
-      });
-    };
+      })
+    }
 
-    window.addEventListener('touchstart', handleTouchStart, { once: true });
+    window.addEventListener('touchstart', handleTouchStart, { once: true })
 
     return () => {
-      window.removeEventListener('touchstart', handleTouchStart);
-    };
-  }, [resources]);
+      window.removeEventListener('touchstart', handleTouchStart)
+    }
+  }, [resources])
 
   const handlePlay = (index: number) => {
     if (playingIndex !== null && playingIndex !== index) {
@@ -154,23 +153,17 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
     })
   }
 
-  const getShareLink = useMemoizedFn(
-    async (title: string, pid: number, uid: number, type: 'shares' | 'profile') => {
-      const shareText = encodeURIComponent(title)
-      const { host, ref } = await getLinkHandlerAsync({ pid, uid })
-      console.log(host, ref, 'getLinkResult')
+  const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
+    const shareText = encodeURIComponent(title)
+    const { host, ref } = await getLinkHandlerAsync({ pid, uid })
+    console.log(host, ref, 'getLinkResult')
 
-      const copyLink = encodeURIComponent(
-        !isLocalEnv
-          ? `https://t.me/BaeDevBot/BAE?startapp=type=${type}_ref=${ref}_uid=${uid}`
-          : ` https://t.me/ditto_gray_tes_bot/ditto_gray_tes?startapp=type=${type}_ref=${ref}_uid=${uid}`
-      )
-      console.log('copyLink', decodeURIComponent(copyLink))
+    const copyLink = encodeURIComponent(`${import.meta.env.VITE_API_URL}link/${ref}?startapp`)
+    console.log('copyLink', decodeURIComponent(copyLink))
 
-      const shareLink = `https://t.me/share/url?url=${copyLink}&text=${shareText}`
-      setLinks({ shareLink, copyLink: decodeURIComponent(copyLink) })
-    }
-  )
+    const shareLink = `https://t.me/share/url?url=${copyLink}&text=${shareText}`
+    setLinks({ shareLink, copyLink: decodeURIComponent(copyLink) })
+  })
   const resourcesEve = (post_id: number) => {
     setPostId(post_id)
     // const updatedUsers = resources.map(user => {
@@ -299,7 +292,7 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
                 </Flex>
                 <IconButton
                   onClick={() => {
-                    getShareLink(data.title, data.id, data.uid, 'shares')
+                    getShareLink(data.title, data.id, data.uid)
                     toggle()
                   }}
                   aria-label="share"
@@ -423,7 +416,7 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
                 </Flex>
                 <IconButton
                   onClick={() => {
-                    getShareLink(data.title, data.id, data.uid, 'shares')
+                    getShareLink(data.title, data.id, data.uid)
                     toggle()
                   }}
                   aria-label="share"
@@ -434,7 +427,6 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
                   icon={<IconShare />}
                 />
               </Flex>
-
               <Box px={4}>
                 <Text color={'#62636F'} fontSize={'sm'} lineHeight={6}>
                   {data.title}

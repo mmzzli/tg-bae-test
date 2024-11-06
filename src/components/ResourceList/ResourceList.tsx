@@ -259,7 +259,6 @@ const ResourceList = ({ resources }: { resources: FormatterListItem[] }) => {
                       width={128}
                       height={128}
                       key={i}
-                      currentIndex={ind}
                       onClick={() => handleImageClick(data.media, ind)}
                       rect
                     />

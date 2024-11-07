@@ -12,7 +12,7 @@ export interface FollowListState {
 }
 
 export interface UserSlice {
-  othersUserInfo: OthersUserInfo
+  othersUserInfo: OthersUserInfo & { user_id: number }
   userInfo: IUserInfo
   setUserInfo: (info: IUserInfo) => void
   resetUserInfo: () => void
@@ -51,8 +51,9 @@ const initialUserInfo: IUserInfo = {
   api_token: '',
 }
 
-const initialOthersUserInfo: OthersUserInfo = {
+const initialOthersUserInfo: OthersUserInfo & { user_id: number } = {
   uid: -1,
+  user_id: -1,
   username: '',
   avatar: '',
   bio: '',

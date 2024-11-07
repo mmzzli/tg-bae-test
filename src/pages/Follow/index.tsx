@@ -19,16 +19,20 @@ const FollowPage: FC = () => {
 
   const {
     token,
+    myFollow,
     follower,
     following,
     setFollowerList,
     setFollowingList,
+    setMyFollow,
     resetFollowerList,
     resetFollowingList,
   } = useStore((state) => ({
+    myFollow: state.myFollow,
     token: state.token,
     follower: state.follower,
     following: state.following,
+    setMyFollow: state.setMyFollow,
     setFollowerList: state.setFollowerList,
     setFollowingList: state.setFollowingList,
     resetFollowerList: state.resetFollowerList,
@@ -38,19 +42,16 @@ const FollowPage: FC = () => {
   useEffect(() => {
     if (uid && token) {
       if (type === 'follower') {
-        // getFollowerList(Number(uid)).then((res) => setFollowerList(res))
-        setFollowerList(
-          Array.from({ length: 100 }).map((item, index) => ({
-            avatar: 'https://img.bae.boo/christina.jpg',
-            tg_id: 520002 + index,
-            tgname: 'christina1111111111111111111' + index,
-          }))
-        )
+        getFollowerList(Number(uid)).then((res) => setFollowerList(res))
       } else {
         getFollowingList(Number(uid)).then((res) => setFollowingList(res))
       }
     }
-  }, [uid, token])
+    if (token && myFollow.length === 0) {
+      const current_uid = launchParams.initData?.user?.id ?? 0
+      getFollowingList(current_uid).then((res) => setMyFollow(res))
+    }
+  }, [uid, token, myFollow])
 
   useEffect(() => {
     return () => {

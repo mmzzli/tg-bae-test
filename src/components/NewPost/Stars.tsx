@@ -52,6 +52,17 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
       window.scrollTo(0, 0);
     }
   }, [isOpen])
+  
+  useEffect(() => {
+    const handleKeyboardHide = () => {
+      window.scrollTo(0, 0);
+    };
+    window.addEventListener('focusout', handleKeyboardHide);
+
+    return () => {
+      window.removeEventListener('focusout', handleKeyboardHide);
+    };
+  }, []);
 
 
   return (

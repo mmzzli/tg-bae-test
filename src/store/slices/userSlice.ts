@@ -46,8 +46,8 @@ const initialUserInfo: IUserInfo = {
   username: '',
   avatar: '',
   bio: '',
-  followers: 0,
-  following: 0,
+  follower: 0,
+  fans: 0,
   api_token: '',
 }
 
@@ -56,8 +56,8 @@ const initialOthersUserInfo: OthersUserInfo = {
   username: '',
   avatar: '',
   bio: '',
-  followers: 0,
-  following: 0,
+  follower: 0,
+  fans: 0,
 }
 
 const initialFollowListState: FollowListState = {

@@ -62,6 +62,6 @@ export type ListRes = {
 export type UserPostsReq = { page_num: number; records: number; uid: number }
 export type UserPostsRes = { posts: Array<PostItem> }
 
-export type OthersUserInfo = UserItem & { bio: string; followers: number; following: number }
+export type OthersUserInfo = UserItem & { bio: string; fans: number; follower: number }
 
 export type ShareInfo = { type: number; media: ListItem[]; userInfo: OthersUserInfo }

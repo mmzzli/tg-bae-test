@@ -48,7 +48,7 @@ const UserProfile: FC = () => {
             lineHeight="24px"
             onClick={() => navigate(`/follow/${uid}?type=follower`)}
           >
-            {userInfo.followers}
+            {userInfo.follower}
           </Heading>
           <Text color="#8A8C91" fontSize="12px" lineHeight="14px">
             followers
@@ -61,7 +61,7 @@ const UserProfile: FC = () => {
             lineHeight="24px"
             onClick={() => navigate(`/follow/${uid}?type=following`)}
           >
-            {userInfo.following}
+            {userInfo.fans}
           </Heading>
           <Text color="#8A8C91" fontSize="12px" lineHeight="14px">
             following

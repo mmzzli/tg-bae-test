@@ -123,12 +123,12 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
               mt="17px"
               p="0 20px"
               borderRadius="8px"
+              mb="10px"
             >
               {boll && <Input
                 color="#E0E2F6"
                 border="none"
                 p="0"
-                pb="20px"
                 inputMode="numeric"
                 placeholder="Add a custom amount"
                 onChange={handleChange}

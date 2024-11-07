@@ -137,7 +137,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
               <Image src={StarsIcon} alt="Stars Icon" />
             </HStack>
 
-            <Box p="0px 18px" h="200px">
+            <Box p="0px 18px" h="500px">
               <Button
                 size="xl"
                 fontSize="14px"

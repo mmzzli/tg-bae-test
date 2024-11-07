@@ -1,5 +1,5 @@
 import { post, get, put } from './base'
-import { IUserLogIn, OthersUserInfo, PostItem, UserInfoProfile } from '@/types'
+import { IUserLogIn, OthersUserInfo, PostItem, UserInfoProfile, Follow } from '@/types'
 
 export const logIn = (params: { user: string }) => {
   return post<IUserLogIn>(`/api/v1/login`, params)
@@ -10,6 +10,18 @@ export const getSomeoneProfile = (uid: number) => {
 }
 export const getSomeonePosts = (uid: number) => {
   return get<{ posts: PostItem[] }>(`/api/v1/profile/${uid}`)
+}
+
+export const getFollowerList = (uid: number) => {
+  return get<Follow[]>(`/api/v1/followers/${uid}`)
+}
+
+export const getFollowingList = (uid: number) => {
+  return get<Follow[]>(`/api/v1/fans/${uid}`)
+}
+
+export const follow = (params: { fansid: number; tgid: number }) => {
+  return post(`/api/v1/follow`, params)
 }
 
 export const botInvoice = (params: {
@@ -26,11 +38,6 @@ export const viewPid = (pid: number) => {
 export const profileEdit = (uid: number) => {
   return get<UserInfoProfile>(`/api/v1/profile/${uid}`)
 }
-export const putProfile = (params:{
-  avatar: string,
-  bio: string,
-  username: string
-}) => {
+export const putProfile = (params: { avatar: string; bio: string; username: string }) => {
   return put(`/api/v1/profile`, params)
 }
-

@@ -39,7 +39,7 @@ export const HomePage: FC = () => {
         setSharedPostList(data.media)
         navigate(`/shares?ref=${ref}`)
       } else if (data.type === SHARE_PROFILE) {
-        setOthersUserInfo(data.userInfo)
+        setOthersUserInfo({ ...data.userInfo, uid: data.userInfo.user_id })
         navigate(`/profile/${data.userInfo.uid}`)
       }
     } catch (error) {

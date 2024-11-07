@@ -64,4 +64,8 @@ export type UserPostsRes = { posts: Array<PostItem> }
 
 export type OthersUserInfo = UserItem & { bio: string; fans: number; follower: number }
 
-export type ShareInfo = { type: number; media: ListItem[]; userInfo: OthersUserInfo }
+export type ShareInfo = {
+  type: number
+  media: ListItem[]
+  userInfo: OthersUserInfo & { user_id: number }
+}

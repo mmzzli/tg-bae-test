@@ -16,7 +16,7 @@ export interface UserSlice {
   userInfo: IUserInfo
   setUserInfo: (info: IUserInfo) => void
   resetUserInfo: () => void
-  setOthersUserInfo: (info: OthersUserInfo) => void
+  setOthersUserInfo: (info: OthersUserInfo & { user_id: number }) => void
   resetOthersUserInfo: () => void
   follower: FollowListState
   following: FollowListState

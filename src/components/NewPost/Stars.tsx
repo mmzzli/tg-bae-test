@@ -34,7 +34,10 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
     setPrice(item)
   }
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPrice(Number(e.target.value))
+    const newValue = e.target.value;
+    if (/^\d*$/.test(newValue)) {
+      setPrice(Number(newValue));
+    }
   }
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -44,6 +47,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
   }, [isOpen]);
 
   useEffect(() => {
+    console.log(1)
     if (!isOpen) {
       window.scrollTo(0, 0);
     }
@@ -113,6 +117,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
                 color="#E0E2F6"
                 border="none"
                 p="0"
+                inputMode="numeric"
                 placeholder="Add a custom amount"
                 onChange={handleChange}
                 value={price}

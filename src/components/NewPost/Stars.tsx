@@ -52,7 +52,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
       window.scrollTo(0, 0);
     }
   }, [isOpen])
-  
+
   useEffect(() => {
     const handleKeyboardHide = () => {
       window.scrollTo(0, 0);
@@ -117,6 +117,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
                 </GridItem>
               ))}
             </Grid>
+            <Box pb="18px">
             <HStack
               h="48px"
               border="1px solid rgba(255, 255, 255, 0.1)"
@@ -136,6 +137,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
               />}
               <Image src={StarsIcon} alt="Stars Icon" />
             </HStack>
+            </Box>
 
             <Box p="0px 18px">
               <Button

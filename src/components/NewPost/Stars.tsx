@@ -29,6 +29,8 @@ const starList: StarValue[] = [0, 100, 250, 500, 1000, 2500]
 const Stars: FC<StarsProps> = ({ price, setPrice }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [boll, setBoll] = useState<boolean>(false)
+  const [isFocused, setIsFocused] = useState<boolean>(false);
+
 
   const handleStarSelect = (item: StarValue) => {
     setPrice(item)
@@ -52,7 +54,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
       window.scrollTo(0, 0);
     }
   }, [isOpen])
-  
+
   useEffect(() => {
     const handleKeyboardHide = () => {
       window.scrollTo(0, 0);
@@ -133,11 +135,13 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
                 onChange={handleChange}
                 value={price}
                 h="100%"
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
               />}
               <Image src={StarsIcon} alt="Stars Icon" />
             </HStack>
 
-            <Box p="0px 18px" h="500px">
+            <Box p="0px 18px" h={`${isFocused ? "400px" : ""}`}>
               <Button
                 size="xl"
                 fontSize="14px"

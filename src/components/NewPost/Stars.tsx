@@ -28,7 +28,7 @@ const starList: StarValue[] = [0, 100, 250, 500, 1000, 2500]
 
 const Stars: FC<StarsProps> = ({ price, setPrice }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const [boll,setBoll] = useState<boolean>(false)
+  const [boll, setBoll] = useState<boolean>(false)
 
   const handleStarSelect = (item: StarValue) => {
     setPrice(item)
@@ -42,6 +42,13 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
     }, 100);
     return () => clearTimeout(timer);
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      window.scrollTo(0, 0);
+    }
+  }, [isOpen])
+
 
   return (
     <>
@@ -109,6 +116,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
                 placeholder="Add a custom amount"
                 onChange={handleChange}
                 value={price}
+                h="100%"
               />}
               <Image src={StarsIcon} alt="Stars Icon" />
             </HStack>

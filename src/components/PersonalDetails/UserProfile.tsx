@@ -6,8 +6,11 @@ import Image from '../Image/Image'
 import EarningsPage from '@/components/PersonalDetails/Earnings'
 import ShareUser from './ShareUser'
 import { EditIcon } from '@/assets/icons'
+import { useTMAUtils } from '@/hooks/useTMAUtils'
 
 const UserProfile: FC = () => {
+  const { launchParams } = useTMAUtils()
+  const uid = launchParams.initData?.user?.id ?? 0
   const userInfo = useStore((state) => state.userInfo)
   const navigate = useNavigate()
 
@@ -39,7 +42,12 @@ const UserProfile: FC = () => {
       </HStack>
       <HStack pt="24px" gap="56px">
         <Box>
-          <Heading fontSize="20px" color="#E0E2F6" lineHeight="24px">
+          <Heading
+            fontSize="20px"
+            color="#E0E2F6"
+            lineHeight="24px"
+            onClick={() => navigate(`/follow/${uid}?type=follower`)}
+          >
             {userInfo.followers}
           </Heading>
           <Text color="#8A8C91" fontSize="12px" lineHeight="14px">
@@ -47,7 +55,12 @@ const UserProfile: FC = () => {
           </Text>
         </Box>
         <Box>
-          <Heading fontSize="20px" color="#E0E2F6" lineHeight="24px">
+          <Heading
+            fontSize="20px"
+            color="#E0E2F6"
+            lineHeight="24px"
+            onClick={() => navigate(`/follow/${uid}?type=following`)}
+          >
             {userInfo.following}
           </Heading>
           <Text color="#8A8C91" fontSize="12px" lineHeight="14px">

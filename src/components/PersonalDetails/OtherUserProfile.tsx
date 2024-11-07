@@ -1,19 +1,16 @@
 import { FC } from 'react'
 import { Heading, HStack, Box, Text } from '@chakra-ui/react'
 import Image from '../Image/Image'
-
-import BaseButton from '../BaseButton/BaseButton'
 import { useStore } from '../../store'
+import FollowButton from './FollowButton'
+import { useTMAUtils } from '@/hooks/useTMAUtils'
 
 const OtherUserProfile: FC = () => {
   const { userInfo } = useStore((state) => ({
     userInfo: state.othersUserInfo,
   }))
-
-  const follow = async () => {
-    // TODO: Implement follow functionality
-  }
-
+  const { launchParams } = useTMAUtils()
+  const currentUid = launchParams.initData?.user?.id ?? 0
   return (
     <Box p="0px 16px" pt="30px">
       <HStack gap="16px" pl="8px" justifyContent="space-between">
@@ -27,12 +24,11 @@ const OtherUserProfile: FC = () => {
             alt={userInfo.username}
           />
         }
-        <BaseButton
-          text="Follow"
-          width="104px"
-          handler={() => {
-            follow()
-          }}
+        <FollowButton
+          fansid={currentUid}
+          tgid={userInfo.uid}
+          avatar={userInfo.avatar}
+          username={userInfo.username}
         />
       </HStack>
       <Heading as="h3" color="#E0E2F6" fontWeight="500" className="mt-4">

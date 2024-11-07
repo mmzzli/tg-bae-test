@@ -15,7 +15,13 @@ export interface IUserLogIn {
 }
 
 export interface UserInfoProfile {
-  username: string;
-  bio: string;
-  avatar: string;
+  username: string
+  bio: string
+  avatar: string
+}
+
+export interface Follow {
+  avatar: string
+  tg_id: number
+  tgname: string
 }

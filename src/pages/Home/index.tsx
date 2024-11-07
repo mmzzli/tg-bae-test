@@ -40,7 +40,7 @@ export const HomePage: FC = () => {
         navigate(`/shares?ref=${ref}`)
       } else if (data.type === SHARE_PROFILE) {
         setOthersUserInfo({ ...data.userInfo, uid: data.userInfo.user_id })
-        navigate(`/profile/${data.userInfo.user_id || data.userInfo.user_id}`)
+        navigate(`/profile/${data.userInfo.uid || data.userInfo.user_id}`)
       }
     } catch (error) {
       console.warn('API ERROR', error)

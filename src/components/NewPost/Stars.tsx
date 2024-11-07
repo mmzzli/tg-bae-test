@@ -56,7 +56,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
         >
           <HStack gap="12px" w="100%" justifyContent="space-between">
             <Text color="#E0E2F6" w="100%">Stars to unlock this post</Text>
-            <HStack w="100%" justifyContent="flex-end">
+            <HStack justifyContent="flex-end">
               <Image src={StarsIcon} />
               <Text color="#E0E2F6" fontSize="14px">{price}</Text>
             </HStack>

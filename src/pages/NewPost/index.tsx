@@ -134,13 +134,21 @@ export const NewPost: FC = () => {
     if (!allSameType) {
       toast({
         title: 'Please select only images or only videos',
-
+        position: "top",
         status: 'warning',
       })
       return
     }
     setFirstFileType(firstFileType)
     if (firstFileType === 'video') {
+      if(fileArray.length>1){
+        toast({
+          title: 'Please select only one video.',
+          position: "top",
+          status: 'warning',
+        })
+        return
+      }
       setVideoFile(fileArray[0])
       const videoUrl = URL.createObjectURL(fileArray[0])
       setVideoSrc(videoUrl)

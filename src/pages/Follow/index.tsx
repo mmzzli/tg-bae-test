@@ -47,11 +47,20 @@ const FollowPage: FC = () => {
         getFollowingList(Number(uid)).then((res) => setFollowingList(res))
       }
     }
-    if (token && myFollow.length === 0) {
+  }, [uid, token])
+
+  const updateMyFollow = () => {
+    if (!token) {
+      setTimeout(() => {
+        updateMyFollow()
+      }, 150)
+      return
+    }
+    if (myFollow.length === 0) {
       const current_uid = launchParams.initData?.user?.id ?? 0
       getFollowingList(current_uid).then((res) => setMyFollow(res))
     }
-  }, [uid, token, myFollow])
+  }
 
   useEffect(() => {
     return () => {

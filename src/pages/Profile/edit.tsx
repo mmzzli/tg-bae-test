@@ -79,7 +79,7 @@ const ProfileEdit: FC = () => {
           height="12"
           handler={async () => {
             await putProfile(profileData)
-            navigate('/profile')
+            location.href = '/profile'
           }}
         />
       </div>

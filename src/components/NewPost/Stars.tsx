@@ -123,7 +123,6 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
               mt="17px"
               p="0 20px"
               borderRadius="8px"
-              mb="10px"
             >
               {boll && <Input
                 color="#E0E2F6"
@@ -138,7 +137,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
               <Image src={StarsIcon} alt="Stars Icon" />
             </HStack>
 
-            <Box p="0px 18px">
+            <Box p="0px 18px" h="200px">
               <Button
                 size="xl"
                 fontSize="14px"

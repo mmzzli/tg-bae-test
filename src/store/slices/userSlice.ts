@@ -1,10 +1,10 @@
 import { StateCreator } from 'zustand'
 import { StoreState, useStore } from '../store'
 import { shallow } from 'zustand/shallow'
-import { IUserInfo, OthersUserInfo } from '@/types'
+import { IUserInfo, OthersUserInfo, Follow } from '@/types'
 
 export interface FollowListState {
-  list: OthersUserInfo[]
+  list: Follow[]
   page: number
   hasMore: boolean
   isLoading: boolean
@@ -21,8 +21,11 @@ export interface UserSlice {
   follower: FollowListState
   following: FollowListState
 
+  myFollow: Follow[]
+  setMyFollow: (follow: Follow[]) => void
+
   setFollowerPage: (page: number) => void
-  setFollowerList: (list: OthersUserInfo[], merge?: boolean) => void
+  setFollowerList: (list: Follow[], merge?: boolean) => void
   setFollowerLoading: (isLoading: boolean) => void
   setFollowerError: (error: string | null) => void
   setFollowerHasMore: (hasMore: boolean) => void
@@ -30,7 +33,7 @@ export interface UserSlice {
   loadFollowerList: (page: number) => Promise<void>
 
   setFollowingPage: (page: number) => void
-  setFollowingList: (list: OthersUserInfo[], merge?: boolean) => void
+  setFollowingList: (list: Follow[], merge?: boolean) => void
   setFollowingLoading: (isLoading: boolean) => void
   setFollowingError: (error: string | null) => void
   setFollowingHasMore: (hasMore: boolean) => void
@@ -188,6 +191,9 @@ export const createUserSlice: StateCreator<UserSlice> = (set, get) => ({
       get().setFollowingLoading(false)
     }
   },
+
+  myFollow: [],
+  setMyFollow: (follow) => set({ myFollow: follow }),
 })
 
 export const selectUserInfo = (state: StoreState) => state.userInfo

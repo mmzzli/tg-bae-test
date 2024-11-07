@@ -10,6 +10,7 @@ import {
   createStandaloneToast,
   Grid,
   GridItem,
+  Toast,
 } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import axios, { AxiosResponse } from 'axios'
@@ -17,8 +18,6 @@ import { postResources, postReq } from '@/api'
 import StarsPage from '@/components/NewPost/Stars'
 import { PostIcon, PostAddIcon, RemoveIcon } from '@/assets/icons'
 import { useStore } from '@/store'
-import BaseButton from '@/components/BaseButton/BaseButton'
-
 
 export const NewPost: FC = () => {
   const navigate = useNavigate()
@@ -122,6 +121,11 @@ export const NewPost: FC = () => {
   }
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    Toast({
+      title: '1',
+      status: 'info',
+      position: 'top',
+    })
     const newFiles = event.target.files
     if (!newFiles || newFiles.length === 0) return
     const fileArray = Array.from(newFiles)
@@ -134,13 +138,21 @@ export const NewPost: FC = () => {
     if (!allSameType) {
       toast({
         title: 'Please select only images or only videos',
-
+        position: 'top',
         status: 'warning',
       })
       return
     }
     setFirstFileType(firstFileType)
     if (firstFileType === 'video') {
+      if (fileArray.length > 1) {
+        toast({
+          title: 'Please select only one video.',
+          position: 'top',
+          status: 'warning',
+        })
+        return
+      }
       setVideoFile(fileArray[0])
       const videoUrl = URL.createObjectURL(fileArray[0])
       setVideoSrc(videoUrl)
@@ -164,8 +176,15 @@ export const NewPost: FC = () => {
   }
 
   const handleChooseFile = () => {
+    Toast({
+      title: '1',
+      status: 'info',
+      position: 'top',
+    })
+    console.log(inputRef.current)
     inputRef.current?.click()
   }
+
   const removeImg = (key: number) => {
     setImgAttr((prevItems) => prevItems.filter((_, index) => index !== key))
     setFiles((prevItems) => prevItems.filter((_, index) => index !== key))
@@ -179,113 +198,113 @@ export const NewPost: FC = () => {
 
   return (
     <Box h="100vh" overflow="hidden">
-    <Box p="0 16px">
-      <HStack justifyContent="space-between" pt="16px">
-        <Heading as="h3" fontSize="20px" color="#E0E2F6">
-          New Post
-        </Heading>
-        <Button
-          size="xl"
-          fontSize="14px"
-          variant="primary-dark"
-          w="82px"
-          h="35px"
-          onClick={handleUpload}
-          isLoading={isLoading}
-          isDisabled={(firstFileType === 'image' ? files.length === 0 : videoFile == null)}
-        >
-          <Image src={PostIcon} mr="5px" /> Post
-        </Button>
-      </HStack>
-      <Box pt="16px">
-        <Input
-          type="file"
-          accept="image/*,video/*"
-          multiple
-          onChange={handleFileChange}
-          style={{ display: 'none' }}
-          ref={inputRef}
-        />
+      <Box p="0 16px">
+        <HStack justifyContent="space-between" pt="16px">
+          <Heading as="h3" fontSize="20px" color="#E0E2F6">
+            New Post
+          </Heading>
+          <Button
+            size="xl"
+            fontSize="14px"
+            variant="primary-dark"
+            w="82px"
+            h="35px"
+            onClick={handleUpload}
+            isLoading={isLoading}
+            isDisabled={firstFileType === 'image' ? files.length === 0 : videoFile == null}
+          >
+            <Image src={PostIcon} mr="5px" /> Post
+          </Button>
+        </HStack>
+        <Box pt="16px">
+          <Input
+            type="file"
+            accept="image/*,video/*"
+            multiple
+            onChange={handleFileChange}
+            style={{ display: 'none' }}
+            ref={inputRef}
+          />
 
-        <Box>
-          {firstFileType === 'video' && (
-            <>
-              {videoSrc ? (
-                <Box maxW="600px" m="auto" position="relative">
-                  <video
-                    src={videoSrc}
-                    controls
-                    width="100%"
-                    autoPlay
-                    playsInline
-                    style={{ borderRadius: '4px', maxHeight: '380px' }}
-                  />
+          <Box>
+            {firstFileType === 'video' && (
+              <>
+                {videoSrc ? (
+                  <Box maxW="600px" m="auto" position="relative">
+                    <video
+                      src={videoSrc}
+                      controls
+                      width="100%"
+                      autoPlay
+                      playsInline
+                      style={{ borderRadius: '4px', maxHeight: '380px' }}
+                    />
+                    <Image
+                      onClick={() => setVideoSrc('')}
+                      w="24px"
+                      h="24px"
+                      position="absolute"
+                      top="8px"
+                      right="8px"
+                      src={RemoveIcon}
+                      alt="img"
+                    />
+                  </Box>
+                ) : (
                   <Image
-                    onClick={() => setVideoSrc('')}
-                    w="24px"
-                    h="24px"
-                    position="absolute"
-                    top="8px"
-                    right="8px"
-                    src={RemoveIcon}
-                    alt="img"
+                    w="88px"
+                    h="88px"
+                    cursor="pointer"
+                    src={PostAddIcon}
+                    onClick={handleChooseFile}
                   />
-                </Box>
-              ) : (
-                <Image
-                  w="88px"
-                  h="88px"
-                  cursor="pointer"
-                  src={PostAddIcon}
-                  onClick={handleChooseFile}
-                />
-              )}
-            </>
-          )}
-          {firstFileType === 'image' && (
-            <Grid templateColumns="repeat(3, 1fr)" gap={4}>
-              {imgAttr.map((url: string, key: number) => (
-                <GridItem aspectRatio={1} key={url} position="relative">
-                  <Image objectFit="cover" w="100%" h="100%" src={url} alt="img" />
+                )}
+              </>
+            )}
+            {firstFileType === 'image' && (
+              <Grid templateColumns="repeat(3, 1fr)" gap={4}>
+                {imgAttr.map((url: string, key: number) => (
+                  <GridItem aspectRatio={1} key={url} position="relative">
+                    <Image objectFit="cover" w="100%" h="100%" src={url} alt="img" />
+                    <Image
+                      onClick={() => removeImg(key)}
+                      w="24px"
+                      h="24px"
+                      position="absolute"
+                      top="8px"
+                      right="8px"
+                      src={RemoveIcon}
+                      alt="img"
+                    />
+                  </GridItem>
+                ))}
+                <GridItem aspectRatio={1}>
                   <Image
-                    onClick={() => removeImg(key)}
-                    w="24px"
-                    h="24px"
-                    position="absolute"
-                    top="8px"
-                    right="8px"
-                    src={RemoveIcon}
-                    alt="img"
+                    w="100%"
+                    h="100%"
+                    cursor="pointer"
+                    src={PostAddIcon}
+                    onClick={handleChooseFile}
                   />
                 </GridItem>
-              ))}
-              <GridItem aspectRatio={1}>
-                <Image
-                  w="100%"
-                  h="100%"
-                  cursor="pointer"
-                  src={PostAddIcon}
-                  onClick={handleChooseFile}
-                />
-              </GridItem>
-            </Grid>
-          )}
+              </Grid>
+            )}
+          </Box>
+          <Textarea
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+            mt="10px"
+            color="#E0E2F6"
+            fontWeight="400"
+            p="0"
+            fontSize="14px"
+            border="none"
+            placeholder="Say something ..."
+            h="80px"
+          />
         </Box>
-        <Textarea
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-          mt="10px"
-          color="#E0E2F6"
-          fontWeight="400"
-          p="0"
-          fontSize="14px"
-          border="none"
-          placeholder="Say something ..."
-          h="80px"
-        />
+        <StarsPage setPrice={setPrice} price={price} />
       </Box>
-      <StarsPage setPrice={setPrice} price={price} />
-    </Box>
     </Box>
   )
 }

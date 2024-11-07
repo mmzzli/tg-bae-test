@@ -7,10 +7,14 @@ body {
   background-color: #0d0d0d !important;
 }
 
-button {
+button,
+.no-tap {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }

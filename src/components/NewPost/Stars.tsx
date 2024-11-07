@@ -17,6 +17,7 @@ import {
 } from '@chakra-ui/react'
 
 import { StarsIcon, BottomIcon, Remove1Icon, RightIcon } from '@/assets/icons'
+import { isMobileDevice } from '@/utils/utils'
 
 type StarsProps = {
   price: StarValue
@@ -28,13 +29,18 @@ const starList: StarValue[] = [0, 100, 250, 500, 1000, 2500]
 
 const Stars: FC<StarsProps> = ({ price, setPrice }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const [boll,setBoll] = useState<boolean>(false)
+  const [boll, setBoll] = useState<boolean>(false)
+  const [isFocused, setIsFocused] = useState<boolean>(false);
+
 
   const handleStarSelect = (item: StarValue) => {
     setPrice(item)
   }
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPrice(Number(e.target.value))
+    const newValue = e.target.value;
+    if (/^\d*$/.test(newValue)) {
+      setPrice(Number(newValue));
+    }
   }
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -42,6 +48,25 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
     }, 100);
     return () => clearTimeout(timer);
   }, [isOpen]);
+
+  useEffect(() => {
+    console.log(1)
+    if (!isOpen) {
+      window.scrollTo(0, 0);
+    }
+  }, [isOpen])
+
+  useEffect(() => {
+    const handleKeyboardHide = () => {
+      window.scrollTo(0, 0);
+    };
+    window.addEventListener('focusout', handleKeyboardHide);
+
+    return () => {
+      window.removeEventListener('focusout', handleKeyboardHide);
+    };
+  }, []);
+
 
   return (
     <>
@@ -56,7 +81,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
         >
           <HStack gap="12px" w="100%" justifyContent="space-between">
             <Text color="#E0E2F6" w="100%">Stars to unlock this post</Text>
-            <HStack w="100%" justifyContent="flex-end">
+            <HStack justifyContent="flex-end">
               <Image src={StarsIcon} />
               <Text color="#E0E2F6" fontSize="14px">{price}</Text>
             </HStack>
@@ -106,14 +131,18 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
                 color="#E0E2F6"
                 border="none"
                 p="0"
+                inputMode="numeric"
                 placeholder="Add a custom amount"
                 onChange={handleChange}
                 value={price}
+                h="100%"
+                onFocus={() => { isMobileDevice() && setIsFocused(true) }}
+                onBlur={() => { isMobileDevice() && setIsFocused(false) }}
               />}
               <Image src={StarsIcon} alt="Stars Icon" />
             </HStack>
 
-            <Box p="0px 18px">
+            <Box p="0px 18px" h={`${isFocused ? "400px" : ""}`}>
               <Button
                 size="xl"
                 fontSize="14px"

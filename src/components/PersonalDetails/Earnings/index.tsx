@@ -64,7 +64,7 @@ const Earnings = () => {
           </div>
           <div className="mt-12 mb-[18px]">
             <BaseButton
-              text="With draw"
+              text="Withdraw"
               width="100%"
               handler={() => {
                 // shareLink(link ?? '')

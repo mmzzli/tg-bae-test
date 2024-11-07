@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 type Props = {
   text: string
@@ -6,14 +6,24 @@ type Props = {
   handler: () => void
   width?: string // Optional width prop
   height?: string // Optional width prop
+  className?: string
+  loading?: boolean
 }
 
-const BaseButton = ({ text, icon, handler, width, height = '12' }: Props) => {
+const BaseButton = ({
+  text,
+  icon,
+  handler,
+  width,
+  height = '12',
+  className,
+  loading = false,
+}: Props) => {
   return (
     <div>
       <div
-        className={`flex items-center justify-center gap-2 h-${height} bg-[#4A3AFF] rounded-[42px] text-[#E0E2F6] text-sm font-medium cursor-pointer`}
-        onClick={handler}
+        className={`no-tap flex items-center justify-center gap-2 h-${height} bg-[#4A3AFF] rounded-[42px] text-[#E0E2F6] text-sm font-medium cursor-pointer ${className}`}
+        onClick={() => !loading && handler()}
         style={{ width }}
       >
         {icon}

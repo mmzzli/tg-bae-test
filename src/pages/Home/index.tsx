@@ -10,17 +10,16 @@ import { useStore } from '@/store'
 import RecommendList from '@/components/RecommendList/RecommendList'
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { getSingleMedia } from '@/api/list'
-
 const SHARE_POST = 1
 const SHARE_PROFILE = 2
 export const HomePage: FC = () => {
   const navigate = useNavigate()
   const { shareLink, isInTMA } = useTMAUtils()
-  const token = useStore((state) => state.token)
   const { startParam } = retrieveLaunchParams()
-  const { setSharedPostList, setOthersUserInfo } = useStore((state) => ({
+  const { token, setSharedPostList, setOthersUserInfo } = useStore((state) => ({
     setSharedPostList: state.setSharedPostList,
     setOthersUserInfo: state.setOthersUserInfo,
+    token: state.token,
   }))
 
   const handleNavigate = async (ref: string) => {

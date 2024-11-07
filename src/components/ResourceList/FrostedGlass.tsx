@@ -54,8 +54,7 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
   return (
     <>
       <Box
-        backdropFilter="blur(60px) brightness(1.1)"
-        boxShadow="0 4px 10px rgba(0, 0, 0, 0.1)"
+        bg="linear-gradient(135deg, #ccc, #000)"
         color="#333"
         textAlign="center"
         position="absolute"

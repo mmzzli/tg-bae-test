@@ -17,6 +17,7 @@ import {
 } from '@chakra-ui/react'
 
 import { StarsIcon, BottomIcon, Remove1Icon, RightIcon } from '@/assets/icons'
+import { isMobileDevice } from '@/utils/utils'
 
 type StarsProps = {
   price: StarValue
@@ -135,8 +136,8 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
                 onChange={handleChange}
                 value={price}
                 h="100%"
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
+                onFocus={() => { isMobileDevice() && setIsFocused(true) }}
+                onBlur={() => { isMobileDevice() && setIsFocused(false) }}
               />}
               <Image src={StarsIcon} alt="Stars Icon" />
             </HStack>

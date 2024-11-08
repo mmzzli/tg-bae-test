@@ -69,6 +69,7 @@ const ShareUser = ({ userInfo }: { userInfo: IUserInfo }) => {
           <div className="mt-12 mb-[18px] mx-4">
             <BaseButton
               text="Share via Telegram"
+              height="48px"
               icon={<Image src={TelegramIcon} />}
               handler={() => {
                 shareLink(links.shareLink ?? '')
@@ -79,6 +80,7 @@ const ShareUser = ({ userInfo }: { userInfo: IUserInfo }) => {
           <div className="mx-4">
             <BaseButton
               text="Copy link"
+              height="48px"
               icon={<Image src={LinkIcon} />}
               handler={() => {
                 copy(links.copyLink)

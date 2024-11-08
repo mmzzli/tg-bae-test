@@ -14,7 +14,7 @@ const Earnings = () => {
         text="️Earnings"
         icon={<Image src={MoneyIcon} />}
         width="104px"
-        height="9"
+        height="36px"
         handler={() => {
           toggle()
         }}
@@ -36,12 +36,10 @@ const Earnings = () => {
         showHandle={false}
       >
         <div className="mt-4 ml-2 w-[100%]">
-          <h3 className="font-bold text-[24px] text-[#E0E2F6]">
-            Earnings
-          </h3>
+          <h3 className="font-bold text-[24px] text-[#E0E2F6]">Earnings</h3>
           <div className="flex gap-[8px] mt-[10px]">
             <p className="text-[15px] text-[#808080]">Earning History</p>
-            <img className='mt-[4px]' src={RightIcon} />
+            <img className="mt-[4px]" src={RightIcon} />
           </div>
           <div className="mt-[56px] flex gap-[30px] items-center justify-between">
             <div>

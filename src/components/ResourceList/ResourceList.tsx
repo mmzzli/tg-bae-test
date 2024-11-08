@@ -214,6 +214,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
           <div className="mt-12 mb-[18px] mx-4">
             <BaseButton
               text="Share via Telegram"
+              height="48px"
               icon={<Image src={TelegramIcon} />}
               handler={() => {
                 shareLink(links.shareLink ?? '')
@@ -226,6 +227,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
         <div className={isMobile ? 'mx-4' : 'mx-4 mt-[50px]'}>
           <BaseButton
             text="Copy link"
+            height="48px"
             icon={<Image src={LinkIcon} />}
             handler={() => {
               copy(links.copyLink)

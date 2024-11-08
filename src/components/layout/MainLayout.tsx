@@ -36,6 +36,7 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
     } catch (error) {
       userInfo = DEV_INIT_DATA_RAW
     }
+    alert(JSON.stringify(userInfo))
 
     resetAllLists()
     resetUserInfo()

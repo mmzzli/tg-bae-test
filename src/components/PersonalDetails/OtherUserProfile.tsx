@@ -5,6 +5,7 @@ import { useStore } from '../../store'
 import FollowButton from './FollowButton'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useNavigate } from 'react-router-dom'
+import { profileImg } from '@/assets/image'
 
 const OtherUserProfile: FC = () => {
   const { userInfo } = useStore((state) => ({
@@ -23,7 +24,7 @@ const OtherUserProfile: FC = () => {
             width={64}
             height={64}
             className="rounded-full"
-            src={userInfo.avatar}
+            src={userInfo.avatar || profileImg}
             alt={userInfo.username}
           />
         }

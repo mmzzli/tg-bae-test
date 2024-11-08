@@ -8,6 +8,8 @@ import ShareUser from './ShareUser'
 import { EditIcon } from '@/assets/icons'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 
+import { profileImg } from '@/assets/image'
+
 const UserProfile: FC = () => {
   const { launchParams } = useTMAUtils()
   const uid = launchParams.initData?.user?.id ?? 0
@@ -24,7 +26,7 @@ const UserProfile: FC = () => {
           width={64}
           height={64}
           className="rounded-full"
-          src={userInfo.avatar}
+          src={userInfo.avatar || profileImg}
           alt={userInfo.username}
         />
         <div className="flex items-center">

@@ -278,7 +278,7 @@ export const NewPost: FC = () => {
               <Grid templateColumns="repeat(3, 1fr)" gap={4}>
                 {imgAttr.map((url: string, key: number) => (
                   <GridItem aspectRatio={1} key={url} position="relative">
-                    <Image objectFit="cover" w="100%" h="100%" src={url} alt="img" />
+                    <Image objectFit="cover" w="100%" h="100%" borderRadius="4px" src={url} alt="img" />
                     <Image
                       onClick={() => removeImg(key)}
                       w="24px"
@@ -291,7 +291,7 @@ export const NewPost: FC = () => {
                     />
                   </GridItem>
                 ))}
-                <GridItem aspectRatio={1}>
+                {imgAttr.length < 9 && <GridItem aspectRatio={1}>
                   <Image
                     w="100%"
                     h="100%"
@@ -299,7 +299,7 @@ export const NewPost: FC = () => {
                     src={PostAddIcon}
                     onClick={handleChooseFile}
                   />
-                </GridItem>
+                </GridItem>}
               </Grid>
             )}
           </Box>

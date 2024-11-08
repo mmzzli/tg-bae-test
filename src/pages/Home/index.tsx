@@ -68,8 +68,7 @@ export const HomePage: FC = () => {
         <BaseButton
           text="Create"
           icon={<Image src={AddIcon1} />}
-          width="104px"
-          height="9"
+          width="87px"
           handler={() => navigate('/post')}
         />
         {/* <Button

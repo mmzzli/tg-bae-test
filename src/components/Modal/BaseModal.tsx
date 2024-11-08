@@ -108,7 +108,7 @@ export const BaseModal: FC<BottomSheetProps> = ({
   return (
     <div
       className={`fixed inset-0 z-50 ${
-        isOpen ? 'visible bg-black/50' : 'invisible'
+        isOpen ? 'visible bg-black/80' : 'invisible'
       } transition-all duration-300`}
       onClick={handleBackdropClick}
       role="dialog"

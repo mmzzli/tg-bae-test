@@ -26,7 +26,10 @@ const ProfileEdit: FC = () => {
     field: keyof UserInfoProfile
   ) => {
     const value = e.target.value;
-    if (value.length > 500) {
+    if (field === 'bio' && value.length > 500) {
+      return
+    }
+    if (field === 'username' && value.length > 20) {
       return
     }
     setProfileData((prevData) => ({

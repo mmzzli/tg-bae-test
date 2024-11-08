@@ -346,10 +346,10 @@ const ResourceList = ({ resources:initialResources }: { resources: FormatterList
                   currentUid={launchParams.initData?.user?.id ?? 0}
                 />
               </Flex>
-              <Box minH="200px">
+              <Box>
                 {data.type === 1 ? (
                   data.media?.[0] == "" ? (
-                    <Box position="relative">
+                    <Box position="relative" minH="200px">
                       <Image
                         src={data.media?.[0] ?? data?.media ?? ''}
                         alt={data.title}

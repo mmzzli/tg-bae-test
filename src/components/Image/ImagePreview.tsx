@@ -4,6 +4,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { FreeMode, Navigation } from 'swiper/modules'
 import { X } from 'lucide-react'
 import { cn } from '@/utils/utils'
+import { handleZoomAndPan } from './resizeAndMove'
 
 import 'swiper/css'
 
@@ -36,12 +37,21 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
       document.body.style.overflow = 'hidden'
       document.body.style.paddingRight = `${window.innerWidth - document.documentElement.clientWidth}px`
 
+      let cleanupFns: (() => void)[] = []
+      if (swiper) {
+        const images = document.querySelectorAll('.preview-image')
+        cleanupFns = Array.from(images).map((img) =>
+          handleZoomAndPan(img as HTMLImageElement, swiper)
+        )
+      }
+
       return () => {
         document.body.style.overflow = ''
         document.body.style.paddingRight = ''
+        cleanupFns.forEach((cleanup) => cleanup())
       }
     }
-  }, [isOpen])
+  }, [isOpen, swiper])
 
   if (!isOpen) return null
 
@@ -80,8 +90,13 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
             <img
               src={src}
               alt={`Image ${index + 1}`}
-              className={cn('max-h-[90vh] max-w-[90vw]', 'object-contain select-none')}
+              className={cn(
+                'max-h-[90vh] max-w-[90vw]',
+                'object-contain select-none preview-image',
+                'transition-transform duration-200'
+              )}
               draggable={false}
+              style={{ transformOrigin: 'center center' }}
             />
           </SwiperSlide>
         ))}

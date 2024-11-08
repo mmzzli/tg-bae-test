@@ -1,6 +1,6 @@
 import { FC, useEffect } from 'react'
 import { useStore } from '@/store'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { getFollowerList, getFollowingList } from '@/api'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { Spinner } from '@chakra-ui/react'
@@ -16,7 +16,7 @@ const FollowPage: FC = () => {
 
   const { launchParams } = useTMAUtils()
   const currentUid = launchParams.initData?.user?.id ?? 0
-
+  const navigate = useNavigate()
   const {
     token,
     myFollow,
@@ -62,6 +62,13 @@ const FollowPage: FC = () => {
     }
   }
 
+  const handleOpenUserProfile = (tg_id: number) => {
+    if (tg_id === currentUid) {
+      return navigate('/profile')
+    }
+    navigate(`/profile/${tg_id}`)
+  }
+
   useEffect(() => {
     return () => {
       resetFollowerList()
@@ -78,16 +85,21 @@ const FollowPage: FC = () => {
           width={56}
           height={56}
           rect
+          onClick={() => {
+            handleOpenUserProfile(item.tg_id)
+          }}
           className="rounded-full"
         />
         <div className="flex-1 ml-3 truncate overflow-hidden whitespace-nowrap">{item.tgname}</div>
-        <FollowButton
-          className="ml-[32px]"
-          fansid={currentUid}
-          tgid={item.tg_id}
-          avatar={item.avatar}
-          username={item.tgname}
-        />
+        {item.tg_id !== currentUid && (
+          <FollowButton
+            className="ml-[32px]"
+            fansid={currentUid}
+            tgid={item.tg_id}
+            avatar={item.avatar}
+            username={item.tgname}
+          />
+        )}
       </div>
     )
   }

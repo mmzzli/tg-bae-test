@@ -1,4 +1,4 @@
-import { FC, useState, useEffect } from 'react'
+import { FC, useState, useEffect, ChangeEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import BaseButton from '@/components/BaseButton/BaseButton'
@@ -22,10 +22,13 @@ const ProfileEdit: FC = () => {
     avatar: '',
   });
   const changeEve = (
-    e: React.ChangeEvent<HTMLInputElement>,
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     field: keyof UserInfoProfile
   ) => {
     const value = e.target.value;
+    if (value.length > 500) {
+      return
+    }
     setProfileData((prevData) => ({
       ...prevData,
       [field]: value,
@@ -52,7 +55,9 @@ const ProfileEdit: FC = () => {
       <div className='mt-[44px]'>
         <p className='w-[88px] h-[88px] bg-[#333] m-[auto] rounded-[50px] relative'>
           <img src={profileData?.avatar} />
-          <img className='absolute bottom-[0px] right-[0px]' src={CameraIcon}/>
+          <p className='absolute bottom-[0px] right-[-14px]  bg-[#19191E] rounded-[50px] p-[5px]'>
+            <img src={CameraIcon}/>
+          </p>
         </p>
       </div>
       <div className='px-[8px] mt-[48px]'>
@@ -64,11 +69,15 @@ const ProfileEdit: FC = () => {
           onChange={(e) => changeEve(e, 'username')}
         />
         <div className='mt-[24px]'>
-          <h3 className='text-[16px] text-[#E0E2F6] mb-[16px]'>
-            Bio
-          </h3>
-          <textarea className='w-[100%] rounded-[10px] text-[#E0E2F6] text-[14px] bg-[#19191E] px-[16px] py-[15px]'
+          <div className='flex justify-between items-center mb-[16px]'>
+            <h3 className='text-[16px] text-[#E0E2F6]'>
+              Bio
+            </h3>
+            <p className='text-[#424048] text-[12px]'>{profileData?.bio.length}/500</p>
+          </div>
+          <textarea className='w-[100%] h-[218px] rounded-[10px] text-[#E0E2F6] text-[14px] bg-[#19191E] px-[16px] py-[15px]'
             value={profileData?.bio}
+            onChange={(e) => changeEve(e, 'bio')}
           />
         </div>
       </div>

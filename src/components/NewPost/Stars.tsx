@@ -77,6 +77,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
           lineHeight="52px"
           p="0 16px"
           justifyContent="space-between"
+          borderRadius="4px"
           onClick={onOpen}
         >
           <HStack gap="12px" w="100%" justifyContent="space-between">

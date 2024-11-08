@@ -6,13 +6,15 @@ import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import { deletePost } from '@/api'
 import { useStore } from '@/store'
 import Report from './Report'
+import { cn } from '@/utils/utils'
 
 type Props = {
   mediaData: FormatterListItem
   currentUid: number
+  className?: string
 }
 
-const SecondaryMenu = ({ mediaData, currentUid }: Props) => {
+const SecondaryMenu = ({ mediaData, currentUid, className }: Props) => {
   const { uid, id } = mediaData
   const [visible, setVisible] = useSafeState(false)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -61,7 +63,7 @@ const SecondaryMenu = ({ mediaData, currentUid }: Props) => {
   )
 
   return (
-    <div className="relative" ref={menuRef}>
+    <div className={cn(className, 'relative')} ref={menuRef}>
       <button className="p-2 rounded-full" onClick={() => setVisible(!visible)}>
         <MoreHorizontal className="w-5 h-5 text-[#E0E2F6]" />
       </button>

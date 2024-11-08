@@ -1,9 +1,10 @@
 import { FC, useMemo } from 'react'
 import BaseButton from '../BaseButton/BaseButton'
-import { follow } from '@/api'
+import { follow, getSomeoneProfile } from '@/api'
 import { useRequest } from 'ahooks'
 import { useStore } from '@/store'
 
+// Object is Follow, I Follow Someone, so fansid is current user id
 const FollowButton: FC<{
   fansid: number
   tgid: number
@@ -11,10 +12,15 @@ const FollowButton: FC<{
   username: string
   className?: string
 }> = ({ fansid, tgid, avatar, username, className }) => {
-  const { myFollow, setMyFollow } = useStore((state) => ({
-    myFollow: state.myFollow,
-    setMyFollow: state.setMyFollow,
-  }))
+  const { userInfo, myFollow, setMyFollow, setUserInfo, othersUserInfo, setOthersUserInfo } =
+    useStore((state) => ({
+      userInfo: state.userInfo,
+      myFollow: state.myFollow,
+      setMyFollow: state.setMyFollow,
+      setUserInfo: state.setUserInfo,
+      othersUserInfo: state.othersUserInfo,
+      setOthersUserInfo: state.setOthersUserInfo,
+    }))
   const isFollowing = useMemo(() => {
     return myFollow.some((item) => item.tg_id === tgid)
   }, [myFollow, tgid])
@@ -27,6 +33,7 @@ const FollowButton: FC<{
       } else {
         setMyFollow([...myFollow, { avatar, tg_id: tgid, tgname: username }])
       }
+      updateUserFollowInfo()
     },
   })
 
@@ -35,6 +42,17 @@ const FollowButton: FC<{
       tgid,
       fansid,
     })
+  }
+
+  const updateUserFollowInfo = () => {
+    getSomeoneProfile(fansid).then((res) => {
+      setUserInfo({ ...userInfo, fans: res.fans, follower: res.follower })
+    })
+    if (othersUserInfo.uid !== -1) {
+      getSomeoneProfile(othersUserInfo.uid).then((res) => {
+        setOthersUserInfo({ ...othersUserInfo, fans: res.fans, follower: res.follower })
+      })
+    }
   }
   return isFollowing ? (
     <BaseButton

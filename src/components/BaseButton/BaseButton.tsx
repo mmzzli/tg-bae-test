@@ -15,16 +15,16 @@ const BaseButton = ({
   icon,
   handler,
   width,
-  height = '12',
+  height = '36px',
   className,
   loading = false,
 }: Props) => {
   return (
     <div>
       <div
-        className={`no-tap flex items-center justify-center gap-2 h-${height} bg-[#4A3AFF] rounded-[42px] text-[#E0E2F6] text-sm font-medium cursor-pointer ${className}`}
+        className={`no-tap flex items-center justify-center gap-2 bg-[#4A3AFF] rounded-[42px] text-[#E0E2F6] text-sm font-medium cursor-pointer ${className}`}
         onClick={() => !loading && handler()}
-        style={{ width }}
+        style={{ width, height }}
       >
         {icon}
         {text}

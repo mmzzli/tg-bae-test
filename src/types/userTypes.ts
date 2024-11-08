@@ -3,8 +3,8 @@ export interface IUserInfo {
   username: string
   avatar: string
   bio: string
-  followers: number
-  following: number
+  follower: number
+  fans: number
   api_token: string
 }
 

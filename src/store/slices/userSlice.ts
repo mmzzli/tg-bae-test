@@ -12,11 +12,11 @@ export interface FollowListState {
 }
 
 export interface UserSlice {
-  othersUserInfo: OthersUserInfo
+  othersUserInfo: OthersUserInfo & { user_id: number }
   userInfo: IUserInfo
   setUserInfo: (info: IUserInfo) => void
   resetUserInfo: () => void
-  setOthersUserInfo: (info: OthersUserInfo) => void
+  setOthersUserInfo: (info: OthersUserInfo & { user_id: number }) => void
   resetOthersUserInfo: () => void
   follower: FollowListState
   following: FollowListState
@@ -46,18 +46,19 @@ const initialUserInfo: IUserInfo = {
   username: '',
   avatar: '',
   bio: '',
-  followers: 0,
-  following: 0,
+  follower: 0,
+  fans: 0,
   api_token: '',
 }
 
-const initialOthersUserInfo: OthersUserInfo = {
+const initialOthersUserInfo: OthersUserInfo & { user_id: number } = {
   uid: -1,
+  user_id: -1,
   username: '',
   avatar: '',
   bio: '',
-  followers: 0,
-  following: 0,
+  follower: 0,
+  fans: 0,
 }
 
 const initialFollowListState: FollowListState = {

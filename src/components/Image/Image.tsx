@@ -66,7 +66,7 @@ const Image = React.memo(
         <div className={cn('relative flex overflow-hidden', wrapperClassName)}>
           {rect ? (
             <div
-              className="rounded-[4px] overflow-hidden"
+              className="rounded-[2px] overflow-hidden"
               style={{
                 width: props.width ? props.width : '',
                 height: props.height ? props.height : '',

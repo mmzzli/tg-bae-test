@@ -31,7 +31,7 @@ const OthersProfile: FC = () => {
 
   const getUserInfo = async (uid: string) => {
     const user = await getSomeoneProfile(Number(uid))
-    setOthersUserInfo(user)
+    setOthersUserInfo({ ...user, user_id: user.uid })
   }
 
   useEffect(() => {

@@ -20,15 +20,19 @@ import SecondaryMenu from '../SecondaryMenu/SecondaryMenu'
 import { getLink } from '@/api/list'
 import { ImagePreview } from '../Image/ImagePreview'
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
-
+import useMobile from '@/hooks/useMobile'
 interface Like {
   id: number
   liked: boolean
   like: number
 }
 
-const ResourceList = ({ resources:initialResources }: { resources: FormatterListItem[] }) => {
-  const [resources, setResources] = useState<FormatterListItem[]>([]);
+const POST_TYPE_IMAGE = 1
+const POST_TYPE_VIDEO = 0
+
+const ResourceList = ({ resources: initialResources }: { resources: FormatterListItem[] }) => {
+  const isMobile = useMobile()
+  const [resources, setResources] = useState<FormatterListItem[]>([])
   const [likes, setLikes] = useSafeState<Like[]>([])
   const { shareLink, launchParams } = useTMAUtils()
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
@@ -63,11 +67,11 @@ const ResourceList = ({ resources:initialResources }: { resources: FormatterList
     },
   })
 
-  useEffect(()=>{
-    if(initialResources.length){
+  useEffect(() => {
+    if (initialResources.length) {
       setResources(initialResources)
     }
-  },[initialResources])
+  }, [initialResources])
   useEffect(() => {
     if (resources.length > 0) {
       setLikes(resources.map((item) => ({ id: item.id, liked: item.is_liked, like: item.like })))
@@ -174,14 +178,14 @@ const ResourceList = ({ resources:initialResources }: { resources: FormatterList
     const shareLink = `https://t.me/share/url?url=${copyLink}&text=${shareText}`
     setLinks({ shareLink, copyLink: decodeURIComponent(copyLink) })
   })
-  const resourcesEve = (post_id: number, url:string) => {
+  const resourcesEve = (post_id: number, url: string) => {
     setPostId(post_id)
-    const updatedUsers = resources.map(item => {
+    const updatedUsers = resources.map((item) => {
       if (item.id === post_id) {
-        return { ...item, media: url.split(',') };
+        return { ...item, media: url.split(',') }
       }
-      return item;
-    });
+      return item
+    })
     setResources(updatedUsers)
   }
 
@@ -189,7 +193,7 @@ const ResourceList = ({ resources:initialResources }: { resources: FormatterList
     <BaseModal
       isOpen={isBaseModalOpen}
       onClose={off}
-      height="60vh"
+      height={isMobile ? '60vh' : '300px'}
       animation={{
         duration: 400,
         timingFunction: 'ease-in-out',
@@ -205,19 +209,25 @@ const ResourceList = ({ resources:initialResources }: { resources: FormatterList
       <div className="mt-4 w-full">
         <h3 className="font-bold text-2xl mb-[10px]">Share from Bae</h3>
         <div className="text-[15px] text-[#808080]">Earn $Bae every time you share from Bae</div>
-        <div className="mt-12 mb-[18px] mx-4">
-          <BaseButton
-            text="Share via Telegram"
-            icon={<Image src={TelegramIcon} />}
-            handler={() => {
-              shareLink(links.shareLink ?? '')
-              off()
-            }}
-          />
-        </div>
-        <div className="mx-4">
+
+        {isMobile && (
+          <div className="mt-12 mb-[18px] mx-4">
+            <BaseButton
+              text="Share via Telegram"
+              height="48px"
+              icon={<Image src={TelegramIcon} />}
+              handler={() => {
+                shareLink(links.shareLink ?? '')
+                off()
+              }}
+            />
+          </div>
+        )}
+
+        <div className={isMobile ? 'mx-4' : 'mx-4 mt-[50px]'}>
           <BaseButton
             text="Copy link"
+            height="48px"
             icon={<Image src={LinkIcon} />}
             handler={() => {
               copy(links.copyLink)
@@ -232,49 +242,55 @@ const ResourceList = ({ resources:initialResources }: { resources: FormatterList
   return (
     <>
       {resources.map((data, index: number) => {
-        if (data.type === 1 && data.media.length > 1) {
+        if (data.type === POST_TYPE_IMAGE && data.media.length > 1) {
           return (
             <Box background={'#0D0D0D'} pt="32px" key={data.id}>
-              <Flex px={4} py={3} alignItems={'center'} justifyContent={'space-between'}>
-                <Flex alignItems={'center'}>
-                  <div className="flex items-center justify-between gap-2">
-                    <Image
-                      rect
-                      width={48}
-                      height={48}
-                      className="rounded-full"
-                      onClick={() => jumpToProfilePage(data.uid)}
-                      src={data.avatar}
-                      alt={data.username}
-                    />
-                    <div className="text-[#E0E2F6] font-medium">{data.username}</div>
-                  </div>
-                </Flex>
+              <div className="p-4 flex items-center">
+                <div className="flex items-center justify-between gap-2">
+                  <Image
+                    rect
+                    width={48}
+                    height={48}
+                    className="rounded-full"
+                    onClick={() => jumpToProfilePage(data.uid)}
+                    src={data.avatar}
+                    alt={data.username}
+                  />
+                  <div className="text-[#E0E2F6] font-bold text-base">{data.username}</div>
+                </div>
                 <SecondaryMenu
+                  className="ml-auto"
                   key={data.id}
                   mediaData={data}
                   currentUid={launchParams.initData?.user?.id ?? 0}
                 />
-              </Flex>
-              <Box minH="200px" position="relative">
-                <div className="grid grid-cols-3 gap-1 max-w-[400px]">
+              </div>
+              <div className="relative max-w-[375px] px-4">
+                <div className="grid grid-cols-3 gap-2">
                   {data.media.map((i, ind) => (
                     <Image
                       src={i}
                       alt={data.title}
-                      width={128}
-                      height={128}
+                      width={109}
+                      height={109}
                       key={i}
                       onClick={() => handleImageClick(data.media, ind)}
                       rect
                     />
                   ))}
                 </div>
-                {data.media?.[0] == "" && (
+                {data.media?.[0] == '' && (
                   <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} />
                 )}
-              </Box>
-              <Flex px={4} py={3} alignItems={'center'} justifyContent={'space-between'}>
+              </div>
+
+              <div className="px-4 py-3">
+                <p className="text-[#62636F] text-sm leading-6">{data.title}</p>
+                <p className="text-[#424048] text-xs pt-2">
+                  {dayjs(data.created_at).format('YYYY-MM-DD HH:mm')}
+                </p>
+              </div>
+              <div className="px-4 flex items-center justify-between">
                 <Flex>
                   <Flex
                     as={'button'}
@@ -311,44 +327,35 @@ const ResourceList = ({ resources:initialResources }: { resources: FormatterList
                   w={6}
                   icon={<IconShare />}
                 />
-              </Flex>
-              <Box px={4}>
-                <Text color={'#62636F'} fontSize={'sm'} lineHeight={6}>
-                  {data.title}
-                </Text>
-                <Text color={'#424048'} fontSize={'xs'} pt={2}>
-                  {dayjs(data.created_at).format('YYYY-MM-DD HH:mm')}
-                </Text>
-              </Box>
+              </div>
             </Box>
           )
         } else {
           return (
             <Box background={'#0D0D0D'} pt="32px" key={index}>
-              <Flex px={4} py={3} alignItems={'center'} justifyContent={'space-between'}>
-                <Flex alignItems={'center'}>
-                  <div className="flex items-center justify-between gap-2">
-                    <Image
-                      rect
-                      width={48}
-                      height={48}
-                      className="rounded-full"
-                      src={data.avatar}
-                      alt={data.username}
-                      onClick={() => jumpToProfilePage(data.uid)}
-                    />
-                    <div className="text-[#E0E2F6] font-medium">{data.username}</div>
-                  </div>
-                </Flex>
+              <div className="p-4 flex items-center">
+                <div className="flex items-center justify-between gap-2">
+                  <Image
+                    rect
+                    width={48}
+                    height={48}
+                    className="rounded-full"
+                    onClick={() => jumpToProfilePage(data.uid)}
+                    src={data.avatar}
+                    alt={data.username}
+                  />
+                  <div className="text-[#E0E2F6] font-bold text-base">{data.username}</div>
+                </div>
                 <SecondaryMenu
+                  className="ml-auto"
                   key={data.id}
                   mediaData={data}
                   currentUid={launchParams.initData?.user?.id ?? 0}
                 />
-              </Flex>
-              <Box minH="200px">
-                {data.type === 1 ? (
-                  data.media?.[0] == "" ? (
+              </div>
+              <div className="relative max-w-[375px] px-4">
+                {data.type === POST_TYPE_IMAGE ? (
+                  data.media?.[0] == '' ? (
                     <Box position="relative">
                       <Image
                         src={data.media?.[0] ?? data?.media ?? ''}
@@ -372,7 +379,7 @@ const ResourceList = ({ resources:initialResources }: { resources: FormatterList
                       onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
                     />
                   )
-                ) : data.media?.[0] == "" ? (
+                ) : data.media?.[0] == '' ? (
                   <Box position="relative">
                     <video
                       ref={(el) => (videoRefs.current[index] = el)}
@@ -400,7 +407,7 @@ const ResourceList = ({ resources:initialResources }: { resources: FormatterList
                     onPlay={() => handlePlay(index)}
                   />
                 )}
-              </Box>
+              </div>
 
               <Flex px={4} py={3} alignItems={'center'} justifyContent={'space-between'}>
                 <Flex>

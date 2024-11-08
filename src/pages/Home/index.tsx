@@ -39,8 +39,8 @@ export const HomePage: FC = () => {
         setSharedPostList(data.media)
         navigate(`/shares?ref=${ref}`)
       } else if (data.type === SHARE_PROFILE) {
-        setOthersUserInfo(data.userInfo)
-        navigate(`/profile/${data.userInfo.uid}`)
+        setOthersUserInfo({ ...data.userInfo, uid: data.userInfo.user_id })
+        navigate(`/profile/${data.userInfo.uid || data.userInfo.user_id}`)
       }
     } catch (error) {
       console.warn('API ERROR', error)
@@ -68,8 +68,7 @@ export const HomePage: FC = () => {
         <BaseButton
           text="Create"
           icon={<Image src={AddIcon1} />}
-          width="104px"
-          height="9"
+          width="87px"
           handler={() => navigate('/post')}
         />
         {/* <Button

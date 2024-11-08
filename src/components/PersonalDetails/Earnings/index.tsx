@@ -14,7 +14,7 @@ const Earnings = () => {
         text="️Earnings"
         icon={<Image src={MoneyIcon} />}
         width="104px"
-        height="9"
+        height="36px"
         handler={() => {
           toggle()
         }}
@@ -36,12 +36,10 @@ const Earnings = () => {
         showHandle={false}
       >
         <div className="mt-4 ml-2 w-[100%]">
-          <h3 className="font-bold text-2xl mb-[10px] h-9 p-3 flex items-center justify-center">
-            Earnings
-          </h3>
-          <div className="flex gap-[8px]">
+          <h3 className="font-bold text-[24px] text-[#E0E2F6]">Earnings</h3>
+          <div className="flex gap-[8px] mt-[10px]">
             <p className="text-[15px] text-[#808080]">Earning History</p>
-            <img src={RightIcon} />
+            <img className="mt-[4px]" src={RightIcon} />
           </div>
           <div className="mt-[56px] flex gap-[30px] items-center justify-between">
             <div>
@@ -52,7 +50,7 @@ const Earnings = () => {
               <p className="text-[rgba(98,99,111,1)] mt-[10px]">Total earnings</p>
               <p className="text-[rgba(224, 226, 246, 1)] text-[14px] mt-[5px]">$120</p>
             </div>
-            <p className="h-[31px] w-[1px] bg-[rgba(98,99,111,1)]"></p>
+            <p className="h-[31px] w-[1px] bg-[rgba(255,255,255,0.10)]"></p>
             <div>
               <div className="flex gap-[3px]">
                 <h3 className="text-[30px]">65,432</h3>
@@ -62,7 +60,7 @@ const Earnings = () => {
               <p className="text-[rgba(224, 226, 246, 1)] text-[14px] mt-[5px]">$120</p>
             </div>
           </div>
-          <div className="mt-12 mb-[18px]">
+          <div className="mt-12 mb-[18px] px-[17px]">
             <BaseButton
               text="Withdraw"
               width="100%"

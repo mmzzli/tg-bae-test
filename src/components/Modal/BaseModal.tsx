@@ -108,7 +108,7 @@ export const BaseModal: FC<BottomSheetProps> = ({
   return (
     <div
       className={`fixed inset-0 z-50 ${
-        isOpen ? 'visible bg-black/50' : 'invisible'
+        isOpen ? 'visible bg-black/80' : 'invisible'
       } transition-all duration-300`}
       onClick={handleBackdropClick}
       role="dialog"
@@ -116,7 +116,7 @@ export const BaseModal: FC<BottomSheetProps> = ({
       aria-hidden={!isOpen}
     >
       <div
-        className={`fixed bottom-0 left-0 right-0 rounded-t-2xl bg-white dark:bg-gray-800 transition-transform ${
+        className={`fixed bottom-0 left-0 right-0 rounded-t-2xl bg-[#1C1C1C] dark:bg-gray-800 transition-transform ${
           isOpen ? 'translate-y-0' : 'translate-y-full'
         } ${className}`}
         style={sheetStyle}
@@ -130,7 +130,7 @@ export const BaseModal: FC<BottomSheetProps> = ({
         )}
 
         <div
-          className="p-4 overflow-y-auto  bg-[#1C1C1C] text-[#E0E2F6] rounded-t-2xl rounded-b-none"
+          className="p-4 overflow-y-auto  bg-[#1C1C1C] text-[#E0E2F6] rounded-t-2xl rounded-b-none border-[#1c1c1c]"
           style={{ height: 'calc(100%)' }}
         >
           <Image src={CloseIcon} className="cursor-pointer" onClick={handleBackdropClick} />

@@ -4,6 +4,8 @@ import Image from '../Image/Image'
 import { useStore } from '../../store'
 import FollowButton from './FollowButton'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
+import { useNavigate } from 'react-router-dom'
+import { profileImg } from '@/assets/image'
 
 const OtherUserProfile: FC = () => {
   const { userInfo } = useStore((state) => ({
@@ -11,6 +13,8 @@ const OtherUserProfile: FC = () => {
   }))
   const { launchParams } = useTMAUtils()
   const currentUid = launchParams.initData?.user?.id ?? 0
+
+  const navigate = useNavigate()
   return (
     <Box p="0px 16px" pt="30px">
       <HStack gap="16px" pl="8px" justifyContent="space-between">
@@ -20,7 +24,7 @@ const OtherUserProfile: FC = () => {
             width={64}
             height={64}
             className="rounded-full"
-            src={userInfo.avatar}
+            src={userInfo.avatar || profileImg}
             alt={userInfo.username}
           />
         }
@@ -36,16 +40,26 @@ const OtherUserProfile: FC = () => {
       </Heading>
       <HStack pt="24px" gap="56px">
         <Box>
-          <Heading fontSize="20px" color="#E0E2F6" lineHeight="24px">
-            {userInfo.followers}
+          <Heading
+            fontSize="20px"
+            color="#E0E2F6"
+            lineHeight="24px"
+            onClick={() => navigate(`/follow/${userInfo.uid}?type=follower`)}
+          >
+            {userInfo.follower || 0}
           </Heading>
           <Text color="#8A8C91" fontSize="12px" lineHeight="14px">
             followers
           </Text>
         </Box>
         <Box>
-          <Heading fontSize="20px" color="#E0E2F6" lineHeight="24px">
-            {userInfo.following}
+          <Heading
+            fontSize="20px"
+            color="#E0E2F6"
+            lineHeight="24px"
+            onClick={() => navigate(`/follow/${userInfo.uid}?type=following`)}
+          >
+            {userInfo.fans || 0}
           </Heading>
           <Text color="#8A8C91" fontSize="12px" lineHeight="14px">
             following

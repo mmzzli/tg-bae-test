@@ -93,10 +93,15 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
               className={cn(
                 'max-h-[90vh] max-w-[90vw]',
                 'object-contain select-none preview-image',
-                'transition-transform duration-200'
+                'touch-none'
               )}
               draggable={false}
-              style={{ transformOrigin: 'center center' }}
+              style={{
+                transformOrigin: 'center center',
+                userSelect: 'none',
+                touchAction: 'none',
+                willChange: 'transform',
+              }}
             />
           </SwiperSlide>
         ))}

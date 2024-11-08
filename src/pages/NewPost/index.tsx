@@ -138,8 +138,12 @@ export const NewPost: FC = () => {
     if (!allSameType) {
       toast({
         title: 'Please select only images or only videos',
-        position: 'top',
         status: 'warning',
+        position: "top",
+        containerStyle: {
+          marginTop: "50vh",
+          transform: "translateY(-50%)",
+        },
       })
       return
     }
@@ -148,7 +152,11 @@ export const NewPost: FC = () => {
       if (fileArray.length > 1) {
         toast({
           title: 'Please select only one video.',
-          position: 'top',
+          position: "top",
+          containerStyle: {
+            marginTop: "50vh",
+            transform: "translateY(-50%)",
+          },
           status: 'warning',
         })
         return
@@ -162,6 +170,11 @@ export const NewPost: FC = () => {
         toast({
           title: 'Maximum 9 images allowed',
           status: 'warning',
+          position: "top",
+          containerStyle: {
+            marginTop: "50vh",
+            transform: "translateY(-50%)",
+          },
         })
         return
       }

@@ -4,6 +4,7 @@ import {
   Heading,
   Image,
   Button,
+  Text,
   Box,
   Textarea,
   Input,
@@ -18,11 +19,13 @@ import { postResources, postReq } from '@/api'
 import StarsPage from '@/components/NewPost/Stars'
 import { PostIcon, PostAddIcon, RemoveIcon } from '@/assets/icons'
 import { useStore } from '@/store'
+import VideoFrameSelector from '@/components/NewPost/VideoFrameSelector'
 
 export const NewPost: FC = () => {
   const navigate = useNavigate()
   const { toast } = createStandaloneToast()
   const [videoFile, setVideoFile] = useState<File | null>(null)
+  const videoRef = useRef<HTMLVideoElement>(null);
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [videoSrc, setVideoSrc] = useState<string | null>(null)
   const [title, setTitle] = useState<string>('')
@@ -31,6 +34,7 @@ export const NewPost: FC = () => {
   const [imgAttr, setImgAttr] = useState<any[]>([])
   const [files, setFiles] = useState<File[]>([])
   const token = useStore((state) => state.token)
+  const [frameSelectorBoll, setFrameSelectorBoll] = useState<boolean>(false)
   // start
   const [price, setPrice] = useState<number>(0)
 
@@ -245,6 +249,7 @@ export const NewPost: FC = () => {
                 {videoSrc ? (
                   <Box maxW="600px" m="auto" position="relative">
                     <video
+                      ref={videoRef}
                       src={videoSrc}
                       controls
                       width="100%"
@@ -252,6 +257,15 @@ export const NewPost: FC = () => {
                       playsInline
                       style={{ borderRadius: '4px', maxHeight: '380px' }}
                     />
+                    <Text color="#FFF" fontSize="14px" borderRadius="4px" bg="rgba(0, 0, 0, 0.50)" p="5px 9px 6px 10px"
+                      position="absolute"
+                      bottom="8px"
+                      right="8px"
+                      cursor="pointer"
+                      onClick={()=>setFrameSelectorBoll(true)}
+                    >
+                      Select cover
+                    </Text>
                     <Image
                       onClick={() => setVideoSrc('')}
                       w="24px"
@@ -318,6 +332,7 @@ export const NewPost: FC = () => {
           />
         </Box>
         <StarsPage setPrice={setPrice} price={price} />
+        {/* {frameSelectorBoll && <VideoFrameSelector videoRef={videoRef}/>} */}
       </Box>
     </Box>
   )

@@ -1,15 +1,15 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-// import { retrieveLaunchParams } from '@tma.js/sdk'
 import { retrieveLaunchParams } from '@telegram-apps/sdk'
 import { logIn } from '@/api'
 import { DEV_INIT_DATA_RAW } from '@/utils/constants'
 import { isLocalEnv } from '@/utils/env'
 import { useStore } from '@/store'
 import { useRequest } from 'ahooks'
+import { Outlet } from 'react-router-dom'
 import { log } from 'console'
 
-export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const MainLayout: React.FC = () => {
   const location = useLocation()
   const setUserInfo = useStore((state) => state.setUserInfo)
   const setToken = useStore((state) => state.setToken)
@@ -78,5 +78,5 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
     }
   }, [location.pathname])
 
-  return <>{children}</>
+  return <Outlet />
 }

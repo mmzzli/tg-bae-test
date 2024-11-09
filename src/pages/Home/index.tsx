@@ -12,7 +12,7 @@ import BaseButton from '@/components/BaseButton/BaseButton'
 import { getSingleMedia } from '@/api/list'
 const SHARE_POST = 1
 const SHARE_PROFILE = 2
-export const HomePage: FC = () => {
+const HomePage: FC = () => {
   const navigate = useNavigate()
   const { shareLink, isInTMA } = useTMAUtils()
   const { startParam } = retrieveLaunchParams()
@@ -21,6 +21,7 @@ export const HomePage: FC = () => {
     setOthersUserInfo: state.setOthersUserInfo,
     token: state.token,
   }))
+  const random = Math.random()
 
   const handleNavigate = async (ref: string) => {
     if (!token) {
@@ -59,11 +60,20 @@ export const HomePage: FC = () => {
       }
     })
   }, [startParam, isInTMA])
+
+  console.log('HomePage render') // 添加渲染日志
+
+  useEffect(() => {
+    console.log('HomePage mounted') // 添加挂载日志
+    return () => {
+      console.log('HomePage unmounted') // 添加卸载日志
+    }
+  }, [])
   return (
     <>
       <HStack justifyContent="space-between" p="0px 16px" pt="16px">
         <Heading as="h3" fontSize="20px" color="#E0E2F6">
-          Following
+          Following {random}
         </Heading>
         <BaseButton
           text="Create"
@@ -101,3 +111,4 @@ export const HomePage: FC = () => {
     </>
   )
 }
+export default HomePage

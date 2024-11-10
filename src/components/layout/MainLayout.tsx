@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { retrieveLaunchParams } from '@telegram-apps/sdk'
 import { logIn } from '@/api'
@@ -8,6 +8,7 @@ import { useStore } from '@/store'
 import { useRequest } from 'ahooks'
 import { Outlet } from 'react-router-dom'
 import { log } from 'console'
+import ChatPage from '@/pages/Chat'
 
 export const MainLayout: React.FC = () => {
   const location = useLocation()
@@ -16,6 +17,7 @@ export const MainLayout: React.FC = () => {
   const resetAllLists = useStore((state) => state.resetAllLists)
   const resetUserInfo = useStore((state) => state.resetUserInfo)
   const resetToken = useStore((state) => state.resetToken)
+  const [hiddenChatPage, setHiddenChatPage] = useState(false)
   const { run: runLogin } = useRequest(logIn, {
     manual: true,
     onSuccess({ token, api_token, user_info }) {
@@ -67,6 +69,11 @@ export const MainLayout: React.FC = () => {
   }, [])
 
   useEffect(() => {
+    if (location.pathname === '/chat') {
+      setHiddenChatPage(false)
+    } else {
+      setHiddenChatPage(true)
+    }
     if (window.Telegram?.WebApp) {
       const tgApp = window.Telegram.WebApp
       if (location.pathname === '/home') {
@@ -77,5 +84,10 @@ export const MainLayout: React.FC = () => {
     }
   }, [location.pathname])
 
-  return <Outlet />
+  return (
+    <div className="bg-black min-h-screen">
+      <ChatPage className={hiddenChatPage ? 'hidden' : ''} />
+      <Outlet />
+    </div>
+  )
 }

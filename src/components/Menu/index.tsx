@@ -3,7 +3,14 @@ import { useNavigate } from 'react-router-dom'
 
 import { Box, HStack, Text, Link } from '@chakra-ui/react'
 
-import { HomeIcon, ProfileIcon, ProfileActiveIcon, HomeActiveIcon } from '@/assets/icons'
+import {
+  HomeIcon,
+  ProfileIcon,
+  ProfileActiveIcon,
+  HomeActiveIcon,
+  ChatIcon,
+  ChatActiveIcon,
+} from '@/assets/icons'
 import Image from '../Image/Image'
 
 interface NavItem {
@@ -25,6 +32,12 @@ export const Menu: FC<MenuProps> = ({ selectedIndex }) => {
       iconActive: HomeActiveIcon,
       name: 'Home',
       url: '/home',
+    },
+    {
+      icon: ChatIcon,
+      iconActive: ChatActiveIcon,
+      name: 'Chat',
+      url: '/chat',
     },
     {
       icon: ProfileIcon,

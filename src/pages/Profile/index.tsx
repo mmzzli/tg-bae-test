@@ -25,7 +25,7 @@ const Profile: FC = () => {
     <>
       <UserProfile />
       <ViewList />
-      <Menu selectedIndex={1} />
+      <Menu selectedIndex={2} />
     </>
   )
 }

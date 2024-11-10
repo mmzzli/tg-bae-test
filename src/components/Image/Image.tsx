@@ -1,5 +1,6 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react'
 import { cn } from '@/utils/utils'
+import { DefaultAvatarIcon } from '@/assets/icons'
 
 interface ImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'onClick'> {
   wrapperClassName?: string
@@ -9,6 +10,7 @@ interface ImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'on
   previewOverlayClassName?: string
   images?: NonNullable<string>[]
   rect?: boolean
+  type?: 'default' | 'avatar'
   onIndexChange?: (index: number) => void
   onClick?: () => void
 }
@@ -17,6 +19,7 @@ const Image = React.memo(
   ({
     src,
     alt = 'Image',
+    type = 'default',
     className,
     wrapperClassName,
     loaderClassName,
@@ -57,6 +60,28 @@ const Image = React.memo(
               loaderClassName
             )}
           />
+        </div>
+      )
+    }
+
+    if (hasError && type === 'avatar') {
+      return (
+        <div className={cn('w-full h-full bg-gray-200 rounded-full', errorClassName)}>
+          <div
+            className="rounded-[2px] overflow-hidden"
+            style={{
+              width: props.width ? props.width : '',
+              height: props.height ? props.height : '',
+            }}
+          >
+            <img
+              ref={imageRef}
+              src={DefaultAvatarIcon}
+              alt={alt}
+              className={cn('w-full h-full object-cover', imageClassNames)}
+              {...props}
+            />
+          </div>
         </div>
       )
     }

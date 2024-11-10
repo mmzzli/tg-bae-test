@@ -72,6 +72,9 @@ function App() {
 
               {/* Follow */}
               <Route path="follow/:uid" element={<Follow />} />
+
+              {/* Chat */}
+              <Route path="chat" element={<></>} />
             </Route>
           </Routes>
         </BrowserRouter>

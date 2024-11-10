@@ -245,26 +245,11 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
         if (data.type === POST_TYPE_IMAGE && data.media.length > 1) {
           return (
             <Box background={'#0D0D0D'} pt="32px" key={data.id}>
-              <div className="p-4 flex items-center">
-                <div className="flex items-center justify-between gap-2">
-                  <Image
-                    rect
-                    width={48}
-                    height={48}
-                    className="rounded-full"
-                    onClick={() => jumpToProfilePage(data)}
-                    src={data.avatar}
-                    alt={data.username}
-                  />
-                  <div className="text-[#E0E2F6] font-bold text-base">{data.username}</div>
-                </div>
-                <SecondaryMenu
-                  className="ml-auto"
-                  key={data.id}
-                  mediaData={data}
-                  currentUid={launchParams.initData?.user?.id ?? 0}
-                />
-              </div>
+              <ResourceHeader
+                data={data}
+                currentUid={launchParams.initData?.user?.id ?? 0}
+                onProfileClick={jumpToProfilePage}
+              />
               <div className="relative max-w-[375px] px-4">
                 <div className="grid grid-cols-3 gap-2">
                   {data.media.map((i, ind) => (
@@ -284,75 +269,25 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                 )}
               </div>
 
-              <div className="px-4 py-3">
-                <p className="text-[#62636F] text-sm leading-6">{data.title}</p>
-                <p className="text-[#424048] text-xs pt-2">
-                  {dayjs(data.created_at).format('YYYY-MM-DD HH:mm')}
-                </p>
-              </div>
-              <div className="px-4 flex items-center justify-between">
-                <Flex>
-                  <Flex
-                    as={'button'}
-                    alignItems={'center'}
-                    onClick={() =>
-                      linkEve(data.id, likes.find((like) => like.id === data.id)?.liked === false)
-                    }
-                  >
-                    {likes.find((like) => like.id === data.id)?.liked === true ? (
-                      <IconLiked />
-                    ) : (
-                      <IconLike />
-                    )}
-                    <Text fontSize={'sm'} color={'#E0E2F6'} pl={1}>
-                      {likes.find((like) => like.id === data.id)?.like}
-                    </Text>
-                  </Flex>
-                  {/* <Flex as={'button'} alignItems={'center'} ml={4} borderRadius={5}>
-                    <IconCommit />
-                    <Text fontSize={'sm'} color={'#E0E2F6'} pl={1}>
-                      {data.comment ?? 0}
-                    </Text>
-                  </Flex> */}
-                </Flex>
-                <IconButton
-                  onClick={() => {
-                    getShareLink(data.title, data.id, data.uid)
-                    toggle()
-                  }}
-                  aria-label="share"
-                  background={'transparent'}
-                  colorScheme={'transparent'}
-                  h={6}
-                  w={6}
-                  icon={<IconShare />}
-                />
-              </div>
+              <ResourceFooter
+                data={data}
+                likes={likes}
+                linkEve={linkEve}
+                onShare={() => {
+                  getShareLink(data.title, data.id, data.uid)
+                  toggle()
+                }}
+              />
             </Box>
           )
         } else {
           return (
             <Box background={'#0D0D0D'} pt="32px" key={index}>
-              <div className="p-4 flex items-center">
-                <div className="flex items-center justify-between gap-2">
-                  <Image
-                    rect
-                    width={48}
-                    height={48}
-                    className="rounded-full"
-                    onClick={() => jumpToProfilePage(data)}
-                    src={data.avatar}
-                    alt={data.username}
-                  />
-                  <div className="text-[#E0E2F6] font-bold text-base">{data.username}</div>
-                </div>
-                <SecondaryMenu
-                  className="ml-auto"
-                  key={data.id}
-                  mediaData={data}
-                  currentUid={launchParams.initData?.user?.id ?? 0}
-                />
-              </div>
+              <ResourceHeader
+                data={data}
+                currentUid={launchParams.initData?.user?.id ?? 0}
+                onProfileClick={jumpToProfilePage}
+              />
               <div className="relative max-w-[375px] px-4">
                 {data.type === POST_TYPE_IMAGE ? (
                   data.media?.[0] == '' ? (
@@ -409,52 +344,15 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                 )}
               </div>
 
-              <Flex px={4} py={3} alignItems={'center'} justifyContent={'space-between'}>
-                <Flex>
-                  <Flex
-                    as={'button'}
-                    alignItems={'center'}
-                    onClick={() =>
-                      linkEve(data.id, likes.find((like) => like.id === data.id)?.liked === false)
-                    }
-                  >
-                    {likes.find((like) => like.id === data.id)?.liked === true ? (
-                      <IconLiked />
-                    ) : (
-                      <IconLike />
-                    )}
-                    <Text fontSize={'sm'} color={'#E0E2F6'} pl={1}>
-                      {likes.find((like) => like.id === data.id)?.like}
-                    </Text>
-                  </Flex>
-                  {/* <Flex as={'button'} alignItems={'center'} ml={4} borderRadius={5}>
-                    <IconCommit />
-                    <Text fontSize={'sm'} color={'#E0E2F6'} pl={1}>
-                      {data.comment ?? 0}
-                    </Text>
-                  </Flex> */}
-                </Flex>
-                <IconButton
-                  onClick={() => {
-                    getShareLink(data.title, data.id, data.uid)
-                    toggle()
-                  }}
-                  aria-label="share"
-                  background={'transparent'}
-                  colorScheme={'transparent'}
-                  h={6}
-                  w={6}
-                  icon={<IconShare />}
-                />
-              </Flex>
-              <Box px={4}>
-                <Text color={'#62636F'} fontSize={'sm'} lineHeight={6}>
-                  {data.title}
-                </Text>
-                <Text color={'#424048'} fontSize={'xs'} pt={2}>
-                  {dayjs(data.created_at).format('YYYY-MM-DD HH:mm')}
-                </Text>
-              </Box>
+              <ResourceFooter
+                data={data}
+                likes={likes}
+                linkEve={linkEve}
+                onShare={() => {
+                  getShareLink(data.title, data.id, data.uid)
+                  toggle()
+                }}
+              />
             </Box>
           )
         }
@@ -468,6 +366,81 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
       />
       {/* Components */}
       {renderBaseModal()}
+    </>
+  )
+}
+
+interface ResourceHeaderProps {
+  data: FormatterListItem
+  currentUid: number
+  onProfileClick: (data: FormatterListItem) => void
+}
+
+const ResourceHeader: React.FC<ResourceHeaderProps> = ({ data, currentUid, onProfileClick }) => {
+  return (
+    <div className="p-4 flex items-center">
+      <div className="flex items-center justify-between gap-2">
+        <Image
+          rect
+          width={48}
+          height={48}
+          className="rounded-full"
+          onClick={() => onProfileClick(data)}
+          src={data.avatar}
+          alt={data.username}
+        />
+        <div className="text-[#E0E2F6] font-bold text-base">{data.username}</div>
+      </div>
+      <SecondaryMenu className="ml-auto" key={data.id} mediaData={data} currentUid={currentUid} />
+    </div>
+  )
+}
+
+interface ResourceFooterProps {
+  data: FormatterListItem
+  likes: Like[]
+  linkEve: (postId: number, isLike: boolean) => void
+  onShare: () => void
+}
+
+const ResourceFooter: React.FC<ResourceFooterProps> = ({ data, likes, linkEve, onShare }) => {
+  return (
+    <>
+      <div className="px-4 py-3">
+        <p className="text-[#62636F] text-sm leading-6">{data.title}</p>
+        <p className="text-[#424048] text-xs pt-2">
+          {dayjs(data.created_at).format('YYYY-MM-DD HH:mm')}
+        </p>
+      </div>
+      <div className="px-4 flex items-center justify-between">
+        <Flex>
+          <Flex
+            as={'button'}
+            alignItems={'center'}
+            onClick={() =>
+              linkEve(data.id, likes.find((like) => like.id === data.id)?.liked === false)
+            }
+          >
+            {likes.find((like) => like.id === data.id)?.liked === true ? (
+              <IconLiked />
+            ) : (
+              <IconLike />
+            )}
+            <Text fontSize={'sm'} color={'#E0E2F6'} pl={1}>
+              {likes.find((like) => like.id === data.id)?.like}
+            </Text>
+          </Flex>
+        </Flex>
+        <IconButton
+          onClick={onShare}
+          aria-label="share"
+          background={'transparent'}
+          colorScheme={'transparent'}
+          h={6}
+          w={6}
+          icon={<IconShare />}
+        />
+      </div>
     </>
   )
 }

@@ -28,9 +28,14 @@ export const useTMAUtils = () => {
     }
   }
 
+  const getCurrentUid = () => {
+    return launchParams.initData?.user?.id ?? 0
+  }
+
   return {
     isInTMA,
     shareLink,
+    getCurrentUid,
     launchParams,
   }
 }

@@ -21,7 +21,6 @@ const HomePage: FC = () => {
     setOthersUserInfo: state.setOthersUserInfo,
     token: state.token,
   }))
-  const random = Math.random()
 
   const handleNavigate = async (ref: string) => {
     if (!token) {
@@ -61,19 +60,19 @@ const HomePage: FC = () => {
     })
   }, [startParam, isInTMA])
 
-  console.log('HomePage render') // 添加渲染日志
+  console.log('HomePage render')
 
   useEffect(() => {
-    console.log('HomePage mounted') // 添加挂载日志
+    console.log('HomePage mounted')
     return () => {
-      console.log('HomePage unmounted') // 添加卸载日志
+      console.log('HomePage unmounted')
     }
   }, [])
   return (
     <>
       <HStack justifyContent="space-between" p="0px 16px" pt="16px">
         <Heading as="h3" fontSize="20px" color="#E0E2F6">
-          Following {random}
+          Following
         </Heading>
         <BaseButton
           text="Create"

@@ -16,7 +16,6 @@ export const MainLayout: React.FC = () => {
   const resetAllLists = useStore((state) => state.resetAllLists)
   const resetUserInfo = useStore((state) => state.resetUserInfo)
   const resetToken = useStore((state) => state.resetToken)
-
   const { run: runLogin } = useRequest(logIn, {
     manual: true,
     onSuccess({ token, api_token, user_info }) {

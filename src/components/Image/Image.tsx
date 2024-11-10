@@ -63,7 +63,13 @@ const Image = React.memo(
 
     return (
       <>
-        <div className={cn('relative flex overflow-hidden', wrapperClassName)}>
+        <div
+          className={cn(
+            'relative flex overflow-hidden',
+            wrapperClassName,
+            hasError && errorClassName
+          )}
+        >
           {rect ? (
             <div
               className="rounded-[2px] overflow-hidden"
@@ -93,6 +99,7 @@ const Image = React.memo(
               alt={alt}
               className={imageClassNames}
               onLoad={() => setIsLoading(false)}
+              onClick={() => onClick && onClick()}
               onError={() => {
                 setIsLoading(false)
                 setHasError(true)
@@ -114,7 +121,7 @@ const Image = React.memo(
           {hasError && (
             <div
               className={cn(
-                'absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-400',
+                'absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-400 w-full h-full',
                 errorClassName
               )}
             >
@@ -132,7 +139,7 @@ const Image = React.memo(
                     d="M6 18L18 6M6 6l12 12"
                   />
                 </svg>
-                {/* <p className="mt-2">Failed to load image</p> */}
+                <p className="mt-2">Failed to load image</p>
               </div>
             </div>
           )}

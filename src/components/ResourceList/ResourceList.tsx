@@ -55,6 +55,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
   const jumpToProfilePage = useProfileNavigation()
 
   const handleImageClick = (images: string[], index: number) => {
+    console.log(images, 'images')
     setPreviewImages(images)
     setCurrentIndex(index)
     setIsPreviewOpen(true)
@@ -295,8 +296,8 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                       <Image
                         src={data.media?.[0] ?? data?.media ?? ''}
                         alt={data.title}
-                        width={387}
-                        height={387}
+                        errorClassName="rounded-[2px] h-[150px]"
+                        className="object-left max-h-[387px] rounded-[2px]"
                         onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
                       />
                       <FrostedGlass
@@ -309,8 +310,8 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                     <Image
                       src={data.media?.[0] ?? data?.media ?? ''}
                       alt={data.title}
-                      width={387}
-                      height={387}
+                      errorClassName="rounded-[2px] h-[150px]"
+                      className="object-left rounded-[2px] max-h-[387px]"
                       onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
                     />
                   )

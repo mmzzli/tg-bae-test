@@ -8,6 +8,7 @@ import Image from '@/components/Image/Image'
 import FollowButton from '@/components/PersonalDetails/FollowButton'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { Follow } from '@/types'
+import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 const FollowPage: FC = () => {
   const { uid } = useParams()
   const searchParams = new URLSearchParams(window.location.search)
@@ -16,7 +17,7 @@ const FollowPage: FC = () => {
 
   const { launchParams } = useTMAUtils()
   const currentUid = launchParams.initData?.user?.id ?? 0
-  const navigate = useNavigate()
+  const jumpToProfilePage = useProfileNavigation()
   const {
     token,
     myFollow,
@@ -62,13 +63,6 @@ const FollowPage: FC = () => {
     }
   }
 
-  const handleOpenUserProfile = (tg_id: number) => {
-    if (tg_id === currentUid) {
-      return navigate('/profile')
-    }
-    navigate(`/profile/${tg_id}`)
-  }
-
   useEffect(() => {
     return () => {
       resetFollowerList()
@@ -86,7 +80,13 @@ const FollowPage: FC = () => {
           height={56}
           rect
           onClick={() => {
-            handleOpenUserProfile(item.tg_id)
+            jumpToProfilePage({
+              avatar: item.avatar,
+              uid: item.tg_id,
+              username: item.tgname,
+              fans: 0,
+              follower: 0,
+            })
           }}
           className="rounded-full"
         />

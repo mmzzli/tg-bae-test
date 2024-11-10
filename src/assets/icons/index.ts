@@ -24,4 +24,6 @@ export { default as ReportIcon } from './report.svg'
 export { default as EditIcon } from './edit.svg'
 export { default as ShareIcon } from './share.svg'
 export { default as CameraIcon } from './camera.svg'
-
+export { default as DefaultAvatarIcon } from './defaultAvatar.svg'
+export { default as ChatIcon } from './chat.svg'
+export { default as ChatActiveIcon } from './chatActive.svg'

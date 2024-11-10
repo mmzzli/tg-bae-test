@@ -117,7 +117,6 @@ export const useOthersViewList = () => {
 
   useEffect(() => {
     if (!token) return
-    console.log('loadOthersViewList useEffect', page)
     loadOthersViewList(page)
   }, [page, token])
 
@@ -128,7 +127,6 @@ export const useOthersViewList = () => {
   // }, [])
 
   useEffect(() => {
-    console.log('othersUserInfo', othersUserInfo)
     if (othersUserInfo.uid != -1) {
       resetOthersViewList()
       loadOthersViewList(page)

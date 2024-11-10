@@ -16,6 +16,7 @@ import ProfileEdit from '@/pages/Profile/edit'
 import OthersProfile from '@/pages/OthersProfile'
 import EarningsHistory from '@/components/PersonalDetails/Earnings/History'
 import Follow from './pages/Follow'
+import ProfileGuard from './pages/OthersProfile/routeGuard'
 
 // import { mockTelegramEnv, parseInitData } from '@tma.js/sdk'
 // import { DEV_INIT_DATA_RAW } from './utils/constants'
@@ -59,7 +60,14 @@ function App() {
                 <Route index element={<Profile />} />
                 <Route path="edit" element={<ProfileEdit />} />
                 <Route path="earningsHistory" element={<EarningsHistory />} />
-                <Route path=":uid" element={<OthersProfile />} />
+                <Route
+                  path=":uid"
+                  element={
+                    <ProfileGuard>
+                      <OthersProfile />
+                    </ProfileGuard>
+                  }
+                />
               </Route>
 
               {/* Follow */}

@@ -257,7 +257,6 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     })),
   loadOthersViewList: async (page) => {
     try {
-      console.log('loadOthersViewList', page)
       const othersUserInfo = useStore.getState().othersUserInfo
       if (othersUserInfo.uid === -1) return
       get().setOthersViewLoading(true)

@@ -16,7 +16,7 @@ export interface UserSlice {
   userInfo: IUserInfo
   setUserInfo: (info: IUserInfo) => void
   resetUserInfo: () => void
-  setOthersUserInfo: (info: OthersUserInfo & { user_id: number }) => void
+  setOthersUserInfo: (info: OthersUserInfo & { user_id: number }, merge?: boolean) => void
   resetOthersUserInfo: () => void
   follower: FollowListState
   following: FollowListState
@@ -74,8 +74,10 @@ export const createUserSlice: StateCreator<UserSlice> = (set, get) => ({
   othersUserInfo: initialOthersUserInfo,
   setUserInfo: (info) => set({ userInfo: info }),
   resetUserInfo: () => set({ userInfo: initialUserInfo }),
-  setOthersUserInfo: (info) => {
-    set({ othersUserInfo: info })
+  setOthersUserInfo: (info, merge = false) => {
+    set((state) => ({
+      othersUserInfo: merge ? { ...state.othersUserInfo, ...info } : info,
+    }))
   },
   resetOthersUserInfo: () => set({ othersUserInfo: initialOthersUserInfo }),
 

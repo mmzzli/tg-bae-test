@@ -31,23 +31,16 @@ const OthersProfile: FC = () => {
 
   const getUserInfo = async (uid: string) => {
     const user = await getSomeoneProfile(Number(uid))
-    setOthersUserInfo({ ...user, user_id: user.uid })
+    setOthersUserInfo({ ...user, user_id: user.uid }, true)
   }
 
   useEffect(() => {
-    if (uid && token && othersUserInfo.uid === -1) getUserInfo(uid)
+    if (uid && token) getUserInfo(uid)
     if (token && myFollow.length === 0) {
       const current_uid = launchParams.initData?.user?.id ?? 0
       getFollowingList(current_uid).then((res) => setMyFollow(res))
     }
   }, [uid, token])
-
-  useEffect(() => {
-    return () => {
-      resetOthersUserInfo()
-      resetOthersViewList()
-    }
-  }, [])
 
   return (
     <>

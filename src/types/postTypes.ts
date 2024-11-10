@@ -48,7 +48,13 @@ export type PostItem = {
   type: number
   uid: number
 }
-export type UserItem = { avatar: string; uid: number; username: string }
+export type UserItem = {
+  avatar: string
+  uid: number
+  username: string
+  fans: number
+  follower: number
+}
 export type ListItem = {
   user: UserItem
   post: PostItem

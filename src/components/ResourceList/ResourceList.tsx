@@ -252,7 +252,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                     width={48}
                     height={48}
                     className="rounded-full"
-                    onClick={() => jumpToProfilePage(data.uid)}
+                    onClick={() => jumpToProfilePage(data)}
                     src={data.avatar}
                     alt={data.username}
                   />
@@ -340,7 +340,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                     width={48}
                     height={48}
                     className="rounded-full"
-                    onClick={() => jumpToProfilePage(data.uid)}
+                    onClick={() => jumpToProfilePage(data)}
                     src={data.avatar}
                     alt={data.username}
                   />

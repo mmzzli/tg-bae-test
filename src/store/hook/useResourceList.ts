@@ -117,6 +117,7 @@ export const useOthersViewList = () => {
 
   useEffect(() => {
     if (!token) return
+    console.log('loadOthersViewList useEffect', page)
     loadOthersViewList(page)
   }, [page, token])
 

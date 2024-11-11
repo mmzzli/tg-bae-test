@@ -8,7 +8,7 @@ import { useStore } from '@/store'
 import { useRequest } from 'ahooks'
 import { Outlet } from 'react-router-dom'
 import { log } from 'console'
-import ChatPage from '@/pages/Chat'
+import { ChatListPage } from '@/pages/Chat'
 
 export const MainLayout: React.FC = () => {
   const location = useLocation()
@@ -86,7 +86,7 @@ export const MainLayout: React.FC = () => {
 
   return (
     <div className="bg-black min-h-screen">
-      <ChatPage className={hiddenChatPage ? 'hidden' : ''} />
+      <ChatListPage className={hiddenChatPage ? 'hidden' : ''} />
       <Outlet />
     </div>
   )

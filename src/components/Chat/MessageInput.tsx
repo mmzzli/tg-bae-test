@@ -1,8 +1,13 @@
 import { AttachIcon } from '@/assets/icons'
 import Image from '@/components/Image/Image'
 import { useEffect, useRef, useState } from 'react'
+import { MessageType } from './types'
 
-export const MessageInput = ({ onSend }: { onSend: (content: string) => void }) => {
+export const MessageInput = ({
+  onSend,
+}: {
+  onSend: ({ type, text }: { type: MessageType; text?: string }) => void
+}) => {
   const [message, setMessage] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -11,9 +16,9 @@ export const MessageInput = ({ onSend }: { onSend: (content: string) => void }) 
     inputRef.current?.focus()
   }, [])
 
-  const handleSend = () => {
+  const handleSendText = () => {
     if (message.trim()) {
-      onSend(message.trim())
+      onSend({ type: MessageType.TEXT, text: message.trim() })
       setMessage('')
       // after send, keep focus
       inputRef.current?.focus()
@@ -23,14 +28,14 @@ export const MessageInput = ({ onSend }: { onSend: (content: string) => void }) 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       e.preventDefault()
-      handleSend()
+      handleSendText()
     }
   }
 
   // mobile submit
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    handleSend()
+    handleSendText()
   }
 
   return (

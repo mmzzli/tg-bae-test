@@ -9,6 +9,8 @@ import { useRequest } from 'ahooks'
 import { Outlet } from 'react-router-dom'
 import { log } from 'console'
 import { ChatListPage } from '@/pages/Chat'
+import { useTMAUtils } from '@/hooks/useTMAUtils'
+import BaeimSDK from '../SDK/BaeimSDK'
 
 export const MainLayout: React.FC = () => {
   const location = useLocation()
@@ -17,7 +19,12 @@ export const MainLayout: React.FC = () => {
   const resetAllLists = useStore((state) => state.resetAllLists)
   const resetUserInfo = useStore((state) => state.resetUserInfo)
   const resetToken = useStore((state) => state.resetToken)
+  const setConnection = useStore((state) => state.setConnection)
+  const userInfo = useStore((state) => state.userInfo)
+  const token = useStore((state) => state.token)
   const [hiddenChatPage, setHiddenChatPage] = useState(false)
+  const { getCurrentUid } = useTMAUtils()
+  const currentUid = getCurrentUid()
   const { run: runLogin } = useRequest(logIn, {
     manual: true,
     onSuccess({ token, api_token, user_info }) {
@@ -42,6 +49,19 @@ export const MainLayout: React.FC = () => {
     resetUserInfo()
     resetToken()
     runLogin({ user: userInfo ?? '' })
+  }
+
+  const initIM = () => {
+    const sdk = new BaeimSDK({
+      token,
+      userUid: String(currentUid),
+      serverAddr: 'wss://chat-dev.anyconn.org:8210',
+    })
+    sdk.start()
+    setConnection(sdk)
+    return () => {
+      sdk.stop()
+    }
   }
 
   useEffect(() => {
@@ -83,6 +103,12 @@ export const MainLayout: React.FC = () => {
       }
     }
   }, [location.pathname])
+
+  useEffect(() => {
+    if (userInfo.user_id && token) {
+      initIM()
+    }
+  }, [userInfo, token])
 
   return (
     <div className="bg-black min-h-screen">

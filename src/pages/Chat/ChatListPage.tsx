@@ -1,38 +1,44 @@
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 import ChatList from '@/components/Chat/ChatList'
 import { Menu } from '@/components/Menu'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { Spinner } from '@chakra-ui/react'
 import { cn } from '@/utils/utils'
+import { useStore } from '@/store'
+import { Message } from 'wukongimjssdk/lib/model'
 const ChatListPage: FC<{ className?: string }> = ({ className }) => {
-  const chats = [
-    {
-      id: '1',
-      avatar: '/path/to/avatar.jpg',
-      name: 'Athalia Putri',
-      lastMessage: 'Good morning, did you sleep w...',
-      time: '2024-01-20T10:00:00',
-      unreadCount: 12,
-    },
-    {
-      id: '2',
-      avatar: '/path/to/avatar.jpg',
-      name: 'UX Team',
-      lastMessage: 'How is it going?',
-      time: '2024-01-20T09:45:00',
-    },
-    // ... more chats
-  ]
+  const chatList = useStore((state) => state.chatList)
+  const connection = useStore((state) => state.connection)
 
   const handleDelete = (id: string) => {
     console.log('Delete chat:', id)
     // Implement delete logic
   }
 
+  const handleMessage = (message: Message) => {
+    console.log('-------message from server-------- ', message)
+    // find chat list
+    // find chat window
+
+    // update chat window
+    // update chat list
+  }
+
+  useEffect(() => {
+    if (connection) {
+      connection.addMessageListener(handleMessage)
+    }
+    return () => {
+      if (connection) {
+        connection.removeMessageListener()
+      }
+    }
+  }, [connection])
+
   return (
     <div className={cn('bg-black min-h-screen pt-[32px]', className)}>
       <InfiniteScroll
-        dataLength={chats.length}
+        dataLength={chatList.length}
         next={() => {}}
         hasMore={false}
         loader={
@@ -41,7 +47,7 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
           </div>
         }
       >
-        <ChatList chats={chats} onDelete={handleDelete} />
+        <ChatList chats={chatList} onDelete={handleDelete} />
       </InfiniteScroll>
       <Menu selectedIndex={1} />
     </div>

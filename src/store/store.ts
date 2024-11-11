@@ -9,8 +9,9 @@ import {
   BaseListState,
 } from './slices/resourceListSlice'
 import { StateCreator } from 'zustand'
+import { createIMSlice, IMSlice } from './slices/imSlice'
 
-export interface StoreState extends UserSlice, AuthSlice, ResourceListSlice {
+export interface StoreState extends UserSlice, AuthSlice, ResourceListSlice, IMSlice {
   recommendList: BaseListState
   viewList: BaseListState
 }
@@ -53,4 +54,5 @@ export const useStore = createStore(((...a) => ({
   ...createUserSlice(...a),
   ...createAuthSlice(...a),
   ...createResourceListSlice(...a),
+  ...createIMSlice(...a),
 })) as StateCreator<StoreState, [], MyMiddlewares>)

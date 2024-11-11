@@ -1,97 +1,109 @@
-import { WKSDK, MessageText, Channel, ChannelTypePerson, ConnectStatus, Message, MessageListener } from "wukongimjssdk";
+import {
+  WKSDK,
+  MessageText,
+  Channel,
+  ChannelTypePerson,
+  ConnectStatus,
+  Message,
+  MessageListener,
+} from 'wukongimjssdk'
 
 interface BaeimSDKOptions {
-  token: string;
-  userUid: string;
-  serverAddr: string;
+  token: string
+  userUid: string
+  serverAddr: string
 }
 
 class BaeimSDK {
-  private token: string;
-  private userUid: string;
-  private serverAddr: string;
-  private messageListener?: (message: Message) => void;
+  private token: string
+  private userUid: string
+  private serverAddr: string
+  private messageListener?: (message: Message) => void
+  public status: ConnectStatus
 
   constructor(options: BaeimSDKOptions) {
-    this.token = options.token;
-    this.userUid = options.userUid;
-    this.serverAddr = options.serverAddr;
+    this.token = options.token
+    this.userUid = options.userUid
+    this.serverAddr = options.serverAddr
+    this.status = ConnectStatus.Disconnect
+    this.handleConnectStatus = this.handleConnectStatus.bind(this)
   }
 
   private initializeSDK() {
     if (!this.token || !this.userUid) {
-      console.error('Token or User UID is missing.');
-      return;
+      console.error('Token or User UID is missing.')
+      return
     }
-    const config = WKSDK.shared().config;
-    config.uid = String(this.userUid);
-    config.token = this.token;
-    config.addr = this.serverAddr;
-    WKSDK.shared().config = config;
+    const config = WKSDK.shared().config
+    config.uid = String(this.userUid)
+    config.token = this.token
+    config.addr = this.serverAddr
+    WKSDK.shared().config = config
 
-    this.connect();
+    this.connect()
   }
 
   private async connect() {
     try {
-      await WKSDK.shared().connect();
-      console.log('SDK connected successfully.');
+      await WKSDK.shared().connect()
+      console.log('SDK connected successfully.')
     } catch (error) {
-      console.error('Failed to connect SDK:', error);
+      console.error('Failed to connect SDK:', error)
     }
   }
 
   private handleConnectStatus(status: ConnectStatus) {
     switch (status) {
       case ConnectStatus.Connected:
-        console.log("1");
-        break;
+        console.log('1', status)
+        break
       case ConnectStatus.Disconnect:
-        console.log("2");
-        break;
+        console.log('2', status)
+        break
       default:
-        console.log("3:", status);
-        break;
+        console.log('3:', status)
+        break
     }
+    this.status = status
   }
 
   public async sendMessage(content: string, channelId: string) {
     try {
-      const textMessage = new MessageText(content);
-      await WKSDK.shared().chatManager.send(textMessage, new Channel(channelId, ChannelTypePerson));
-      console.log('Message sent successfully');
+      const textMessage = new MessageText(content)
+      await WKSDK.shared().chatManager.send(textMessage, new Channel(channelId, ChannelTypePerson))
+      console.log('Message sent successfully')
     } catch (error) {
-      console.error('error:', error);
+      console.error('error:', error)
     }
   }
 
   public addMessageListener(listener: (message: Message) => void) {
-    this.messageListener = listener;
-    WKSDK.shared().chatManager.addMessageListener(this.messageHandler);
+    this.messageListener = listener
+    WKSDK.shared().chatManager.addMessageListener(this.messageHandler)
   }
 
   public removeMessageListener() {
     if (this.messageListener) {
-      WKSDK.shared().chatManager.removeMessageListener(this.messageHandler);
-      this.messageListener = undefined;
+      WKSDK.shared().chatManager.removeMessageListener(this.messageHandler)
+      this.messageListener = undefined
     }
   }
 
   private messageHandler = (message: Message) => {
     if (this.messageListener) {
-      this.messageListener(message);
+      this.messageListener(message)
     }
   }
 
   public start() {
-    this.initializeSDK();
-    WKSDK.shared().connectManager.addConnectStatusListener(this.handleConnectStatus);
+    this.initializeSDK()
+    WKSDK.shared().connectManager.addConnectStatusListener(this.handleConnectStatus)
   }
 
   public stop() {
-    WKSDK.shared().connectManager.removeConnectStatusListener(this.handleConnectStatus);
-    this.removeMessageListener();
+    WKSDK.shared().connectManager.removeConnectStatusListener(this.handleConnectStatus)
+    this.removeMessageListener()
   }
 }
 
-export default BaeimSDK;
+export default BaeimSDK

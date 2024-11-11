@@ -18,6 +18,7 @@ import EarningsHistory from '@/components/PersonalDetails/Earnings/History'
 import Follow from './pages/Follow'
 import ProfileGuard from './pages/OthersProfile/routeGuard'
 import { MessagePage } from './pages/Chat'
+import MessagePageRouteGuard from './pages/Chat/MessagePageRouteGuard'
 
 // import { mockTelegramEnv, parseInitData } from '@tma.js/sdk'
 // import { DEV_INIT_DATA_RAW } from './utils/constants'
@@ -76,7 +77,14 @@ function App() {
 
               {/* Chat */}
               <Route path="chat" element={<></>} />
-              <Route path="chat/:uid" element={<MessagePage />} />
+              <Route
+                path="chat/:uid"
+                element={
+                  <MessagePageRouteGuard>
+                    <MessagePage />
+                  </MessagePageRouteGuard>
+                }
+              />
             </Route>
           </Routes>
         </BrowserRouter>

@@ -1,80 +1,52 @@
 import { useState, useEffect } from 'react'
 import { MessageList } from '@/components/Chat/MessageList'
 import { MessageInput } from '@/components/Chat/MessageInput'
-import { useTMAUtils } from '@/hooks/useTMAUtils'
+import { Message, MessageType } from '@/components/Chat/types'
+import { useParams } from 'react-router-dom'
+import { useFormatMessage } from '@/hooks/useFormatMessage'
+import { useIM } from '@/store/hook/userIM'
+import { useStore } from '@/store'
 
-interface ChatMessage {
-  id: string
-  content: string
-  sender: number
-  timestamp: number
-}
+// const PAGE_SIZE = 20
 
-const PAGE_SIZE = 20
-
-const defaultMessages: ChatMessage[] = [
-  {
-    id: '1',
-    content: 'Hello',
-    sender: 1,
-    timestamp: Date.now(),
-  },
-  {
-    id: '2',
-    content: 'Hello',
-    sender: 1,
-    timestamp: Date.now(),
-  },
-]
+const defaultMessages: Message[] = []
 
 const MessagePage = () => {
-  const [messages, setMessages] = useState<ChatMessage[]>(defaultMessages)
-  const [page, setPage] = useState(1)
-  const [hasMore, setHasMore] = useState(true)
-  const { getCurrentUid } = useTMAUtils()
-  const current_uid = getCurrentUid()
-
+  const { uid } = useParams()
+  const [messages, setMessages] = useState<Message[]>(defaultMessages)
+  // const [page, setPage] = useState(1)
+  // const [hasMore, setHasMore] = useState(true)
+  const { formatMessage } = useFormatMessage()
+  const { getMessageWindowByReceiveId, sendMessage } = useIM()
+  const messageWindow = getMessageWindowByReceiveId(Number(uid))
+  // useEffect(() => {
+  //   loadMessages()
+  // }, [])
+  const chatList = useStore((state) => state.chatList)
   useEffect(() => {
-    loadMessages()
-  }, [])
-
-  const loadMessages = () => {
-    const savedMessages = localStorage.getItem('chat-messages')
-    if (savedMessages) {
-      const allMessages = JSON.parse(savedMessages)
-      const start = Math.max(0, allMessages.length - page * PAGE_SIZE)
-      const end = allMessages.length
-      const paginatedMessages = allMessages.slice(start, end)
-
-      setMessages(paginatedMessages)
-      setHasMore(start > 0)
+    if (messageWindow) {
+      setMessages(messageWindow.messages)
     }
-  }
+  }, [messageWindow])
 
-  const loadMore = () => {
-    setPage((prev) => prev + 1)
-    loadMessages()
-  }
+  // const loadMore = () => {
+  //   setPage((prev) => prev + 1)
+  //   loadMessages()
+  // }
 
-  const handleSend = (content: string) => {
-    const newMessage = {
-      id: Date.now().toString(),
-      content,
-      sender: current_uid,
-      timestamp: Date.now(),
-    }
-
-    const savedMessages = localStorage.getItem('chat-messages')
-    const allMessages = savedMessages ? JSON.parse(savedMessages) : []
-    const updatedMessages = [...allMessages, newMessage]
-
-    localStorage.setItem('chat-messages', JSON.stringify(updatedMessages))
-    setMessages((prev) => [...prev, newMessage])
+  const handleSend = ({ type, text }: { type: MessageType; text?: string }) => {
+    const newMessage = formatMessage({
+      type,
+      text,
+      to: Number(uid),
+    })
+    sendMessage(newMessage)
+    // setMessages((prev) => [...prev, newMessage])
   }
 
   return (
     <div className="flex flex-col h-screen bg-[#0D0D0D]">
-      <MessageList messages={messages} loadMore={loadMore} hasMore={hasMore} className="flex-1" />
+      <MessageList messages={messages} loadMore={() => {}} hasMore={false} className="flex-1" />
       <MessageInput onSend={handleSend} />
     </div>
   )

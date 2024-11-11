@@ -4,13 +4,7 @@ import InfiniteScroll from 'react-infinite-scroll-component'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import dayjs from 'dayjs'
 import Image from '@/components/Image/Image'
-
-interface Message {
-  id: string
-  content: string
-  sender: number
-  timestamp: number
-}
+import { Message } from './types'
 
 interface MessageListProps {
   messages: Message[]
@@ -39,10 +33,6 @@ export const MessageList = ({ messages, loadMore, hasMore, className }: MessageL
       localStorage.setItem(scrollPositionKey, scrollRef.current.scrollTop.toString())
     }
   }
-
-  useEffect(() => {
-    console.log('messages', messages)
-  }, [messages])
 
   return (
     <div
@@ -85,7 +75,7 @@ export const MessageList = ({ messages, loadMore, hasMore, className }: MessageL
                   : 'bg-[#303030]  max-w-[255px]'
               }`}
             >
-              <div className="text-sm">{message.content}</div>
+              <div className="text-sm">{message.text}</div>
               <div className="text-xs mt-1 opacity-70 text-[#8E8E93]">
                 {dayjs(message.timestamp).format('HH:mm')}
               </div>

@@ -6,9 +6,11 @@ import { Spinner } from '@chakra-ui/react'
 import { cn } from '@/utils/utils'
 import { useStore } from '@/store'
 import { Message } from 'wukongimjssdk/lib/model'
+import { useIM } from '@/store/hook/userIM'
 const ChatListPage: FC<{ className?: string }> = ({ className }) => {
   const chatList = useStore((state) => state.chatList)
   const connection = useStore((state) => state.connection)
+  const { receiveMessage } = useIM()
 
   const handleDelete = (id: string) => {
     console.log('Delete chat:', id)
@@ -17,11 +19,13 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
 
   const handleMessage = (message: Message) => {
     console.log('-------message from server-------- ', message)
-    // find chat list
-    // find chat window
-
-    // update chat window
-    // update chat list
+    try {
+      if (message?.content?.text) {
+        receiveMessage(JSON.parse(message.content.text))
+      }
+    } catch (error) {
+      console.error('message from server parse error:', error)
+    }
   }
 
   useEffect(() => {

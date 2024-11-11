@@ -67,7 +67,7 @@ const ChatListItem: FC<{
               </span>
             </div>
 
-            <div className="flex justify-between items-start">
+            <div className="flex justify-between items-start min-h-[24px]">
               <p className="flex-1 text-gray-400 text-sm truncate mt-1">
                 {chat?.lastMessage?.text}
               </p>

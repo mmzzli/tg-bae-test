@@ -8,33 +8,30 @@ export const useIM = () => {
   const { getCurrentUid } = useTMAUtils()
   const current_uid = getCurrentUid()
   const {
-    connection,
-    messageWindowList,
-    chatList,
     addChatListItem,
     updateChatListItem,
     addMessageWindowListItem,
-    chatPeopleInfoList,
     setChatPeopleInfoList,
     updateMessageWindowListItem,
   } = useStore((state) => ({
-    connection: state.connection,
-    messageWindowList: state.messageWindowList,
-    chatList: state.chatList,
     addChatListItem: state.addChatListItem,
     updateChatListItem: state.updateChatListItem,
     addMessageWindowListItem: state.addMessageWindowListItem,
-    chatPeopleInfoList: state.chatPeopleInfoList,
     setChatPeopleInfoList: state.setChatPeopleInfoList,
     updateMessageWindowListItem: state.updateMessageWindowListItem,
   }))
 
   const getMessageWindowByReceiveId = (receiver: number) => {
     const chatId = getChatId(receiver, current_uid)
-    return messageWindowList.find((msg) => msg.chatId === chatId)
+    return useStore.getState().messageWindowList.find((msg) => msg.chatId === chatId)
   }
 
-  const initMessageWindow = (receiver: number) => {
+  const getChatListItemByReceiveId = (receiver: number) => {
+    const chatId = getChatId(receiver, current_uid)
+    return useStore.getState().chatList.find((item) => item.id === chatId)
+  }
+
+  const initMessageWindow = (receiver: number, message?: Message) => {
     const chatId = getChatId(receiver, current_uid)
     const messageWindow = getMessageWindowByReceiveId(receiver)
     if (!messageWindow) {
@@ -42,14 +39,14 @@ export const useIM = () => {
         id: Date.now().toString() + current_uid,
         chatId,
         users: [receiver, current_uid],
-        messages: [],
+        messages: message ? [message] : [],
       })
     }
   }
 
-  const initChatListItem = (receiver: number) => {
+  const initChatListItem = (receiver: number, message?: Message) => {
     const chatId = getChatId(receiver, current_uid)
-    const chatItem = chatList.find((item) => item.id === chatId)
+    const chatItem = useStore.getState().chatList.find((item) => item.id === chatId)
     if (!chatItem) {
       initChatPeopleInfo(receiver)
       addChatListItem({
@@ -57,12 +54,13 @@ export const useIM = () => {
         users: [receiver, current_uid],
         title: '',
         unreadCount: 0,
+        lastMessage: message,
       })
     }
   }
 
   const initChatPeopleInfo = (receiver: number, cb?: (user: OthersUserInfo) => void) => {
-    const user = chatPeopleInfoList.find((item) => item.uid === receiver)
+    const user = useStore.getState().chatPeopleInfoList.find((item) => item.uid === receiver)
     if (!user) {
       getSomeoneProfile(receiver).then((res) => {
         setChatPeopleInfoList([res])
@@ -73,23 +71,34 @@ export const useIM = () => {
 
   const getChatPeopleInfo = (users: number[]) => {
     const receiver = users[0] === current_uid ? users[1] : users[0]
-    return chatPeopleInfoList.find((item) => item.uid === receiver)
+    return useStore.getState().chatPeopleInfoList.find((item) => item.uid === receiver)
   }
 
   const sendMessage = (message: Message) => {
-    connection?.sendMessage(JSON.stringify(message), String(message.receiver))
-    // update message window
-    const messageWindow = getMessageWindowByReceiveId(message.receiver)
-    if (messageWindow) {
+    useStore.getState().connection?.sendMessage(JSON.stringify(message), String(message.receiver))
+    updateMessage(message, message.receiver)
+  }
+
+  const receiveMessage = (message: Message) => {
+    if (message.sender !== current_uid) {
+      updateMessage(message, message.sender)
+    } else {
+      // TODO: set msg status to sent
+    }
+  }
+
+  const updateMessage = (message: Message, othersId: number) => {
+    const messageWindow = getMessageWindowByReceiveId(othersId)
+    const chatItem = getChatListItemByReceiveId(othersId)
+    if (messageWindow && chatItem) {
       updateMessageWindowListItem({
         ...messageWindow,
         messages: [...messageWindow.messages, message],
       })
-    }
-    // update chat list
-    const chatItem = chatList.find((item) => item.id === message.chatId)
-    if (chatItem) {
       updateChatListItem({ ...chatItem, lastMessage: message })
+    } else {
+      initChatListItem(othersId, message)
+      initMessageWindow(othersId, message)
     }
   }
 
@@ -100,5 +109,6 @@ export const useIM = () => {
     initChatListItem,
     getChatPeopleInfo,
     sendMessage,
+    receiveMessage,
   }
 }

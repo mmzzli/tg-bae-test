@@ -146,6 +146,8 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover }) 
                       minWidth: '48px',
                       cursor: 'pointer',
                       border: selectedFrame?.time === frame.time ? '2px solid #FFF' : 'none',
+                      borderRadius: selectedFrame?.time === frame.time ? '8px' : '0px',
+                      opacity: selectedFrame?.time === frame.time ? '1' : '0.5',
                     }}
                     width="100px"
                   />

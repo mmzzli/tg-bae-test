@@ -1,4 +1,4 @@
-@font-face {
+/* @font-face {
   font-family: 'ArialGrotesk';
   src: url('./assets/fonts/arial-grotesk-regular.otf') format('opentype');
   font-weight: 400;
@@ -16,10 +16,13 @@
   font-weight: 700;
   font-style: normal;
 }
+  */
 html,
 body {
-  font-family: 'ArialGrotesk', sans-serif !important;
+  /* font-family: 'ArialGrotesk', sans-serif !important; */
+  font-family: 'Poppins', sans-serif !important;
 }
+
 h1,
 h2,
 h3,
@@ -27,9 +30,11 @@ h4,
 h5 {
   font-weight: 700;
 }
+
 p {
   font-weight: 500;
 }
+
 input:focus,
 textarea:focus {
   box-shadow: none !important;

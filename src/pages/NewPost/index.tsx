@@ -37,6 +37,8 @@ export const NewPost: FC = () => {
   const [frameSelectorBoll, setFrameSelectorBoll] = useState<boolean>(false)
   // start
   const [price, setPrice] = useState<number>(0)
+  // cover
+  const [cover, setCover] = useState<string | null>(null)
 
   async function checkVideoURL(url: string): Promise<AxiosResponse<any> | undefined> {
     let isNotFound = true
@@ -55,6 +57,7 @@ export const NewPost: FC = () => {
     const imgList = []
     for (const file of files) {
       const url = `https://picupload.mobus.workers.dev/upload/${file.name}`
+      console.log(file)
       const formData = new FormData()
       formData.append('file', file)
       try {
@@ -113,8 +116,10 @@ export const NewPost: FC = () => {
     if (response.status === 200) {
       const url = `https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${id}/manifest/video.m3u8`
       await checkVideoURL(url)
+      const medias = [url]
+      cover && medias.unshift(cover)
       await postResources({
-        media: url,
+        media: medias.join(','),
         ...(title ? { title } : {}),
         type: 0,
         currency: 0,
@@ -257,15 +262,7 @@ export const NewPost: FC = () => {
                       playsInline
                       style={{ borderRadius: '4px', maxHeight: '380px' }}
                     />
-                    <Text color="#FFF" fontSize="14px" borderRadius="4px" bg="rgba(0, 0, 0, 0.50)" p="5px 9px 6px 10px"
-                      position="absolute"
-                      bottom="8px"
-                      right="8px"
-                      cursor="pointer"
-                      onClick={()=>setFrameSelectorBoll(true)}
-                    >
-                      Select cover
-                    </Text>
+                    <VideoFrameSelector videoRef={videoRef} setCover={setCover}/>
                     <Image
                       onClick={() => setVideoSrc('')}
                       w="24px"
@@ -332,7 +329,6 @@ export const NewPost: FC = () => {
           />
         </Box>
         <StarsPage setPrice={setPrice} price={price} />
-        {/* {frameSelectorBoll && <VideoFrameSelector videoRef={videoRef}/>} */}
       </Box>
     </Box>
   )

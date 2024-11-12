@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import Hls from 'hls.js'
-import { Box, Flex, Text, IconButton, useBoolean } from '@chakra-ui/react'
+import { Box, Flex, Text, IconButton, useBoolean, HStack } from '@chakra-ui/react'
 import { IconLike } from '@/components/icons/like'
 import { IconLiked } from '@/components/icons/liked'
 import { IconCommit } from '@/components/icons/commit'
@@ -12,7 +12,7 @@ import BaseButton from '../BaseButton/BaseButton'
 import useCopy from '@/hooks/useCopy'
 import { useMemoizedFn, useRequest, useSafeState, useSetState } from 'ahooks'
 import dayjs from 'dayjs'
-import { LinkIcon, TelegramIcon } from '@/assets/icons'
+import { LinkIcon, TelegramIcon, VideoIcon } from '@/assets/icons'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import Image from '../Image/Image'
 import FrostedGlass from '@/components/ResourceList/FrostedGlass'
@@ -70,7 +70,21 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
 
   useEffect(() => {
     if (initialResources.length) {
-      setResources(initialResources)
+      console.log(initialResources)
+      const res = initialResources.map((item) => {
+        if (item.type === 0 && item.media.length > 0) {
+          const [mediaCover, media] = item.media[0].split(',');
+          return {
+            ...item,
+            media: [media || mediaCover],
+            mediaCover
+          };
+        }
+        return item;
+      });
+
+      console.log(res);
+      setResources(res);
     }
   }, [initialResources])
   useEffect(() => {
@@ -322,6 +336,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                       style={{ display: preloaded[index] ? 'block' : 'none', width: '100%' }}
                       controls={false}
                       muted={isMuted}
+                      poster={data.mediaCover}
                       loop
                       playsInline
                       onPlay={() => handlePlay(index)}
@@ -333,15 +348,24 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                     />
                   </Box>
                 ) : (
-                  <video
-                    ref={(el) => (videoRefs.current[index] = el)}
-                    style={{ display: preloaded[index] ? 'block' : 'none', width: '100%' }}
-                    controls={false}
-                    muted={isMuted}
-                    loop
-                    playsInline
-                    onPlay={() => handlePlay(index)}
-                  />
+                  <>
+                    <video
+                      ref={(el) => (videoRefs.current[index] = el)}
+                      style={{ display: preloaded[index] ? 'block' : 'none', width: '100%' }}
+                      controls={false}
+                      muted={isMuted}
+                      poster={data.mediaCover}
+                      loop
+                      playsInline
+                      onPlay={() => handlePlay(index)}
+                    />
+                    <HStack borderRadius="4px" bg="rgba(0, 0, 0, 0.20)" position="absolute" top="12px" left="28px" p="4px 8px">
+                      <Image src={VideoIcon}/>
+                      <Text color="#E0E2F6" fontSize="12px">
+                        00:30
+                      </Text>
+                    </HStack>
+                  </>
                 )}
               </div>
 

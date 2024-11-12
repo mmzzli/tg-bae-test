@@ -61,7 +61,10 @@ const ProfileEdit: FC = () => {
         </p>
       </div>
       <div className="px-[8px] mt-[48px]">
-        <h3 className="text-[16px] text-[#E0E2F6] mb-[16px]">* Name</h3>
+          <div className="flex justify-between items-center mb-[16px]">
+            <h3 className="text-[16px] text-[#E0E2F6]">* Name</h3>
+            <p className="text-[#424048] text-[12px]">{profileData?.username.length}/20</p>
+          </div>
         <input
           className="w-[100%] rounded-[10px] text-[#E0E2F6] text-[14px] bg-[#19191E] px-[16px] py-[15px]"
           value={profileData?.username}

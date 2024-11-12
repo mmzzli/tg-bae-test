@@ -8,15 +8,13 @@ import ShareUser from './ShareUser';
 import { EditIcon } from '@/assets/icons';
 import { useTMAUtils } from '@/hooks/useTMAUtils';
 import { profileImg } from '@/assets/image';
+import More from './More'
 
 const UserProfile: FC = () => {
   const { launchParams } = useTMAUtils();
   const userId = launchParams.initData?.user?.id ?? 0;
   const userInfo = useStore((state) => state.userInfo);
   const navigate = useNavigate();
-  const [isBioExpanded, setIsBioExpanded] = useState(false);
-
-  const toggleBioExpand = () => setIsBioExpanded((prev) => !prev);
 
   return (
     <Box padding="0 16px" paddingTop="30px">
@@ -74,15 +72,7 @@ const UserProfile: FC = () => {
           </Text>
         </Box>
       </HStack>
-
-      <Box paddingTop="16px" paddingBottom="24px" borderBottom="1px solid #212121">
-        <Text color="#62636F" fontSize="14px" lineHeight="16px" marginBottom="4px">
-          {isBioExpanded ? userInfo.bio : `${userInfo.bio.slice(0, 100)}...`}
-        </Text>
-        <Link color="#4452FF" fontSize="14px" onClick={toggleBioExpand}>
-          {isBioExpanded ? 'Less' : 'More'}
-        </Link>
-      </Box>
+      <More bio={userInfo.bio}/>
     </Box>
   );
 };

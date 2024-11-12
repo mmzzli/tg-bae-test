@@ -1,5 +1,5 @@
-import { FC, useState } from 'react'
-import { Heading, HStack, Box, Text, Link } from '@chakra-ui/react'
+import { FC } from 'react'
+import { Heading, HStack, Box, Text } from '@chakra-ui/react'
 import Image from '../Image/Image'
 import { MessageIcon } from '@/assets/icons'
 import { useStore } from '../../store'
@@ -7,6 +7,7 @@ import FollowButton from './FollowButton'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useNavigate } from 'react-router-dom'
 import { profileImg } from '@/assets/image'
+import More from './More'
 
 const OtherUserProfile: FC = () => {
   const { userInfo } = useStore((state) => ({
@@ -16,9 +17,6 @@ const OtherUserProfile: FC = () => {
   const currentUid = launchParams.initData?.user?.id ?? 0
 
   const navigate = useNavigate()
-  const [isBioExpanded, setIsBioExpanded] = useState(false);
-
-  const toggleBioExpand = () => setIsBioExpanded((prev) => !prev);
   return (
     <Box p="0px 16px" pt="30px">
       <HStack gap="16px" pl="8px" justifyContent="space-between">
@@ -76,14 +74,7 @@ const OtherUserProfile: FC = () => {
           </Text>
         </Box>
       </HStack>
-      <Box paddingTop="16px" paddingBottom="24px" borderBottom="1px solid #212121">
-        <Text color="#62636F" fontSize="14px" lineHeight="16px" marginBottom="4px">
-          {isBioExpanded ? userInfo.bio : `${userInfo.bio.slice(0, 100)}...`}
-        </Text>
-        <Link color="#4452FF" fontSize="14px" onClick={toggleBioExpand}>
-          {isBioExpanded ? 'Less' : 'More'}
-        </Link>
-      </Box>
+      <More bio={userInfo.bio}/>
     </Box>
   )
 }

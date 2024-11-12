@@ -23,7 +23,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, style, videoRef }) => {
 
   return (
     <div
-      style={{ position: 'relative', width: '100%' }}
+      // style={{ position: 'relative', width: '100%' }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -35,7 +35,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, style, videoRef }) => {
         autoPlay
         playsInline
       />
-      {isHovered && (
+      {(isHovered || videoRef?.current?.paused) && (
         <Text
           onClick={togglePlayPause}
           position="absolute"

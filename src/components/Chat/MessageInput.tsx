@@ -39,8 +39,8 @@ export const MessageInput = ({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-center h-[42px] w-full bg-[#303030] pr-4">
-      <div className="flex items-center h-[42px] w-full bg-[#303030] pr-4">
+    <form onSubmit={handleSubmit} className="flex h-[68px] w-full bg-[#303030] pr-4 pt-[8px]">
+      <div className="flex items-center h-[34px] w-full bg-[#303030] pr-4">
         <div className="w-[28px] h-[28px] mx-[10px] cursor-pointer">
           <Image src={AttachIcon} />
         </div>
@@ -50,7 +50,7 @@ export const MessageInput = ({
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyPress}
           type="text"
-          className="flex-1 h-[34px] bg-black border-[#4B4B4D] rounded-full px-3 outline-none text-white"
+          className="flex-1 h-[34px] text-default bg-black border-[#4B4B4D] rounded-full px-3 outline-none text-white placeholder:text-[#5D5D60]"
           placeholder="Type a Message..."
         />
       </div>

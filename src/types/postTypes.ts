@@ -75,3 +75,11 @@ export type ShareInfo = {
   media: ListItem[]
   userInfo: OthersUserInfo & { user_id: number }
 }
+
+export type LinkMetadata = {
+  site_name: string
+  title: string
+  desc: string
+  image: string
+  url: string
+}

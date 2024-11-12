@@ -7,6 +7,7 @@ import {
   UserPostsRes,
   ListRes,
   ViewListReq,
+  LinkMetadata,
 } from '@/types'
 
 export const postResources = (params: PostResourceReq) => {
@@ -28,4 +29,8 @@ export const deletePost = (pid: number) => {
 
 export const getUsersPosts = (params: UserPostsReq) => {
   return post<UserPostsRes>(`/api/v1/other/user/posts`, params)
+}
+
+export const getLinkMetadata = (url: string) => {
+  return get<LinkMetadata>(`/meta?url=${url}`)
 }

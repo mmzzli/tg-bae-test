@@ -17,9 +17,10 @@ import { useNavigate } from 'react-router-dom'
 import axios, { AxiosResponse } from 'axios'
 import { postResources, postReq } from '@/api'
 import StarsPage from '@/components/NewPost/Stars'
-import { PostIcon, PostAddIcon, RemoveIcon } from '@/assets/icons'
+import { PostIcon, PostAddIcon, RemoveIcon, VideoSwitchIcon } from '@/assets/icons'
 import { useStore } from '@/store'
 import VideoFrameSelector from '@/components/NewPost/VideoFrameSelector'
+import VideoPlayer from '@/components/comm/VideoPlayer'
 
 export const NewPost: FC = () => {
   const navigate = useNavigate()
@@ -253,15 +254,7 @@ export const NewPost: FC = () => {
               <>
                 {videoSrc ? (
                   <Box maxW="600px" m="auto" position="relative">
-                    <video
-                      ref={videoRef}
-                      src={videoSrc}
-                      controls
-                      width="100%"
-                      autoPlay
-                      playsInline
-                      style={{ borderRadius: '4px', maxHeight: '380px' }}
-                    />
+                    <VideoPlayer videoRef={videoRef} src={videoSrc} style={{ borderRadius: '4px', maxHeight: '380px' }}/>
                     <VideoFrameSelector videoRef={videoRef} setCover={setCover}/>
                     <Image
                       onClick={() => setVideoSrc('')}

@@ -131,7 +131,7 @@ export const useOthersViewList = () => {
       resetOthersViewList()
       loadOthersViewList(page)
     }
-  }, [othersUserInfo])
+  }, [othersUserInfo.uid])
 
   const fetchMoreData = () => {
     if (!isLoading && hasMore) {

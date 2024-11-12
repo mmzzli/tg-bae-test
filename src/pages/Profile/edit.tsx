@@ -1,5 +1,6 @@
-import { FC, useState, useEffect, ChangeEvent } from 'react'
+import { FC, useState, useEffect, ChangeEvent, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import axios, { AxiosResponse } from 'axios'
 
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { profileEdit, putProfile } from '@/api'
@@ -10,6 +11,7 @@ import { UserInfoProfile } from '@/types'
 import { CameraIcon } from '@/assets/icons'
 
 const ProfileEdit: FC = () => {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const navigate = useNavigate()
   const token = useStore((state) => state.token)
   const { launchParams } = useTMAUtils()
@@ -49,17 +51,53 @@ const ProfileEdit: FC = () => {
       load()
     }
   }, [token])
+
+  const handleDivClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async(event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const url = `https://picupload.mobus.workers.dev/upload/${file.name}`
+      const formData = new FormData()
+      formData.append('file', file)
+      try {
+        const response = await axios.put(url, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        console.log(response.data)
+        setProfileData((prevData) => ({
+          ...prevData,
+          ['avatar']: response.data,
+        }))
+      } catch (error) {
+        console.error(`Error uploading ${file.name}:`, error)
+      }
+    }
+  };
+
   return (
     <div className="pt-[10px] px-[16px]">
       <h2 className="text-[20px] text-[#E0E2F6]">Profile</h2>
       <div className="mt-[44px]">
         <p className="w-[88px] h-[88px] bg-[#333] m-[auto] rounded-[50px] relative">
-          <img src={profileData?.avatar} />
-          <p className="absolute bottom-[0px] right-[-14px]  bg-[#19191E] rounded-[50px] p-[5px]">
+          <img src={profileData?.avatar} className='w-[100%] h-[100%] rounded-[50px] object-cover overflow-hidden' />
+          <p className="absolute bottom-[0px] right-[-14px]  bg-[#19191E] rounded-[50px] p-[5px]" onClick={handleDivClick}>
             <img src={CameraIcon} />
           </p>
         </p>
       </div>
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: "none" }}
+        accept="image/*"
+        onChange={handleFileChange}
+      />
       <div className="px-[8px] mt-[48px]">
           <div className="flex justify-between items-center mb-[16px]">
             <h3 className="text-[16px] text-[#E0E2F6]">* Name</h3>

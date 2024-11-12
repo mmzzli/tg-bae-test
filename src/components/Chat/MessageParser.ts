@@ -41,8 +41,6 @@ export class MessageParser {
     // merge and sort all matches
     const matches = [...tgMatches, ...urlMatches].sort((a, b) => a.index - b.index)
 
-    console.log(matches)
-
     for (const match of matches) {
       // add text before match
       if (match.index > lastIndex) {

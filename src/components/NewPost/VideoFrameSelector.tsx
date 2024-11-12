@@ -32,8 +32,8 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover }) 
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
 
-    canvas.width = video.videoWidth / 4;
-    canvas.height = video.videoHeight / 4;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
 
     const videoDuration = video.duration;
 
@@ -124,7 +124,9 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover }) 
           <h2 className='text-[24px] text-[#E0E2F6] mt-[24px]'>Select cover</h2>
           <div className='rounded-[5px] mt-[16px] overflow-hidden'>
             {selectedFrame &&
-              <img className='h-[184px] object-cover' src={selectedFrame.url} alt={`Selected Frame at ${selectedFrame.time}s`} width="100%" />
+              <img className='object-contain' src={selectedFrame.url} alt={`Selected Frame at ${selectedFrame.time}s`} width="100%"
+                style={{ maxHeight: '315px' }}
+               />
             }
           </div>
           <div className='bg-[#1C1C1C] rounded-tl-[16px] rounded-tr-[16px]'>

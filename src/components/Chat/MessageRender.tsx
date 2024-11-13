@@ -139,7 +139,7 @@ const MessagePart: React.FC<{ part: ParsedContent }> = ({ part }) => {
   }
   if (part.type === 'link') {
     return (
-      <a href={part.content} target="_blank" className="text-[#3fa9ff]">
+      <a href={part.content} target="_blank" className="underline">
         {part.content}
       </a>
     )
@@ -147,7 +147,7 @@ const MessagePart: React.FC<{ part: ParsedContent }> = ({ part }) => {
 
   if (part.type === 'telegram') {
     return (
-      <a href={part.content} target="_blank" className="text-[#3fa9ff]">
+      <a href={part.content} target="_blank" className="underline">
         {part.content}
       </a>
     )

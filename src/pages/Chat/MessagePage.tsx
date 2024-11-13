@@ -1,33 +1,31 @@
 import { useState, useEffect } from 'react'
 import { MessageList } from '@/components/Chat/MessageList'
 import { MessageInput } from '@/components/Chat/MessageInput'
-import { Message, MessageType } from '@/components/Chat/types'
+import { MessageType, WrappedMessage } from '@/components/Chat/types'
 import { useParams } from 'react-router-dom'
 import { useFormatMessage } from '@/hooks/useFormatMessage'
 import { useIM } from '@/store/hook/userIM'
 import { useStore } from '@/store'
-
 // const PAGE_SIZE = 20
 
-const defaultMessages: Message[] = []
+const defaultMessages: WrappedMessage[] = []
 
 const MessagePage = () => {
   const { uid } = useParams()
-  const [messages, setMessages] = useState<Message[]>(defaultMessages)
+  const [messages, setMessages] = useState<WrappedMessage[]>(defaultMessages)
   // const [page, setPage] = useState(1)
   // const [hasMore, setHasMore] = useState(true)
   const { formatMessage } = useFormatMessage()
-  const { getMessageWindowByReceiveId, sendMessage } = useIM()
-  const messageWindow = getMessageWindowByReceiveId(Number(uid))
-  // useEffect(() => {
-  //   loadMessages()
-  // }, [])
-  const chatList = useStore((state) => state.chatList)
+  const { sendMessage, getMessageWindow } = useIM()
+  const messageWindow = getMessageWindow(uid || '')
+  const messageWindowList = useStore((state) => state.messageWindowList)
+
   useEffect(() => {
+    console.log('MessagePage messageWindowList change', messageWindowList)
     if (messageWindow) {
       setMessages(messageWindow.messages)
     }
-  }, [messageWindow])
+  }, [messageWindow, messageWindowList])
 
   // const loadMore = () => {
   //   setPage((prev) => prev + 1)
@@ -41,9 +39,9 @@ const MessagePage = () => {
       to: Number(uid),
     })
     sendMessage(newMessage)
-    // setMessages((prev) => [...prev, newMessage])
   }
 
+  console.log('MessagePage render', messageWindow)
   return (
     <div className="flex flex-col h-screen bg-[#0D0D0D]">
       <MessageList messages={messages} loadMore={() => {}} hasMore={false} className="flex-1" />

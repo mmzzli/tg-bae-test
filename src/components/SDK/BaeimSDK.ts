@@ -6,16 +6,25 @@ import {
   ConnectStatus,
   Message,
   MessageListener,
-  Conversation,
+  Conversation as WKConversation,
   ConversationAction,
   PullMode,
+  SyncOptions,
 } from 'wukongimjssdk'
+import { Convert } from './Convert'
+
+export type FormattedMessage = Message & {
+  toUID: string
+}
+
+export type Conversation = WKConversation & { recents?: FormattedMessage[] }
 
 interface BaeimSDKOptions {
   token: string
   userUid: string
   serverAddr: string
-  syncConversationsCallback: () => Promise<Conversation[]>
+  syncConversationsCallback?: () => Promise<Conversation[]>
+  syncMessagesCallback?: (channel: Channel, opts: SyncOptions) => Promise<Message[]>
 }
 
 type GetMessagesOpt = {
@@ -24,13 +33,13 @@ type GetMessagesOpt = {
   limit: number
   pullMode: PullMode // 0:向下拉取 1:向上拉取
 }
-
 class BaeimSDK {
   private token: string
   private userUid: string
   private serverAddr: string
-  private messageListener?: (message: Message) => void
-  private syncConversationsCallback: () => Promise<Conversation[]>
+  private messageListener?: (message: FormattedMessage) => void
+  private syncConversationsCallback?: () => Promise<Conversation[]>
+  private syncMessagesCallback?: (channel: Channel, opts: SyncOptions) => Promise<Message[]>
   public status: ConnectStatus
   private connectionStatusListeners: Set<(status: ConnectStatus) => void> = new Set()
 
@@ -40,6 +49,7 @@ class BaeimSDK {
     this.serverAddr = options.serverAddr
     this.status = ConnectStatus.Disconnect
     this.syncConversationsCallback = options.syncConversationsCallback
+    this.syncMessagesCallback = options.syncMessagesCallback
     this.handleConnectStatus = this.handleConnectStatus.bind(this)
   }
 
@@ -52,7 +62,34 @@ class BaeimSDK {
     config.uid = String(this.userUid)
     config.token = this.token
     config.addr = this.serverAddr
-    config.provider.syncConversationsCallback = this.syncConversationsCallback
+    if (this.syncConversationsCallback) {
+      const cb = async () => {
+        let resultConversations = new Array<Conversation>()
+        const resp = await this.syncConversationsCallback?.()
+        if (resp) {
+          resp.forEach((v: any) => {
+            const conversation = Convert.toConversation(v)
+            resultConversations.push(conversation)
+          })
+        }
+        return resultConversations
+      }
+      config.provider.syncConversationsCallback = cb
+    }
+    if (this.syncMessagesCallback) {
+      const cb = async (channel: Channel, opts: SyncOptions) => {
+        let resultMessages = new Array<Message>()
+        const resp = await this.syncMessagesCallback?.(channel, opts)
+        if (resp) {
+          resp.forEach((v: any) => {
+            const message = Convert.toMessage(v)
+            resultMessages.push(message)
+          })
+        }
+        return resultMessages
+      }
+      config.provider.syncMessagesCallback = cb
+    }
     WKSDK.shared().config = config
 
     this.connect()
@@ -82,13 +119,12 @@ class BaeimSDK {
     try {
       const textMessage = new MessageText(content)
       await WKSDK.shared().chatManager.send(textMessage, new Channel(channelId, ChannelTypePerson))
-      console.log('Message sent successfully')
     } catch (error) {
-      console.error('error:', error)
+      console.error('sendMessage error:', error)
     }
   }
 
-  public addMessageListener(listener: (message: Message) => void) {
+  public addMessageListener(listener: (message: FormattedMessage) => void) {
     this.messageListener = listener
     WKSDK.shared().chatManager.addMessageListener(this.messageHandler)
   }
@@ -102,7 +138,7 @@ class BaeimSDK {
 
   public addConversationListener(
     listener: (conversation: Conversation, action: ConversationAction) => void
-  ) {
+  ): () => void {
     WKSDK.shared().conversationManager.addConversationListener(listener)
     return () => {
       WKSDK.shared().conversationManager.removeConversationListener(listener)
@@ -125,6 +161,18 @@ class BaeimSDK {
     return await WKSDK.shared().conversationManager.sync({})
   }
 
+  public async createEmptyConversation(channelId: string): Promise<Conversation> {
+    return await WKSDK.shared().conversationManager.createEmptyConversation(
+      new Channel(channelId, ChannelTypePerson)
+    )
+  }
+
+  public removeConversation(channelId: string) {
+    return WKSDK.shared().conversationManager.removeConversation(
+      new Channel(channelId, ChannelTypePerson)
+    )
+  }
+
   public async getMessages(channel: string, opt: GetMessagesOpt): Promise<Message[]> {
     return await WKSDK.shared().chatManager.syncMessages(
       new Channel(channel, ChannelTypePerson),
@@ -134,7 +182,17 @@ class BaeimSDK {
 
   private messageHandler = (message: Message) => {
     if (this.messageListener) {
-      this.messageListener(message)
+      if (message.content.text) {
+        try {
+          message.content.entity = JSON.parse(message.content.text)
+        } catch (error) {
+          console.log('message content entity parse error', error)
+        }
+      }
+      this.messageListener({
+        ...message,
+        toUID: message.channel.channelID,
+      } as FormattedMessage)
     }
   }
 
@@ -149,5 +207,5 @@ class BaeimSDK {
   }
 }
 
-export { ConnectStatus, Conversation }
+export { ConnectStatus, ConversationAction, SyncOptions, Channel, Message }
 export default BaeimSDK

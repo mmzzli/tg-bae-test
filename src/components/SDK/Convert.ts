@@ -1,4 +1,5 @@
-import { Conversation, MessageContentType, Setting } from 'wukongimjssdk'
+import { MessageContentType, Setting, Conversation as WKConversation } from 'wukongimjssdk'
+import { Conversation, FormattedMessage } from './BaeimSDK'
 import {
   WKSDK,
   Message,
@@ -14,8 +15,9 @@ import {
 import BigNumber from 'bignumber.js'
 import { Buffer } from 'buffer'
 export class Convert {
-  static toMessage(msgMap: any): Message {
-    const message = new Message()
+  static toMessage(msgMap: any): FormattedMessage {
+    const message = new Message() as FormattedMessage
+
     if (msgMap['message_idstr']) {
       message.messageID = msgMap['message_idstr']
     } else {
@@ -37,6 +39,7 @@ export class Convert {
 
     message.clientSeq = msgMap['client_seq']
     message.channel = new Channel(msgMap['channel_id'], msgMap['channel_type'])
+    message.toUID = msgMap['channel_id']
     message.messageSeq = msgMap['message_seq']
     message.clientMsgNo = msgMap['client_msg_no']
     message.streamNo = msgMap['stream_no']
@@ -59,9 +62,17 @@ export class Convert {
       message.content = messageContent
     } catch (error) {
       console.log(error)
-      // 如果报错，直接设置为unknown
+      // if error, set to unknown
       const messageContent = WKSDK.shared().getMessageContent(MessageContentType.unknown)
       message.content = messageContent
+    }
+
+    if (message.content.text) {
+      try {
+        message.content.entity = JSON.parse(message.content.text)
+      } catch (error) {
+        console.log('message content entity parse error', error)
+      }
     }
 
     message.isDeleted = msgMap['is_deleted'] === 1
@@ -94,7 +105,7 @@ export class Convert {
   }
 
   static toConversation(conversationMap: any): Conversation {
-    const conversation = new Conversation()
+    const conversation = new WKConversation() as Conversation
     conversation.channel = new Channel(
       conversationMap['channel_id'],
       conversationMap['channel_type']
@@ -105,7 +116,9 @@ export class Convert {
     if (recents && recents.length > 0) {
       const messageModel = this.toMessage(recents[0])
       conversation.lastMessage = messageModel
+      conversation.recents = recents.map((item: any) => this.toMessage(item))
     }
+
     conversation.extra = {}
 
     return conversation

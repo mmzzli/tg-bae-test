@@ -1,5 +1,4 @@
-import { Message, MessageStatus, MessageType } from '@/components/Chat/types'
-import { getChatId } from '@/utils/utils'
+import { MessageType, WrappedMessage } from '@/components/Chat/types'
 import { retrieveLaunchParams } from '@tma.js/sdk'
 
 export const useFormatMessage = () => {
@@ -16,17 +15,16 @@ export const useFormatMessage = () => {
     text?: string
     url?: string
     to: number
-  }): Message => {
+  }): WrappedMessage => {
     return {
       id: Date.now().toString() + currentUid,
-      chatId: getChatId(currentUid, to),
       url,
       text,
       type,
-      status: MessageStatus.SENT,
       sender: currentUid,
       receiver: to,
       timestamp: Date.now(),
+      messageSeq: -1,
     }
   }
 

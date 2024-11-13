@@ -1,4 +1,4 @@
-import { Conversation } from '@/components/SDK/BaeimSDK'
+import { Conversation, Message } from '@/components/SDK/BaeimSDK'
 import { del, get, post } from './base'
 import {
   LikeReq,
@@ -37,5 +37,21 @@ export const getLinkMetadata = (url: string) => {
 }
 
 export const getConversationSync = (params: { uid: string; msg_count: number }) => {
-  return post<Conversation[]>(`https://chat-dev.anyconn.org:5001/conversation/sync`, params)
+  return post<Conversation[]>('https://imdev.anyconn.org/conversation/sync', params, {
+    headers: { token: '662fd9dc8edae1de8cafb3822125f240' },
+  })
+}
+
+export const getMessagesSync = (params: {
+  uid: string
+  channel_id: string
+  channel_type: number
+  start_message_seq: number
+  end_message_seq: number
+  pull_mode: number
+  limit: number
+}) => {
+  return post<Message[]>(`https://imdev.anyconn.org/channel/messagesync`, params, {
+    headers: { token: '662fd9dc8edae1de8cafb3822125f240' },
+  })
 }

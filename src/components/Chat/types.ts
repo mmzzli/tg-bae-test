@@ -1,3 +1,5 @@
+import { Conversation, Channel } from '../SDK/BaeimSDK'
+
 export enum MessageStatus {
   SENT = 0,
   RECEIVED = 1,
@@ -9,32 +11,24 @@ export enum MessageType {
   VIDEO = 'VIDEO',
 }
 
-export type ChatListItem = {
-  id: string
-  users: number[]
-  title: string
-  unreadCount: number
-  lastMessage?: Message
-}
 export type MessageWindowListItem = {
-  id: string
-  chatId: string
-  users: number[]
-  name?: string
-  messages: Message[]
+  channel: Channel
+  messages: WrappedMessage[]
 }
 export type Message = {
-  id: string
-  chatId: string
   url?: string
   text?: string
   type: MessageType
-  status: MessageStatus
+}
+
+export type WrappedMessage = Message & {
+  id: string
+  timestamp: number
   sender: number
   receiver: number
-  timestamp: number
+  messageSeq: number
 }
 export interface ChatListProps {
-  chats: ChatListItem[]
-  onDelete: (id: string) => void
+  chats: Conversation[]
+  onDelete: (channel: string) => void
 }

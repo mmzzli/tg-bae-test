@@ -4,11 +4,11 @@ import InfiniteScroll from 'react-infinite-scroll-component'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import dayjs from 'dayjs'
 import Image from '@/components/Image/Image'
-import { Message } from './types'
+import { WrappedMessage } from './types'
 import { MessageRender } from './MessageRender'
 
 interface MessageListProps {
-  messages: Message[]
+  messages: WrappedMessage[]
   loadMore: () => void
   hasMore: boolean
   className?: string

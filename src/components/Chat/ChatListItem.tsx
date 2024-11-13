@@ -1,21 +1,37 @@
 import { motion, PanInfo, useAnimation } from 'framer-motion'
 import dayjs from 'dayjs'
-import { type ChatListItem } from './types'
-import { FC } from 'react'
+import { FC, useEffect, useState } from 'react'
 import Image from '@/components/Image/Image'
 import { cn } from '@/utils/utils'
 import { useIM } from '@/store/hook/userIM'
 import { useNavigate } from 'react-router-dom'
+import { Conversation } from '../SDK/BaeimSDK'
+import { OthersUserInfo } from '@/types'
+import deleteIcon from '@/assets/image/chat/delete.png'
 
 const ChatListItem: FC<{
-  chat: ChatListItem
-  onDelete: (id: string) => void
+  chat: Conversation
+  onDelete: (channel: string) => void
   className?: string
 }> = ({ chat, onDelete, className }) => {
   const controls = useAnimation()
-  const { getChatPeopleInfo } = useIM()
+  const [isDragging, setIsDragging] = useState(false)
   const navigate = useNavigate()
-  const chatPeople = getChatPeopleInfo(chat.users)
+  const { getChatPeopleInfo, initChatPeopleInfo } = useIM()
+  const [chatPeople, setChatPeople] = useState<OthersUserInfo | null>(null)
+  useEffect(() => {
+    const loadChatPeople = () => {
+      const user = getChatPeopleInfo(Number(chat.channel.channelID))
+      if (user) {
+        setChatPeople(user)
+      } else {
+        initChatPeopleInfo(Number(chat.channel.channelID), (user) => {
+          setChatPeople(user)
+        })
+      }
+    }
+    loadChatPeople()
+  }, [chat.channel.channelID])
   const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const threshold = -50 // Swipe threshold to show delete button
     if (info.offset.x < threshold) {
@@ -23,6 +39,9 @@ const ChatListItem: FC<{
     } else {
       controls.start({ x: 0 }) // Reset position
     }
+    setTimeout(() => {
+      setIsDragging(false)
+    }, 100)
   }
 
   return (
@@ -33,18 +52,17 @@ const ChatListItem: FC<{
         dragConstraints={{ left: -80, right: 0 }}
         dragElastic={0.2}
         onDragEnd={handleDragEnd}
+        onDragStart={() => setIsDragging(true)}
         animate={controls}
         style={{ x: 0 }}
+        onClick={() => {
+          if (chatPeople?.uid && !isDragging) {
+            navigate(`/chat/${chatPeople?.uid}`)
+          }
+        }}
         className="absolute top-0 left-0 right-0 bottom-0 z-10"
       >
-        <div
-          className="flex items-center bg-black border border-black h-[64px] px-[24px]"
-          onClick={() => {
-            if (chatPeople?.uid) {
-              navigate(`/chat/${chatPeople?.uid}`)
-            }
-          }}
-        >
+        <div className="flex items-center bg-black border border-black h-[64px] px-[24px]">
           {/* Avatar */}
           <div className="relative w-12 h-12 mr-3">
             <Image
@@ -69,12 +87,12 @@ const ChatListItem: FC<{
 
             <div className="flex justify-between items-start min-h-[24px]">
               <p className="flex-1 text-gray-400 text-sm truncate mt-1">
-                {chat?.lastMessage?.text}
+                {chat?.lastMessage?.content?.entity?.text}
               </p>
               {/* Unread Count */}
-              {chat.unreadCount ? (
+              {chat.unread ? (
                 <div className="mt-1 ml-3 bg-[#4A3AFF] rounded-full w-[22px] h-[20px] flex items-center justify-center">
-                  <span className="text-white text-xs">{chat.unreadCount}</span>
+                  <span className="text-white text-xs">{chat.unread}</span>
                 </div>
               ) : null}
             </div>
@@ -82,10 +100,12 @@ const ChatListItem: FC<{
         </div>
       </motion.div>
       <div
-        className="absolute right-0 top-[1px] bottom-[1px] w-[64px] bg-red-500 flex items-center justify-center -z-1"
-        onClick={() => onDelete(chat.id)}
+        className="cursor-pointer absolute right-0 top-[1px] bottom-[1px] w-[64px] bg-[#FF5330] flex items-center justify-center -z-1"
+        onClick={() => onDelete(chat.channel.channelID)}
       >
-        <span className="text-white">Delete</span>
+        <span className="text-white">
+          <img style={{ width: '20px', height: '20px' }} src={deleteIcon} alt="delete" />
+        </span>
       </div>
     </div>
   )

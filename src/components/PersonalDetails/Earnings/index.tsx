@@ -7,15 +7,6 @@ import { StarsIcon, MoneyIcon, RightIcon } from '@/assets/icons'
 
 const Earnings = () => {
   const [isBaseModalOpen, { toggle, on, off }] = useBoolean(false)
-
-  useEffect(()=>{
-    if(isBaseModalOpen){
-      document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.style.overflow = '';
-      };
-    }
-  },[isBaseModalOpen])
   return (
     <>
       {/* <Text onClick={()=>toggle()} color="#fff">️Earnings</Text> */}

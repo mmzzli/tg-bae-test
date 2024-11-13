@@ -331,7 +331,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                   )
                 ) : data.media?.[0] == '' ? (
                   <Box position="relative">
-                    <Box minH="88px">
+                    <Box minH="130px">
                       <video
                         ref={(el) => (videoRefs.current[index] = el)}
                         style={{ display: preloaded[index] ? 'block' : 'none', width: '100%', borderRadius:"4px" }}
@@ -351,7 +351,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                   </Box>
                 ) : (
                   <>
-                    <Box minH="88px">
+                    <Box minH="130px">
                       <video
                         ref={(el) => (videoRefs.current[index] = el)}
                         style={{ display: preloaded[index] ? 'block' : 'none', width: '100%', borderRadius:"4px" }}

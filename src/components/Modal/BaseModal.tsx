@@ -104,6 +104,14 @@ export const BaseModal: FC<BottomSheetProps> = ({
     transition: `transform ${animation.duration}ms ${animation.timingFunction}`,
     ...style,
   }
+  useEffect(()=>{
+    if(isOpen){
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = '';
+      };
+    }
+  },[isOpen])
 
   return (
     <div

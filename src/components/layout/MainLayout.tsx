@@ -54,9 +54,6 @@ export const MainLayout: React.FC = () => {
   useEffect(() => {
     if (window.Telegram?.WebApp) {
       const tgApp = window.Telegram.WebApp
-      tgApp.setStyle({
-        headerColor: "#000"
-      });
       tgApp.ready()
       tgApp.expand()
       tgApp.MainButton.hide()

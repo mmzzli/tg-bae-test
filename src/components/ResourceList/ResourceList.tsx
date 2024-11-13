@@ -331,16 +331,18 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                   )
                 ) : data.media?.[0] == '' ? (
                   <Box position="relative">
-                    <video
-                      ref={(el) => (videoRefs.current[index] = el)}
-                      style={{ display: preloaded[index] ? 'block' : 'none', width: '100%', borderRadius:"4px" }}
-                      controls={false}
-                      muted={isMuted}
-                      poster={data.mediaCover}
-                      loop
-                      playsInline
-                      onPlay={() => handlePlay(index)}
-                    />
+                    <Box minH="88px">
+                      <video
+                        ref={(el) => (videoRefs.current[index] = el)}
+                        style={{ display: preloaded[index] ? 'block' : 'none', width: '100%', borderRadius:"4px" }}
+                        controls={false}
+                        muted={isMuted}
+                        poster={data.mediaCover}
+                        loop
+                        playsInline
+                        onPlay={() => handlePlay(index)}
+                      />
+                    </Box>
                     <FrostedGlass
                       price={data.price}
                       post_id={data.id}
@@ -349,16 +351,18 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                   </Box>
                 ) : (
                   <>
-                    <video
-                      ref={(el) => (videoRefs.current[index] = el)}
-                      style={{ display: preloaded[index] ? 'block' : 'none', width: '100%', borderRadius:"4px" }}
-                      controls={false}
-                      muted={isMuted}
-                      poster={data.mediaCover}
-                      loop
-                      playsInline
-                      onPlay={() => handlePlay(index)}
-                    />
+                    <Box minH="88px">
+                      <video
+                        ref={(el) => (videoRefs.current[index] = el)}
+                        style={{ display: preloaded[index] ? 'block' : 'none', width: '100%', borderRadius:"4px" }}
+                        controls={false}
+                        muted={isMuted}
+                        poster={data.mediaCover}
+                        loop
+                        playsInline
+                        onPlay={() => handlePlay(index)}
+                      />
+                    </Box>
                     <HStack borderRadius="4px" bg="rgba(0, 0, 0, 0.20)" position="absolute" top="12px" left="28px" p="4px 8px">
                       <Image src={VideoIcon}/>
                       <Text color="#E0E2F6" fontSize="12px">

@@ -362,7 +362,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                     <HStack borderRadius="4px" bg="rgba(0, 0, 0, 0.20)" position="absolute" top="12px" left="28px" p="4px 8px">
                       <Image src={VideoIcon}/>
                       <Text color="#E0E2F6" fontSize="12px">
-                        00:30
+                        {data.duration}
                       </Text>
                     </HStack>
                   </>

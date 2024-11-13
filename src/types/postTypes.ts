@@ -25,6 +25,7 @@ export type PostResourceReq = {
   type: number
   currency: number
   price: number
+  duration?: number
 }
 
 // like

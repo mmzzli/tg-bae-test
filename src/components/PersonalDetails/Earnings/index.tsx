@@ -56,14 +56,15 @@ const Earnings = () => {
                 <h3 className="text-[30px]">65,432</h3>
                 <img src={StarsIcon} />
               </div>
-              <p className="text-[rgba(98,99,111,1)] mt-[10px]">Total earnings</p>
+              <p className="text-[rgba(98,99,111,1)] mt-[10px]">Available earnings</p>
               <p className="text-[rgba(224, 226, 246, 1)] text-[14px] mt-[5px]">$120</p>
             </div>
           </div>
-          <div className="mt-12 mb-[18px] px-[17px]">
+          <div className="mt-[58px] mb-[18px] px-[17px]">
             <BaseButton
               text="Withdraw"
               width="100%"
+              height="48px"
               handler={() => {
                 // shareLink(link ?? '')
               }}

@@ -56,7 +56,7 @@ const ProfileEdit: FC = () => {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = async(event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const url = `https://picupload.mobus.workers.dev/upload/${file.name}`
@@ -99,10 +99,10 @@ const ProfileEdit: FC = () => {
         onChange={handleFileChange}
       />
       <div className="px-[8px] mt-[48px]">
-          <div className="flex justify-between items-center mb-[16px]">
-            <h3 className="text-[16px] text-[#E0E2F6]">* Name</h3>
-            <p className="text-[#424048] text-[12px]">{profileData?.username.length}/20</p>
-          </div>
+        <div className="flex justify-between items-center mb-[16px]">
+          <h3 className="text-[16px] text-[#E0E2F6]">* Name</h3>
+          <p className="text-[#424048] text-[12px]">{profileData?.username.length}/20</p>
+        </div>
         <input
           className="w-[100%] rounded-[10px] text-[#E0E2F6] text-[14px] bg-[#19191E] px-[16px] py-[15px]"
           value={profileData?.username}

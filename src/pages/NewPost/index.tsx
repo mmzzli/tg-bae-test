@@ -120,6 +120,7 @@ export const NewPost: FC = () => {
       const medias = [url]
       cover && medias.unshift(cover)
       await postResources({
+        duration: Math.floor(videoRef?.current?.duration || 0),
         media: medias.join(','),
         ...(title ? { title } : {}),
         type: 0,

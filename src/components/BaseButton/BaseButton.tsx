@@ -27,7 +27,7 @@ const BaseButton = ({
         style={{ width, height }}
       >
         {icon}
-        {text}
+        <span>{text}</span>
       </div>
     </div>
   )

@@ -21,6 +21,7 @@ export interface ResourceListState {
 export type FormatterListItem = Omit<ListItem['post'], 'media'> & {
   media: string[]
   mediaCover?: string
+  duration?: number
 } & UserItem
 export interface ListState {
   list: FormatterListItem[]
@@ -29,6 +30,7 @@ export interface ListState {
   isLoading: boolean
   error: string | null
 }
+const recordsNum = 3
 
 export interface ResourceListSlice {
   // recommend
@@ -124,10 +126,10 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
 
       const { posts } = await getRecommendMedia({
         page_num: page,
-        records: 5,
+        records: recordsNum,
       })
 
-      const hasMore = posts.length === 5
+      const hasMore = posts.length === recordsNum
       const updatedPosts = posts.map(({ post, user }: ListItem) => ({
         ...user,
         ...post,
@@ -197,9 +199,9 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       get().setViewError(null)
       const { posts } = await viewList({
         page_num: page,
-        records: 5,
+        records: recordsNum,
       })
-      const hasMore = posts.length === 5
+      const hasMore = posts.length === recordsNum
 
       const updatedPosts = posts.map(({ post, user }) => ({
         ...user,
@@ -264,10 +266,10 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       get().setOthersViewError(null)
       const { posts } = await getUsersPosts({
         page_num: page,
-        records: 5,
+        records: recordsNum,
         uid: othersUserInfo.uid,
       })
-      const hasMore = posts.length === 5
+      const hasMore = posts.length === recordsNum
 
       const updatedPosts = posts.map((post) => ({
         ...post,

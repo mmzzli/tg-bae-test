@@ -1,6 +1,7 @@
 import { FC, useState, useEffect, ChangeEvent, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios, { AxiosResponse } from 'axios'
+import { useToast } from '@chakra-ui/react'
 
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { profileEdit, putProfile } from '@/api'
@@ -16,6 +17,7 @@ const ProfileEdit: FC = () => {
   const token = useStore((state) => state.token)
   const { launchParams } = useTMAUtils()
   const uid = launchParams.initData?.user?.id ?? 0
+  const toast = useToast();
 
   const [profileData, setProfileData] = useState<UserInfoProfile>({
     username: '',
@@ -56,7 +58,7 @@ const ProfileEdit: FC = () => {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = async(event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const url = `https://picupload.mobus.workers.dev/upload/${file.name}`
@@ -99,10 +101,10 @@ const ProfileEdit: FC = () => {
         onChange={handleFileChange}
       />
       <div className="px-[8px] mt-[48px]">
-          <div className="flex justify-between items-center mb-[16px]">
-            <h3 className="text-[16px] text-[#E0E2F6]">* Name</h3>
-            <p className="text-[#424048] text-[12px]">{profileData?.username.length}/20</p>
-          </div>
+        <div className="flex justify-between items-center mb-[16px]">
+          <h3 className="text-[16px] text-[#E0E2F6]">* Name</h3>
+          <p className="text-[#424048] text-[12px]">{profileData?.username.length}/20</p>
+        </div>
         <input
           className="w-[100%] rounded-[10px] text-[#E0E2F6] text-[14px] bg-[#19191E] px-[16px] py-[15px]"
           value={profileData?.username}
@@ -127,7 +129,14 @@ const ProfileEdit: FC = () => {
           height="48px"
           handler={async () => {
             await putProfile(profileData)
-            location.href = '/profile'
+            toast({
+              title: 'successfully',
+              status: 'success',
+              position: 'top',
+              onCloseComplete: () => {
+                location.href = '/profile'
+              },
+            })
           }}
         />
       </div>

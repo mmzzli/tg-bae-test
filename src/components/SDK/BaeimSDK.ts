@@ -40,8 +40,8 @@ class BaeimSDK {
   private messageListener?: (message: FormattedMessage) => void
   private syncConversationsCallback?: () => Promise<Conversation[]>
   private syncMessagesCallback?: (channel: Channel, opts: SyncOptions) => Promise<Message[]>
-  public status: ConnectStatus
   private connectionStatusListeners: Set<(status: ConnectStatus) => void> = new Set()
+  public status: ConnectStatus
 
   constructor(options: BaeimSDKOptions) {
     this.token = options.token

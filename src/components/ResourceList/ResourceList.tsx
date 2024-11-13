@@ -121,6 +121,14 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
           hls.startLevel = maxLevel
           hls.currentLevel = maxLevel
         })
+        let loadedFragments = 0;
+        const maxPreloadFragments = 1;
+        hls.on(Hls.Events.FRAG_LOADING, (event, data) => {
+          if (loadedFragments < maxPreloadFragments) {
+            loadedFragments++;
+            cacheFragment(data.frag.url);
+          }
+        });
 
         const videoElement = videoRefs.current[index]
         if (videoElement) {
@@ -203,6 +211,17 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
     })
     setResources(updatedUsers)
   }
+  const cacheFragment = (url:string) => {
+    if ('caches' in window) {
+      caches.open('video-cache').then((cache) => {
+        cache.add(url).then(() => {
+          console.log('视频片段已缓存:', url);
+        }).catch((error) => {
+          console.error('缓存视频片段失败:', error);
+        });
+      });
+    }
+  };
 
   const renderBaseModal = () => (
     <BaseModal
@@ -259,20 +278,20 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
       {resources.map((data, index: number) => {
         if (data.type === POST_TYPE_IMAGE && data.media.length > 1) {
           return (
-            <Box background={'#0D0D0D'} pt="32px" key={data.id}>
+            <Box pt="32px" key={data.id}>
               <ResourceHeader
                 data={data}
                 currentUid={launchParams.initData?.user?.id ?? 0}
                 onProfileClick={jumpToProfilePage}
               />
-              <div className="relative max-w-[375px] px-4">
+              <div className="relative px-4">
                 <div className="grid grid-cols-3 gap-2">
                   {data.media.map((i, ind) => (
                     <Image
                       src={i}
                       alt={data.title}
-                      width={109}
-                      height={109}
+                      width="100%"
+                      height="100%"
                       key={i}
                       onClick={() => handleImageClick(data.media, ind)}
                       rect
@@ -297,13 +316,13 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
           )
         } else {
           return (
-            <Box background={'#0D0D0D'} pt="32px" key={index}>
+            <Box pt="32px" key={index}>
               <ResourceHeader
                 data={data}
                 currentUid={launchParams.initData?.user?.id ?? 0}
                 onProfileClick={jumpToProfilePage}
               />
-              <div className="relative max-w-[375px] px-4">
+              <div className="relative px-4">
                 {data.type === POST_TYPE_IMAGE ? (
                   data.media?.[0] == '' ? (
                     <Box position="relative">
@@ -331,16 +350,18 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                   )
                 ) : data.media?.[0] == '' ? (
                   <Box position="relative">
-                    <video
-                      ref={(el) => (videoRefs.current[index] = el)}
-                      style={{ display: preloaded[index] ? 'block' : 'none', width: '100%' }}
-                      controls={false}
-                      muted={isMuted}
-                      poster={data.mediaCover}
-                      loop
-                      playsInline
-                      onPlay={() => handlePlay(index)}
-                    />
+                    <Box minH="130px">
+                      <video
+                        ref={(el) => (videoRefs.current[index] = el)}
+                        style={{ display: preloaded[index] ? 'block' : 'none', width: '100%', borderRadius:"4px" }}
+                        controls={false}
+                        muted={isMuted}
+                        // poster={data.mediaCover}
+                        loop
+                        playsInline
+                        onPlay={() => handlePlay(index)}
+                      />
+                    </Box>
                     <FrostedGlass
                       price={data.price}
                       post_id={data.id}
@@ -349,20 +370,22 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                   </Box>
                 ) : (
                   <>
-                    <video
-                      ref={(el) => (videoRefs.current[index] = el)}
-                      style={{ display: preloaded[index] ? 'block' : 'none', width: '100%' }}
-                      controls={false}
-                      muted={isMuted}
-                      poster={data.mediaCover}
-                      loop
-                      playsInline
-                      onPlay={() => handlePlay(index)}
-                    />
+                    <Box minH="130px">
+                      <video
+                        ref={(el) => (videoRefs.current[index] = el)}
+                        style={{ display: preloaded[index] ? 'block' : 'none', width: '100%', borderRadius:"4px" }}
+                        controls={false}
+                        muted={isMuted}
+                        // poster={data.mediaCover}
+                        loop
+                        playsInline
+                        onPlay={() => handlePlay(index)}
+                      />
+                    </Box>
                     <HStack borderRadius="4px" bg="rgba(0, 0, 0, 0.20)" position="absolute" top="12px" left="28px" p="4px 8px">
                       <Image src={VideoIcon}/>
                       <Text color="#E0E2F6" fontSize="12px">
-                        00:30
+                        {data.duration}
                       </Text>
                     </HStack>
                   </>

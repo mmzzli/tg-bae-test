@@ -39,6 +39,7 @@ input:focus,
 textarea:focus {
   box-shadow: none !important;
   border-color: teal !important;
+  outline: none;
 }
 
 .section {

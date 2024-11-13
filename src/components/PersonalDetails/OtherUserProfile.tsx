@@ -7,6 +7,7 @@ import FollowButton from './FollowButton'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useNavigate } from 'react-router-dom'
 import { profileImg } from '@/assets/image'
+import More from './More'
 
 const OtherUserProfile: FC = () => {
   const { userInfo } = useStore((state) => ({
@@ -73,14 +74,7 @@ const OtherUserProfile: FC = () => {
           </Text>
         </Box>
       </HStack>
-      <Box pt="16px" pb="24px" borderBottom="1px solid #212121">
-        <Text color="#62636F" fontSize="14px" lineHeight="16px" mb="4px">
-          {userInfo.bio}
-        </Text>
-        {/* <Link color="#4452FF" fontSize="14px">
-          More
-        </Link> */}
-      </Box>
+      <More bio={userInfo.bio}/>
     </Box>
   )
 }

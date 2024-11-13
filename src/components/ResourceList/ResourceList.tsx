@@ -121,6 +121,14 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
           hls.startLevel = maxLevel
           hls.currentLevel = maxLevel
         })
+        let loadedFragments = 0;
+        const maxPreloadFragments = 1;
+        hls.on(Hls.Events.FRAG_LOADING, (event, data) => {
+          if (loadedFragments < maxPreloadFragments) {
+            loadedFragments++;
+            cacheFragment(data.frag.url);
+          }
+        });
 
         const videoElement = videoRefs.current[index]
         if (videoElement) {
@@ -203,6 +211,17 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
     })
     setResources(updatedUsers)
   }
+  const cacheFragment = (url:string) => {
+    if ('caches' in window) {
+      caches.open('video-cache').then((cache) => {
+        cache.add(url).then(() => {
+          console.log('视频片段已缓存:', url);
+        }).catch((error) => {
+          console.error('缓存视频片段失败:', error);
+        });
+      });
+    }
+  };
 
   const renderBaseModal = () => (
     <BaseModal

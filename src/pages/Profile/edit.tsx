@@ -1,6 +1,7 @@
 import { FC, useState, useEffect, ChangeEvent, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios, { AxiosResponse } from 'axios'
+import { useToast } from '@chakra-ui/react'
 
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { profileEdit, putProfile } from '@/api'
@@ -16,6 +17,7 @@ const ProfileEdit: FC = () => {
   const token = useStore((state) => state.token)
   const { launchParams } = useTMAUtils()
   const uid = launchParams.initData?.user?.id ?? 0
+  const toast = useToast();
 
   const [profileData, setProfileData] = useState<UserInfoProfile>({
     username: '',
@@ -127,7 +129,14 @@ const ProfileEdit: FC = () => {
           height="48px"
           handler={async () => {
             await putProfile(profileData)
-            location.href = '/profile'
+            toast({
+              title: 'successfully',
+              status: 'success',
+              position: 'top',
+              onCloseComplete: () => {
+                location.href = '/profile'
+              },
+            })
           }}
         />
       </div>

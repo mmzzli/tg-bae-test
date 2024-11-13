@@ -19,10 +19,10 @@ button,
   user-select: none;
 }
 
-@font-face {
+/* @font-face {
   font-family: 'Poppins';
   src: url('https://pub-b66b819f148445b792a6e91af8481614.r2.dev/Poppins-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
-}
+} */

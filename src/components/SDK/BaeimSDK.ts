@@ -6,6 +6,7 @@ import {
   ConnectStatus,
   Message,
   MessageListener,
+  SyncConversationsCallback,
   Conversation,
   ConversationAction,
   PullMode,
@@ -15,7 +16,7 @@ interface BaeimSDKOptions {
   token: string
   userUid: string
   serverAddr: string
-  syncConversationsCallback: () => Promise<Conversation[]>
+  syncConversationsCallback: SyncConversationsCallback
 }
 
 type GetMessagesOpt = {
@@ -30,9 +31,9 @@ class BaeimSDK {
   private userUid: string
   private serverAddr: string
   private messageListener?: (message: Message) => void
-  private syncConversationsCallback: () => Promise<Conversation[]>
-  public status: ConnectStatus
+  private syncConversationsCallback: SyncConversationsCallback
   private connectionStatusListeners: Set<(status: ConnectStatus) => void> = new Set()
+  public status: ConnectStatus
 
   constructor(options: BaeimSDKOptions) {
     this.token = options.token
@@ -150,4 +151,5 @@ class BaeimSDK {
 }
 
 export { ConnectStatus, Conversation }
+export type { SyncConversationsCallback }
 export default BaeimSDK

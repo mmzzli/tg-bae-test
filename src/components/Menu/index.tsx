@@ -60,7 +60,7 @@ export const Menu: FC<MenuProps> = ({ selectedIndex }) => {
     >
       <HStack justifyContent="space-around">
         {navList.map((item, index) => (
-          <Link onClick={() => navigate(item.url)} key={index}>
+          <Link onClick={() => {location.href = `${item.url}`}} key={index}>
             <Box textAlign="center" pt="6px" cursor="pointer">
               <Box h="24px" w="24px" m="auto">
                 <Image

@@ -259,7 +259,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
       {resources.map((data, index: number) => {
         if (data.type === POST_TYPE_IMAGE && data.media.length > 1) {
           return (
-            <Box background={'#0D0D0D'} pt="32px" key={data.id}>
+            <Box pt="32px" key={data.id}>
               <ResourceHeader
                 data={data}
                 currentUid={launchParams.initData?.user?.id ?? 0}
@@ -297,7 +297,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
           )
         } else {
           return (
-            <Box background={'#0D0D0D'} pt="32px" key={index}>
+            <Box pt="32px" key={index}>
               <ResourceHeader
                 data={data}
                 currentUid={launchParams.initData?.user?.id ?? 0}

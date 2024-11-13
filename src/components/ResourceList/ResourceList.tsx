@@ -265,7 +265,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                 currentUid={launchParams.initData?.user?.id ?? 0}
                 onProfileClick={jumpToProfilePage}
               />
-              <div className="relative max-w-[375px] px-4">
+              <div className="relative px-4">
                 <div className="grid grid-cols-3 gap-2">
                   {data.media.map((i, ind) => (
                     <Image
@@ -303,7 +303,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                 currentUid={launchParams.initData?.user?.id ?? 0}
                 onProfileClick={jumpToProfilePage}
               />
-              <div className="relative max-w-[375px] px-4">
+              <div className="relative px-4">
                 {data.type === POST_TYPE_IMAGE ? (
                   data.media?.[0] == '' ? (
                     <Box position="relative">
@@ -333,7 +333,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                   <Box position="relative">
                     <video
                       ref={(el) => (videoRefs.current[index] = el)}
-                      style={{ display: preloaded[index] ? 'block' : 'none', width: '100%' }}
+                      style={{ display: preloaded[index] ? 'block' : 'none', width: '100%', borderRadius:"4px" }}
                       controls={false}
                       muted={isMuted}
                       poster={data.mediaCover}
@@ -351,7 +351,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                   <>
                     <video
                       ref={(el) => (videoRefs.current[index] = el)}
-                      style={{ display: preloaded[index] ? 'block' : 'none', width: '100%' }}
+                      style={{ display: preloaded[index] ? 'block' : 'none', width: '100%', borderRadius:"4px" }}
                       controls={false}
                       muted={isMuted}
                       poster={data.mediaCover}

@@ -6,7 +6,6 @@ import dayjs from 'dayjs'
 import Image from '@/components/Image/Image'
 import { WrappedMessage } from './types'
 import { MessageRender } from './MessageRender'
-
 interface MessageListProps {
   messages: WrappedMessage[]
   loadMore: () => void

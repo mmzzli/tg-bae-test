@@ -30,5 +30,4 @@ export type WrappedMessage = Message & {
 }
 export interface ChatListProps {
   chats: Conversation[]
-  onDelete: (channel: string) => void
 }

@@ -52,10 +52,10 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
   const { getCurrentUid } = useTMAUtils()
   const currentUid = getCurrentUid()
 
-  const handleDelete = (id: string) => {
-    log('Delete chat:', id)
-    // Implement delete logic
-  }
+  // const handleDelete = (id: string) => {
+  //   log('Delete chat:', id)
+  //   // Implement delete logic
+  // }
 
   const handleMessage = useCallback(
     (message: FormattedMessage) => {
@@ -178,7 +178,7 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
             </div>
           }
         >
-          <ChatList chats={chatList} onDelete={handleDelete} />
+          <ChatList chats={chatList} />
         </InfiniteScroll>
       )}
       {isChatListLoaded && chatList.length === 0 && (

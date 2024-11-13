@@ -27,6 +27,7 @@ export default {
       animation: {
         ripple: 'ripple 1s ease-out infinite',
         'zoom-in': 'zoom-in 0.5s ease-out forwards',
+        'fade-in': 'fade-in 0.2s ease-out',
       },
     },
   },

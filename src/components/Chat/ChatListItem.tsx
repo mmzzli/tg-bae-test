@@ -7,17 +7,20 @@ import { useIM } from '@/store/hook/userIM'
 import { useNavigate } from 'react-router-dom'
 import { Conversation } from '../SDK/BaeimSDK'
 import { OthersUserInfo } from '@/types'
-import deleteIcon from '@/assets/image/chat/delete.png'
+import { DeleteDialog } from './DeleteDialog'
+import { useStore } from '@/store'
 
 const ChatListItem: FC<{
   chat: Conversation
-  onDelete: (channel: string) => void
   className?: string
-}> = ({ chat, onDelete, className }) => {
+}> = ({ chat, className }) => {
   const controls = useAnimation()
   const [isDragging, setIsDragging] = useState(false)
   const navigate = useNavigate()
   const { getChatPeopleInfo, initChatPeopleInfo } = useIM()
+  const { connection } = useStore((state) => ({
+    connection: state.connection,
+  }))
   const [chatPeople, setChatPeople] = useState<OthersUserInfo | null>(null)
   useEffect(() => {
     const loadChatPeople = () => {
@@ -42,6 +45,9 @@ const ChatListItem: FC<{
     setTimeout(() => {
       setIsDragging(false)
     }, 100)
+  }
+  const onDelete = (id: string) => {
+    connection?.removeConversation(id)
   }
 
   return (
@@ -99,14 +105,17 @@ const ChatListItem: FC<{
           </div>
         </div>
       </motion.div>
-      <div
+      {/* <div
         className="cursor-pointer absolute right-0 top-[1px] bottom-[1px] w-[64px] bg-[#FF5330] flex items-center justify-center -z-1"
         onClick={() => onDelete(chat.channel.channelID)}
       >
         <span className="text-white">
           <img style={{ width: '20px', height: '20px' }} src={deleteIcon} alt="delete" />
+          <DeleteDialog />
         </span>
-      </div>
+      </div> */}
+
+      <DeleteDialog onDelete={() => onDelete(chat.channel.channelID)} />
     </div>
   )
 }

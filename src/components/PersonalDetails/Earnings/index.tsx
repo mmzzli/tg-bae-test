@@ -35,7 +35,7 @@ const Earnings = () => {
         closeOnBackdropClick={true}
         showHandle={false}
       >
-        <div className="mt-4 ml-2 w-[100%]">
+        <div className="mt-[24px] ml-2 w-[100%]">
           <h3 className="font-bold text-[24px] text-[#E0E2F6]">Earnings</h3>
           <div className="flex gap-[8px] mt-[10px]">
             <p className="text-[15px] text-[#808080]">Earning History</p>

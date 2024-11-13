@@ -62,11 +62,13 @@ export const Menu: FC<MenuProps> = ({ selectedIndex }) => {
         {navList.map((item, index) => (
           <Link onClick={() => navigate(item.url)} key={index}>
             <Box textAlign="center" pt="6px" cursor="pointer">
-              <Image
-                className="m-auto"
-                src={selectedIndex === index ? item.iconActive : item.icon}
-                alt={item.name}
-              />
+              <Box h="24px" w="24px" m="auto">
+                <Image
+                  className="m-auto"
+                  src={selectedIndex === index ? item.iconActive : item.icon}
+                  alt={item.name}
+                />
+              </Box>
               <Text
                 color={selectedIndex === index ? '#E0E2F6' : '#424048'}
                 fontSize="10px"

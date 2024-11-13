@@ -6,12 +6,23 @@ import {
   ConnectStatus,
   Message,
   MessageListener,
+  Conversation,
+  ConversationAction,
+  PullMode,
 } from 'wukongimjssdk'
 
 interface BaeimSDKOptions {
   token: string
   userUid: string
   serverAddr: string
+  syncConversationsCallback: () => Promise<Conversation[]>
+}
+
+type GetMessagesOpt = {
+  startMessageSeq: number // startMessageSeq（结果包含startMessageSeq的消息）
+  endMessageSeq: number // endMessageSeq（结果不包含endMessageSeq的消息）0表示不限制
+  limit: number
+  pullMode: PullMode // 0:向下拉取 1:向上拉取
 }
 
 class BaeimSDK {
@@ -19,13 +30,16 @@ class BaeimSDK {
   private userUid: string
   private serverAddr: string
   private messageListener?: (message: Message) => void
+  private syncConversationsCallback: () => Promise<Conversation[]>
   public status: ConnectStatus
+  private connectionStatusListeners: Set<(status: ConnectStatus) => void> = new Set()
 
   constructor(options: BaeimSDKOptions) {
     this.token = options.token
     this.userUid = options.userUid
     this.serverAddr = options.serverAddr
     this.status = ConnectStatus.Disconnect
+    this.syncConversationsCallback = options.syncConversationsCallback
     this.handleConnectStatus = this.handleConnectStatus.bind(this)
   }
 
@@ -38,6 +52,7 @@ class BaeimSDK {
     config.uid = String(this.userUid)
     config.token = this.token
     config.addr = this.serverAddr
+    config.provider.syncConversationsCallback = this.syncConversationsCallback
     WKSDK.shared().config = config
 
     this.connect()
@@ -53,18 +68,14 @@ class BaeimSDK {
   }
 
   private handleConnectStatus(status: ConnectStatus) {
-    switch (status) {
-      case ConnectStatus.Connected:
-        console.log('1', status)
-        break
-      case ConnectStatus.Disconnect:
-        console.log('2', status)
-        break
-      default:
-        console.log('3:', status)
-        break
-    }
     this.status = status
+    this.connectionStatusListeners.forEach((listener) => {
+      try {
+        listener(status)
+      } catch (error) {
+        console.error('Error in channel listener:', error)
+      }
+    })
   }
 
   public async sendMessage(content: string, channelId: string) {
@@ -89,6 +100,38 @@ class BaeimSDK {
     }
   }
 
+  public addConversationListener(
+    listener: (conversation: Conversation, action: ConversationAction) => void
+  ) {
+    WKSDK.shared().conversationManager.addConversationListener(listener)
+    return () => {
+      WKSDK.shared().conversationManager.removeConversationListener(listener)
+    }
+  }
+
+  public addConnectionStatusListener(listener: (status: ConnectStatus) => void) {
+    this.connectionStatusListeners.add(listener)
+
+    return () => {
+      this.removeConnectionStatusListener(listener)
+    }
+  }
+
+  public removeConnectionStatusListener(listener: (status: ConnectStatus) => void) {
+    this.connectionStatusListeners.delete(listener)
+  }
+
+  public async getAllConversation(): Promise<Conversation[]> {
+    return await WKSDK.shared().conversationManager.sync({})
+  }
+
+  public async getMessages(channel: string, opt: GetMessagesOpt): Promise<Message[]> {
+    return await WKSDK.shared().chatManager.syncMessages(
+      new Channel(channel, ChannelTypePerson),
+      opt
+    )
+  }
+
   private messageHandler = (message: Message) => {
     if (this.messageListener) {
       this.messageListener(message)
@@ -106,4 +149,5 @@ class BaeimSDK {
   }
 }
 
+export { ConnectStatus, Conversation }
 export default BaeimSDK

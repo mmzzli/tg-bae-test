@@ -1,3 +1,4 @@
+import { Conversation } from '@/components/SDK/BaeimSDK'
 import { del, get, post } from './base'
 import {
   LikeReq,
@@ -33,4 +34,8 @@ export const getUsersPosts = (params: UserPostsReq) => {
 
 export const getLinkMetadata = (url: string) => {
   return get<LinkMetadata>(`/meta?url=${url}`)
+}
+
+export const getConversationSync = (params: { uid: string; msg_count: number }) => {
+  return post<Conversation[]>(`https://chat-dev.anyconn.org:5001/conversation/sync`, params)
 }

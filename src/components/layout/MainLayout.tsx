@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { retrieveLaunchParams } from '@telegram-apps/sdk'
-import { logIn } from '@/api'
+import { getConversationSync, logIn } from '@/api'
 import { DEV_INIT_DATA_RAW } from '@/utils/constants'
 import { isLocalEnv } from '@/utils/env'
 import { useStore } from '@/store'
@@ -10,7 +10,7 @@ import { Outlet } from 'react-router-dom'
 import { log } from 'console'
 import { ChatListPage } from '@/pages/Chat'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
-import BaeimSDK from '../SDK/BaeimSDK'
+import BaeimSDK, { Conversation } from '../SDK/BaeimSDK'
 
 export const MainLayout: React.FC = () => {
   const location = useLocation()
@@ -49,19 +49,6 @@ export const MainLayout: React.FC = () => {
     resetUserInfo()
     resetToken()
     runLogin({ user: userInfo ?? '' })
-  }
-
-  const initIM = () => {
-    const sdk = new BaeimSDK({
-      token,
-      userUid: String(currentUid),
-      serverAddr: 'wss://chat-dev.anyconn.org:8210',
-    })
-    sdk.start()
-    setConnection(sdk)
-    return () => {
-      sdk.stop()
-    }
   }
 
   useEffect(() => {
@@ -105,8 +92,38 @@ export const MainLayout: React.FC = () => {
   }, [location.pathname])
 
   useEffect(() => {
+    let removeConnectionStatusListener: () => void
+    let sdk: BaeimSDK
     if (userInfo.user_id && token) {
+      const initIM = async () => {
+        const sdk = new BaeimSDK({
+          token,
+          userUid: String(currentUid),
+          serverAddr: 'wss://chat-dev.anyconn.org:8210',
+          syncConversationsCallback: async () => {
+            const resp = await getConversationSync({
+              uid: String(currentUid),
+              msg_count: 30,
+            })
+            return resp
+          },
+        })
+        sdk.start()
+        setConnection(sdk)
+        removeConnectionStatusListener = sdk.addConnectionStatusListener(async (status) => {
+          log('-----ConnectionStatusListener------', status)
+          // if (status === ConnectStatus.Connected) {
+          //   const res = await sdk.getAllConversation()
+          //   log('getAllConversation', res)
+          // }
+        })
+      }
+
       initIM()
+    }
+    return () => {
+      sdk?.stop()
+      removeConnectionStatusListener?.()
     }
   }, [userInfo, token])
 

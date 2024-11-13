@@ -271,8 +271,8 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                     <Image
                       src={i}
                       alt={data.title}
-                      width={109}
-                      height={109}
+                      width="100%"
+                      height="100%"
                       key={i}
                       onClick={() => handleImageClick(data.media, ind)}
                       rect

@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Box, Flex, Image, Text, IconButton, useBoolean } from '@chakra-ui/react'
 
 import { BaseModal } from '@/components/Modal/BaseModal'
@@ -6,6 +7,15 @@ import { StarsIcon, MoneyIcon, RightIcon } from '@/assets/icons'
 
 const Earnings = () => {
   const [isBaseModalOpen, { toggle, on, off }] = useBoolean(false)
+
+  useEffect(()=>{
+    if(isBaseModalOpen){
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = '';
+      };
+    }
+  },[isBaseModalOpen])
   return (
     <>
       {/* <Text onClick={()=>toggle()} color="#fff">️Earnings</Text> */}

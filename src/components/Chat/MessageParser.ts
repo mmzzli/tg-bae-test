@@ -122,7 +122,6 @@ export class MessageParser {
   }
 
   private async getLinkPreview(url: string): Promise<LinkMetadata> {
-    console.log(MessageParser.previewCache)
     if (MessageParser.previewCache.has(url)) {
       return MessageParser.previewCache.get(url)!
     }

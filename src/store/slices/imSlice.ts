@@ -20,6 +20,7 @@ export interface IMSlice {
   deleteMessageWindowListItem: (chatId: string) => void
   chatPeopleInfoList: OthersUserInfo[]
   setChatPeopleInfoList: (info: OthersUserInfo[]) => void
+  addChatPeopleInfo: (info: OthersUserInfo) => void
 }
 
 export const createIMSlice: StateCreator<IMSlice> = (set) => ({
@@ -78,4 +79,6 @@ export const createIMSlice: StateCreator<IMSlice> = (set) => ({
     })),
   chatPeopleInfoList: [],
   setChatPeopleInfoList: (info) => set({ chatPeopleInfoList: info }),
+  addChatPeopleInfo: (info) =>
+    set((state) => ({ chatPeopleInfoList: [...state.chatPeopleInfoList, info] })),
 })

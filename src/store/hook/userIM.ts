@@ -6,9 +6,9 @@ import { WrappedMessage } from '@/components/Chat/types'
 export const useIM = () => {
   const { getCurrentUid } = useTMAUtils()
   const current_uid = getCurrentUid()
-  const { setChatPeopleInfoList, updateMessageWindowListItem } = useStore((state) => ({
-    setChatPeopleInfoList: state.setChatPeopleInfoList,
+  const { updateMessageWindowListItem, addChatPeopleInfo } = useStore((state) => ({
     updateMessageWindowListItem: state.updateMessageWindowListItem,
+    addChatPeopleInfo: state.addChatPeopleInfo,
   }))
 
   const getMessageWindow = (channelId: string) => {
@@ -37,7 +37,7 @@ export const useIM = () => {
 
   const initChatPeopleInfo = (user: number, cb?: (user: OthersUserInfo) => void) => {
     getSomeoneProfile(user).then((res) => {
-      setChatPeopleInfoList([res])
+      addChatPeopleInfo(res)
       cb?.(res)
     })
   }

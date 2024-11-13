@@ -7,6 +7,7 @@ import { useFormatMessage } from '@/hooks/useFormatMessage'
 import { useIM } from '@/store/hook/userIM'
 import { useStore } from '@/store'
 import { OthersUserInfo } from '@/types'
+import Image from '@/components/Image/Image'
 // const PAGE_SIZE = 20
 
 const defaultMessages: WrappedMessage[] = []
@@ -18,7 +19,7 @@ const MessagePage = () => {
   // const [page, setPage] = useState(1)
   // const [hasMore, setHasMore] = useState(true)
   const { formatMessage } = useFormatMessage()
-  const { sendMessage, getMessageWindow, getChatPeopleInfo, initChatPeopleInfo } = useIM()
+  const { sendMessage, getMessageWindow, getChatPeopleInfo } = useIM()
   const messageWindow = getMessageWindow(uid || '')
   const messageWindowList = useStore((state) => state.messageWindowList)
 
@@ -35,20 +36,20 @@ const MessagePage = () => {
   // }
 
   useEffect(() => {
-    if (messageWindow) {
-      const loadChatPeople = () => {
-        const user = getChatPeopleInfo(Number(messageWindow.channel.channelID))
+    if (uid) {
+      const getUserInfo = (times: number) => {
+        const user = getChatPeopleInfo(Number(uid))
         if (user) {
           setChatPeople(user)
-        } else {
-          initChatPeopleInfo(Number(messageWindow.channel.channelID), (user) => {
-            setChatPeople(user)
-          })
+        } else if (times > 0) {
+          setTimeout(() => {
+            getUserInfo(times - 1)
+          }, 300)
         }
       }
-      loadChatPeople()
+      getUserInfo(10)
     }
-  }, [messageWindow])
+  }, [uid])
 
   const handleSend = ({ type, text }: { type: MessageType; text?: string }) => {
     const newMessage = formatMessage({
@@ -63,7 +64,13 @@ const MessagePage = () => {
   return (
     <div className="flex flex-col h-screen bg-[#0D0D0D]">
       <div className="flex items-center px-[16px] my-[24px] h-[32px]">
-        <img src={chatPeople?.avatar} alt="avatar" className="w-[32px] h-[32px] rounded-full" />
+        <Image
+          type="avatar"
+          rect
+          src={chatPeople?.avatar}
+          alt="avatar"
+          className="w-[32px] h-[32px] rounded-full"
+        />
         <span className="text-[#FFFFFF] text-lg ml-2">{chatPeople?.username}</span>
       </div>
       <MessageList

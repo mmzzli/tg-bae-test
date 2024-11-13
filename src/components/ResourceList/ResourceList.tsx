@@ -337,7 +337,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                         style={{ display: preloaded[index] ? 'block' : 'none', width: '100%', borderRadius:"4px" }}
                         controls={false}
                         muted={isMuted}
-                        poster={data.mediaCover}
+                        // poster={data.mediaCover}
                         loop
                         playsInline
                         onPlay={() => handlePlay(index)}
@@ -357,7 +357,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                         style={{ display: preloaded[index] ? 'block' : 'none', width: '100%', borderRadius:"4px" }}
                         controls={false}
                         muted={isMuted}
-                        poster={data.mediaCover}
+                        // poster={data.mediaCover}
                         loop
                         playsInline
                         onPlay={() => handlePlay(index)}

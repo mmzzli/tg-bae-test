@@ -6,14 +6,22 @@ import dayjs from 'dayjs'
 import Image from '@/components/Image/Image'
 import { WrappedMessage } from './types'
 import { MessageRender } from './MessageRender'
+import { OthersUserInfo } from '@/types/postTypes'
 interface MessageListProps {
   messages: WrappedMessage[]
   loadMore: () => void
   hasMore: boolean
   className?: string
+  channelInfo: OthersUserInfo | null
 }
 
-export const MessageList = ({ messages, loadMore, hasMore, className }: MessageListProps) => {
+export const MessageList = ({
+  messages,
+  loadMore,
+  hasMore,
+  className,
+  channelInfo,
+}: MessageListProps) => {
   const scrollRef = useRef<HTMLDivElement>(null)
   const scrollPositionKey = 'chat-scroll-position'
   const { getCurrentUid } = useTMAUtils()
@@ -62,7 +70,7 @@ export const MessageList = ({ messages, loadMore, hasMore, className }: MessageL
                   type="avatar"
                   width={26}
                   height={26}
-                  src="/"
+                  src={channelInfo?.avatar}
                   alt="Avatar"
                   className="w-[26px] h-[26px] rounded-full"
                 />

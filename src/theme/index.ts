@@ -36,6 +36,12 @@ const theme = extendTheme({
             background: '#0D0D0D',
           },
         },
+        'primary-dark-border': {
+          border: '1px solid #4A3AFF',
+          borderRadius: '32px',
+          background: '#0D0D0D',
+          color: '#4A3AFF',
+        },
         'primary-dark': {
           borderRadius: '32px',
           background: '#4A3AFF',

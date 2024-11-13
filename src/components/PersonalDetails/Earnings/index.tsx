@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Box, Flex, Image, Text, IconButton, useBoolean } from '@chakra-ui/react'
 
 import { BaseModal } from '@/components/Modal/BaseModal'
@@ -35,35 +36,36 @@ const Earnings = () => {
         closeOnBackdropClick={true}
         showHandle={false}
       >
-        <div className="mt-4 ml-2 w-[100%]">
+        <div className="mt-[24px] ml-2 w-[100%]">
           <h3 className="font-bold text-[24px] text-[#E0E2F6]">Earnings</h3>
-          <div className="flex gap-[8px] mt-[10px]">
+          <div className="flex gap-[8px] mt-[3px]">
             <p className="text-[15px] text-[#808080]">Earning History</p>
-            <img className="mt-[4px]" src={RightIcon} />
+            <img className="mt-[2px]" src={RightIcon} />
           </div>
           <div className="mt-[56px] flex gap-[30px] items-center justify-between">
             <div>
-              <div className="flex gap-[3px]">
+              <div className="flex gap-[11px]">
                 <h3 className="text-[30px]">65,432</h3>
                 <img src={StarsIcon} />
               </div>
-              <p className="text-[rgba(98,99,111,1)] mt-[10px]">Total earnings</p>
-              <p className="text-[rgba(224, 226, 246, 1)] text-[14px] mt-[5px]">$120</p>
+              <p className="text-[rgba(98,99,111,1)] text-[14px]">Total earnings</p>
+              <p className="text-[rgba(224, 226, 246, 1)] text-[14px]">$120</p>
             </div>
             <p className="h-[31px] w-[1px] bg-[rgba(255,255,255,0.10)]"></p>
             <div>
-              <div className="flex gap-[3px]">
-                <h3 className="text-[30px]">65,432</h3>
+              <div className="flex gap-[11px]">
+                <h3 className="text-[30px]">5,678</h3>
                 <img src={StarsIcon} />
               </div>
-              <p className="text-[rgba(98,99,111,1)] mt-[10px]">Total earnings</p>
-              <p className="text-[rgba(224, 226, 246, 1)] text-[14px] mt-[5px]">$120</p>
+              <p className="text-[rgba(98,99,111,1)] text-[14px]">Available earnings</p>
+              <p className="text-[rgba(224, 226, 246, 1)] text-[14px]">$120</p>
             </div>
           </div>
-          <div className="mt-12 mb-[18px] px-[17px]">
+          <div className="mt-[58px] mb-[43px] px-[17px]">
             <BaseButton
               text="Withdraw"
               width="100%"
+              height="48px"
               handler={() => {
                 // shareLink(link ?? '')
               }}

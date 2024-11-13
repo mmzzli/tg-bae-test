@@ -22,11 +22,11 @@ export const useRecommendList = () => {
     loadRecommendList(page)
   }, [page, token])
 
-  useEffect(() => {
-    return () => {
-      resetRecommendList()
-    }
-  }, [])
+  // useEffect(() => {
+  //   return () => {
+  //     resetRecommendList()
+  //   }
+  // }, [])
 
   const fetchMoreData = () => {
     if (!isLoading && hasMore) {
@@ -67,11 +67,11 @@ export const useViewList = () => {
     loadViewList(page)
   }, [page, token])
 
-  useEffect(() => {
-    return () => {
-      resetViewList()
-    }
-  }, [])
+  // useEffect(() => {
+  //   return () => {
+  //     resetViewList()
+  //   }
+  // }, [])
 
   const fetchMoreData = () => {
     if (!isLoading && hasMore) {
@@ -120,19 +120,18 @@ export const useOthersViewList = () => {
     loadOthersViewList(page)
   }, [page, token])
 
-  useEffect(() => {
-    return () => {
-      resetOthersViewList()
-    }
-  }, [])
+  // useEffect(() => {
+  //   return () => {
+  //     resetOthersViewList()
+  //   }
+  // }, [])
 
   useEffect(() => {
-    console.log('othersUserInfo', othersUserInfo)
     if (othersUserInfo.uid != -1) {
       resetOthersViewList()
       loadOthersViewList(page)
     }
-  }, [othersUserInfo])
+  }, [othersUserInfo.uid])
 
   const fetchMoreData = () => {
     if (!isLoading && hasMore) {

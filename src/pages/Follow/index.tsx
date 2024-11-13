@@ -1,6 +1,6 @@
 import { FC, useEffect } from 'react'
 import { useStore } from '@/store'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { getFollowerList, getFollowingList } from '@/api'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { Spinner } from '@chakra-ui/react'
@@ -8,6 +8,7 @@ import Image from '@/components/Image/Image'
 import FollowButton from '@/components/PersonalDetails/FollowButton'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { Follow } from '@/types'
+import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 const FollowPage: FC = () => {
   const { uid } = useParams()
   const searchParams = new URLSearchParams(window.location.search)
@@ -16,7 +17,7 @@ const FollowPage: FC = () => {
 
   const { launchParams } = useTMAUtils()
   const currentUid = launchParams.initData?.user?.id ?? 0
-
+  const jumpToProfilePage = useProfileNavigation()
   const {
     token,
     myFollow,
@@ -78,16 +79,27 @@ const FollowPage: FC = () => {
           width={56}
           height={56}
           rect
+          onClick={() => {
+            jumpToProfilePage({
+              avatar: item.avatar,
+              uid: item.tg_id,
+              username: item.tgname,
+              fans: 0,
+              follower: 0,
+            })
+          }}
           className="rounded-full"
         />
         <div className="flex-1 ml-3 truncate overflow-hidden whitespace-nowrap">{item.tgname}</div>
-        <FollowButton
-          className="ml-[32px]"
-          fansid={currentUid}
-          tgid={item.tg_id}
-          avatar={item.avatar}
-          username={item.tgname}
-        />
+        {item.tg_id !== currentUid && (
+          <FollowButton
+            className="ml-[32px]"
+            fansid={currentUid}
+            tgid={item.tg_id}
+            avatar={item.avatar}
+            username={item.tgname}
+          />
+        )}
       </div>
     )
   }

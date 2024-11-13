@@ -1,5 +1,5 @@
 import { useEffect, type FC } from 'react'
-import { HStack, Heading, Image } from '@chakra-ui/react'
+import { HStack, Heading, Image, Button } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { Menu } from '@/components/Menu'
 import { AddIcon1 } from '@/assets/icons'
@@ -12,7 +12,7 @@ import BaseButton from '@/components/BaseButton/BaseButton'
 import { getSingleMedia } from '@/api/list'
 const SHARE_POST = 1
 const SHARE_PROFILE = 2
-export const HomePage: FC = () => {
+const HomePage: FC = () => {
   const navigate = useNavigate()
   const { shareLink, isInTMA } = useTMAUtils()
   const { startParam } = retrieveLaunchParams()
@@ -59,6 +59,15 @@ export const HomePage: FC = () => {
       }
     })
   }, [startParam, isInTMA])
+
+  console.log('HomePage render')
+
+  useEffect(() => {
+    console.log('HomePage mounted')
+    return () => {
+      console.log('HomePage unmounted')
+    }
+  }, [])
   return (
     <>
       <HStack justifyContent="space-between" p="0px 16px" pt="16px">
@@ -84,15 +93,18 @@ export const HomePage: FC = () => {
         </Button> */}
       </HStack>
       <div className="mt-[40px] mx-auto w-full text-center">
-        <p className="text-[#E0E2F6]">Join our community to meet creators</p>
-        <p className="text-[#E0E2F6]">and start to follow them</p>
+        <p className="text-[#62636F]">Join our community to meet creators</p>
+        <p className="text-[#62636F]">and start to follow them</p>
       </div>
-      <button
+      <div className='mt-[28px] mb-[48px] text-center'>
+        <Button variant='primary-dark-border' m="auto" w="126px" h="40px" onClick={() => shareLink(COMMUNITY_LINK)}>Community</Button>
+      </div>
+      {/* <button
         onClick={() => shareLink(COMMUNITY_LINK)}
         className="text-[14px] py-[14px] px-6 w-[126px] h-[40px] bg-[#4A3AFF] rounded-[32px] flex items-center justify-center font-medium text-[#fff] mx-auto mt-[28px] mb-12"
       >
         Community
-      </button>
+      </button> */}
       <div className="px-4">
         <h3 className="text-[#E0E2F6] font-bold text-xl">Selected Posts</h3>
       </div>
@@ -101,3 +113,4 @@ export const HomePage: FC = () => {
     </>
   )
 }
+export default HomePage

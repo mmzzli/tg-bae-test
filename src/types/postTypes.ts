@@ -25,6 +25,7 @@ export type PostResourceReq = {
   type: number
   currency: number
   price: number
+  duration?: number
 }
 
 // like
@@ -48,7 +49,13 @@ export type PostItem = {
   type: number
   uid: number
 }
-export type UserItem = { avatar: string; uid: number; username: string }
+export type UserItem = {
+  avatar: string
+  uid: number
+  username: string
+  fans: number
+  follower: number
+}
 export type ListItem = {
   user: UserItem
   post: PostItem
@@ -68,4 +75,12 @@ export type ShareInfo = {
   type: number
   media: ListItem[]
   userInfo: OthersUserInfo & { user_id: number }
+}
+
+export type LinkMetadata = {
+  site_name: string
+  title: string
+  desc: string
+  image: string
+  url: string
 }

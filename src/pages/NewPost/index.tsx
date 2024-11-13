@@ -4,6 +4,7 @@ import {
   Heading,
   Image,
   Button,
+  Text,
   Box,
   Textarea,
   Input,
@@ -16,13 +17,16 @@ import { useNavigate } from 'react-router-dom'
 import axios, { AxiosResponse } from 'axios'
 import { postResources, postReq } from '@/api'
 import StarsPage from '@/components/NewPost/Stars'
-import { PostIcon, PostAddIcon, RemoveIcon } from '@/assets/icons'
+import { PostIcon, PostAddIcon, RemoveIcon, VideoSwitchIcon } from '@/assets/icons'
 import { useStore } from '@/store'
+import VideoFrameSelector from '@/components/NewPost/VideoFrameSelector'
+import VideoPlayer from '@/components/comm/VideoPlayer'
 
 export const NewPost: FC = () => {
   const navigate = useNavigate()
   const { toast } = createStandaloneToast()
   const [videoFile, setVideoFile] = useState<File | null>(null)
+  const videoRef = useRef<HTMLVideoElement>(null);
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [videoSrc, setVideoSrc] = useState<string | null>(null)
   const [title, setTitle] = useState<string>('')
@@ -31,8 +35,11 @@ export const NewPost: FC = () => {
   const [imgAttr, setImgAttr] = useState<any[]>([])
   const [files, setFiles] = useState<File[]>([])
   const token = useStore((state) => state.token)
+  const [frameSelectorBoll, setFrameSelectorBoll] = useState<boolean>(false)
   // start
   const [price, setPrice] = useState<number>(0)
+  // cover
+  const [cover, setCover] = useState<string | null>(null)
 
   async function checkVideoURL(url: string): Promise<AxiosResponse<any> | undefined> {
     let isNotFound = true
@@ -51,6 +58,7 @@ export const NewPost: FC = () => {
     const imgList = []
     for (const file of files) {
       const url = `https://picupload.mobus.workers.dev/upload/${file.name}`
+      console.log(file)
       const formData = new FormData()
       formData.append('file', file)
       try {
@@ -109,8 +117,11 @@ export const NewPost: FC = () => {
     if (response.status === 200) {
       const url = `https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${id}/manifest/video.m3u8`
       await checkVideoURL(url)
+      const medias = [url]
+      cover && medias.unshift(cover)
       await postResources({
-        media: url,
+        duration: Math.floor(videoRef?.current?.duration || 0),
+        media: medias.join(','),
         ...(title ? { title } : {}),
         type: 0,
         currency: 0,
@@ -244,14 +255,8 @@ export const NewPost: FC = () => {
               <>
                 {videoSrc ? (
                   <Box maxW="600px" m="auto" position="relative">
-                    <video
-                      src={videoSrc}
-                      controls
-                      width="100%"
-                      autoPlay
-                      playsInline
-                      style={{ borderRadius: '4px', maxHeight: '380px' }}
-                    />
+                    <VideoPlayer videoRef={videoRef} src={videoSrc} style={{ borderRadius: '4px', maxHeight: '380px' }}/>
+                    <VideoFrameSelector videoRef={videoRef} setCover={setCover}/>
                     <Image
                       onClick={() => setVideoSrc('')}
                       w="24px"

@@ -1,39 +1,46 @@
 @font-face {
-  font-family: 'ArialGrotesk';
-  src: url('./assets/fonts/arial-grotesk-regular.otf') format('opentype');
+  font-family: 'Poppins';
+  src: url('./assets/fonts/Poppins-Regular.ttf') format('opentype');
   font-weight: 400;
   font-style: normal;
 }
 @font-face {
-  font-family: 'ArialGrotesk';
-  src: url('./assets/fonts/arial-grotesk-medium.otf') format('opentype');
+  font-family: 'Poppins';
+  src: url('./assets/fonts/Poppins-Medium.ttf') format('opentype');
   font-weight: 500;
   font-style: normal;
 }
 @font-face {
-  font-family: 'ArialGrotesk';
-  src: url('./assets/fonts/arial-grotesk-bold.otf') format('opentype');
+  font-family: 'Poppins';
+  src: url('./assets/fonts/Poppins-Bold.ttf') format('opentype');
   font-weight: 700;
   font-style: normal;
 }
+
 html,
 body {
-  font-family: 'ArialGrotesk', sans-serif !important;
+  font-family: 'Poppins', sans-serif !important;
 }
+
 h1,
 h2,
 h3,
 h4,
 h5 {
   font-weight: 700;
+  font-family: 'Poppins', sans-serif !important;
 }
+
 p {
   font-weight: 500;
+  font-family: 'Poppins', sans-serif !important;
 }
+
 input:focus,
 textarea:focus {
   box-shadow: none !important;
   border-color: teal !important;
+  outline: none;
 }
 
 .section {

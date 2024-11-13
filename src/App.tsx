@@ -8,7 +8,7 @@ import './types/window.d.ts'
 
 import { MainLayout } from '@/components/layout'
 import Splash from '@/pages/Splash'
-import { HomePage } from '@/pages/Home'
+import HomePage from '@/pages/Home'
 import { NewPost } from '@/pages/NewPost'
 import Shares from '@/pages/Shares'
 import Profile from '@/pages/Profile'
@@ -16,6 +16,10 @@ import ProfileEdit from '@/pages/Profile/edit'
 import OthersProfile from '@/pages/OthersProfile'
 import EarningsHistory from '@/components/PersonalDetails/Earnings/History'
 import Follow from './pages/Follow'
+import ProfileGuard from './pages/OthersProfile/routeGuard'
+import { MessagePage } from './pages/Chat'
+import MessagePageRouteGuard from './pages/Chat/MessagePageRouteGuard'
+
 // import { mockTelegramEnv, parseInitData } from '@tma.js/sdk'
 // import { DEV_INIT_DATA_RAW } from './utils/constants'
 
@@ -46,19 +50,43 @@ function App() {
     <>
       <ChakraProvider resetCSS theme={theme}>
         <BrowserRouter>
-          <MainLayout>
-            <Routes>
-              <Route path="/" element={<Splash />} />
+          <Routes>
+            <Route path="/" element={<MainLayout />}>
+              <Route index element={<Splash />} />
               <Route path="/home" element={<HomePage />} />
-              <Route path="/post" element={<NewPost />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/profile/edit" element={<ProfileEdit />} />
-              <Route path="/profile/:uid" element={<OthersProfile />} />
-              <Route path="/follow/:uid" element={<Follow />} />
-              <Route path="/shares" element={<Shares />} />
-              <Route path="/profile/earningsHistory" element={<EarningsHistory />} />
-            </Routes>
-          </MainLayout>
+              <Route path="post" element={<NewPost />} />
+              <Route path="shares" element={<Shares />} />
+
+              {/* Profile  */}
+              <Route path="profile">
+                <Route index element={<Profile />} />
+                <Route path="edit" element={<ProfileEdit />} />
+                <Route path="earningsHistory" element={<EarningsHistory />} />
+                <Route
+                  path=":uid"
+                  element={
+                    <ProfileGuard>
+                      <OthersProfile />
+                    </ProfileGuard>
+                  }
+                />
+              </Route>
+
+              {/* Follow */}
+              <Route path="follow/:uid" element={<Follow />} />
+
+              {/* Chat */}
+              <Route path="chat" element={<></>} />
+              <Route
+                path="chat/:uid"
+                element={
+                  <MessagePageRouteGuard>
+                    <MessagePage />
+                  </MessagePageRouteGuard>
+                }
+              />
+            </Route>
+          </Routes>
         </BrowserRouter>
       </ChakraProvider>
     </>

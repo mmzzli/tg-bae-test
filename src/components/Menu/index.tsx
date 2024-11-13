@@ -3,7 +3,14 @@ import { useNavigate } from 'react-router-dom'
 
 import { Box, HStack, Text, Link } from '@chakra-ui/react'
 
-import { HomeIcon, ProfileIcon, ProfileActiveIcon, HomeActiveIcon } from '@/assets/icons'
+import {
+  HomeIcon,
+  ProfileIcon,
+  ProfileActiveIcon,
+  HomeActiveIcon,
+  ChatIcon,
+  ChatActiveIcon,
+} from '@/assets/icons'
 import Image from '../Image/Image'
 
 interface NavItem {
@@ -27,6 +34,12 @@ export const Menu: FC<MenuProps> = ({ selectedIndex }) => {
       url: '/home',
     },
     {
+      icon: ChatIcon,
+      iconActive: ChatActiveIcon,
+      name: 'Chat',
+      url: '/chat',
+    },
+    {
       icon: ProfileIcon,
       iconActive: ProfileActiveIcon,
       name: 'Profile',
@@ -47,13 +60,15 @@ export const Menu: FC<MenuProps> = ({ selectedIndex }) => {
     >
       <HStack justifyContent="space-around">
         {navList.map((item, index) => (
-          <Link onClick={() => navigate(item.url)} key={index}>
+          <Link onClick={() => {location.href = `${item.url}`}} key={index}>
             <Box textAlign="center" pt="6px" cursor="pointer">
-              <Image
-                className="m-auto"
-                src={selectedIndex === index ? item.iconActive : item.icon}
-                alt={item.name}
-              />
+              <Box h="24px" w="24px" m="auto">
+                <Image
+                  className="m-auto"
+                  src={selectedIndex === index ? item.iconActive : item.icon}
+                  alt={item.name}
+                />
+              </Box>
               <Text
                 color={selectedIndex === index ? '#E0E2F6' : '#424048'}
                 fontSize="10px"

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import Hls from 'hls.js'
-import { Box, Flex, Text, IconButton, useBoolean } from '@chakra-ui/react'
+import { Box, Flex, Text, IconButton, useBoolean, HStack } from '@chakra-ui/react'
 import { IconLike } from '@/components/icons/like'
 import { IconLiked } from '@/components/icons/liked'
 import { IconCommit } from '@/components/icons/commit'
@@ -12,7 +12,7 @@ import BaseButton from '../BaseButton/BaseButton'
 import useCopy from '@/hooks/useCopy'
 import { useMemoizedFn, useRequest, useSafeState, useSetState } from 'ahooks'
 import dayjs from 'dayjs'
-import { LinkIcon, TelegramIcon } from '@/assets/icons'
+import { LinkIcon, TelegramIcon, VideoIcon } from '@/assets/icons'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import Image from '../Image/Image'
 import FrostedGlass from '@/components/ResourceList/FrostedGlass'
@@ -55,6 +55,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
   const jumpToProfilePage = useProfileNavigation()
 
   const handleImageClick = (images: string[], index: number) => {
+    console.log(images, 'images')
     setPreviewImages(images)
     setCurrentIndex(index)
     setIsPreviewOpen(true)
@@ -69,7 +70,21 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
 
   useEffect(() => {
     if (initialResources.length) {
-      setResources(initialResources)
+      console.log(initialResources)
+      const res = initialResources.map((item) => {
+        if (item.type === 0 && item.media.length > 0) {
+          const [mediaCover, media] = item.media[0].split(',');
+          return {
+            ...item,
+            media: [media || mediaCover],
+            mediaCover
+          };
+        }
+        return item;
+      });
+
+      console.log(res);
+      setResources(res);
     }
   }, [initialResources])
   useEffect(() => {
@@ -106,6 +121,14 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
           hls.startLevel = maxLevel
           hls.currentLevel = maxLevel
         })
+        let loadedFragments = 0;
+        const maxPreloadFragments = 1;
+        hls.on(Hls.Events.FRAG_LOADING, (event, data) => {
+          if (loadedFragments < maxPreloadFragments) {
+            loadedFragments++;
+            cacheFragment(data.frag.url);
+          }
+        });
 
         const videoElement = videoRefs.current[index]
         if (videoElement) {
@@ -188,6 +211,17 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
     })
     setResources(updatedUsers)
   }
+  const cacheFragment = (url:string) => {
+    if ('caches' in window) {
+      caches.open('video-cache').then((cache) => {
+        cache.add(url).then(() => {
+          console.log('视频片段已缓存:', url);
+        }).catch((error) => {
+          console.error('缓存视频片段失败:', error);
+        });
+      });
+    }
+  };
 
   const renderBaseModal = () => (
     <BaseModal
@@ -244,35 +278,20 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
       {resources.map((data, index: number) => {
         if (data.type === POST_TYPE_IMAGE && data.media.length > 1) {
           return (
-            <Box background={'#0D0D0D'} pt="32px" key={data.id}>
-              <div className="p-4 flex items-center">
-                <div className="flex items-center justify-between gap-2">
-                  <Image
-                    rect
-                    width={48}
-                    height={48}
-                    className="rounded-full"
-                    onClick={() => jumpToProfilePage(data.uid)}
-                    src={data.avatar}
-                    alt={data.username}
-                  />
-                  <div className="text-[#E0E2F6] font-bold text-base">{data.username}</div>
-                </div>
-                <SecondaryMenu
-                  className="ml-auto"
-                  key={data.id}
-                  mediaData={data}
-                  currentUid={launchParams.initData?.user?.id ?? 0}
-                />
-              </div>
-              <div className="relative max-w-[375px] px-4">
+            <Box pt="32px" key={data.id}>
+              <ResourceHeader
+                data={data}
+                currentUid={launchParams.initData?.user?.id ?? 0}
+                onProfileClick={jumpToProfilePage}
+              />
+              <div className="relative px-4">
                 <div className="grid grid-cols-3 gap-2">
                   {data.media.map((i, ind) => (
                     <Image
                       src={i}
                       alt={data.title}
-                      width={109}
-                      height={109}
+                      width="100%"
+                      height="100%"
                       key={i}
                       onClick={() => handleImageClick(data.media, ind)}
                       rect
@@ -284,84 +303,34 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                 )}
               </div>
 
-              <div className="px-4 py-3">
-                <p className="text-[#62636F] text-sm leading-6">{data.title}</p>
-                <p className="text-[#424048] text-xs pt-2">
-                  {dayjs(data.created_at).format('YYYY-MM-DD HH:mm')}
-                </p>
-              </div>
-              <div className="px-4 flex items-center justify-between">
-                <Flex>
-                  <Flex
-                    as={'button'}
-                    alignItems={'center'}
-                    onClick={() =>
-                      linkEve(data.id, likes.find((like) => like.id === data.id)?.liked === false)
-                    }
-                  >
-                    {likes.find((like) => like.id === data.id)?.liked === true ? (
-                      <IconLiked />
-                    ) : (
-                      <IconLike />
-                    )}
-                    <Text fontSize={'sm'} color={'#E0E2F6'} pl={1}>
-                      {likes.find((like) => like.id === data.id)?.like}
-                    </Text>
-                  </Flex>
-                  {/* <Flex as={'button'} alignItems={'center'} ml={4} borderRadius={5}>
-                    <IconCommit />
-                    <Text fontSize={'sm'} color={'#E0E2F6'} pl={1}>
-                      {data.comment ?? 0}
-                    </Text>
-                  </Flex> */}
-                </Flex>
-                <IconButton
-                  onClick={() => {
-                    getShareLink(data.title, data.id, data.uid)
-                    toggle()
-                  }}
-                  aria-label="share"
-                  background={'transparent'}
-                  colorScheme={'transparent'}
-                  h={6}
-                  w={6}
-                  icon={<IconShare />}
-                />
-              </div>
+              <ResourceFooter
+                data={data}
+                likes={likes}
+                linkEve={linkEve}
+                onShare={() => {
+                  getShareLink(data.title, data.id, data.uid)
+                  toggle()
+                }}
+              />
             </Box>
           )
         } else {
           return (
-            <Box background={'#0D0D0D'} pt="32px" key={index}>
-              <div className="p-4 flex items-center">
-                <div className="flex items-center justify-between gap-2">
-                  <Image
-                    rect
-                    width={48}
-                    height={48}
-                    className="rounded-full"
-                    onClick={() => jumpToProfilePage(data.uid)}
-                    src={data.avatar}
-                    alt={data.username}
-                  />
-                  <div className="text-[#E0E2F6] font-bold text-base">{data.username}</div>
-                </div>
-                <SecondaryMenu
-                  className="ml-auto"
-                  key={data.id}
-                  mediaData={data}
-                  currentUid={launchParams.initData?.user?.id ?? 0}
-                />
-              </div>
-              <div className="relative max-w-[375px] px-4">
+            <Box pt="32px" key={index}>
+              <ResourceHeader
+                data={data}
+                currentUid={launchParams.initData?.user?.id ?? 0}
+                onProfileClick={jumpToProfilePage}
+              />
+              <div className="relative px-4">
                 {data.type === POST_TYPE_IMAGE ? (
                   data.media?.[0] == '' ? (
                     <Box position="relative">
                       <Image
                         src={data.media?.[0] ?? data?.media ?? ''}
                         alt={data.title}
-                        width={387}
-                        height={387}
+                        errorClassName="rounded-[2px] h-[150px]"
+                        className="object-left max-h-[387px] rounded-[2px]"
                         onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
                       />
                       <FrostedGlass
@@ -374,22 +343,25 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                     <Image
                       src={data.media?.[0] ?? data?.media ?? ''}
                       alt={data.title}
-                      width={387}
-                      height={387}
+                      errorClassName="rounded-[2px] h-[150px]"
+                      className="object-left rounded-[2px] max-h-[387px]"
                       onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
                     />
                   )
                 ) : data.media?.[0] == '' ? (
                   <Box position="relative">
-                    <video
-                      ref={(el) => (videoRefs.current[index] = el)}
-                      style={{ display: preloaded[index] ? 'block' : 'none', width: '100%' }}
-                      controls={false}
-                      muted={isMuted}
-                      loop
-                      playsInline
-                      onPlay={() => handlePlay(index)}
-                    />
+                    <Box minH="130px">
+                      <video
+                        ref={(el) => (videoRefs.current[index] = el)}
+                        style={{ display: preloaded[index] ? 'block' : 'none', width: '100%', borderRadius:"4px" }}
+                        controls={false}
+                        muted={isMuted}
+                        // poster={data.mediaCover}
+                        loop
+                        playsInline
+                        onPlay={() => handlePlay(index)}
+                      />
+                    </Box>
                     <FrostedGlass
                       price={data.price}
                       post_id={data.id}
@@ -397,64 +369,38 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                     />
                   </Box>
                 ) : (
-                  <video
-                    ref={(el) => (videoRefs.current[index] = el)}
-                    style={{ display: preloaded[index] ? 'block' : 'none', width: '100%' }}
-                    controls={false}
-                    muted={isMuted}
-                    loop
-                    playsInline
-                    onPlay={() => handlePlay(index)}
-                  />
+                  <>
+                    <Box minH="130px">
+                      <video
+                        ref={(el) => (videoRefs.current[index] = el)}
+                        style={{ display: preloaded[index] ? 'block' : 'none', width: '100%', borderRadius:"4px" }}
+                        controls={false}
+                        muted={isMuted}
+                        // poster={data.mediaCover}
+                        loop
+                        playsInline
+                        onPlay={() => handlePlay(index)}
+                      />
+                    </Box>
+                    <HStack borderRadius="4px" bg="rgba(0, 0, 0, 0.20)" position="absolute" top="12px" left="28px" p="4px 8px">
+                      <Image src={VideoIcon}/>
+                      <Text color="#E0E2F6" fontSize="12px">
+                        {data.duration}
+                      </Text>
+                    </HStack>
+                  </>
                 )}
               </div>
 
-              <Flex px={4} py={3} alignItems={'center'} justifyContent={'space-between'}>
-                <Flex>
-                  <Flex
-                    as={'button'}
-                    alignItems={'center'}
-                    onClick={() =>
-                      linkEve(data.id, likes.find((like) => like.id === data.id)?.liked === false)
-                    }
-                  >
-                    {likes.find((like) => like.id === data.id)?.liked === true ? (
-                      <IconLiked />
-                    ) : (
-                      <IconLike />
-                    )}
-                    <Text fontSize={'sm'} color={'#E0E2F6'} pl={1}>
-                      {likes.find((like) => like.id === data.id)?.like}
-                    </Text>
-                  </Flex>
-                  {/* <Flex as={'button'} alignItems={'center'} ml={4} borderRadius={5}>
-                    <IconCommit />
-                    <Text fontSize={'sm'} color={'#E0E2F6'} pl={1}>
-                      {data.comment ?? 0}
-                    </Text>
-                  </Flex> */}
-                </Flex>
-                <IconButton
-                  onClick={() => {
-                    getShareLink(data.title, data.id, data.uid)
-                    toggle()
-                  }}
-                  aria-label="share"
-                  background={'transparent'}
-                  colorScheme={'transparent'}
-                  h={6}
-                  w={6}
-                  icon={<IconShare />}
-                />
-              </Flex>
-              <Box px={4}>
-                <Text color={'#62636F'} fontSize={'sm'} lineHeight={6}>
-                  {data.title}
-                </Text>
-                <Text color={'#424048'} fontSize={'xs'} pt={2}>
-                  {dayjs(data.created_at).format('YYYY-MM-DD HH:mm')}
-                </Text>
-              </Box>
+              <ResourceFooter
+                data={data}
+                likes={likes}
+                linkEve={linkEve}
+                onShare={() => {
+                  getShareLink(data.title, data.id, data.uid)
+                  toggle()
+                }}
+              />
             </Box>
           )
         }
@@ -468,6 +414,81 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
       />
       {/* Components */}
       {renderBaseModal()}
+    </>
+  )
+}
+
+interface ResourceHeaderProps {
+  data: FormatterListItem
+  currentUid: number
+  onProfileClick: (data: FormatterListItem) => void
+}
+
+const ResourceHeader: React.FC<ResourceHeaderProps> = ({ data, currentUid, onProfileClick }) => {
+  return (
+    <div className="p-4 flex items-center">
+      <div className="flex items-center justify-between gap-2">
+        <Image
+          rect
+          width={48}
+          height={48}
+          className="rounded-full"
+          onClick={() => onProfileClick(data)}
+          src={data.avatar}
+          alt={data.username}
+        />
+        <div className="text-[#E0E2F6] font-bold text-base">{data.username}</div>
+      </div>
+      <SecondaryMenu className="ml-auto" key={data.id} mediaData={data} currentUid={currentUid} />
+    </div>
+  )
+}
+
+interface ResourceFooterProps {
+  data: FormatterListItem
+  likes: Like[]
+  linkEve: (postId: number, isLike: boolean) => void
+  onShare: () => void
+}
+
+const ResourceFooter: React.FC<ResourceFooterProps> = ({ data, likes, linkEve, onShare }) => {
+  return (
+    <>
+      <div className="px-4 py-3">
+        <p className="text-[#62636F] text-sm leading-6">{data.title}</p>
+        <p className="text-[#424048] text-xs pt-2">
+          {dayjs(data.created_at).format('YYYY-MM-DD HH:mm')}
+        </p>
+      </div>
+      <div className="px-4 flex items-center justify-between">
+        <Flex>
+          <Flex
+            as={'button'}
+            alignItems={'center'}
+            onClick={() =>
+              linkEve(data.id, likes.find((like) => like.id === data.id)?.liked === false)
+            }
+          >
+            {likes.find((like) => like.id === data.id)?.liked === true ? (
+              <IconLiked />
+            ) : (
+              <IconLike />
+            )}
+            <Text fontSize={'sm'} color={'#E0E2F6'} pl={1}>
+              {likes.find((like) => like.id === data.id)?.like}
+            </Text>
+          </Flex>
+        </Flex>
+        <IconButton
+          onClick={onShare}
+          aria-label="share"
+          background={'transparent'}
+          colorScheme={'transparent'}
+          h={6}
+          w={6}
+          icon={<IconShare />}
+        />
+      </div>
     </>
   )
 }

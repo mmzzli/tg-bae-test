@@ -1,3 +1,4 @@
+import { Conversation } from '@/components/SDK/BaeimSDK'
 import { del, get, post } from './base'
 import {
   LikeReq,
@@ -7,6 +8,7 @@ import {
   UserPostsRes,
   ListRes,
   ViewListReq,
+  LinkMetadata,
 } from '@/types'
 
 export const postResources = (params: PostResourceReq) => {
@@ -28,4 +30,12 @@ export const deletePost = (pid: number) => {
 
 export const getUsersPosts = (params: UserPostsReq) => {
   return post<UserPostsRes>(`/api/v1/other/user/posts`, params)
+}
+
+export const getLinkMetadata = (url: string) => {
+  return get<LinkMetadata>(`/meta?url=${url}`)
+}
+
+export const getConversationSync = (params: { uid: string; msg_count: number }) => {
+  return post<Conversation[]>(`https://chat-dev.anyconn.org:5001/conversation/sync`, params)
 }

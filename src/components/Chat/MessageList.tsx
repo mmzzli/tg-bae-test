@@ -105,8 +105,8 @@ export const MessageList = ({
   )
 
   const TimeDevider = memo(({ timestamp }: { timestamp: number }) => (
-    <div className="flex items-center justify-center my-4">
-      <div className="text-xs text-[#8E8E93] bg-[#1C1C1E] px-2 py-1 rounded">
+    <div className="flex items-center justify-center mt-[20px] mb-4">
+      <div className="text-xs text-[#ffffff99] px-2 py-1 rounded">
         {dayjs(timestamp).format('MM-DD HH:mm')}
       </div>
     </div>

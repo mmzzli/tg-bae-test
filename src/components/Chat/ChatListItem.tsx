@@ -2,13 +2,15 @@ import { motion, PanInfo, useAnimation } from 'framer-motion'
 import dayjs from 'dayjs'
 import { FC, useEffect, useState } from 'react'
 import Image from '@/components/Image/Image'
-import { cn } from '@/utils/utils'
+import { cn, getTimeStringAutoShort } from '@/utils/utils'
 import { useIM } from '@/store/hook/userIM'
 import { useNavigate } from 'react-router-dom'
 import { Conversation } from '../SDK/BaeimSDK'
 import { OthersUserInfo } from '@/types'
 import { DeleteDialog } from './DeleteDialog'
 import { useStore } from '@/store'
+import { setUnread } from '@/api'
+import { useTMAUtils } from '@/hooks/useTMAUtils'
 
 const ChatListItem: FC<{
   chat: Conversation
@@ -18,10 +20,14 @@ const ChatListItem: FC<{
   const [isDragging, setIsDragging] = useState(false)
   const navigate = useNavigate()
   const { getChatPeopleInfo, initChatPeopleInfo } = useIM()
-  const { connection } = useStore((state) => ({
+  const { connection, updateChatListItem } = useStore((state) => ({
     connection: state.connection,
+    updateChatListItem: state.updateChatListItem,
   }))
   const [chatPeople, setChatPeople] = useState<OthersUserInfo | null>(null)
+  const { getCurrentUid } = useTMAUtils()
+  const currentUid = getCurrentUid()
+
   useEffect(() => {
     const loadChatPeople = () => {
       const user = getChatPeopleInfo(Number(chat.channel.channelID))
@@ -63,6 +69,8 @@ const ChatListItem: FC<{
         style={{ x: 0 }}
         onClick={() => {
           if (chatPeople?.uid && !isDragging) {
+            connection?.clearConversationUnread(chat.channel.channelID)
+
             navigate(`/chat/${chatPeople?.uid}`)
           }
         }}
@@ -87,7 +95,9 @@ const ChatListItem: FC<{
             <div className="flex justify-between items-start">
               <h3 className="flex-1 text-white font-medium truncate">{chatPeople?.username}</h3>
               <span className="text-gray-500 text-sm">
-                {dayjs(chat.lastMessage?.timestamp).format('HH:mm')}
+                {chat.lastMessage?.timestamp
+                  ? getTimeStringAutoShort(chat.lastMessage?.timestamp * 1000, true)
+                  : ''}
               </span>
             </div>
 

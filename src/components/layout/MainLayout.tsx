@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
+import { enableClosingConfirmation } from '@telegram-apps/sdk'
 import { useLocation } from 'react-router-dom'
 import { retrieveLaunchParams } from '@telegram-apps/sdk'
 import { logIn } from '@/api'
@@ -60,6 +61,7 @@ export const MainLayout: React.FC = () => {
       tgApp.expand()
       tgApp.headerColor = '#000'
       tgApp.MainButton.hide()
+      enableClosingConfirmation()
       tgApp.onEvent('viewportChanged', () => {
         if (!tgApp.isExpanded) {
           tgApp.expand()

@@ -43,8 +43,8 @@ export const getLinkMetadata = (url: string) => {
 }
 
 export const getConversationSync = (params: { uid: string; msg_count: number }) => {
-  return post<Conversation[]>('https://imdev.anyconn.org/conversation/sync', params, {
-    headers: { token: '662fd9dc8edae1de8cafb3822125f240' },
+  return post<Conversation[]>(`${import.meta.env.VITE_APP_IM_URL}conversation/sync`, params, {
+    headers: { token: import.meta.env.VITE_APP_IM_TOKEN },
   })
 }
 
@@ -57,8 +57,8 @@ export const getMessagesSync = (params: {
   pull_mode: number
   limit: number
 }) => {
-  return post<Message[]>(`https://imdev.anyconn.org/channel/messagesync`, params, {
-    headers: { token: '662fd9dc8edae1de8cafb3822125f240' },
+  return post<Message[]>(`${import.meta.env.VITE_APP_IM_URL}channel/messagesync`, params, {
+    headers: { token: import.meta.env.VITE_APP_IM_TOKEN },
   })
 }
 
@@ -68,7 +68,7 @@ export const setUnread = (params: {
   channel_type: number
   unread: number
 }) => {
-  return post<Message[]>(`https://imdev.anyconn.org/conversations/setUnread`, params, {
-    headers: { token: '662fd9dc8edae1de8cafb3822125f240' },
+  return post<Message[]>(`${import.meta.env.VITE_APP_IM_URL}conversations/setUnread`, params, {
+    headers: { token: import.meta.env.VITE_APP_IM_TOKEN },
   })
 }

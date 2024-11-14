@@ -22,6 +22,8 @@ import { getLink } from '@/api/list'
 const ImagePreview = lazy(() => import('../Image/ImagePreview'))
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import useMobile from '@/hooks/useMobile'
+
+import VideoPreview from '@/components/Image/VideoPreview'
 interface Like {
   id: number
   liked: boolean
@@ -48,6 +50,9 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
   const [previewImages, setPreviewImages] = useState<string[]>([])
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
+  //
+  const [isVideoPreviewOpen, setIsVideoPreviewOpen] = useState<boolean>(false)
+  const [previewVideo, setPreviewVideo] = useState<string>('')
 
   const jumpToProfilePage = useProfileNavigation()
 
@@ -56,6 +61,10 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
     setPreviewImages(images)
     setCurrentIndex(index)
     setIsPreviewOpen(true)
+  }
+  const handleVideoClick = (videoUrl: string) => {
+    setPreviewVideo(videoUrl)
+    setIsVideoPreviewOpen(true)
   }
 
   const { runAsync: getLinkHandlerAsync } = useRequest(getLink, {
@@ -249,7 +258,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                         alt={data.title}
                         errorClassName="rounded-[2px] h-[150px]"
                         className="object-left max-h-[387px] rounded-[2px] m-[auto]"
-                        onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
+                        onClick={() => handleVideoClick(`https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/e99e671e80eda1bcf55a8d9cbab96000/manifest/video.m3u8`)}
                       />
                     </Box>
                     <HStack
@@ -267,11 +276,11 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                     </HStack>
 
                     {data.media?.[0] === '' &&
-                    <FrostedGlass
-                      price={data.price}
-                      post_id={data.id}
-                      resourcesEve={resourcesEve}
-                    />}
+                      <FrostedGlass
+                        price={data.price}
+                        post_id={data.id}
+                        resourcesEve={resourcesEve}
+                      />}
                   </Box>
                 )}
               </div>
@@ -296,6 +305,11 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
         currentIndex={currentIndex}
         onIndexChange={setCurrentIndex}
       /> */}
+      {isVideoPreviewOpen && <VideoPreview
+        isOpen={isVideoPreviewOpen}
+        onClose={() => setIsVideoPreviewOpen(false)}
+        videoUrl={previewVideo}
+      />}
       {isPreviewOpen && (
         <Suspense fallback={null}>
           <ImagePreview

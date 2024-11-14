@@ -8,7 +8,6 @@ import { useStore } from '@/store'
 import { useRequest } from 'ahooks'
 import { Outlet } from 'react-router-dom'
 import { log } from 'console'
-import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { Spinner } from '@chakra-ui/react'
 
 const ChatListPage = lazy(() =>
@@ -26,7 +25,6 @@ export const MainLayout: React.FC = () => {
   const resetToken = useStore((state) => state.resetToken)
   const [shouldLoadChat, setShouldLoadChat] = useState(false)
   const [hiddenChatPage, setHiddenChatPage] = useState(false)
-  const { getCurrentUid } = useTMAUtils()
   const { run: runLogin } = useRequest(logIn, {
     manual: true,
     onSuccess({ token, api_token, user_info }) {

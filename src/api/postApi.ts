@@ -55,3 +55,14 @@ export const getMessagesSync = (params: {
     headers: { token: '662fd9dc8edae1de8cafb3822125f240' },
   })
 }
+
+export const setUnread = (params: {
+  uid: string
+  channel_id: string
+  channel_type: number
+  unread: number
+}) => {
+  return post<Message[]>(`https://imdev.anyconn.org/conversations/setUnread`, params, {
+    headers: { token: '662fd9dc8edae1de8cafb3822125f240' },
+  })
+}

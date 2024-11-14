@@ -1,17 +1,6 @@
 import { MessageContentType, Setting, Conversation as WKConversation } from 'wukongimjssdk'
 import { Conversation, FormattedMessage } from './BaeimSDK'
-import {
-  WKSDK,
-  Message,
-  StreamItem,
-  Channel,
-  ChannelTypePerson,
-  ChannelTypeGroup,
-  MessageStatus,
-  SyncOptions,
-  MessageExtra,
-  MessageContent,
-} from 'wukongimjssdk'
+import { WKSDK, Message, StreamItem, Channel, MessageStatus, MessageExtra } from 'wukongimjssdk'
 import BigNumber from 'bignumber.js'
 import { Buffer } from 'buffer'
 export class Convert {

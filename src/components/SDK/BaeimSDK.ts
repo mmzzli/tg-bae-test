@@ -173,6 +173,19 @@ class BaeimSDK {
     )
   }
 
+  public clearConversationUnread(channelId: string) {
+    const conversation = WKSDK.shared().conversationManager.findConversation(
+      new Channel(channelId, ChannelTypePerson)
+    )
+    if (conversation) {
+      conversation.unread = 0
+      WKSDK.shared().conversationManager.notifyConversationListeners(
+        conversation,
+        ConversationAction.update
+      )
+    }
+  }
+
   public async getMessages(channel: string, opt: GetMessagesOpt): Promise<Message[]> {
     return await WKSDK.shared().chatManager.syncMessages(
       new Channel(channel, ChannelTypePerson),

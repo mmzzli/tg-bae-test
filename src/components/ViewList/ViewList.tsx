@@ -3,7 +3,7 @@ import { Box, Spinner } from '@chakra-ui/react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import ResourceList from '../ResourceList/ResourceList'
 import { cn } from '@/utils/utils'
-import { useViewList, useFavList } from '@/store/hook/useResourceList'
+import { useViewList, useFavList, useOrdersList } from '@/store/hook/useResourceList'
 
 interface PostListProps {
   className?: string
@@ -56,13 +56,30 @@ const ViewList = ({ className }: PostListProps) => {
         </InfiniteScroll>
         }
         {ids === 'purchased' && <FavList />}
-        {ids === 'saved' && <FavList />}
+        {ids === 'saved' && <OrderList />}
       </div>
     </>
   )
 }
 const FavList = () => {
   const { list, hasMore, fetchMoreData } = useFavList()
+  return (
+    <InfiniteScroll
+      dataLength={list.length}
+      next={fetchMoreData}
+      hasMore={hasMore}
+      loader={
+        <Box textAlign="center" m="20px 0">
+          <Spinner color="#4A3AFF" />
+        </Box>
+      }
+    >
+      <ResourceList resources={list} />
+    </InfiniteScroll>
+  )
+}
+const OrderList = () => {
+  const { list, hasMore, fetchMoreData } = useOrdersList()
   return (
     <InfiniteScroll
       dataLength={list.length}

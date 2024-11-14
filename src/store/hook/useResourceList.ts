@@ -131,6 +131,44 @@ export const useFavList = () => {
     },
   }
 }
+export const useOrdersList = () => {
+  const { orderList, setOrderPage, loadOrderList, resetOrderList, token } = useStore(
+    (state) => ({
+      orderList: state.orderList,
+      setOrderPage: state.setOrderPage,
+      loadOrderList: state.loadOrderList,
+      resetOrderList: state.resetOrderList,
+      token: state.token,
+    }),
+    shallow
+  )
+
+  const { list, page, hasMore, isLoading, error } = orderList
+
+  useEffect(() => {
+    if (!token) return
+    loadOrderList(page)
+  }, [page, token])
+
+  const fetchMoreData = () => {
+    if (!isLoading && hasMore) {
+      loadOrderList(page + 1)
+    }
+  }
+
+  return {
+    list,
+    page,
+    hasMore,
+    isLoading,
+    error,
+    fetchMoreData,
+    refresh: () => {
+      resetOrderList()
+      loadOrderList(1)
+    },
+  }
+}
 
 export const useOthersViewList = () => {
   const {

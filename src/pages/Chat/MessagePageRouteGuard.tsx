@@ -1,8 +1,8 @@
 import { useStore } from '@/store'
 import { useIM } from '@/store/hook/userIM'
+import { Spinner } from '@chakra-ui/react'
 import { FC, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { ConnectStatus } from 'wukongimjssdk'
 
 interface MessagePageRouteGuardProps {
   children: React.ReactNode
@@ -11,27 +11,46 @@ interface MessagePageRouteGuardProps {
 const MessagePageRouteGuard: FC<MessagePageRouteGuardProps> = ({ children }) => {
   const [ready, setReady] = useState(false)
   const { uid } = useParams()
-  const token = useStore((state) => state.token)
+  const { getMessageWindow } = useIM()
   const connection = useStore((state) => state.connection)
-  const { initMessageWindow, initChatListItem } = useIM()
-  const prepare = () => {
-    try {
-      initMessageWindow(Number(uid))
-      initChatListItem(Number(uid))
-      setReady(true)
-    } catch (error) {
-      console.error('message page preparation failed:', error)
-      setReady(true)
-    }
-  }
+
+  const isChatListLoaded = useStore((state) => state.isChatListLoaded)
+
   useEffect(() => {
-    if (token && connection) {
+    const prepare = () => {
+      try {
+        if (!uid) {
+          throw new Error('uid is required')
+        }
+        const messageWindow = getMessageWindow(uid)
+        if (!messageWindow) {
+          connection
+            ?.createEmptyConversation(uid)
+            .then((res) => {
+              console.log('createEmptyConversation', res)
+              setReady(true)
+            })
+            .catch((error) => {
+              console.error('createEmptyConversation failed:', error)
+            })
+        } else {
+          setReady(true)
+        }
+      } catch (error) {
+        console.error('message page preparation failed:', error)
+      }
+    }
+    if (isChatListLoaded) {
       prepare()
     }
-  }, [token, connection])
+  }, [isChatListLoaded])
 
   if (!ready) {
-    return null
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <Spinner />
+      </div>
+    )
   }
 
   return <>{children}</>

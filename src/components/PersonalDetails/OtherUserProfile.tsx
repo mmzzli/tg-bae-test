@@ -74,7 +74,7 @@ const OtherUserProfile: FC = () => {
           </Text>
         </Box>
       </HStack>
-      <More bio={userInfo.bio}/>
+      <More bio={userInfo.bio} />
     </Box>
   )
 }

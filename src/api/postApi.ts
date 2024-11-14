@@ -1,4 +1,4 @@
-import { Conversation } from '@/components/SDK/BaeimSDK'
+import { Conversation, Message } from '@/components/SDK/BaeimSDK'
 import { del, get, post } from './base'
 import {
   LikeReq,
@@ -16,6 +16,12 @@ export const postResources = (params: PostResourceReq) => {
 }
 export const viewList = (params: ViewListReq) => {
   return post<ListRes>(`/api/v1/view`, params)
+}
+export const favList = (params: ViewListReq) => {
+  return post<ListRes>(`/api/v1/fav`, params)
+}
+export const ordersList = (params: ViewListReq) => {
+  return post<ListRes>(`/api/v1/orders`, params)
 }
 export const postLike = (params: LikeReq) => {
   return post<LikeRes>(`/api/v1/like`, params)
@@ -37,5 +43,32 @@ export const getLinkMetadata = (url: string) => {
 }
 
 export const getConversationSync = (params: { uid: string; msg_count: number }) => {
-  return post<Conversation[]>(`https://chat-dev.anyconn.org:5001/conversation/sync`, params)
+  return post<Conversation[]>('https://imdev.anyconn.org/conversation/sync', params, {
+    headers: { token: '662fd9dc8edae1de8cafb3822125f240' },
+  })
+}
+
+export const getMessagesSync = (params: {
+  uid: string
+  channel_id: string
+  channel_type: number
+  start_message_seq: number
+  end_message_seq: number
+  pull_mode: number
+  limit: number
+}) => {
+  return post<Message[]>(`https://imdev.anyconn.org/channel/messagesync`, params, {
+    headers: { token: '662fd9dc8edae1de8cafb3822125f240' },
+  })
+}
+
+export const setUnread = (params: {
+  uid: string
+  channel_id: string
+  channel_type: number
+  unread: number
+}) => {
+  return post<Message[]>(`https://imdev.anyconn.org/conversations/setUnread`, params, {
+    headers: { token: '662fd9dc8edae1de8cafb3822125f240' },
+  })
 }

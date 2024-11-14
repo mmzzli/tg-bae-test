@@ -1,6 +1,6 @@
 import { FC, useEffect } from 'react'
 import { useStore } from '@/store'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { getFollowerList, getFollowingList } from '@/api'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { Spinner } from '@chakra-ui/react'
@@ -105,10 +105,10 @@ const FollowPage: FC = () => {
   }
 
   return (
-    <div className="flex flex-col h-full w-full text-white px-4 py-[30px]">
+    <div className="fixed w-screen h-screen bg-black flex flex-col text-white px-4 py-[30px] z-10 overflow-auto scrollbar-hide">
       <h1 className="text-[24px] font-bold">{title}</h1>
       <InfiniteScroll
-        dataLength={type === 'follower' ? follower.list.length : following.list.length}
+        dataLength={type === 'follower' ? follower.list.length : following.list.length * 4}
         next={() => {}}
         hasMore={false}
         loader={
@@ -119,7 +119,9 @@ const FollowPage: FC = () => {
       >
         {type === 'follower'
           ? follower.list.map((item) => <FollowItem key={item.tg_id} item={item} />)
-          : following.list.map((item) => <FollowItem key={item.tg_id} item={item} />)}
+          : [...following.list, ...following.list, ...following.list, ...following.list].map(
+              (item) => <FollowItem key={item.tg_id} item={item} />
+            )}
       </InfiniteScroll>
     </div>
   )

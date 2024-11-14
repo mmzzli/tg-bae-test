@@ -2,11 +2,12 @@ import { FC } from 'react'
 import { ChatListProps } from './types'
 import ChatListItem from './ChatListItem'
 
-const ChatList: FC<ChatListProps> = ({ chats, onDelete }) => {
+const ChatList: FC<ChatListProps> = ({ chats }) => {
+  console.log('chats', chats)
   return (
     <>
       {chats.map((chat) => (
-        <ChatListItem key={chat.id} chat={chat} onDelete={onDelete} className="mb-[12px]" />
+        <ChatListItem key={chat.channel.channelID} chat={chat} className="mb-[12px]" />
       ))}
     </>
   )

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import Hls from 'hls.js'
 import { Box, Flex, Text, IconButton, useBoolean, HStack } from '@chakra-ui/react'
 import { IconLike } from '@/components/icons/like'
@@ -18,9 +18,12 @@ import Image from '../Image/Image'
 import FrostedGlass from '@/components/ResourceList/FrostedGlass'
 import SecondaryMenu from '../SecondaryMenu/SecondaryMenu'
 import { getLink } from '@/api/list'
-import { ImagePreview } from '../Image/ImagePreview'
+// import { ImagePreview } from '../Image/ImagePreview'
+const ImagePreview = lazy(() => import('../Image/ImagePreview'))
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import useMobile from '@/hooks/useMobile'
+
+import VideoPreview from '@/components/Image/VideoPreview'
 interface Like {
   id: number
   liked: boolean
@@ -35,10 +38,6 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
   const [resources, setResources] = useState<FormatterListItem[]>([])
   const [likes, setLikes] = useSafeState<Like[]>([])
   const { shareLink, launchParams } = useTMAUtils()
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
-  const [preloaded, setPreloaded] = useSafeState<boolean[]>(new Array(resources.length).fill(false))
-  const [playingIndex, setPlayingIndex] = useSafeState<number | null>(null)
-  const [isMuted, setIsMuted] = useSafeState(true)
   const [isBaseModalOpen, { toggle, off }] = useBoolean(false)
   const [links, setLinks] = useSetState<{ shareLink: string; copyLink: string }>({
     shareLink: '',
@@ -51,6 +50,9 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
   const [previewImages, setPreviewImages] = useState<string[]>([])
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
+  //
+  const [isVideoPreviewOpen, setIsVideoPreviewOpen] = useState<boolean>(false)
+  const [previewVideo, setPreviewVideo] = useState<string>('')
 
   const jumpToProfilePage = useProfileNavigation()
 
@@ -59,6 +61,10 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
     setPreviewImages(images)
     setCurrentIndex(index)
     setIsPreviewOpen(true)
+  }
+  const handleVideoClick = (videoUrl: string) => {
+    setPreviewVideo(videoUrl)
+    setIsVideoPreviewOpen(true)
   }
 
   const { runAsync: getLinkHandlerAsync } = useRequest(getLink, {
@@ -73,18 +79,16 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
       console.log(initialResources)
       const res = initialResources.map((item) => {
         if (item.type === 0 && item.media.length > 0) {
-          const [mediaCover, media] = item.media[0].split(',');
+          const [mediaCover, media] = item.media[0].split(',')
           return {
             ...item,
             media: [media || mediaCover],
-            mediaCover
-          };
+            mediaCover: item.thumbnail	,
+          }
         }
-        return item;
-      });
-
-      console.log(res);
-      setResources(res);
+        return item
+      })
+      setResources(res)
     }
   }, [initialResources])
   useEffect(() => {
@@ -93,88 +97,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
     }
   }, [resources])
 
-  useEffect(() => {
-    const options = {
-      root: null,
-      rootMargin: '0px',
-      threshold: 0.5,
-    }
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        const videoElement = entry.target as HTMLVideoElement
-        if (entry.isIntersecting) {
-          videoElement.play().catch((error) => console.error('Video play failed:', error))
-        } else {
-          videoElement.pause()
-        }
-      })
-    }, options)
-
-    resources.forEach((item, index) => {
-      if (Hls.isSupported() && item.type === 0) {
-        const hls = new Hls()
-        hls.loadSource(item.media[0])
-        hls.attachMedia(videoRefs.current[index]!)
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          const maxLevel = hls.levels.length - 1
-          hls.startLevel = maxLevel
-          hls.currentLevel = maxLevel
-        })
-        let loadedFragments = 0;
-        const maxPreloadFragments = 1;
-        hls.on(Hls.Events.FRAG_LOADING, (event, data) => {
-          if (loadedFragments < maxPreloadFragments) {
-            loadedFragments++;
-            cacheFragment(data.frag.url);
-          }
-        });
-
-        const videoElement = videoRefs.current[index]
-        if (videoElement) {
-          videoElement.addEventListener('canplaythrough', () => {
-            setPreloaded((prev) => {
-              const updated = [...prev]
-              updated[index] = true
-              return updated
-            })
-          })
-
-          observer.observe(videoElement)
-        }
-
-        return () => {
-          hls.destroy()
-          observer.unobserve(videoRefs.current[index]!)
-        }
-      }
-    })
-
-    const handleTouchStart = () => {
-      setIsMuted(false)
-      videoRefs.current.forEach((video) => {
-        if (video && !video.paused) {
-          video.play().catch((error) => console.error('Video play failed:', error))
-        }
-      })
-    }
-
-    window.addEventListener('touchstart', handleTouchStart, { once: true })
-
-    return () => {
-      window.removeEventListener('touchstart', handleTouchStart)
-    }
-  }, [resources])
-
-  const handlePlay = (index: number) => {
-    if (playingIndex !== null && playingIndex !== index) {
-      const currentVideo = videoRefs.current[playingIndex]
-      if (currentVideo) {
-        currentVideo.pause()
-      }
-    }
-    setPlayingIndex(index)
-  }
 
   const linkEve = async (post_id: number, boll: boolean) => {
     setLikes((prevLikes) =>
@@ -211,17 +134,6 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
     })
     setResources(updatedUsers)
   }
-  const cacheFragment = (url:string) => {
-    if ('caches' in window) {
-      caches.open('video-cache').then((cache) => {
-        cache.add(url).then(() => {
-          console.log('视频片段已缓存:', url);
-        }).catch((error) => {
-          console.error('缓存视频片段失败:', error);
-        });
-      });
-    }
-  };
 
   const renderBaseModal = () => (
     <BaseModal
@@ -241,7 +153,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
       showHandle={false}
     >
       <div className="mt-4 w-full">
-        <h3 className="font-bold text-2xl mb-[10px]">Share from Bae</h3>
+        <h3 className="font-bold text-2xl mb-[10px] text-[24px]">Share from Bae</h3>
         <div className="text-[15px] text-[#808080]">Earn $Bae every time you share from Bae</div>
 
         {isMobile && (
@@ -324,71 +236,52 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
               />
               <div className="relative px-4">
                 {data.type === POST_TYPE_IMAGE ? (
-                  data.media?.[0] == '' ? (
-                    <Box position="relative">
-                      <Image
-                        src={data.media?.[0] ?? data?.media ?? ''}
-                        alt={data.title}
-                        errorClassName="rounded-[2px] h-[150px]"
-                        className="object-left max-h-[387px] rounded-[2px]"
-                        onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
-                      />
-                      <FrostedGlass
-                        price={data.price}
-                        post_id={data.id}
-                        resourcesEve={resourcesEve}
-                      />
-                    </Box>
-                  ) : (
+                  <Box position="relative">
                     <Image
                       src={data.media?.[0] ?? data?.media ?? ''}
                       alt={data.title}
                       errorClassName="rounded-[2px] h-[150px]"
-                      className="object-left rounded-[2px] max-h-[387px]"
+                      className="object-left w-[100%] rounded-[2px] m-[auto]"
                       onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
                     />
-                  )
-                ) : data.media?.[0] == '' ? (
-                  <Box position="relative">
-                    <Box minH="130px">
-                      <video
-                        ref={(el) => (videoRefs.current[index] = el)}
-                        style={{ display: preloaded[index] ? 'block' : 'none', width: '100%', borderRadius:"4px" }}
-                        controls={false}
-                        muted={isMuted}
-                        // poster={data.mediaCover}
-                        loop
-                        playsInline
-                        onPlay={() => handlePlay(index)}
-                      />
-                    </Box>
-                    <FrostedGlass
+                    {data.media?.[0] === '' && <FrostedGlass
                       price={data.price}
                       post_id={data.id}
                       resourcesEve={resourcesEve}
-                    />
+                    />}
                   </Box>
                 ) : (
-                  <>
+                  <Box position="relative">
                     <Box minH="130px">
-                      <video
-                        ref={(el) => (videoRefs.current[index] = el)}
-                        style={{ display: preloaded[index] ? 'block' : 'none', width: '100%', borderRadius:"4px" }}
-                        controls={false}
-                        muted={isMuted}
-                        // poster={data.mediaCover}
-                        loop
-                        playsInline
-                        onPlay={() => handlePlay(index)}
+                      <Image
+                        src={data.mediaCover}
+                        alt={data.title}
+                        errorClassName="rounded-[2px] h-[150px]"
+                        className="object-left w-[100%] rounded-[2px] m-[auto]"
+                        onClick={() => handleVideoClick(data.media[0])}
                       />
                     </Box>
-                    <HStack borderRadius="4px" bg="rgba(0, 0, 0, 0.20)" position="absolute" top="12px" left="28px" p="4px 8px">
-                      <Image src={VideoIcon}/>
+                    <HStack
+                      borderRadius="4px"
+                      bg="rgba(0, 0, 0, 0.20)"
+                      position="absolute"
+                      top="12px"
+                      left="28px"
+                      p="4px 8px"
+                    >
+                      <Image src={VideoIcon} />
                       <Text color="#E0E2F6" fontSize="12px">
                         {data.duration}
                       </Text>
                     </HStack>
-                  </>
+
+                    {data.media?.[0] === '' &&
+                      <FrostedGlass
+                        price={data.price}
+                        post_id={data.id}
+                        resourcesEve={resourcesEve}
+                      />}
+                  </Box>
                 )}
               </div>
 
@@ -405,13 +298,29 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
           )
         }
       })}
-      <ImagePreview
+      {/* <ImagePreview
         isOpen={isPreviewOpen}
         onClose={() => setIsPreviewOpen(false)}
         images={previewImages}
         currentIndex={currentIndex}
         onIndexChange={setCurrentIndex}
-      />
+      /> */}
+      {isVideoPreviewOpen && <VideoPreview
+        isOpen={isVideoPreviewOpen}
+        onClose={() => setIsVideoPreviewOpen(false)}
+        videoUrl={previewVideo}
+      />}
+      {isPreviewOpen && (
+        <Suspense fallback={null}>
+          <ImagePreview
+            isOpen={isPreviewOpen}
+            onClose={() => setIsPreviewOpen(false)}
+            images={previewImages}
+            currentIndex={currentIndex}
+            onIndexChange={setCurrentIndex}
+          />
+        </Suspense>
+      )}
       {/* Components */}
       {renderBaseModal()}
     </>

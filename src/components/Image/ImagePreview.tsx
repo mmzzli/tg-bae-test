@@ -16,7 +16,7 @@ interface ImagePreviewProps {
   onIndexChange: (index: number) => void
 }
 
-export const ImagePreview: React.FC<ImagePreviewProps> = ({
+const ImagePreview: React.FC<ImagePreviewProps> = ({
   isOpen,
   onClose,
   images,
@@ -109,3 +109,5 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
     </div>
   )
 }
+
+export default ImagePreview

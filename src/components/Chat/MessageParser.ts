@@ -10,15 +10,16 @@ export interface ParsedContent {
 }
 
 export class MessageParser {
+  private static previewCache: Map<string, LinkMetadata> = new Map()
+  private static telegramCache: Map<string, LinkMetadata> = new Map()
+
+  private static readonly MAX_CACHE_SIZE = 10000
+
   private patterns = {
     url: /((ftp|https?):\/\/)?((www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z][-a-zA-Z0-9]{1,62})\b([-a-zA-Z0-9()@:%_+.,~#?&/=]*)/gi,
     telegramLink:
       /(?:https?:\/\/)?(?:[-a-zA-Z0-9@:%_+~#=]{1,32}\.)?t\.me\/[a-zA-Z0-9_]+(?:\/[a-zA-Z0-9_]+)?(?:\?[a-zA-Z0-9_=&%-]+)?/gi,
   }
-
-  // cache link preview result
-  private previewCache: Map<string, LinkMetadata> = new Map()
-  private telegramCache: Map<string, LinkMetadata> = new Map()
 
   async parseText(text: string): Promise<ParsedContent[]> {
     const parts: ParsedContent[] = []
@@ -121,41 +122,60 @@ export class MessageParser {
   }
 
   private async getLinkPreview(url: string): Promise<LinkMetadata> {
-    // check cache
-    if (this.previewCache.has(url)) {
-      return this.previewCache.get(url)!
+    if (MessageParser.previewCache.has(url)) {
+      return MessageParser.previewCache.get(url)!
+    }
+
+    if (MessageParser.previewCache.size >= MessageParser.MAX_CACHE_SIZE) {
+      const oldestKeys = Array.from(MessageParser.previewCache.keys()).slice(0, 100)
+      oldestKeys.forEach((key) => MessageParser.previewCache.delete(key))
     }
 
     const preview = await getLinkMetadata(url)
-
-    return {
+    if (preview.image && !preview.image.startsWith('http')) {
+      preview.image = `${preview.url}/${preview.image}`
+    }
+    const res = {
       site_name: preview?.site_name,
       title: preview?.title,
       desc: preview?.desc,
       image: preview?.image,
       url: preview?.url,
     }
+
+    MessageParser.previewCache.set(url, res)
+    return res
   }
 
   private async getTelegramPreview(url: string): Promise<LinkMetadata> {
-    if (this.telegramCache.has(url)) {
-      return this.telegramCache.get(url)!
+    if (MessageParser.telegramCache.has(url)) {
+      return MessageParser.telegramCache.get(url)!
+    }
+
+    if (MessageParser.telegramCache.size >= MessageParser.MAX_CACHE_SIZE) {
+      const oldestKeys = Array.from(MessageParser.telegramCache.keys()).slice(0, 100)
+      oldestKeys.forEach((key) => MessageParser.telegramCache.delete(key))
     }
 
     const preview = await getLinkMetadata(url)
-
-    return {
+    if (preview.image && !preview.image.startsWith('http')) {
+      preview.image = `https://${preview.image}`
+    }
+    const res = {
       site_name: preview?.site_name,
       title: preview?.title,
       desc: preview?.desc,
       image: preview?.image,
       url: preview?.url,
     }
+
+    MessageParser.telegramCache.set(url, res)
+    return res
   }
 
   // clear cache
   public clearCache() {
-    this.previewCache.clear()
-    this.telegramCache.clear()
+    MessageParser.previewCache.clear()
+    MessageParser.telegramCache.clear()
   }
 }

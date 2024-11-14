@@ -96,8 +96,16 @@ const HomePage: FC = () => {
         <p className="text-[#62636F]">Join our community to meet creators</p>
         <p className="text-[#62636F]">and start to follow them</p>
       </div>
-      <div className='mt-[28px] mb-[48px] text-center'>
-        <Button variant='primary-dark-border' m="auto" w="126px" h="40px" onClick={() => shareLink(COMMUNITY_LINK)}>Community</Button>
+      <div className="mt-[28px] mb-[48px] text-center">
+        <Button
+          variant="primary-dark-border"
+          m="auto"
+          w="126px"
+          h="40px"
+          onClick={() => shareLink(COMMUNITY_LINK)}
+        >
+          Community
+        </Button>
       </div>
       {/* <button
         onClick={() => shareLink(COMMUNITY_LINK)}
@@ -109,7 +117,6 @@ const HomePage: FC = () => {
         <h3 className="text-[#E0E2F6] font-bold text-xl">Selected Posts</h3>
       </div>
       <RecommendList />
-      <Menu selectedIndex={0} />
     </>
   )
 }

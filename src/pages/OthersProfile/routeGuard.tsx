@@ -62,7 +62,7 @@ const ProfileGuard: FC<ProfileGuardProps> = ({ children }) => {
   }, [uid, token])
 
   if (!ready) {
-    return null
+    return <div className="fixed w-screen h-screen flex flex-col bg-[#0D0D0D] z-10" />
   }
 
   return <>{children}</>

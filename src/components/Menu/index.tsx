@@ -1,7 +1,5 @@
 import type { FC } from 'react'
-import { useNavigate } from 'react-router-dom'
-
-import { Box, HStack, Text, Link } from '@chakra-ui/react'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import {
   HomeIcon,
@@ -20,12 +18,10 @@ interface NavItem {
   url: string
 }
 
-interface MenuProps {
-  selectedIndex: number
-}
-
-export const Menu: FC<MenuProps> = ({ selectedIndex }) => {
+export const Menu: FC = () => {
   const navigate = useNavigate()
+  const pathname = useLocation().pathname
+
   const navList: NavItem[] = [
     {
       icon: HomeIcon,
@@ -47,41 +43,38 @@ export const Menu: FC<MenuProps> = ({ selectedIndex }) => {
     },
   ]
   return (
-    <Box
-      position="fixed"
-      bottom="0px"
-      width=" 100%"
-      p="0px 34px"
-      pt="8px"
-      borderTop="1px solid #212121"
-      bg="#0D0D0D"
-      pb="28px"
-      zIndex={1}
-    >
-      <HStack justifyContent="space-around">
+    <div className="fixed bottom-0 left-0 w-full p-0 h-[84px] pt-2 border-t border-[#212121] bg-[#0D0D0D] z-9">
+      <div className="flex justify-around items-center">
         {navList.map((item, index) => (
-          <Link onClick={() => {location.href = `${item.url}`}} key={index}>
-            <Box textAlign="center" pt="6px" cursor="pointer">
-              <Box h="24px" w="24px" m="auto">
-                <Image
-                  className="m-auto"
-                  src={selectedIndex === index ? item.iconActive : item.icon}
-                  alt={item.name}
-                />
-              </Box>
-              <Text
-                color={selectedIndex === index ? '#E0E2F6' : '#424048'}
-                fontSize="10px"
-                lineHeight="12px"
-                mt="4px"
-                textTransform="uppercase"
-              >
+          <div
+            className="flex flex-col items-center w-[65px] h-[51px] no-tap"
+            onClick={() => {
+              navigate(item.url)
+            }}
+            key={index}
+          >
+            <div className="text-center pt-[6px] cursor-pointer">
+              <div className="relative h-[24px] w-[24px] m-auto overflow-hidden">
+                <div
+                  className="absolute top-0 left-0 w-full h-full transition-opacity duration-200"
+                  style={{ opacity: pathname === item.url ? 1 : 0 }}
+                >
+                  <Image className="m-auto" src={item.iconActive} alt={item.name} />
+                </div>
+                <div
+                  className="absolute top-0 left-0 w-full h-full transition-opacity duration-200"
+                  style={{ opacity: pathname === item.url ? 0 : 1 }}
+                >
+                  <Image className="m-auto" src={item.icon} alt={item.name} />
+                </div>
+              </div>
+              <div className="text-[#424048] text-[10px] leading-[12px] mt-[4px] uppercase">
                 {item.name}
-              </Text>
-            </Box>
-          </Link>
+              </div>
+            </div>
+          </div>
         ))}
-      </HStack>
-    </Box>
+      </div>
+    </div>
   )
 }

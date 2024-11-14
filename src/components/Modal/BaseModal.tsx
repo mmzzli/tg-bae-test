@@ -102,6 +102,7 @@ export const BaseModal: FC<BottomSheetProps> = ({
     minHeight,
     backgroundColor: backgroundColor || getTelegramTheme().backgroundColor,
     transition: `transform ${animation.duration}ms ${animation.timingFunction}`,
+    transform: 'translateZ(50px)',
     ...style,
   }
   useEffect(()=>{
@@ -122,10 +123,10 @@ export const BaseModal: FC<BottomSheetProps> = ({
       role="dialog"
       aria-modal="true"
       aria-hidden={!isOpen}
-      style={{transform: 'translateZ(10px)'}}
+      style={{transform: 'translateZ(50px)'}}
     >
       <div
-        className={`fixed bottom-0 left-0 right-0 rounded-t-2xl bg-[#1C1C1C] dark:bg-gray-800 transition-transform ${
+        className={`fixed z-50 bottom-0 left-0 right-0 rounded-t-2xl bg-[#1C1C1C] dark:bg-gray-800 transition-transform ${
           isOpen ? 'translate-y-0' : 'translate-y-full'
         } ${className}`}
         style={sheetStyle}
@@ -139,11 +140,11 @@ export const BaseModal: FC<BottomSheetProps> = ({
         )}
 
         <div
-          className="p-4 overflow-y-auto  bg-[#1C1C1C] text-[#E0E2F6] rounded-t-2xl rounded-b-none border-[#1c1c1c]"
+          className="p-[16px] overflow-y-auto  bg-[#1C1C1C] text-[#E0E2F6] rounded-t-2xl rounded-b-none border-[#1c1c1c]"
           style={{ height: 'calc(100%)' }}
         >
           <Image src={CloseIcon} className="cursor-pointer" onClick={handleBackdropClick} />
-          <div className="flex justify-center">{children}</div>
+          <div className="flex justify-center px-[8px]">{children}</div>
         </div>
       </div>
     </div>

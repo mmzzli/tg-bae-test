@@ -1,38 +1,55 @@
 import { useState, useEffect } from 'react'
 import { MessageList } from '@/components/Chat/MessageList'
 import { MessageInput } from '@/components/Chat/MessageInput'
-import { Message, MessageType } from '@/components/Chat/types'
+import { MessageType, WrappedMessage } from '@/components/Chat/types'
 import { useParams } from 'react-router-dom'
 import { useFormatMessage } from '@/hooks/useFormatMessage'
 import { useIM } from '@/store/hook/userIM'
 import { useStore } from '@/store'
-
+import { OthersUserInfo } from '@/types'
+import Image from '@/components/Image/Image'
 // const PAGE_SIZE = 20
 
-const defaultMessages: Message[] = []
+const defaultMessages: WrappedMessage[] = []
 
 const MessagePage = () => {
   const { uid } = useParams()
-  const [messages, setMessages] = useState<Message[]>(defaultMessages)
+  const [messages, setMessages] = useState<WrappedMessage[]>(defaultMessages)
+  const [chatPeople, setChatPeople] = useState<OthersUserInfo | null>(null)
   // const [page, setPage] = useState(1)
   // const [hasMore, setHasMore] = useState(true)
   const { formatMessage } = useFormatMessage()
-  const { getMessageWindowByReceiveId, sendMessage } = useIM()
-  const messageWindow = getMessageWindowByReceiveId(Number(uid))
-  // useEffect(() => {
-  //   loadMessages()
-  // }, [])
-  const chatList = useStore((state) => state.chatList)
+  const { sendMessage, getMessageWindow, getChatPeopleInfo } = useIM()
+  const messageWindow = getMessageWindow(uid || '')
+  const messageWindowList = useStore((state) => state.messageWindowList)
+
   useEffect(() => {
+    console.log('MessagePage messageWindowList change', messageWindowList)
     if (messageWindow) {
       setMessages(messageWindow.messages)
     }
-  }, [messageWindow])
+  }, [messageWindow, messageWindowList])
 
   // const loadMore = () => {
   //   setPage((prev) => prev + 1)
   //   loadMessages()
   // }
+
+  useEffect(() => {
+    if (uid) {
+      const getUserInfo = (times: number) => {
+        const user = getChatPeopleInfo(Number(uid))
+        if (user) {
+          setChatPeople(user)
+        } else if (times > 0) {
+          setTimeout(() => {
+            getUserInfo(times - 1)
+          }, 300)
+        }
+      }
+      getUserInfo(10)
+    }
+  }, [uid])
 
   const handleSend = ({ type, text }: { type: MessageType; text?: string }) => {
     const newMessage = formatMessage({
@@ -41,12 +58,28 @@ const MessagePage = () => {
       to: Number(uid),
     })
     sendMessage(newMessage)
-    // setMessages((prev) => [...prev, newMessage])
   }
 
+  console.log('MessagePage render', messageWindow)
   return (
-    <div className="flex flex-col h-screen bg-[#0D0D0D]">
-      <MessageList messages={messages} loadMore={() => {}} hasMore={false} className="flex-1" />
+    <div className="fixed w-screen h-screen flex flex-col bg-[#0D0D0D] z-10">
+      <div className="flex items-center px-[16px] my-[24px] h-[32px]">
+        <Image
+          type="avatar"
+          rect
+          src={chatPeople?.avatar}
+          alt="avatar"
+          className="w-[32px] h-[32px] rounded-full"
+        />
+        <span className="text-[#FFFFFF] text-lg ml-2">{chatPeople?.username}</span>
+      </div>
+      <MessageList
+        messages={messages}
+        loadMore={() => {}}
+        hasMore={false}
+        channelInfo={chatPeople}
+        className="flex-1"
+      />
       <MessageInput onSend={handleSend} />
     </div>
   )

@@ -14,7 +14,7 @@ const Splash: FC = () => {
   }, [userInfo])
 
   return (
-    <div className="w-full h-screen bg-[#0D0D0D] flex justify-center items-center">
+    <div className="fixed w-screen h-screen bg-[#0D0D0D] flex justify-center items-center z-10">
       <div className="relative w-12 h-12">
         <div className="absolute w-full h-full border-4 border-white rounded-full animate-[ripple_1s_ease-out_infinite]" />
         <div className="absolute w-full h-full border-4 border-white rounded-full animate-[ripple_1s_ease-out_0.5s_infinite]" />

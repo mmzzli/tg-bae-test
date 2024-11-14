@@ -91,7 +91,7 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
         const sdk = new BaeimSDK({
           token,
           userUid: String(currentUid),
-          serverAddr: 'wss://chat-dev.anyconn.org:8210',
+          serverAddr: import.meta.env.VITE_APP_IM_WS_URL,
           syncConversationsCallback: async () => {
             const resp = await getConversationSync({
               uid: String(currentUid),

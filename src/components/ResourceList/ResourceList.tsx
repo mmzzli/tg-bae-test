@@ -241,7 +241,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                       src={data.media?.[0] ?? data?.media ?? ''}
                       alt={data.title}
                       errorClassName="rounded-[2px] h-[150px]"
-                      className="object-left max-h-[387px] rounded-[2px] m-[auto]"
+                      className="object-left w-[100%] rounded-[2px] m-[auto]"
                       onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
                     />
                     {data.media?.[0] === '' && <FrostedGlass
@@ -257,7 +257,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                         src={data.mediaCover}
                         alt={data.title}
                         errorClassName="rounded-[2px] h-[150px]"
-                        className="object-left max-h-[387px] rounded-[2px] m-[auto]"
+                        className="object-left w-[100%] rounded-[2px] m-[auto]"
                         onClick={() => handleVideoClick(data.media[0])}
                       />
                     </Box>

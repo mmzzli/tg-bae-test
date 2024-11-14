@@ -2,7 +2,7 @@ import { StateCreator } from 'zustand'
 export type ListType = 'recommend' | 'view'
 import { ListItem, UserItem } from '../../types'
 import { getRecommendMedia } from '../../api/list'
-import { viewList, getUsersPosts } from '@/api'
+import { viewList, getUsersPosts, favList, ordersList } from '@/api'
 import { useStore } from '../store'
 
 export interface BaseListState {
@@ -54,6 +54,26 @@ export interface ResourceListSlice {
   deleteViewList: (item: FormatterListItem) => void
   loadViewList: (page: number) => Promise<void>
   resetAllLists: () => void
+
+  // Fav
+  favList: BaseListState
+  setFavPage: (page: number) => void
+  setFavList: (list: FormatterListItem[], merge?: boolean) => void
+  setFavLoading: (isLoading: boolean) => void
+  resetFavList: () => void
+  loadFavList: (page: number) => Promise<void>
+  setFavError: (error: string | null) => void
+  setFavHasMore: (hasMore: boolean) => void
+
+  // order
+  orderList: BaseListState
+  setOrderPage: (page: number) => void
+  setOrderList: (list: FormatterListItem[], merge?: boolean) => void
+  setOrderLoading: (isLoading: boolean) => void
+  resetOrderList: () => void
+  loadOrderList: (page: number) => Promise<void>
+  setOrderError: (error: string | null) => void
+  setOrderHasMore: (hasMore: boolean) => void
 
   // others view
   othersViewList: BaseListState
@@ -308,4 +328,140 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       recommendList: { ...initialListState },
       viewList: { ...initialListState },
     }),
+
+  // fav
+  favList: { ...initialListState },
+  loadFavList: async (page) => {
+    try {
+      get().setFavLoading(true)
+      get().setFavError(null)
+      console.log(123)
+      const { posts } = await favList({
+        page_num: page,
+        records: recordsNum,
+      })
+      const hasMore = posts.length === recordsNum
+
+      const updatedPosts = posts.map(({ post, user }) => ({
+        ...user,
+        ...post,
+        media:
+          post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
+      }))
+      console.log(updatedPosts)
+      get().setFavList(updatedPosts, page > 1)
+      get().setFavHasMore(hasMore)
+    } catch (error) {
+      get().setFavError(error instanceof Error ? error.message : 'Loading Failed')
+    } finally {
+      get().setFavLoading(false)
+    }
+  },
+  setFavPage: (page) =>
+    set((state) => ({
+      favList: {
+        ...state.favList,
+        page,
+      },
+    })),
+  resetFavList: () =>
+    set(() => ({
+      favList: { ...initialListState },
+    })),
+  setFavList: (newList, merge = false) =>
+    set((state) => ({
+      favList: {
+        ...state.favList,
+        list: merge ? [...state.favList.list, ...newList] : newList,
+      },
+    })),
+  setFavLoading: (isLoading) =>
+    set((state) => ({
+      favList: {
+        ...state.favList,
+        isLoading,
+      },
+    })),
+  setFavError: (error) =>
+    set((state) => ({
+      favList: {
+        ...state.favList,
+        error,
+      },
+    })),
+  setFavHasMore: (hasMore) =>
+    set((state) => ({
+      favList: {
+        ...state.favList,
+        hasMore,
+      },
+    })),
+
+  // order
+  orderList: { ...initialListState },
+  loadOrderList: async (page) => {
+    try {
+      get().setOrderLoading(true)
+      get().setOrderError(null)
+      console.log(123)
+      const { posts } = await ordersList({
+        page_num: page,
+        records: recordsNum,
+      })
+      const hasMore = posts.length === recordsNum
+
+      const updatedPosts = posts.map(({ post, user }) => ({
+        ...user,
+        ...post,
+        media:
+          post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
+      }))
+      console.log(updatedPosts)
+      get().setOrderList(updatedPosts, page > 1)
+      get().setOrderHasMore(hasMore)
+    } catch (error) {
+      get().setOrderError(error instanceof Error ? error.message : 'Loading Failed')
+    } finally {
+      get().setOrderLoading(false)
+    }
+  },
+  setOrderPage: (page) =>
+    set((state) => ({
+      orderList: {
+        ...state.orderList,
+        page,
+      },
+    })),
+  resetOrderList: () =>
+    set(() => ({
+      orderList: { ...initialListState },
+    })),
+  setOrderList: (newList, merge = false) =>
+    set((state) => ({
+      orderList: {
+        ...state.orderList,
+        list: merge ? [...state.orderList.list, ...newList] : newList,
+      },
+    })),
+  setOrderLoading: (isLoading) =>
+    set((state) => ({
+      orderList: {
+        ...state.orderList,
+        isLoading,
+      },
+    })),
+  setOrderError: (error) =>
+    set((state) => ({
+      orderList: {
+        ...state.orderList,
+        error,
+      },
+    })),
+  setOrderHasMore: (hasMore) =>
+    set((state) => ({
+      orderList: {
+        ...state.orderList,
+        hasMore,
+      },
+    })),
 })

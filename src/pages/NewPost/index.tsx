@@ -21,6 +21,7 @@ import { PostIcon, PostAddIcon, RemoveIcon, VideoSwitchIcon } from '@/assets/ico
 import { useStore } from '@/store'
 import VideoFrameSelector from '@/components/NewPost/VideoFrameSelector'
 import VideoPlayer from '@/components/comm/VideoPlayer'
+import { uploadImgUrl } from '@/utils/env'
 
 export const NewPost: FC = () => {
   const navigate = useNavigate()
@@ -57,7 +58,7 @@ export const NewPost: FC = () => {
   async function imgUpload(files: File[]): Promise<void> {
     const imgList = []
     for (const file of files) {
-      const url = `https://picupload.mobus.workers.dev/upload/${file.name}`
+      const url = `${uploadImgUrl}/upload/${file.name}`
       console.log(file)
       const formData = new FormData()
       formData.append('file', file)

@@ -6,6 +6,7 @@ import { useToast } from '@chakra-ui/react'
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { profileEdit, putProfile } from '@/api'
 import Skeleton from '@/components/Skeketon/Skeleton'
+import { uploadImgUrl } from '@/utils/env'
 
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useStore } from '@/store/store'
@@ -62,7 +63,7 @@ const ProfileEdit: FC = () => {
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const url = `https://picupload.mobus.workers.dev/upload/${file.name}`
+      const url = `${uploadImgUrl}/upload/${file.name}`
       const formData = new FormData()
       formData.append('file', file)
       try {

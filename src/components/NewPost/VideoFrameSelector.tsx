@@ -5,6 +5,7 @@ import axios, { AxiosResponse } from 'axios'
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { BaseModal } from '@/components/Modal/BaseModal'
 import { useStore } from '@/store'
+import { uploadImgUrl } from '@/utils/env'
 
 
 interface Frame {
@@ -160,7 +161,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover }) 
                   className='h-[48px]'
                   handler={async()=>{
                     const timestamp: number = new Date().getTime();
-                    const url = `https://picupload.mobus.workers.dev/upload/${timestamp}`
+                    const url = `${uploadImgUrl}/upload/${timestamp}`
                     const file = base64ToFile(selectedFrame?.url, "image.png");
 
                     const formData = new FormData()

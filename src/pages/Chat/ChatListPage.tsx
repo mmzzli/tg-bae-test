@@ -166,7 +166,9 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
   }, [userInfo, token])
   console.log('chatListPage render')
   return (
-    <div className={cn('bg-black min-h-screen pt-[32px]', className)}>
+    <div
+      className={cn('bg-black min-h-screen pt-[32px] overflow-auto', 'scrollbar-hide', className)}
+    >
       {isChatListLoaded && chatList.length > 0 && (
         <InfiniteScroll
           dataLength={chatList.length}
@@ -195,8 +197,6 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
           <ChatSkeleton />
         </div>
       )}
-
-      <Menu selectedIndex={1} />
     </div>
   )
 }

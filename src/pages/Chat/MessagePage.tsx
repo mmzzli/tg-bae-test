@@ -62,7 +62,7 @@ const MessagePage = () => {
 
   console.log('MessagePage render', messageWindow)
   return (
-    <div className="flex flex-col h-screen bg-[#0D0D0D]">
+    <div className="fixed w-screen h-screen flex flex-col bg-[#0D0D0D] z-10">
       <div className="flex items-center px-[16px] my-[24px] h-[32px]">
         <Image
           type="avatar"

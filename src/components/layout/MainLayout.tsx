@@ -9,6 +9,7 @@ import { useRequest } from 'ahooks'
 import { Outlet } from 'react-router-dom'
 import { log } from 'console'
 import { Spinner } from '@chakra-ui/react'
+import { Menu } from '../Menu'
 
 const ChatListPage = lazy(() =>
   import('@/pages/Chat').then((module) => ({
@@ -96,18 +97,25 @@ export const MainLayout: React.FC = () => {
 
   return (
     <div className="bg-black min-h-screen">
-      {shouldLoadChat && (
-        <Suspense
-          fallback={
-            <div className="h-screen flex items-center justify-center">
-              <Spinner />
-            </div>
-          }
-        >
-          <ChatListPage className={hiddenChatPage ? 'hidden' : ''} />
-        </Suspense>
-      )}
+      <div
+        className="fixed w-screen h-screen flex-col bg-[#0D0D0D]"
+        style={{ display: hiddenChatPage ? 'none' : 'flex' }}
+      >
+        {shouldLoadChat && (
+          <Suspense
+            fallback={
+              <div className="h-screen flex items-center justify-center">
+                <Spinner />
+              </div>
+            }
+          >
+            <ChatListPage />
+          </Suspense>
+        )}
+      </div>
       <Outlet />
+
+      <Menu />
     </div>
   )
 }

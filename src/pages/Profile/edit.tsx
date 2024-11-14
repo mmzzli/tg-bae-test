@@ -5,6 +5,7 @@ import { useToast } from '@chakra-ui/react'
 
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { profileEdit, putProfile } from '@/api'
+import Skeleton from '@/components/Skeketon/Skeleton'
 
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useStore } from '@/store/store'
@@ -85,61 +86,70 @@ const ProfileEdit: FC = () => {
   return (
     <div className="pt-[10px] px-[16px]">
       <h2 className="text-[20px] text-[#E0E2F6]">Profile</h2>
-      <div className="mt-[44px]">
-        <p className="w-[88px] h-[88px] bg-[#333] m-[auto] rounded-[50px] relative">
-          <img src={profileData?.avatar} className='w-[100%] h-[100%] rounded-[50px] object-cover overflow-hidden' />
-          <p className="absolute bottom-[0px] right-[-14px]  bg-[#19191E] rounded-[50px] p-[5px]" onClick={handleDivClick}>
-            <img src={CameraIcon} />
-          </p>
-        </p>
-      </div>
-      <input
-        type="file"
-        ref={fileInputRef}
-        style={{ display: "none" }}
-        accept="image/*"
-        onChange={handleFileChange}
-      />
-      <div className="px-[8px] mt-[48px]">
-        <div className="flex justify-between items-center mb-[16px]">
-          <h3 className="text-[16px] text-[#E0E2F6]">* Name</h3>
-          <p className="text-[#424048] text-[12px]">{profileData?.username.length}/20</p>
-        </div>
-        <input
-          className="w-[100%] rounded-[10px] text-[#E0E2F6] text-[14px] bg-[#19191E] px-[16px] py-[15px]"
-          value={profileData?.username}
-          onChange={(e) => changeEve(e, 'username')}
-        />
-        <div className="mt-[24px]">
-          <div className="flex justify-between items-center mb-[16px]">
-            <h3 className="text-[16px] text-[#E0E2F6]">Bio</h3>
-            <p className="text-[#424048] text-[12px]">{profileData?.bio.length}/500</p>
+      {profileData.avatar ?
+        <>
+          <div className="mt-[44px]">
+            <p className="w-[88px] h-[88px] bg-[#333] m-[auto] rounded-[50px] relative">
+              <img src={profileData?.avatar} className='w-[100%] h-[100%] rounded-[50px] object-cover overflow-hidden' />
+              <p className="absolute bottom-[0px] right-[-14px]  bg-[#19191E] rounded-[50px] p-[5px]" onClick={handleDivClick}>
+                <img src={CameraIcon} />
+              </p>
+            </p>
           </div>
-          <textarea
-            className="w-[100%] h-[218px] rounded-[10px] text-[#E0E2F6] text-[14px] bg-[#19191E] px-[16px] py-[15px]"
-            value={profileData?.bio}
-            onChange={(e) => changeEve(e, 'bio')}
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            accept="image/*"
+            onChange={handleFileChange}
           />
+          <div className="px-[8px] mt-[48px]">
+            <div className="flex justify-between items-center mb-[16px]">
+              <h3 className="text-[16px] text-[#E0E2F6]">* Name</h3>
+              <p className="text-[#424048] text-[12px]">{profileData?.username.length}/20</p>
+            </div>
+            <input
+              className="w-[100%] rounded-[10px] text-[#E0E2F6] text-[14px] bg-[#19191E] px-[16px] py-[15px]"
+              value={profileData?.username}
+              onChange={(e) => changeEve(e, 'username')}
+            />
+            <div className="mt-[24px]">
+              <div className="flex justify-between items-center mb-[16px]">
+                <h3 className="text-[16px] text-[#E0E2F6]">Bio</h3>
+                <p className="text-[#424048] text-[12px]">{profileData?.bio.length}/500</p>
+              </div>
+              <textarea
+                className="w-[100%] h-[218px] rounded-[10px] text-[#E0E2F6] text-[14px] bg-[#19191E] px-[16px] py-[15px]"
+                value={profileData?.bio}
+                onChange={(e) => changeEve(e, 'bio')}
+              />
+            </div>
+          </div>
+          <div className="pt-[28px] px-[18px] pb-[43px]">
+            <BaseButton
+              text="Done"
+              width="100%"
+              height="48px"
+              handler={async () => {
+                await putProfile(profileData)
+                toast({
+                  title: 'successfully',
+                  status: 'success',
+                  position: 'top',
+                  onCloseComplete: () => {
+                    location.href = '/profile'
+                  },
+                })
+              }}
+            />
+          </div>
+        </>
+        :
+        <div className="mt-[44px]">
+          <Skeleton childClassName='w-[88px] h-[88px] m-[auto] rounded-full' />
+          <Skeleton childClassName='w-[100%] h-[188px] m-[auto] rounded-[4px] mt-[48px]' />
         </div>
-      </div>
-      <div className="mt-[20px] px-[18px]">
-        <BaseButton
-          text="Done"
-          width="100%"
-          height="48px"
-          handler={async () => {
-            await putProfile(profileData)
-            toast({
-              title: 'successfully',
-              status: 'success',
-              position: 'top',
-              onCloseComplete: () => {
-                location.href = '/profile'
-              },
-            })
-          }}
-        />
-      </div>
+      }
     </div>
   )
 }

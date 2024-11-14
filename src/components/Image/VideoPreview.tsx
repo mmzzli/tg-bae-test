@@ -15,26 +15,20 @@ const VideoPreview: React.FC<VideoPreviewProps> = ({
   videoUrl
 }) => {
 
-  const videoRef = useRef<HTMLVideoElement | null>(null); // 引用 video 元素
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
     if (Hls.isSupported()) {
       const hls = new Hls();
 
-      // 加载 m3u8 视频流
       hls.loadSource(videoUrl);
 
-      // 将 HLS.js 绑定到 <video> 元素
       if (videoRef.current) {
         hls.attachMedia(videoRef.current);
       }
-
-      // 监听事件
       hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
         console.log('Manifest loaded:', data);
       });
-
-      // 清理工作：组件卸载时销毁 HLS 实例
       return () => {
         hls.destroy();
       };

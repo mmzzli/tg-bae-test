@@ -5,6 +5,7 @@ import axios, { AxiosResponse } from 'axios'
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { BaseModal } from '@/components/Modal/BaseModal'
 import { useStore } from '@/store'
+import { uploadImgUrl } from '@/utils/env'
 
 interface Frame {
   url: string

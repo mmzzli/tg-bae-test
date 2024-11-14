@@ -6,6 +6,7 @@ import { useToast } from '@chakra-ui/react'
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { profileEdit, putProfile } from '@/api'
 import Skeleton from '@/components/Skeketon/Skeleton'
+import { uploadImgUrl } from '@/utils/env'
 
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useStore } from '@/store/store'

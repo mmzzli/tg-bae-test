@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import Hls from 'hls.js'
 import { Box, Flex, Text, IconButton, useBoolean, HStack } from '@chakra-ui/react'
 import { IconLike } from '@/components/icons/like'
@@ -18,7 +18,8 @@ import Image from '../Image/Image'
 import FrostedGlass from '@/components/ResourceList/FrostedGlass'
 import SecondaryMenu from '../SecondaryMenu/SecondaryMenu'
 import { getLink } from '@/api/list'
-import { ImagePreview } from '../Image/ImagePreview'
+// import { ImagePreview } from '../Image/ImagePreview'
+const ImagePreview = lazy(() => import('../Image/ImagePreview'))
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import useMobile from '@/hooks/useMobile'
 interface Like {
@@ -73,18 +74,18 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
       console.log(initialResources)
       const res = initialResources.map((item) => {
         if (item.type === 0 && item.media.length > 0) {
-          const [mediaCover, media] = item.media[0].split(',');
+          const [mediaCover, media] = item.media[0].split(',')
           return {
             ...item,
             media: [media || mediaCover],
-            mediaCover
-          };
+            mediaCover,
+          }
         }
-        return item;
-      });
+        return item
+      })
 
-      console.log(res);
-      setResources(res);
+      console.log(res)
+      setResources(res)
     }
   }, [initialResources])
   useEffect(() => {
@@ -121,14 +122,14 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
           hls.startLevel = maxLevel
           hls.currentLevel = maxLevel
         })
-        let loadedFragments = 0;
-        const maxPreloadFragments = 1;
+        let loadedFragments = 0
+        const maxPreloadFragments = 1
         hls.on(Hls.Events.FRAG_LOADING, (event, data) => {
           if (loadedFragments < maxPreloadFragments) {
-            loadedFragments++;
-            cacheFragment(data.frag.url);
+            loadedFragments++
+            cacheFragment(data.frag.url)
           }
-        });
+        })
 
         const videoElement = videoRefs.current[index]
         if (videoElement) {
@@ -211,17 +212,20 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
     })
     setResources(updatedUsers)
   }
-  const cacheFragment = (url:string) => {
+  const cacheFragment = (url: string) => {
     if ('caches' in window) {
       caches.open('video-cache').then((cache) => {
-        cache.add(url).then(() => {
-          console.log('视频片段已缓存:', url);
-        }).catch((error) => {
-          console.error('缓存视频片段失败:', error);
-        });
-      });
+        cache
+          .add(url)
+          .then(() => {
+            console.log('视频片段已缓存:', url)
+          })
+          .catch((error) => {
+            console.error('缓存视频片段失败:', error)
+          })
+      })
     }
-  };
+  }
 
   const renderBaseModal = () => (
     <BaseModal
@@ -353,7 +357,11 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                     <Box minH="130px">
                       <video
                         ref={(el) => (videoRefs.current[index] = el)}
-                        style={{ display: preloaded[index] ? 'block' : 'none', width: '100%', borderRadius:"4px" }}
+                        style={{
+                          display: preloaded[index] ? 'block' : 'none',
+                          width: '100%',
+                          borderRadius: '4px',
+                        }}
                         controls={false}
                         muted={isMuted}
                         // poster={data.mediaCover}
@@ -373,7 +381,11 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                     <Box minH="130px">
                       <video
                         ref={(el) => (videoRefs.current[index] = el)}
-                        style={{ display: preloaded[index] ? 'block' : 'none', width: '100%', borderRadius:"4px" }}
+                        style={{
+                          display: preloaded[index] ? 'block' : 'none',
+                          width: '100%',
+                          borderRadius: '4px',
+                        }}
                         controls={false}
                         muted={isMuted}
                         // poster={data.mediaCover}
@@ -382,8 +394,15 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                         onPlay={() => handlePlay(index)}
                       />
                     </Box>
-                    <HStack borderRadius="4px" bg="rgba(0, 0, 0, 0.20)" position="absolute" top="12px" left="28px" p="4px 8px">
-                      <Image src={VideoIcon}/>
+                    <HStack
+                      borderRadius="4px"
+                      bg="rgba(0, 0, 0, 0.20)"
+                      position="absolute"
+                      top="12px"
+                      left="28px"
+                      p="4px 8px"
+                    >
+                      <Image src={VideoIcon} />
                       <Text color="#E0E2F6" fontSize="12px">
                         {data.duration}
                       </Text>
@@ -405,13 +424,24 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
           )
         }
       })}
-      <ImagePreview
+      {/* <ImagePreview
         isOpen={isPreviewOpen}
         onClose={() => setIsPreviewOpen(false)}
         images={previewImages}
         currentIndex={currentIndex}
         onIndexChange={setCurrentIndex}
-      />
+      /> */}
+      {isPreviewOpen && (
+        <Suspense fallback={null}>
+          <ImagePreview
+            isOpen={isPreviewOpen}
+            onClose={() => setIsPreviewOpen(false)}
+            images={previewImages}
+            currentIndex={currentIndex}
+            onIndexChange={setCurrentIndex}
+          />
+        </Suspense>
+      )}
       {/* Components */}
       {renderBaseModal()}
     </>

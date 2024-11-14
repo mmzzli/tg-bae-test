@@ -83,8 +83,6 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
         }
         return item
       })
-
-      console.log(res)
       setResources(res)
     }
   }, [initialResources])
@@ -94,88 +92,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
     }
   }, [resources])
 
-  useEffect(() => {
-    const options = {
-      root: null,
-      rootMargin: '0px',
-      threshold: 0.5,
-    }
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        const videoElement = entry.target as HTMLVideoElement
-        if (entry.isIntersecting) {
-          videoElement.play().catch((error) => console.error('Video play failed:', error))
-        } else {
-          videoElement.pause()
-        }
-      })
-    }, options)
-
-    resources.forEach((item, index) => {
-      if (Hls.isSupported() && item.type === 0) {
-        const hls = new Hls()
-        hls.loadSource(item.media[0])
-        hls.attachMedia(videoRefs.current[index]!)
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          const maxLevel = hls.levels.length - 1
-          hls.startLevel = maxLevel
-          hls.currentLevel = maxLevel
-        })
-        let loadedFragments = 0
-        const maxPreloadFragments = 1
-        hls.on(Hls.Events.FRAG_LOADING, (event, data) => {
-          if (loadedFragments < maxPreloadFragments) {
-            loadedFragments++
-            cacheFragment(data.frag.url)
-          }
-        })
-
-        const videoElement = videoRefs.current[index]
-        if (videoElement) {
-          videoElement.addEventListener('canplaythrough', () => {
-            setPreloaded((prev) => {
-              const updated = [...prev]
-              updated[index] = true
-              return updated
-            })
-          })
-
-          observer.observe(videoElement)
-        }
-
-        return () => {
-          hls.destroy()
-          observer.unobserve(videoRefs.current[index]!)
-        }
-      }
-    })
-
-    const handleTouchStart = () => {
-      setIsMuted(false)
-      videoRefs.current.forEach((video) => {
-        if (video && !video.paused) {
-          video.play().catch((error) => console.error('Video play failed:', error))
-        }
-      })
-    }
-
-    window.addEventListener('touchstart', handleTouchStart, { once: true })
-
-    return () => {
-      window.removeEventListener('touchstart', handleTouchStart)
-    }
-  }, [resources])
-
-  const handlePlay = (index: number) => {
-    if (playingIndex !== null && playingIndex !== index) {
-      const currentVideo = videoRefs.current[playingIndex]
-      if (currentVideo) {
-        currentVideo.pause()
-      }
-    }
-    setPlayingIndex(index)
-  }
 
   const linkEve = async (post_id: number, boll: boolean) => {
     setLikes((prevLikes) =>
@@ -328,70 +245,29 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
               />
               <div className="relative px-4">
                 {data.type === POST_TYPE_IMAGE ? (
-                  data.media?.[0] == '' ? (
-                    <Box position="relative">
-                      <Image
-                        src={data.media?.[0] ?? data?.media ?? ''}
-                        alt={data.title}
-                        errorClassName="rounded-[2px] h-[150px]"
-                        className="object-left max-h-[387px] rounded-[2px]"
-                        onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
-                      />
-                      <FrostedGlass
-                        price={data.price}
-                        post_id={data.id}
-                        resourcesEve={resourcesEve}
-                      />
-                    </Box>
-                  ) : (
+                  <Box position="relative">
                     <Image
                       src={data.media?.[0] ?? data?.media ?? ''}
                       alt={data.title}
                       errorClassName="rounded-[2px] h-[150px]"
-                      className="object-left rounded-[2px] max-h-[387px]"
+                      className="object-left max-h-[387px] rounded-[2px] m-[auto]"
                       onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
                     />
-                  )
-                ) : data.media?.[0] == '' ? (
-                  <Box position="relative">
-                    <Box minH="130px">
-                      <video
-                        ref={(el) => (videoRefs.current[index] = el)}
-                        style={{
-                          display: preloaded[index] ? 'block' : 'none',
-                          width: '100%',
-                          borderRadius: '4px',
-                        }}
-                        controls={false}
-                        muted={isMuted}
-                        // poster={data.mediaCover}
-                        loop
-                        playsInline
-                        onPlay={() => handlePlay(index)}
-                      />
-                    </Box>
-                    <FrostedGlass
+                    {data.media?.[0] === '' && <FrostedGlass
                       price={data.price}
                       post_id={data.id}
                       resourcesEve={resourcesEve}
-                    />
+                    />}
                   </Box>
                 ) : (
-                  <>
+                  <Box position="relative">
                     <Box minH="130px">
-                      <video
-                        ref={(el) => (videoRefs.current[index] = el)}
-                        style={{
-                          display: preloaded[index] ? 'block' : 'none',
-                          width: '100%',
-                          borderRadius: '4px',
-                        }}
-                        controls={false}
-                        muted={isMuted}
-                        // poster={data.mediaCover}
-                        loop
-                        playsInline
-                        onPlay={() => handlePlay(index)}
+                      <Image
+                        src={`https://baedev.anyconn.org/bg2.png`}
+                        alt={data.title}
+                        errorClassName="rounded-[2px] h-[150px]"
+                        className="object-left max-h-[387px] rounded-[2px] m-[auto]"
+                        onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
                       />
                     </Box>
                     <HStack
@@ -407,7 +283,14 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                         {data.duration}
                       </Text>
                     </HStack>
-                  </>
+
+                    {data.media?.[0] === '' &&
+                    <FrostedGlass
+                      price={data.price}
+                      post_id={data.id}
+                      resourcesEve={resourcesEve}
+                    />}
+                  </Box>
                 )}
               </div>
 

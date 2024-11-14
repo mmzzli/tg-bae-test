@@ -17,6 +17,9 @@ export const postResources = (params: PostResourceReq) => {
 export const viewList = (params: ViewListReq) => {
   return post<ListRes>(`/api/v1/view`, params)
 }
+export const favList = (params: ViewListReq) => {
+  return post<ListRes>(`/api/v1/fav`, params)
+}
 export const postLike = (params: LikeReq) => {
   return post<LikeRes>(`/api/v1/like`, params)
 }

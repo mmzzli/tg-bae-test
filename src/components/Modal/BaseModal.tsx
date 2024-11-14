@@ -125,7 +125,7 @@ export const BaseModal: FC<BottomSheetProps> = ({
       style={{transform: 'translateZ(50px)'}}
     >
       <div
-        className={`fixed bottom-0 left-0 right-0 rounded-t-2xl bg-[#1C1C1C] dark:bg-gray-800 transition-transform ${
+        className={`fixed z-51 bottom-0 left-0 right-0 rounded-t-2xl bg-[#1C1C1C] dark:bg-gray-800 transition-transform ${
           isOpen ? 'translate-y-0' : 'translate-y-full'
         } ${className}`}
         style={sheetStyle}

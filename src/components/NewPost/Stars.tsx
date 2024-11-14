@@ -81,7 +81,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
           onClick={onOpen}
         >
           <HStack gap="12px" w="100%" justifyContent="space-between">
-            <Text color="#E0E2F6" w="100%">Stars to unlock this post</Text>
+            <Text color="#E0E2F6" w="100%" fontSize="14px">Stars to unlock this post</Text>
             <HStack justifyContent="flex-end">
               <Image src={StarsIcon} />
               <Text color="#E0E2F6" fontSize="14px">{price}</Text>

@@ -30,7 +30,8 @@ const Image = React.memo(
     onClick,
     ...props
   }: ImageProps) => {
-    const [isLoading, setIsLoading] = useState(true)
+    const [isFirstRender, setIsFirstRender] = useState(true)
+    const [isLoading, setIsLoading] = useState(false)
     const [hasError, setHasError] = useState(false)
 
     const imageRef = useRef<HTMLImageElement>(null)
@@ -39,16 +40,27 @@ const Image = React.memo(
       () =>
         cn(
           'transition-opacity duration-300',
-          isLoading && 'opacity-0',
+          // isLoading && 'opacity-0',
+          isFirstRender ? 'opacity-100' : isLoading && 'opacity-0',
           !isLoading && !hasError && 'opacity-100',
           className
         ),
-      [isLoading, hasError, className]
+      [isLoading, hasError, className, isFirstRender]
     )
 
     useEffect(() => {
       if (src) setHasError(false)
     }, [src])
+
+    useEffect(() => {
+      const img = imageRef.current
+      if (img && img.complete) {
+        setIsLoading(false)
+        setIsFirstRender(false)
+      } else {
+        setIsLoading(true)
+      }
+    }, [])
 
     if (!src) {
       return (
@@ -94,7 +106,7 @@ const Image = React.memo(
             wrapperClassName,
             hasError && errorClassName
           )}
-          style={{aspectRatio: 1}}
+          style={{ aspectRatio: 1 }}
         >
           {rect ? (
             <div

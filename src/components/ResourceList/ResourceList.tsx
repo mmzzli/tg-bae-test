@@ -258,7 +258,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                         alt={data.title}
                         errorClassName="rounded-[2px] h-[150px]"
                         className="object-left max-h-[387px] rounded-[2px] m-[auto]"
-                        onClick={() => handleVideoClick(`https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/e99e671e80eda1bcf55a8d9cbab96000/manifest/video.m3u8`)}
+                        onClick={() => handleVideoClick(data.media[0])}
                       />
                     </Box>
                     <HStack

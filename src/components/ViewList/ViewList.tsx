@@ -29,7 +29,7 @@ const ViewList = ({ className }: PostListProps) => {
 
   return (
     <>
-      <div className='flex justify-around'>
+      <Box className='flex justify-around' borderBottom="1px solid rgba(255, 255, 255, 0.10)">
         {
           menuList.map((item) => (
             <div className={`text-[16px] text-[${item.id === ids ? '#E0E2F6' : '#62636F'}]`}
@@ -40,7 +40,7 @@ const ViewList = ({ className }: PostListProps) => {
             </div>
           ))
         }
-      </div>
+      </Box>
       <div className={cn(className, 'pb-24')}>
         {ids === 'posts' && <InfiniteScroll
           dataLength={list.length}

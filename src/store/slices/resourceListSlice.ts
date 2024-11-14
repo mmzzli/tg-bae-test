@@ -21,6 +21,7 @@ export interface ResourceListState {
 export type FormatterListItem = Omit<ListItem['post'], 'media'> & {
   media: string[]
   mediaCover?: string
+  thumbnail?: string
   duration?: number
 } & UserItem
 export interface ListState {

@@ -83,7 +83,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
           return {
             ...item,
             media: [media || mediaCover],
-            mediaCover: `https://baedev.anyconn.org/bg2.png`,
+            mediaCover: item.thumbnail	,
           }
         }
         return item

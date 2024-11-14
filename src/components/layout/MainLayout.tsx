@@ -9,6 +9,7 @@ import { useRequest } from 'ahooks'
 import { Outlet } from 'react-router-dom'
 import { log } from 'console'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
+import { Spinner } from '@chakra-ui/react'
 
 const ChatListPage = lazy(() =>
   import('@/pages/Chat').then((module) => ({
@@ -57,7 +58,7 @@ export const MainLayout: React.FC = () => {
       const tgApp = window.Telegram.WebApp
       tgApp.ready()
       tgApp.expand()
-      tgApp.headerColor = "#000"
+      tgApp.headerColor = '#000'
       tgApp.MainButton.hide()
       tgApp.onEvent('viewportChanged', () => {
         if (!tgApp.isExpanded) {
@@ -98,7 +99,13 @@ export const MainLayout: React.FC = () => {
   return (
     <div className="bg-black min-h-screen">
       {shouldLoadChat && (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense
+          fallback={
+            <div className="h-screen flex items-center justify-center">
+              <Spinner />
+            </div>
+          }
+        >
           <ChatListPage className={hiddenChatPage ? 'hidden' : ''} />
         </Suspense>
       )}

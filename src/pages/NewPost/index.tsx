@@ -26,7 +26,7 @@ export const NewPost: FC = () => {
   const navigate = useNavigate()
   const { toast } = createStandaloneToast()
   const [videoFile, setVideoFile] = useState<File | null>(null)
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null)
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [videoSrc, setVideoSrc] = useState<string | null>(null)
   const [title, setTitle] = useState<string>('')
@@ -57,7 +57,7 @@ export const NewPost: FC = () => {
   async function imgUpload(files: File[]): Promise<void> {
     const imgList = []
     for (const file of files) {
-      const url = `https://picupload.mobus.workers.dev/upload/${file.name}`
+      const url = `${import.meta.env.VITE_APP_UPLOAD_URL}upload/${file.name}`
       console.log(file)
       const formData = new FormData()
       formData.append('file', file)
@@ -150,10 +150,10 @@ export const NewPost: FC = () => {
       toast({
         title: 'Please select only images or only videos',
         status: 'warning',
-        position: "top",
+        position: 'top',
         containerStyle: {
-          marginTop: "50vh",
-          transform: "translateY(-50%)",
+          marginTop: '50vh',
+          transform: 'translateY(-50%)',
         },
       })
       return
@@ -163,10 +163,10 @@ export const NewPost: FC = () => {
       if (fileArray.length > 1) {
         toast({
           title: 'Please select only one video.',
-          position: "top",
+          position: 'top',
           containerStyle: {
-            marginTop: "50vh",
-            transform: "translateY(-50%)",
+            marginTop: '50vh',
+            transform: 'translateY(-50%)',
           },
           status: 'warning',
         })
@@ -181,10 +181,10 @@ export const NewPost: FC = () => {
         toast({
           title: 'Maximum 9 images allowed',
           status: 'warning',
-          position: "top",
+          position: 'top',
           containerStyle: {
-            marginTop: "50vh",
-            transform: "translateY(-50%)",
+            marginTop: '50vh',
+            transform: 'translateY(-50%)',
           },
         })
         return
@@ -255,8 +255,12 @@ export const NewPost: FC = () => {
               <>
                 {videoSrc ? (
                   <Box maxW="600px" m="auto" position="relative">
-                    <VideoPlayer videoRef={videoRef} src={videoSrc} style={{ borderRadius: '4px', maxHeight: '380px' }}/>
-                    <VideoFrameSelector videoRef={videoRef} setCover={setCover}/>
+                    <VideoPlayer
+                      videoRef={videoRef}
+                      src={videoSrc}
+                      style={{ borderRadius: '4px', maxHeight: '380px' }}
+                    />
+                    <VideoFrameSelector videoRef={videoRef} setCover={setCover} />
                     <Image
                       onClick={() => setVideoSrc('')}
                       w="24px"
@@ -283,7 +287,14 @@ export const NewPost: FC = () => {
               <Grid templateColumns="repeat(3, 1fr)" gap={4}>
                 {imgAttr.map((url: string, key: number) => (
                   <GridItem aspectRatio={1} key={url} position="relative">
-                    <Image objectFit="cover" w="100%" h="100%" borderRadius="2px" src={url} alt="img" />
+                    <Image
+                      objectFit="cover"
+                      w="100%"
+                      h="100%"
+                      borderRadius="2px"
+                      src={url}
+                      alt="img"
+                    />
                     <Image
                       onClick={() => removeImg(key)}
                       w="24px"
@@ -296,20 +307,22 @@ export const NewPost: FC = () => {
                     />
                   </GridItem>
                 ))}
-                {imgAttr.length < 9 && <GridItem aspectRatio={1}>
-                  <Image
-                    w="100%"
-                    h="100%"
-                    cursor="pointer"
-                    src={PostAddIcon}
-                    onClick={handleChooseFile}
-                  />
-                </GridItem>}
+                {imgAttr.length < 9 && (
+                  <GridItem aspectRatio={1}>
+                    <Image
+                      w="100%"
+                      h="100%"
+                      cursor="pointer"
+                      src={PostAddIcon}
+                      onClick={handleChooseFile}
+                    />
+                  </GridItem>
+                )}
               </Grid>
             )}
           </Box>
           <Textarea
-            className='placeholder-[#424048]'
+            className="placeholder-[#424048]"
             value={title}
             onChange={(event) => setTitle(event.target.value)}
             mt="10px"

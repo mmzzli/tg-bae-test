@@ -122,7 +122,7 @@ export const BaseModal: FC<BottomSheetProps> = ({
       role="dialog"
       aria-modal="true"
       aria-hidden={!isOpen}
-      style={{transform: 'translateZ(10px)'}}
+      style={{transform: 'translateZ(50px)'}}
     >
       <div
         className={`fixed bottom-0 left-0 right-0 rounded-t-2xl bg-[#1C1C1C] dark:bg-gray-800 transition-transform ${

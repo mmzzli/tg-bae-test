@@ -241,7 +241,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
       showHandle={false}
     >
       <div className="mt-4 w-full">
-        <h3 className="font-bold text-2xl mb-[10px]">Share from Bae</h3>
+        <h3 className="font-bold text-2xl mb-[10px] text-[24px]">Share from Bae</h3>
         <div className="text-[15px] text-[#808080]">Earn $Bae every time you share from Bae</div>
 
         {isMobile && (

@@ -1,7 +1,6 @@
 import { FC } from 'react'
 import { Button, Image } from '@chakra-ui/react'
 import ResourceList from '@/components/ResourceList/ResourceList'
-import { Menu } from '@/components/Menu'
 import { useNavigate } from 'react-router-dom'
 import { AddIcon1 } from '@/assets/icons'
 import RecommendList from '@/components/RecommendList/RecommendList'
@@ -33,7 +32,6 @@ const Shares: FC = () => {
       </div>
       <div className="font-bold text-xl text-[#E0E2F6] mt-4 mx-4">Selected Posts</div>
       <RecommendList className="mb-12" />
-      <Menu selectedIndex={-1} />
     </>
   )
 }

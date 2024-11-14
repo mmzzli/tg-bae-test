@@ -30,7 +30,7 @@ export interface ListState {
   isLoading: boolean
   error: string | null
 }
-const recordsNum = 3
+const recordsNum = 5
 
 export interface ResourceListSlice {
   // recommend

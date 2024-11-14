@@ -20,6 +20,9 @@ export const viewList = (params: ViewListReq) => {
 export const favList = (params: ViewListReq) => {
   return post<ListRes>(`/api/v1/fav`, params)
 }
+export const ordersList = (params: ViewListReq) => {
+  return post<ListRes>(`/api/v1/orders`, params)
+}
 export const postLike = (params: LikeReq) => {
   return post<LikeRes>(`/api/v1/like`, params)
 }

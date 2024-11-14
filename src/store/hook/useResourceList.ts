@@ -93,6 +93,45 @@ export const useViewList = () => {
   }
 }
 
+export const useFavList = () => {
+  const { favList, setFavPage, loadFavList, resetFavList, token } = useStore(
+    (state) => ({
+      favList: state.favList,
+      setFavPage: state.setFavPage,
+      loadFavList: state.loadFavList,
+      resetFavList: state.resetFavList,
+      token: state.token,
+    }),
+    shallow
+  )
+
+  const { list, page, hasMore, isLoading, error } = favList
+
+  useEffect(() => {
+    if (!token) return
+    loadFavList(page)
+  }, [page, token])
+
+  const fetchMoreData = () => {
+    if (!isLoading && hasMore) {
+      setFavPage(page + 1)
+    }
+  }
+
+  return {
+    list,
+    page,
+    hasMore,
+    isLoading,
+    error,
+    fetchMoreData,
+    refresh: () => {
+      resetFavList()
+      loadFavList(1)
+    },
+  }
+}
+
 export const useOthersViewList = () => {
   const {
     othersUserInfo,

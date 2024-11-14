@@ -36,10 +36,6 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
   const [resources, setResources] = useState<FormatterListItem[]>([])
   const [likes, setLikes] = useSafeState<Like[]>([])
   const { shareLink, launchParams } = useTMAUtils()
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
-  const [preloaded, setPreloaded] = useSafeState<boolean[]>(new Array(resources.length).fill(false))
-  const [playingIndex, setPlayingIndex] = useSafeState<number | null>(null)
-  const [isMuted, setIsMuted] = useSafeState(true)
   const [isBaseModalOpen, { toggle, off }] = useBoolean(false)
   const [links, setLinks] = useSetState<{ shareLink: string; copyLink: string }>({
     shareLink: '',
@@ -78,7 +74,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
           return {
             ...item,
             media: [media || mediaCover],
-            mediaCover,
+            mediaCover: `https://baedev.anyconn.org/bg2.png`,
           }
         }
         return item
@@ -128,20 +124,6 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
       return item
     })
     setResources(updatedUsers)
-  }
-  const cacheFragment = (url: string) => {
-    if ('caches' in window) {
-      caches.open('video-cache').then((cache) => {
-        cache
-          .add(url)
-          .then(() => {
-            console.log('视频片段已缓存:', url)
-          })
-          .catch((error) => {
-            console.error('缓存视频片段失败:', error)
-          })
-      })
-    }
   }
 
   const renderBaseModal = () => (
@@ -263,7 +245,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                   <Box position="relative">
                     <Box minH="130px">
                       <Image
-                        src={`https://baedev.anyconn.org/bg2.png`}
+                        src={data.mediaCover}
                         alt={data.title}
                         errorClassName="rounded-[2px] h-[150px]"
                         className="object-left max-h-[387px] rounded-[2px] m-[auto]"

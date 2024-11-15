@@ -37,7 +37,7 @@ export const NewPost: FC = () => {
   const token = useStore((state) => state.token)
   const [frameSelectorBoll, setFrameSelectorBoll] = useState<boolean>(false)
   // start
-  const [price, setPrice] = useState<number>(0)
+  const [price, setPrice] = useState<number | null>(null)
   // cover
   const [cover, setCover] = useState<string | null>(null)
 
@@ -78,7 +78,7 @@ export const NewPost: FC = () => {
       ...(title ? { title } : {}),
       type: 1,
       currency: 0,
-      price,
+      price: price || 0,
     })
     navigate('/profile')
   }
@@ -125,7 +125,7 @@ export const NewPost: FC = () => {
         ...(title ? { title } : {}),
         type: 0,
         currency: 0,
-        price,
+        price:price || 0,
       })
       navigate('/profile')
     }
@@ -335,7 +335,7 @@ export const NewPost: FC = () => {
             h="80px"
           />
         </Box>
-        <StarsPage setPrice={setPrice} price={price} />
+        <StarsPage setPrice={setPrice} price={price || 0} />
       </Box>
     </Box>
   )

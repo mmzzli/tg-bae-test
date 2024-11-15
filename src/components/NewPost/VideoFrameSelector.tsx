@@ -127,7 +127,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover }) 
           <div className="rounded-[5px] mt-[16px] overflow-hidden">
             {selectedFrame && (
               <img
-                className="object-contain"
+                className="object-revert"
                 src={selectedFrame.url}
                 alt={`Selected Frame at ${selectedFrame.time}s`}
                 width="100%"

@@ -178,6 +178,7 @@ export function VideoDialog({
   }, [])
 
   const togglePlay = useCallback(() => {
+    console.log('togglePlay')
     if (videoRef.current) {
       if (state.isPlaying) {
         videoRef.current.pause()
@@ -245,34 +246,33 @@ export function VideoDialog({
       <DialogContent className="p-0">
         <div
           ref={containerRef}
-          className="relative w-screen h-screen bg-black overflow-hidden"
+          className="absolute w-screen h-screen bg-black overflow-hidden"
           style={{ touchAction: 'manipulation' }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            togglePlay()
+          }}
         >
-          <div className="absolute right-2 top-2 z-10 w-8 h-8 bg-black/30 rounded-full overflow-hidden flex items-center justify-center">
-            <img
-              className="pointer-events-none"
-              src={closeIcon}
-              alt="close"
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                onClose()
-              }}
-            />
+          <div
+            className="absolute right-2 top-2 z-20 w-8 h-8 bg-black/30 rounded-full overflow-hidden flex items-center justify-center"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              console.log('close')
+              onClose()
+            }}
+          >
+            <img className="pointer-events-none" src={closeIcon} alt="close" />
           </div>
 
           <video
             ref={videoRef}
-            className="absolute w-full h-full object-contain pointer-events-none"
+            className="absolute w-full h-full object-contain pointer-events-none z-10"
             src={info?.media[0]}
-            onClick={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              togglePlay()
-            }}
             onEnded={() => dispatch({ type: 'SET_PLAYING', payload: false })}
             controls={false}
             playsInline // prevent iOS full screen

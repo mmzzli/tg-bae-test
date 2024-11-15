@@ -248,9 +248,6 @@ export function VideoDialog({
           ref={containerRef}
           className="absolute w-screen h-screen bg-black overflow-hidden"
           style={{ touchAction: 'manipulation' }}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
           onClick={(e) => {
             e.preventDefault()
             e.stopPropagation()
@@ -266,14 +263,17 @@ export function VideoDialog({
               onClose()
             }}
           >
-            <img className="pointer-events-none" src={closeIcon} alt="close" />
+            <img src={closeIcon} alt="close" />
           </div>
 
           <video
             ref={videoRef}
-            className="absolute w-full h-full object-contain pointer-events-none z-10"
+            className="absolute w-full h-full object-contain z-10"
             src={info?.media[0]}
             onEnded={() => dispatch({ type: 'SET_PLAYING', payload: false })}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
             controls={false}
             playsInline // prevent iOS full screen
             webkit-playsinline="true" // for old iOS WebKit

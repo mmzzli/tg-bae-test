@@ -58,6 +58,7 @@ export const MainLayout: React.FC = () => {
       const tgApp = window.Telegram.WebApp
       tgApp.ready()
       tgApp.expand()
+      document.getElementById('root')?.classList.add('root-wrap')
       tgApp.headerColor = '#000'
       tgApp.backgroundColor = '#0d0d0d'
       tgApp.MainButton.hide()

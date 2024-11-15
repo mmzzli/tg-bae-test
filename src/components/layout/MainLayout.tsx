@@ -58,6 +58,7 @@ export const MainLayout: React.FC = () => {
       tgApp.ready()
       tgApp.expand()
       tgApp.headerColor = '#000'
+      tgApp.backgroundColor = '#0d0d0d'
       tgApp.MainButton.hide()
       tgApp.onEvent('viewportChanged', () => {
         if (!tgApp.isExpanded) {

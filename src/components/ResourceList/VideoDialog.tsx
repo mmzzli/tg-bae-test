@@ -1,7 +1,7 @@
 import { Dialog, DialogContent } from '@/components/BaseDialog/BaseDialog'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import Hls from 'hls.js'
-import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react'
+import { memo, useCallback, useEffect, useReducer, useRef } from 'react'
 import { useThrottleFn } from 'ahooks'
 import closeIcon from '@/assets/icons/closeIcon.svg'
 import Image from '@/components/Image/Image'

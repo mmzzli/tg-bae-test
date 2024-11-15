@@ -16,7 +16,7 @@ export const useRecommendList = () => {
     )
 
   const { list, page, hasMore, isLoading, error } = recommendList
-  const [isInitialRender, setIsInitialRender] = useState(page == 1 ? -1 : page);
+  const [isInitialRender, setIsInitialRender] = useState(page == 1 ? -1 : page)
 
   useEffect(() => {
     if (!token) return
@@ -64,7 +64,7 @@ export const useViewList = () => {
   )
 
   const { list, page, hasMore, isLoading, error } = viewList
-  const [isInitialRender, setIsInitialRender] = useState(page == 1 ? -1 : page);
+  const [isInitialRender, setIsInitialRender] = useState(page == 1 ? -1 : page)
 
   useEffect(() => {
     if (!token) return

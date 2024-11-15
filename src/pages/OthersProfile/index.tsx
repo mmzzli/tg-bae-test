@@ -7,7 +7,10 @@ const OthersProfile: FC = () => {
   const { list, hasMore, fetchMoreData } = useOthersViewList()
 
   return (
-    <div className="fixed w-screen h-screen flex flex-col bg-[#0D0D0D] z-10 overflow-auto">
+    <div
+      id="ProfileScrollableDiv"
+      className="fixed w-screen h-screen flex flex-col bg-[#0D0D0D] z-10 overflow-auto no-scroll"
+    >
       <OtherUserProfile />
       <PostList list={list} hasMore={hasMore} fetchMoreData={fetchMoreData} />
     </div>

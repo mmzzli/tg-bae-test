@@ -23,6 +23,9 @@ const PostList = ({ className, list, hasMore, fetchMoreData }: PostListProps) =>
             <Spinner color="#4A3AFF" />
           </Box>
         }
+        scrollableTarget="ProfileScrollableDiv"
+        scrollThreshold={0.8}
+        style={{ overflow: 'visible' }}
       >
         <ResourceList resources={list} />
       </InfiniteScroll>

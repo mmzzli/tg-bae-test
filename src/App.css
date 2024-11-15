@@ -19,6 +19,16 @@ button,
   user-select: none;
 }
 
+/* add CSS variables to handle safe area */
+:root {
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 24px);
+}
+
+/* create a utility class */
+.safe-area-bottom {
+  padding-bottom: calc(var(--safe-area-inset-bottom) + 1rem);
+}
+
 /* @font-face {
   font-family: 'Poppins';
   src: url('https://pub-b66b819f148445b792a6e91af8481614.r2.dev/Poppins-Regular.ttf') format('truetype');

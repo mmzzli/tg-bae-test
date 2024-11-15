@@ -261,6 +261,12 @@ export function VideoDialog({
             onClick={togglePlay}
             onEnded={() => dispatch({ type: 'SET_PLAYING', payload: false })}
             controls={false}
+            playsInline // prevent iOS full screen
+            webkit-playsinline="true" // for old iOS WebKit
+            x5-playsinline="true" // for X5 kernel
+            x5-video-player-type="h5" // enable H5 player
+            x5-video-player-fullscreen="true" // full screen handle
+            preload="auto" // preload
           />
 
           {state.isLoading && (
@@ -272,7 +278,7 @@ export function VideoDialog({
           {!state.isPlaying && (
             <div
               onClick={togglePlay}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 no-tap"
             >
               <div className="w-20 h-20 bg-white/50 rounded-full flex items-center justify-center">
                 <div className="w-0 h-0 border-t-[15px] border-t-transparent border-l-[25px] border-l-white border-b-[15px] border-b-transparent ml-2" />
@@ -281,7 +287,7 @@ export function VideoDialog({
           )}
 
           <div
-            className="absolute left-0 right-0 bottom-0 z-10 flex flex-col transition-transform duration-300 ease-out"
+            className="absolute left-0 right-0 bottom-0 z-10 flex flex-col transition-transform duration-300 ease-out safe-area-bottom"
             style={{
               transform: `translateX(${state.slideOffset}px)`,
             }}

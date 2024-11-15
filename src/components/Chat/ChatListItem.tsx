@@ -1,5 +1,4 @@
-import { motion, PanInfo, useAnimation } from 'framer-motion'
-import dayjs from 'dayjs'
+import { AnimationControls, motion, PanInfo, useAnimation } from 'framer-motion'
 import { FC, useEffect, useState } from 'react'
 import Image from '@/components/Image/Image'
 import { cn, getTimeStringAutoShort } from '@/utils/utils'
@@ -9,24 +8,31 @@ import { Conversation } from '../SDK/BaeimSDK'
 import { OthersUserInfo } from '@/types'
 import { DeleteDialog } from './DeleteDialog'
 import { useStore } from '@/store'
-import { setUnread } from '@/api'
-import { useTMAUtils } from '@/hooks/useTMAUtils'
 
 const ChatListItem: FC<{
   chat: Conversation
   className?: string
-}> = ({ chat, className }) => {
+  onDragStateChange?: (isDragging: boolean) => void
+  hasAnyItemDragged: boolean
+  controlsMap: Map<string, AnimationControls>
+}> = ({ chat, className, onDragStateChange, hasAnyItemDragged, controlsMap }) => {
   const controls = useAnimation()
   const [isDragging, setIsDragging] = useState(false)
   const navigate = useNavigate()
   const { getChatPeopleInfo, initChatPeopleInfo } = useIM()
-  const { connection, updateChatListItem } = useStore((state) => ({
+  const { connection } = useStore((state) => ({
     connection: state.connection,
     updateChatListItem: state.updateChatListItem,
   }))
   const [chatPeople, setChatPeople] = useState<OthersUserInfo | null>(null)
-  const { getCurrentUid } = useTMAUtils()
-  const currentUid = getCurrentUid()
+
+  const resetAllItems = () => {
+    controlsMap.forEach((control) => {
+      control.start({ x: 0 })
+    })
+    setIsDragging(false)
+    onDragStateChange?.(false)
+  }
 
   useEffect(() => {
     const loadChatPeople = () => {
@@ -34,27 +40,56 @@ const ChatListItem: FC<{
       if (user) {
         setChatPeople(user)
       } else {
-        initChatPeopleInfo(Number(chat.channel.channelID), (user) => {
-          setChatPeople(user)
-        })
+        initChatPeopleInfo(Number(chat.channel.channelID), setChatPeople)
       }
     }
     loadChatPeople()
-  }, [chat.channel.channelID])
-  const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    const threshold = -50 // Swipe threshold to show delete button
-    if (info.offset.x < threshold) {
-      controls.start({ x: -80 }) // Show delete button
-    } else {
-      controls.start({ x: 0 }) // Reset position
+
+    controlsMap.set(chat.channel.channelID, controls)
+    return () => {
+      controlsMap.delete(chat.channel.channelID)
     }
-    setTimeout(() => {
-      setIsDragging(false)
-    }, 100)
+  }, [chat.channel.channelID, controls, controlsMap, getChatPeopleInfo, initChatPeopleInfo])
+
+  const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    const threshold = -50
+    if (info.offset.x < threshold) {
+      controls.start({ x: -80 })
+      setIsDragging(true)
+      onDragStateChange?.(true)
+      setTimeout(() => {
+        setIsDragging(false)
+      }, 100)
+    } else {
+      controls.start({ x: 0 })
+      setTimeout(() => {
+        setIsDragging(false)
+        onDragStateChange?.(false)
+      }, 100)
+    }
   }
+
   const onDelete = (id: string) => {
     connection?.removeConversation(id)
   }
+
+  const handleClick = () => {
+    if (hasAnyItemDragged || isDragging) {
+      resetAllItems()
+      return
+    }
+
+    if (chatPeople?.uid) {
+      connection?.clearConversationUnread(chat.channel.channelID)
+      navigate(`/chat/${chatPeople?.uid}`)
+    }
+  }
+  useEffect(() => {
+    controlsMap.set(chat.channel.channelID, controls)
+    return () => {
+      controlsMap.delete(chat.channel.channelID)
+    }
+  }, [])
 
   return (
     <div className={cn('relative h-[64px] w-full overflow-hidden', className)}>
@@ -67,13 +102,7 @@ const ChatListItem: FC<{
         onDragStart={() => setIsDragging(true)}
         animate={controls}
         style={{ x: 0 }}
-        onClick={() => {
-          if (chatPeople?.uid && !isDragging) {
-            connection?.clearConversationUnread(chat.channel.channelID)
-
-            navigate(`/chat/${chatPeople?.uid}`)
-          }
-        }}
+        onClick={handleClick}
         className="absolute top-0 left-0 right-0 bottom-0 z-10"
       >
         <div className="flex items-center bg-black border border-black h-[64px] px-[24px]">

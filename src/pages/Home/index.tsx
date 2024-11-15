@@ -69,7 +69,7 @@ const HomePage: FC = () => {
     }
   }, [])
   return (
-    <>
+    <div className="relative w-full h-full overflow-auto">
       <HStack justifyContent="space-between" p="0px 16px" pt="16px">
         <Heading as="h3" fontSize="20px" color="#E0E2F6">
           Following
@@ -117,7 +117,7 @@ const HomePage: FC = () => {
         <h3 className="text-[#E0E2F6] font-bold text-xl">Selected Posts</h3>
       </div>
       <RecommendList />
-    </>
+    </div>
   )
 }
 export default HomePage

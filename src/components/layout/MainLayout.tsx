@@ -96,7 +96,7 @@ export const MainLayout: React.FC = () => {
   }, [location.pathname])
 
   return (
-    <div className="bg-black min-h-screen">
+    <div className="bg-black h-screen w-screen overflow-hidden flex pb-[84px]">
       <div
         className="fixed w-screen h-screen flex-col bg-[#0D0D0D]"
         style={{ display: hiddenChatPage ? 'none' : 'flex' }}
@@ -113,7 +113,10 @@ export const MainLayout: React.FC = () => {
           </Suspense>
         )}
       </div>
-      <Outlet />
+
+      <div className="flex-1">
+        <Outlet />
+      </div>
 
       <Menu />
     </div>

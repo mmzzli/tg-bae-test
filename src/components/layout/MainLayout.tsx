@@ -69,21 +69,21 @@ export const MainLayout: React.FC = () => {
       tgApp.BackButton.onClick(() => {
         console.log('location.pathname', location.pathname)
         if (location.pathname === '/home') {
-          tgApp.showPopup({
-            message: 'Are you sure you want to continue?',
+          tgApp.showConfirm({
+            text: 'Are you sure you want to continue?',
             buttons: [
-              { type: 'ok', id: 'ok' },
-              { type: 'cancel' }
+              { type: 'ok', id: 'ok' },  // OK button
+              { type: 'cancel' }         // Cancel button
             ]
-          }, function (button_id: string) {
+          }, function(button_id:string) {
             if (button_id === 'ok') {
               tgApp.close()
             } else {
               // User clicked 'Cancel'
               console.log('Action cancelled');
+              // Optionally, cancel the deletion or do nothing
             }
           });
-          // tgApp.close()
         } else {
           window.history.back()
         }

@@ -221,7 +221,7 @@ export const NewPost: FC = () => {
   }, [imgAttr])
 
   return (
-    <Box h="100vh" overflow="hidden">
+    <Box h="100vh" overflow="hidden" className='fixed w-screen h-screen bg-black z-10 overflow-auto scrollbar-hide'>
       <Box p="0 16px">
         <HStack justifyContent="space-between" pt="16px">
           <Heading as="h3" fontSize="20px" color="#E0E2F6">

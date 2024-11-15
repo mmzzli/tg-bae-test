@@ -85,7 +85,7 @@ const ProfileEdit: FC = () => {
   }
 
   return (
-    <div className="pt-[10px] px-[16px]">
+    <div className="pt-[10px] px-[16px] fixed w-screen h-screen bg-black z-10 overflow-auto scrollbar-hide">
       <h2 className="text-[20px] text-[#E0E2F6]">Profile</h2>
       {profileData.avatar ? (
         <>

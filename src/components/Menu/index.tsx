@@ -68,7 +68,10 @@ export const Menu: FC = () => {
                   <Image className="m-auto" src={item.icon} alt={item.name} />
                 </div>
               </div>
-              <div className="text-[#424048] text-[10px] leading-[12px] mt-[4px] uppercase">
+              <div
+                className="text-[10px] leading-[12px] mt-[4px] uppercase"
+                style={{ color: pathname === item.url ? '#E0E2F6' : '#424048' }}
+              >
                 {item.name}
               </div>
             </div>

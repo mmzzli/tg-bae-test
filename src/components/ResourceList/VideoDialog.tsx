@@ -284,7 +284,7 @@ export function VideoDialog({
           />
 
           {state.isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
+            <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-20">
               <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin" />
             </div>
           )}
@@ -296,7 +296,7 @@ export function VideoDialog({
                 e.stopPropagation()
                 togglePlay()
               }}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 no-tap"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 no-tap z-20"
               style={{ touchAction: 'manipulation' }}
             >
               <div className="w-20 h-20 bg-white/50 rounded-full flex items-center justify-center">

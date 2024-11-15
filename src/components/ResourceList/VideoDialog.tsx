@@ -249,17 +249,12 @@ export function VideoDialog({
           className="absolute w-screen h-screen bg-black overflow-hidden"
           style={{ touchAction: 'manipulation' }}
           onClick={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
             togglePlay()
           }}
         >
           <div
             className="absolute right-2 top-2 z-20 w-8 h-8 bg-black/30 rounded-full overflow-hidden flex items-center justify-center"
             onClick={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              console.log('close')
               onClose()
             }}
           >
@@ -271,9 +266,9 @@ export function VideoDialog({
             className="absolute w-full h-full object-contain z-10"
             src={info?.media[0]}
             onEnded={() => dispatch({ type: 'SET_PLAYING', payload: false })}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
+            // onTouchStart={handleTouchStart}
+            // onTouchMove={handleTouchMove}
+            // onTouchEnd={handleTouchEnd}
             controls={false}
             playsInline // prevent iOS full screen
             webkit-playsinline="true" // for old iOS WebKit
@@ -316,13 +311,13 @@ export function VideoDialog({
             <div
               ref={progressBarRef}
               className="absolute bottom-6 left-0 right-0 px-4 touch-none"
-              onMouseDown={handleDragStart}
-              onMouseMove={(e) => state.isDragging && handleProgressChange(e)}
-              onMouseUp={handleDragEnd}
-              onMouseLeave={handleDragEnd}
-              onTouchStart={handleDragStart}
-              onTouchMove={(e) => state.isDragging && handleProgressChange(e)}
-              onTouchEnd={handleDragEnd}
+              // onMouseDown={handleDragStart}
+              // onMouseMove={(e) => state.isDragging && handleProgressChange(e)}
+              // onMouseUp={handleDragEnd}
+              // onMouseLeave={handleDragEnd}
+              // onTouchStart={handleDragStart}
+              // onTouchMove={(e) => state.isDragging && handleProgressChange(e)}
+              // onTouchEnd={handleDragEnd}
             >
               <div className="relative group h-8 -my-2 flex items-center cursor-pointer no-tap">
                 <div className="absolute inset-0" />

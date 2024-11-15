@@ -251,14 +251,26 @@ export function VideoDialog({
           onTouchEnd={handleTouchEnd}
         >
           <div className="absolute right-2 top-2 z-10 w-8 h-8 bg-black/30 rounded-full overflow-hidden flex items-center justify-center">
-            <img src={closeIcon} alt="close" onClick={onClose} />
+            <img
+              src={closeIcon}
+              alt="close"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                onClose()
+              }}
+            />
           </div>
 
           <video
             ref={videoRef}
             className="w-full h-full object-contain"
             src={info?.media[0]}
-            onClick={togglePlay}
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              togglePlay()
+            }}
             onEnded={() => dispatch({ type: 'SET_PLAYING', payload: false })}
             controls={false}
             playsInline // prevent iOS full screen
@@ -277,7 +289,11 @@ export function VideoDialog({
 
           {!state.isPlaying && (
             <div
-              onClick={togglePlay}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                togglePlay()
+              }}
               className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 no-tap"
             >
               <div className="w-20 h-20 bg-white/50 rounded-full flex items-center justify-center">

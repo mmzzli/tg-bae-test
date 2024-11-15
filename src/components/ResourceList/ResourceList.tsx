@@ -23,7 +23,7 @@ const ImagePreview = lazy(() => import('../Image/ImagePreview'))
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import useMobile from '@/hooks/useMobile'
 
-import VideoPreview from '@/components/Image/VideoPreview'
+import { VideoDialog } from './VideoDialog'
 interface Like {
   id: number
   liked: boolean
@@ -52,7 +52,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
   const [currentIndex, setCurrentIndex] = useState(0)
   //
   const [isVideoPreviewOpen, setIsVideoPreviewOpen] = useState<boolean>(false)
-  const [previewVideo, setPreviewVideo] = useState<string>('')
+  const [previewVideo, setPreviewVideo] = useState<FormatterListItem | null>(null)
 
   const jumpToProfilePage = useProfileNavigation()
 
@@ -62,8 +62,8 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
     setCurrentIndex(index)
     setIsPreviewOpen(true)
   }
-  const handleVideoClick = (videoUrl: string) => {
-    setPreviewVideo(videoUrl)
+  const handleVideoClick = (video: FormatterListItem) => {
+    setPreviewVideo(video)
     setIsVideoPreviewOpen(true)
   }
 
@@ -83,7 +83,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
           return {
             ...item,
             media: [media || mediaCover],
-            mediaCover: item.thumbnail	,
+            mediaCover: item.thumbnail,
           }
         }
         return item
@@ -96,8 +96,6 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
       setLikes(resources.map((item) => ({ id: item.id, liked: item.is_liked, like: item.like })))
     }
   }, [resources])
-
-
 
   const linkEve = async (post_id: number, boll: boolean) => {
     setLikes((prevLikes) =>
@@ -244,11 +242,13 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                       className="object-left w-[100%] rounded-[2px] m-[auto]"
                       onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
                     />
-                    {data.media?.[0] === '' && <FrostedGlass
-                      price={data.price}
-                      post_id={data.id}
-                      resourcesEve={resourcesEve}
-                    />}
+                    {data.media?.[0] === '' && (
+                      <FrostedGlass
+                        price={data.price}
+                        post_id={data.id}
+                        resourcesEve={resourcesEve}
+                      />
+                    )}
                   </Box>
                 ) : (
                   <Box position="relative">
@@ -258,7 +258,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                         alt={data.title}
                         errorClassName="rounded-[2px] h-[150px]"
                         className="object-left w-[100%] rounded-[2px] m-[auto]"
-                        onClick={() => handleVideoClick(data.media[0])}
+                        onClick={() => handleVideoClick(data)}
                       />
                     </Box>
                     <HStack
@@ -275,12 +275,13 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                       </Text>
                     </HStack>
 
-                    {data.media?.[0] === '' &&
+                    {data.media?.[0] === '' && (
                       <FrostedGlass
                         price={data.price}
                         post_id={data.id}
                         resourcesEve={resourcesEve}
-                      />}
+                      />
+                    )}
                   </Box>
                 )}
               </div>
@@ -305,11 +306,15 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
         currentIndex={currentIndex}
         onIndexChange={setCurrentIndex}
       /> */}
-      {isVideoPreviewOpen && <VideoPreview
+
+      {isVideoPreviewOpen && (
+        <VideoDialog info={previewVideo} onClose={() => setIsVideoPreviewOpen(false)} />
+      )}
+      {/* {isVideoPreviewOpen && <VideoPreview
         isOpen={isVideoPreviewOpen}
         onClose={() => setIsVideoPreviewOpen(false)}
         videoUrl={previewVideo}
-      />}
+      />} */}
       {isPreviewOpen && (
         <Suspense fallback={null}>
           <ImagePreview

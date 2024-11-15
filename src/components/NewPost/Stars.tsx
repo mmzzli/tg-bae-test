@@ -94,9 +94,9 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
       <Drawer placement="bottom" onClose={onClose} isOpen={isOpen}>
         <DrawerOverlay />
         <DrawerContent bg="no-repeat">
-          <DrawerBody bg="rgba(28, 28, 28, 1)" border="none" borderRadius="16px">
+          <DrawerBody bg="rgba(28, 28, 28, 1)" border="none" borderTopRadius="16px">
             <Image onClick={onClose} mt="16px" mb="24px" src={Remove1Icon} alt="Remove Icon" />
-            <Heading as="h3" color="rgba(224, 226, 246, 1)">
+            <Heading as="h3" fontSize="24px" color="#E0E2F6">
               Choose the stars to unlock this post
             </Heading>
             <Grid pt="28px" templateColumns="repeat(3, 1fr)" gap={3}>
@@ -114,7 +114,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
                       bg={price === item ? 'rgba(74, 58, 255, 1)' : ''}
                       onClick={() => handleStarSelect(item)}
                     >
-                      <Text color="rgba(224, 226, 246, 1)">{item}</Text>
+                      <Text color="rgba(224, 226, 246, 1)" fontSize="14px">{item}</Text>
                       <Image src={StarsIcon} alt="Stars Icon" />
                     </HStack>
                   </Box>
@@ -133,9 +133,9 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
                 border="none"
                 p="0"
                 inputMode="numeric"
-                placeholder="Add a custom amount"
+                placeholder="customize"
                 onChange={handleChange}
-                value={price}
+                value={price || ''}
                 h="100%"
                 onFocus={() => { isMobileDevice() && setIsFocused(true) }}
                 onBlur={() => { isMobileDevice() && setIsFocused(false) }}
@@ -144,7 +144,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
             </HStack>
 
             <Box p="0px 18px" h={`${isFocused ? "400px" : ""}`}>
-              <Button
+              {boll && <Button
                 size="xl"
                 fontSize="14px"
                 variant="primary-outline"
@@ -154,7 +154,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
                 onClick={onClose}
               >
                 Done
-              </Button>
+              </Button>}
             </Box>
           </DrawerBody>
         </DrawerContent>

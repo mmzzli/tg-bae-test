@@ -43,7 +43,7 @@ export const Menu: FC = () => {
     },
   ]
   return (
-    <div className="fixed bottom-0 left-0 w-full p-0 h-[84px] pt-2 border-t border-[#212121] bg-[#0D0D0D] z-9">
+    <div className="fixed bottom-0 left-0 w-full p-0 h-[84px] pt-2 border-t border-[#212121] bg-[#0D0D0D]">
       <div className="flex justify-around items-center">
         {navList.map((item, index) => (
           <div

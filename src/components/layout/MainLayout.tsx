@@ -128,7 +128,7 @@ export const MainLayout: React.FC = () => {
         )}
       </div>
 
-      <div className="flex-1">
+      <div className="absolute inset-0 top-0 bottom-[84px] z-1">
         <Outlet />
       </div>
 

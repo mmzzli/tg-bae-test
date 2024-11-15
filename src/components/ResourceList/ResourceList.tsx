@@ -194,7 +194,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                 currentUid={launchParams.initData?.user?.id ?? 0}
                 onProfileClick={jumpToProfilePage}
               />
-              <div className="relative px-4">
+              <div className="relative px-4 min-h-[200px]">
                 <div className="grid grid-cols-3 gap-2">
                   {data.media.map((i, ind) => (
                     <Image
@@ -234,7 +234,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
               />
               <div className="relative px-4">
                 {data.type === POST_TYPE_IMAGE ? (
-                  <Box position="relative">
+                  <Box position="relative" minH="200px">
                     <Image
                       src={data.media?.[0] ?? data?.media ?? ''}
                       alt={data.title}

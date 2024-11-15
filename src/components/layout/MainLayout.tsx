@@ -68,19 +68,20 @@ export const MainLayout: React.FC = () => {
       tgApp.BackButton.onClick(() => {
         console.log('location.pathname', location.pathname)
         if (location.pathname === '/home') {
-          tgApp.showConfirm({
-            text: 'Are you sure you want to continue?',
-            ok_button: 'Yes',
-            cancel_button: 'No',
-          }).then((result:boolean) => {
-            if (result) {
-              tgApp.close()
-            } else {
-              console.log(1)
-            }
-          }).catch((error:Error) => {
-            console.error("Error showing confirmation:", error);
-          });
+          // tgApp.showConfirm({
+          //   text: 'Are you sure you want to continue?',
+          //   ok_button: 'Yes',
+          //   cancel_button: 'No',
+          // }).then((result:boolean) => {
+          //   if (result) {
+          //     tgApp.close()
+          //   } else {
+          //     console.log(1)
+          //   }
+          // }).catch((error:Error) => {
+          //   console.error("Error showing confirmation:", error);
+          // });
+          tgApp.close()
         } else {
           window.history.back()
         }

@@ -184,7 +184,7 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
         </InfiniteScroll>
       )}
       {isChatListLoaded && chatList.length === 0 && (
-        <div className="flex flex-col items-center justify-center flex-1 pb-[80px]">
+        <div className="flex flex-col items-center justify-center min-h-screen pb-[120px]">
           <img src={emptyChat} alt="empty" style={{ width: '164px' }} />
           <span className="text-[#424048] text-sm mt-6">No Chat History</span>
         </div>

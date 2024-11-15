@@ -109,7 +109,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover }) 
       <BaseModal
         isOpen={isBaseModalOpen}
         onClose={off}
-        height="80vh"
+        height="100vh"
         animation={{
           duration: 400,
           timingFunction: 'ease-in-out',
@@ -124,14 +124,14 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover }) 
       >
         <div className="w-[100%]">
           <h2 className="text-[24px] text-[#E0E2F6] mt-[24px]">Select cover</h2>
-          <div className="rounded-[5px] mt-[16px] overflow-hidden">
+          <div className="rounded-[5px] mt-[16px] max-h-[300px] overflow-hidden">
             {selectedFrame && (
               <img
-                className="object-revert"
+                // className="object-revert"
                 src={selectedFrame.url}
                 alt={`Selected Frame at ${selectedFrame.time}s`}
                 width="100%"
-                style={{ maxHeight: '315px' }}
+                // style={{ maxHeight: '315px' }}
               />
             )}
           </div>

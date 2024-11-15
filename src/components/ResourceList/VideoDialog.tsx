@@ -252,6 +252,7 @@ export function VideoDialog({
         >
           <div className="absolute right-2 top-2 z-10 w-8 h-8 bg-black/30 rounded-full overflow-hidden flex items-center justify-center">
             <img
+              className="pointer-events-none"
               src={closeIcon}
               alt="close"
               onClick={(e) => {
@@ -264,7 +265,7 @@ export function VideoDialog({
 
           <video
             ref={videoRef}
-            className="w-full h-full object-contain"
+            className="absolute w-full h-full object-contain pointer-events-none"
             src={info?.media[0]}
             onClick={(e) => {
               e.preventDefault()

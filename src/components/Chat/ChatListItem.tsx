@@ -9,6 +9,44 @@ import { OthersUserInfo } from '@/types'
 import { DeleteDialog } from './DeleteDialog'
 import { useStore } from '@/store'
 
+const ChatAvatar: FC<{ user: OthersUserInfo | null }> = ({ user }) => (
+  <div className="relative w-12 h-12 mr-3">
+    <Image
+      rect
+      type="avatar"
+      src={user?.avatar}
+      alt={user?.username}
+      width={48}
+      height={48}
+      className="w-full h-full rounded-full"
+    />
+  </div>
+)
+
+const ChatContent: FC<{ user: OthersUserInfo | null; chat: Conversation }> = ({ user, chat }) => (
+  <div className="flex-1 min-w-0">
+    <div className="flex justify-between items-start">
+      <h3 className="flex-1 text-white font-medium truncate">{user?.username}</h3>
+      <span className="text-gray-500 text-sm">
+        {chat.lastMessage?.timestamp
+          ? getTimeStringAutoShort(chat.lastMessage?.timestamp * 1000, true)
+          : ''}
+      </span>
+    </div>
+
+    <div className="flex justify-between items-start min-h-[24px]">
+      <p className="flex-1 text-gray-400 text-sm truncate mt-1">
+        {chat?.lastMessage?.content?.entity?.text}
+      </p>
+      {chat.unread ? (
+        <div className="mt-1 ml-3 bg-[#4A3AFF] rounded-full w-[22px] h-[20px] flex items-center justify-center">
+          <span className="text-white text-xs">{chat.unread}</span>
+        </div>
+      ) : null}
+    </div>
+  </div>
+)
+
 const ChatListItem: FC<{
   chat: Conversation
   className?: string
@@ -25,14 +63,6 @@ const ChatListItem: FC<{
     updateChatListItem: state.updateChatListItem,
   }))
   const [chatPeople, setChatPeople] = useState<OthersUserInfo | null>(null)
-
-  const resetAllItems = () => {
-    controlsMap.forEach((control) => {
-      control.start({ x: 0 })
-    })
-    setIsDragging(false)
-    onDragStateChange?.(false)
-  }
 
   useEffect(() => {
     const loadChatPeople = () => {
@@ -51,26 +81,31 @@ const ChatListItem: FC<{
     }
   }, [chat.channel.channelID, controls, controlsMap, getChatPeopleInfo, initChatPeopleInfo])
 
+  const resetAllItems = () => {
+    controlsMap.forEach((control) => {
+      control.start({ x: 0 })
+    })
+    setIsDragging(false)
+    onDragStateChange?.(false)
+  }
+
   const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const threshold = -50
+    const resetDragging = () => {
+      setTimeout(() => {
+        setIsDragging(false)
+      }, 100)
+    }
+
     if (info.offset.x < threshold) {
       controls.start({ x: -80 })
       setIsDragging(true)
       onDragStateChange?.(true)
-      setTimeout(() => {
-        setIsDragging(false)
-      }, 100)
+      resetDragging()
     } else {
       controls.start({ x: 0 })
-      setTimeout(() => {
-        setIsDragging(false)
-        onDragStateChange?.(false)
-      }, 100)
+      resetDragging()
     }
-  }
-
-  const onDelete = (id: string) => {
-    connection?.removeConversation(id)
   }
 
   const handleClick = () => {
@@ -84,16 +119,9 @@ const ChatListItem: FC<{
       navigate(`/chat/${chatPeople?.uid}`)
     }
   }
-  useEffect(() => {
-    controlsMap.set(chat.channel.channelID, controls)
-    return () => {
-      controlsMap.delete(chat.channel.channelID)
-    }
-  }, [])
 
   return (
     <div className={cn('relative h-[64px] w-full overflow-hidden', className)}>
-      {/* Chat Item */}
       <motion.div
         drag="x"
         dragConstraints={{ left: -80, right: 0 }}
@@ -106,55 +134,11 @@ const ChatListItem: FC<{
         className="absolute top-0 left-0 right-0 bottom-0 z-10"
       >
         <div className="flex items-center bg-black border border-black h-[64px] px-[24px]">
-          {/* Avatar */}
-          <div className="relative w-12 h-12 mr-3">
-            <Image
-              rect
-              type="avatar"
-              src={chatPeople?.avatar}
-              alt={chatPeople?.username}
-              width={48}
-              height={48}
-              className="w-full h-full rounded-full"
-            />
-          </div>
-
-          {/* Content */}
-          <div className="flex-1 min-w-0">
-            <div className="flex justify-between items-start">
-              <h3 className="flex-1 text-white font-medium truncate">{chatPeople?.username}</h3>
-              <span className="text-gray-500 text-sm">
-                {chat.lastMessage?.timestamp
-                  ? getTimeStringAutoShort(chat.lastMessage?.timestamp * 1000, true)
-                  : ''}
-              </span>
-            </div>
-
-            <div className="flex justify-between items-start min-h-[24px]">
-              <p className="flex-1 text-gray-400 text-sm truncate mt-1">
-                {chat?.lastMessage?.content?.entity?.text}
-              </p>
-              {/* Unread Count */}
-              {chat.unread ? (
-                <div className="mt-1 ml-3 bg-[#4A3AFF] rounded-full w-[22px] h-[20px] flex items-center justify-center">
-                  <span className="text-white text-xs">{chat.unread}</span>
-                </div>
-              ) : null}
-            </div>
-          </div>
+          <ChatAvatar user={chatPeople} />
+          <ChatContent user={chatPeople} chat={chat} />
         </div>
       </motion.div>
-      {/* <div
-        className="cursor-pointer absolute right-0 top-[1px] bottom-[1px] w-[64px] bg-[#FF5330] flex items-center justify-center -z-1"
-        onClick={() => onDelete(chat.channel.channelID)}
-      >
-        <span className="text-white">
-          <img style={{ width: '20px', height: '20px' }} src={deleteIcon} alt="delete" />
-          <DeleteDialog />
-        </span>
-      </div> */}
-
-      <DeleteDialog onDelete={() => onDelete(chat.channel.channelID)} />
+      <DeleteDialog onDelete={() => connection?.removeConversation(chat.channel.channelID)} />
     </div>
   )
 }

@@ -1,9 +1,9 @@
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { ChatListProps } from './types'
 import ChatListItem from './ChatListItem'
 import { AnimationControls } from 'framer-motion'
 
-const ChatList: FC<ChatListProps> = ({ chats }) => {
+const useDragControls = (resetTrigger: number) => {
   const [hasAnyItemDragged, setHasAnyItemDragged] = useState(false)
   const [controlsMap] = useState(new Map<string, AnimationControls>())
 
@@ -18,6 +18,20 @@ const ChatList: FC<ChatListProps> = ({ chats }) => {
     }
   }
 
+  useEffect(() => {
+    controlsMap.forEach((control) => control.start({ x: 0 }))
+    setHasAnyItemDragged(false)
+  }, [resetTrigger])
+
+  return {
+    hasAnyItemDragged,
+    controlsMap,
+    handleDragStateChange,
+  }
+}
+
+const ChatList: FC<ChatListProps & { resetTrigger: number }> = ({ chats, resetTrigger }) => {
+  const { hasAnyItemDragged, controlsMap, handleDragStateChange } = useDragControls(resetTrigger)
   return (
     <>
       {chats.map((chat) => (

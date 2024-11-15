@@ -16,7 +16,7 @@ const Dialog: React.FC<DialogProps> = ({ open, children }) => {
   if (!open) return null
 
   return createPortal(
-    <div className="fixed inset-0 z-50" aria-modal="true" role="dialog">
+    <div className="fixed inset-0 w-screen h-screen z-50" aria-modal="true" role="dialog">
       {children}
     </div>,
     document.body

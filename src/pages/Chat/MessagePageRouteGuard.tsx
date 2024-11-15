@@ -47,7 +47,7 @@ const MessagePageRouteGuard: FC<MessagePageRouteGuardProps> = ({ children }) => 
 
   if (!ready) {
     return (
-      <div className="flex h-screen w-full items-center justify-center">
+      <div className="fixed inset-0 w-screen h-screen flex items-center justify-center bg-[#0D0D0D] z-10">
         <Spinner />
       </div>
     )

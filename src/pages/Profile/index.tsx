@@ -1,5 +1,4 @@
 import { FC, useEffect } from 'react'
-import { Menu } from '@/components/Menu'
 import UserProfile from '@/components/PersonalDetails/UserProfile'
 
 import ViewList from '@/components/ViewList/ViewList'
@@ -22,10 +21,10 @@ const Profile: FC = () => {
     }
   }, [token])
   return (
-    <>
+    <div className="relative w-full h-full overflow-auto">
       <UserProfile />
       <ViewList />
-    </>
+    </div>
   )
 }
 

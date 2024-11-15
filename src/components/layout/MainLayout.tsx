@@ -58,6 +58,7 @@ export const MainLayout: React.FC = () => {
       tgApp.ready()
       tgApp.expand()
       tgApp.headerColor = '#000'
+      tgApp.backgroundColor = '#0d0d0d'
       tgApp.MainButton.hide()
       tgApp.onEvent('viewportChanged', () => {
         if (!tgApp.isExpanded) {
@@ -67,6 +68,19 @@ export const MainLayout: React.FC = () => {
       tgApp.BackButton.onClick(() => {
         console.log('location.pathname', location.pathname)
         if (location.pathname === '/home') {
+          // tgApp.showConfirm({
+          //   text: 'Are you sure you want to continue?',
+          //   ok_button: 'Yes',
+          //   cancel_button: 'No',
+          // }).then((result:boolean) => {
+          //   if (result) {
+          //     tgApp.close()
+          //   } else {
+          //     console.log(1)
+          //   }
+          // }).catch((error:Error) => {
+          //   console.error("Error showing confirmation:", error);
+          // });
           tgApp.close()
         } else {
           window.history.back()
@@ -96,7 +110,7 @@ export const MainLayout: React.FC = () => {
   }, [location.pathname])
 
   return (
-    <div className="bg-black min-h-screen">
+    <div className="bg-black h-screen w-screen overflow-hidden flex pb-[84px]">
       <div
         className="fixed w-screen h-screen flex-col bg-[#0D0D0D]"
         style={{ display: hiddenChatPage ? 'none' : 'flex' }}
@@ -113,7 +127,10 @@ export const MainLayout: React.FC = () => {
           </Suspense>
         )}
       </div>
-      <Outlet />
+
+      <div className="absolute inset-0 top-0 bottom-[84px] z-1">
+        <Outlet />
+      </div>
 
       <Menu />
     </div>

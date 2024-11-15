@@ -133,7 +133,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
                 border="none"
                 p="0"
                 inputMode="numeric"
-                placeholder="Add a custom amount"
+                placeholder="customize"
                 onChange={handleChange}
                 value={price || ''}
                 h="100%"

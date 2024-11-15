@@ -259,6 +259,7 @@ export function VideoDialog({
             className="w-full h-full object-contain"
             src={info?.media[0]}
             onClick={togglePlay}
+            onEnded={() => dispatch({ type: 'SET_PLAYING', payload: false })}
             controls={false}
           />
 

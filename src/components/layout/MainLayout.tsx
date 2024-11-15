@@ -10,6 +10,7 @@ import { Outlet } from 'react-router-dom'
 import { log } from 'console'
 import { Spinner } from '@chakra-ui/react'
 import { Menu } from '../Menu'
+import { postEvent } from '@telegram-apps/sdk'
 
 const ChatListPage = lazy(() =>
   import('@/pages/Chat').then((module) => ({
@@ -101,6 +102,9 @@ export const MainLayout: React.FC = () => {
     }
     if (window.Telegram?.WebApp) {
       const tgApp = window.Telegram.WebApp
+      postEvent('web_app_setup_swipe_behavior', {
+        allow_vertical_swipe: false,
+      })
       if (location.pathname === '/home') {
         tgApp.BackButton.hide()
       } else {

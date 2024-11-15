@@ -1,11 +1,4 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/BaseDialog/BaseDialog'
+import { Dialog, DialogContent } from '@/components/BaseDialog/BaseDialog'
 import { useDialog } from '@/hooks/useDialog'
 import deleteIcon from '@/assets/image/chat/delete.png'
 

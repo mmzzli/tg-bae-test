@@ -12,11 +12,16 @@ interface DialogContentProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode
 }
 
-const Dialog: React.FC<DialogProps> = ({ open, children }) => {
+const Dialog: React.FC<DialogProps> = ({ open, onOpenChange, children }) => {
   if (!open) return null
 
   return createPortal(
-    <div className="fixed inset-0 w-screen h-screen z-50" aria-modal="true" role="dialog">
+    <div
+      className="fixed inset-0 w-screen h-screen z-50"
+      aria-modal="true"
+      role="dialog"
+      onClick={() => onOpenChange?.(false)}
+    >
       {children}
     </div>,
     document.body

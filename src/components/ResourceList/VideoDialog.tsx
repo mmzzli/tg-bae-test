@@ -245,7 +245,8 @@ export function VideoDialog({
       <DialogContent className="p-0">
         <div
           ref={containerRef}
-          className="relative w-screen h-screen bg-black"
+          className="relative w-screen h-screen bg-black overflow-hidden"
+          style={{ touchAction: 'manipulation' }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -283,7 +284,7 @@ export function VideoDialog({
           />
 
           {state.isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+            <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
               <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin" />
             </div>
           )}
@@ -296,6 +297,7 @@ export function VideoDialog({
                 togglePlay()
               }}
               className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 no-tap"
+              style={{ touchAction: 'manipulation' }}
             >
               <div className="w-20 h-20 bg-white/50 rounded-full flex items-center justify-center">
                 <div className="w-0 h-0 border-t-[15px] border-t-transparent border-l-[25px] border-l-white border-b-[15px] border-b-transparent ml-2" />

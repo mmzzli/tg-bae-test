@@ -1,4 +1,3 @@
-import { Dialog, DialogContent } from '@/components/BaseDialog/BaseDialog'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import Hls from 'hls.js'
 import { memo, useCallback, useEffect, useReducer, useRef } from 'react'
@@ -64,7 +63,6 @@ export function VideoDialog({
   const progressBarRef = useRef<HTMLDivElement>(null)
   const progressRef = useRef(0)
   const touchStartXRef = useRef(0)
-  const containerRef = useRef<HTMLDivElement>(null)
 
   // video init
   useEffect(() => {
@@ -242,96 +240,94 @@ export function VideoDialog({
     )
   )
   return (
-    <Dialog open={true}>
-      <DialogContent className="p-0">
-        <div
-          ref={containerRef}
-          className="absolute w-screen h-screen bg-black overflow-hidden"
-          style={{ touchAction: 'manipulation' }}
-          onClick={(e) => {
-            togglePlay()
-          }}
-        >
-          <div
-            className="absolute right-2 top-2 z-20 w-8 h-8 bg-black/30 rounded-full overflow-hidden flex items-center justify-center"
+    <div className="fixed inset-0 top-0 left-0 bottom-0 right-0 z-50 bg-black overflow-hidden">
+      <div
+        className="absolute w-screen h-screen animate-in fade-in-0 overflow-hidden"
+        onClick={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          togglePlay()
+        }}
+      >
+        <video
+          ref={videoRef}
+          className="absolute w-full h-full object-contain -z-1"
+          src={info?.media[0]}
+          onEnded={() => dispatch({ type: 'SET_PLAYING', payload: false })}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          controls={false}
+          playsInline // prevent iOS full screen
+          webkit-playsinline="true" // for old iOS WebKit
+          x5-playsinline="true" // for X5 kernel
+          x5-video-player-type="h5" // enable H5 player
+          x5-video-player-fullscreen="true" // full screen handle
+          preload="auto" // preload
+        />
+        <div className="absolute right-2 top-2  flex items-center justify-center w-8 h-8 bg-black/30 rounded-full overflow-hidden z-20">
+          <img
+            src={closeIcon}
+            alt="close"
             onClick={(e) => {
               onClose()
             }}
-          >
-            <img src={closeIcon} alt="close" />
-          </div>
-
-          <video
-            ref={videoRef}
-            className="absolute w-full h-full object-contain z-10"
-            src={info?.media[0]}
-            onEnded={() => dispatch({ type: 'SET_PLAYING', payload: false })}
-            // onTouchStart={handleTouchStart}
-            // onTouchMove={handleTouchMove}
-            // onTouchEnd={handleTouchEnd}
-            controls={false}
-            playsInline // prevent iOS full screen
-            webkit-playsinline="true" // for old iOS WebKit
-            x5-playsinline="true" // for X5 kernel
-            x5-video-player-type="h5" // enable H5 player
-            x5-video-player-fullscreen="true" // full screen handle
-            preload="auto" // preload
           />
+        </div>
 
-          {state.isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-20">
-              <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin" />
-            </div>
-          )}
+        {state.isLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-20">
+            <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin" />
+          </div>
+        )}
 
-          {!state.isPlaying && (
-            <div
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                togglePlay()
-              }}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 no-tap z-20"
-              style={{ touchAction: 'manipulation' }}
-            >
-              <div className="w-20 h-20 bg-white/50 rounded-full flex items-center justify-center">
-                <div className="w-0 h-0 border-t-[15px] border-t-transparent border-l-[25px] border-l-white border-b-[15px] border-b-transparent ml-2" />
-              </div>
+        {!state.isPlaying && (
+          <div
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              togglePlay()
+            }}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 no-tap z-20"
+            style={{ touchAction: 'manipulation' }}
+          >
+            <div className="w-20 h-20 bg-white/50 rounded-full flex items-center justify-center">
+              <div className="w-0 h-0 border-t-[15px] border-t-transparent border-l-[25px] border-l-white border-b-[15px] border-b-transparent ml-2" />
             </div>
-          )}
+          </div>
+        )}
+
+        <div
+          className="absolute left-0 right-0 bottom-0 z-20 flex flex-col transition-transform duration-300 ease-out safe-area-bottom"
+          style={{
+            transform: `translateX(${state.slideOffset}px)`,
+          }}
+        >
+          <UserInfo avatar={info?.avatar} username={info?.username} content={info?.title} />
 
           <div
-            className="absolute left-0 right-0 bottom-0 z-10 flex flex-col transition-transform duration-300 ease-out safe-area-bottom"
-            style={{
-              transform: `translateX(${state.slideOffset}px)`,
-            }}
+            ref={progressBarRef}
+            className="absolute bottom-6 left-0 right-0 px-4 touch-none"
+            onMouseDown={handleDragStart}
+            onMouseMove={(e) => state.isDragging && handleProgressChange(e)}
+            onMouseUp={handleDragEnd}
+            onMouseLeave={handleDragEnd}
+            onTouchStart={handleDragStart}
+            onTouchMove={(e) => state.isDragging && handleProgressChange(e)}
+            onTouchEnd={handleDragEnd}
           >
-            <UserInfo avatar={info?.avatar} username={info?.username} content={info?.title} />
-
-            <div
-              ref={progressBarRef}
-              className="absolute bottom-6 left-0 right-0 px-4 touch-none"
-              // onMouseDown={handleDragStart}
-              // onMouseMove={(e) => state.isDragging && handleProgressChange(e)}
-              // onMouseUp={handleDragEnd}
-              // onMouseLeave={handleDragEnd}
-              // onTouchStart={handleDragStart}
-              // onTouchMove={(e) => state.isDragging && handleProgressChange(e)}
-              // onTouchEnd={handleDragEnd}
-            >
-              <div className="relative group h-8 -my-2 flex items-center cursor-pointer no-tap">
-                <div className="absolute inset-0" />
-                <div
-                  className={`w-full ${state.isDragging ? 'h-2' : 'h-[1px] group-hover:h-2'}
+            <div className="relative group h-8 -my-2 flex items-center cursor-pointer no-tap">
+              <div className="absolute inset-0" />
+              <div
+                className={`w-full ${state.isDragging ? 'h-2' : 'h-[1px] group-hover:h-2'}
                       bg-gray-500/30 rounded-full transition-[height] duration-200`}
-                >
-                  <ProgressDisplay progress={state.progress} isDragging={state.isDragging} />
-                </div>
+              >
+                <ProgressDisplay progress={state.progress} isDragging={state.isDragging} />
               </div>
             </div>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   )
 }

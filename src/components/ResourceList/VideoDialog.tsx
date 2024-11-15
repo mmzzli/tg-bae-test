@@ -258,7 +258,7 @@ export function VideoDialog({
             togglePlay()
           }}
         >
-          <div
+          {/* <div
             className="absolute right-2 top-2 z-20 w-8 h-8 bg-black/30 rounded-full overflow-hidden flex items-center justify-center"
             onClick={(e) => {
               e.preventDefault()
@@ -268,7 +268,7 @@ export function VideoDialog({
             }}
           >
             <img src={closeIcon} alt="close" />
-          </div>
+          </div> */}
 
           <video
             ref={videoRef}

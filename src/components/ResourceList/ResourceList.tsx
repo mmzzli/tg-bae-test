@@ -23,7 +23,6 @@ const ImagePreview = lazy(() => import('../Image/ImagePreview'))
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import useMobile from '@/hooks/useMobile'
 
-import VideoPreview from '@/components/Image/VideoPreview'
 import { VideoDialog } from './VideoDialog'
 interface Like {
   id: number

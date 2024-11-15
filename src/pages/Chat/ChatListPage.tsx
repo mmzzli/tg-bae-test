@@ -1,11 +1,9 @@
 import { FC, useCallback, useEffect } from 'react'
 import ChatList from '@/components/Chat/ChatList'
-import { Menu } from '@/components/Menu'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { Spinner } from '@chakra-ui/react'
 import { cn, getWrappedMessage } from '@/utils/utils'
 import { useStore } from '@/store'
-import { Message } from 'wukongimjssdk/lib/model'
 import { useIM } from '@/store/hook/userIM'
 import BaeimSDK, {
   ConnectStatus,
@@ -114,6 +112,18 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
         })
         sdk.start()
         setConnection(sdk)
+
+        // setTimeout(async () => {
+        //   const res = await sdk.getAllConversation()
+        //   setIsChatListLoaded(true)
+        //   setChatList(res)
+        //   res.forEach((conversation) => {
+        //     addMessageWindowListItem({
+        //       channel: conversation.channel,
+        //       messages: conversation.recents?.map(getWrappedMessage).reverse() ?? [],
+        //     })
+        //   })
+        // }, 4000)
 
         removeConnectionStatusListener = sdk.addConnectionStatusListener(async (status) => {
           log('-----ConnectionStatusListener------', status)

@@ -41,9 +41,9 @@ export const MessageInput = ({
   return (
     <form onSubmit={handleSubmit} className="flex h-[68px] w-full bg-[#303030] pr-4 pt-[8px]">
       <div className="flex items-center h-[34px] w-full bg-[#303030] pr-4">
-        <div className="w-[28px] h-[28px] mx-[10px] cursor-pointer">
+        {/* <div className="w-[28px] h-[28px] mx-[10px] cursor-pointer">
           <Image src={AttachIcon} />
-        </div>
+        </div> */}
         <input
           ref={inputRef}
           value={message}

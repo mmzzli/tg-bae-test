@@ -58,6 +58,7 @@ export const MainLayout: React.FC = () => {
       tgApp.ready()
       tgApp.expand()
       tgApp.headerColor = '#000'
+      tgApp.backgroundColor = '#0d0d0d'
       tgApp.MainButton.hide()
       tgApp.onEvent('viewportChanged', () => {
         if (!tgApp.isExpanded) {
@@ -67,6 +68,19 @@ export const MainLayout: React.FC = () => {
       tgApp.BackButton.onClick(() => {
         console.log('location.pathname', location.pathname)
         if (location.pathname === '/home') {
+          // tgApp.showConfirm({
+          //   text: 'Are you sure you want to continue?',
+          //   ok_button: 'Yes',
+          //   cancel_button: 'No',
+          // }).then((result:boolean) => {
+          //   if (result) {
+          //     tgApp.close()
+          //   } else {
+          //     console.log(1)
+          //   }
+          // }).catch((error:Error) => {
+          //   console.error("Error showing confirmation:", error);
+          // });
           tgApp.close()
         } else {
           window.history.back()

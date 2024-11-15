@@ -133,9 +133,9 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
                 border="none"
                 p="0"
                 inputMode="numeric"
-                placeholder="Add a custom amount"
+                placeholder="customize"
                 onChange={handleChange}
-                value={price}
+                value={price || ''}
                 h="100%"
                 onFocus={() => { isMobileDevice() && setIsFocused(true) }}
                 onBlur={() => { isMobileDevice() && setIsFocused(false) }}
@@ -144,7 +144,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
             </HStack>
 
             <Box p="0px 18px" h={`${isFocused ? "400px" : ""}`}>
-              <Button
+              {boll && <Button
                 size="xl"
                 fontSize="14px"
                 variant="primary-outline"
@@ -154,7 +154,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
                 onClick={onClose}
               >
                 Done
-              </Button>
+              </Button>}
             </Box>
           </DrawerBody>
         </DrawerContent>

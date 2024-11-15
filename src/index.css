@@ -40,10 +40,11 @@ p {
 }
 
 input:focus,
-textarea:focus {
+textarea:focus,
+button:focus {
   box-shadow: none !important;
   border-color: teal !important;
-  outline: none;
+  outline: none !important;
 }
 
 .section {

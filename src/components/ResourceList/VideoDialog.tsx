@@ -1,7 +1,7 @@
 import { Dialog, DialogContent } from '@/components/BaseDialog/BaseDialog'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import Hls from 'hls.js'
-import { memo, useCallback, useEffect, useReducer, useRef } from 'react'
+import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react'
 import { useThrottleFn } from 'ahooks'
 import closeIcon from '@/assets/icons/closeIcon.svg'
 import Image from '@/components/Image/Image'
@@ -52,6 +52,49 @@ function reducer(state: State, action: Action): State {
       return state
   }
 }
+
+const UserInfo = memo(
+  ({
+    avatar,
+    username,
+    content,
+  }: {
+    avatar: string | undefined
+    username: string | undefined
+    content: string | undefined
+  }) => (
+    <div className="absolute left-4 bottom-12 z-10 flex flex-col cursor-pointer no-tap">
+      <div className="flex items-center">
+        <Image rect src={avatar} alt="avatar" className="w-10 h-10 rounded-full" />
+        <span className="text-white text-sm ml-2 shadow-sm">{username}</span>
+      </div>
+      <p className="text-white text-xs mt-2 line-clamp-2 overflow-hidden">{content}</p>
+    </div>
+  )
+)
+
+const CloseButton = memo(({ onClose }: { onClose: () => void }) => (
+  <div
+    className="absolute right-2 top-2 z-20 w-8 h-8 bg-black/30 rounded-full overflow-hidden flex items-center justify-center"
+    onTouchEnd={(e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      onClose()
+    }}
+    onClick={onClose}
+  >
+    <img src={closeIcon} alt="close" />
+  </div>
+))
+
+const PlayButton = memo(({ onClick }: { onClick: (e: React.MouseEvent) => void }) => (
+  <div
+    onClick={onClick}
+    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 no-tap z-20"
+  >
+    <Image src={playIcon} alt="play" className="w-[72px] h-[72px] no-tap" />
+  </div>
+))
 
 export function VideoDialog({
   info,
@@ -189,7 +232,6 @@ export function VideoDialog({
   }, [])
 
   const togglePlay = useCallback(() => {
-    console.log('togglePlay')
     if (videoRef.current) {
       if (state.isPlaying) {
         videoRef.current.pause()
@@ -233,25 +275,15 @@ export function VideoDialog({
     )
   )
 
-  const UserInfo = memo(
-    ({
-      avatar,
-      username,
-      content,
-    }: {
-      avatar: string | undefined
-      username: string | undefined
-      content: string | undefined
-    }) => (
-      <div className="absolute left-4 bottom-12 z-10 flex flex-col cursor-pointer no-tap">
-        <div className="flex items-center">
-          <Image rect src={avatar} alt="avatar" className="w-10 h-10 rounded-full" />
-          <span className="text-white text-sm ml-2 shadow-sm">{username}</span>
-        </div>
-        <p className="text-white text-xs mt-2 line-clamp-2 overflow-hidden">{content}</p>
-      </div>
-    )
+  const handlePlayClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      togglePlay()
+    },
+    [togglePlay]
   )
+
   return (
     <Dialog open={true}>
       <DialogContent className="p-0">
@@ -260,17 +292,7 @@ export function VideoDialog({
           className="absolute w-screen h-screen bg-black overflow-hidden"
           {...touchHandlers}
         >
-          <div
-            className="absolute right-2 top-2 z-20 w-8 h-8 bg-black/30 rounded-full overflow-hidden flex items-center justify-center"
-            onTouchEnd={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              onClose()
-            }}
-            onClick={onClose}
-          >
-            <img src={closeIcon} alt="close" />
-          </div>
+          <CloseButton onClose={onClose} />
 
           <video
             ref={videoRef}
@@ -293,19 +315,7 @@ export function VideoDialog({
             </div>
           )}
 
-          {!state.isPlaying && (
-            <div
-              onClick={(e) => {
-                console.log('play')
-                e.preventDefault()
-                e.stopPropagation()
-                togglePlay()
-              }}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 no-tap z-20"
-            >
-              <Image src={playIcon} alt="play" className="w-[72px] h-[72px] no-tap" />
-            </div>
-          )}
+          {!state.isPlaying && <PlayButton onClick={handlePlayClick} />}
 
           <div
             className="absolute left-0 right-0 bottom-0 z-10 flex flex-col transition-transform duration-300 ease-out safe-area-bottom"

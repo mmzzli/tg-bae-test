@@ -23,7 +23,7 @@ export const useFormatMessage = () => {
       type,
       sender: currentUid,
       receiver: to,
-      timestamp: Date.now(),
+      timestamp: Date.now() / 1000,
       messageSeq: -1,
     }
   }

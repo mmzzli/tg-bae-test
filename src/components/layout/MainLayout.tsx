@@ -10,6 +10,7 @@ import { Outlet } from 'react-router-dom'
 import { log } from 'console'
 import { Spinner } from '@chakra-ui/react'
 import { Menu } from '../Menu'
+import { postEvent } from '@telegram-apps/sdk'
 
 const ChatListPage = lazy(() =>
   import('@/pages/Chat').then((module) => ({
@@ -57,6 +58,7 @@ export const MainLayout: React.FC = () => {
       const tgApp = window.Telegram.WebApp
       tgApp.ready()
       tgApp.expand()
+      document.getElementById('root')?.classList.add('root-wrap')
       tgApp.headerColor = '#000'
       tgApp.backgroundColor = '#0d0d0d'
       tgApp.MainButton.hide()
@@ -68,20 +70,24 @@ export const MainLayout: React.FC = () => {
       tgApp.BackButton.onClick(() => {
         console.log('location.pathname', location.pathname)
         if (location.pathname === '/home') {
-          // tgApp.showConfirm({
-          //   text: 'Are you sure you want to continue?',
-          //   ok_button: 'Yes',
-          //   cancel_button: 'No',
-          // }).then((result:boolean) => {
-          //   if (result) {
-          //     tgApp.close()
-          //   } else {
-          //     console.log(1)
-          //   }
-          // }).catch((error:Error) => {
-          //   console.error("Error showing confirmation:", error);
-          // });
-          tgApp.close()
+          tgApp.showConfirm(
+            {
+              text: 'Are you sure you want to continue?',
+              buttons: [
+                { type: 'ok', id: 'ok' }, // OK button
+                { type: 'cancel' }, // Cancel button
+              ],
+            },
+            function (button_id: string) {
+              if (button_id === 'ok') {
+                tgApp.close()
+              } else {
+                // User clicked 'Cancel'
+                console.log('Action cancelled')
+                // Optionally, cancel the deletion or do nothing
+              }
+            }
+          )
         } else {
           window.history.back()
         }
@@ -101,6 +107,9 @@ export const MainLayout: React.FC = () => {
     }
     if (window.Telegram?.WebApp) {
       const tgApp = window.Telegram.WebApp
+      postEvent('web_app_setup_swipe_behavior', {
+        allow_vertical_swipe: false,
+      })
       if (location.pathname === '/home') {
         tgApp.BackButton.hide()
       } else {
@@ -112,8 +121,8 @@ export const MainLayout: React.FC = () => {
   return (
     <div className="bg-black h-screen w-screen overflow-hidden flex pb-[84px]">
       <div
-        className="fixed w-screen h-screen flex-col bg-[#0D0D0D]"
-        style={{ display: hiddenChatPage ? 'none' : 'flex' }}
+        className="fixed w-screen top-0 bottom-[84px] flex-col bg-[#0D0D0D] overflow-hidden"
+        style={{ display: hiddenChatPage ? 'none' : 'flex', zIndex: hiddenChatPage ? -1 : 2 }}
       >
         {shouldLoadChat && (
           <Suspense

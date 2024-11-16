@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { shallow } from 'zustand/shallow'
 import { useStore } from '../store'
 
@@ -16,10 +16,13 @@ export const useRecommendList = () => {
     )
 
   const { list, page, hasMore, isLoading, error } = recommendList
+  const [isInitialRender, setIsInitialRender] = useState(page == 1 ? -1 : page)
 
   useEffect(() => {
     if (!token) return
+    if (isInitialRender === page) return
     loadRecommendList(page)
+    setIsInitialRender(page)
   }, [page, token])
 
   // useEffect(() => {
@@ -61,10 +64,13 @@ export const useViewList = () => {
   )
 
   const { list, page, hasMore, isLoading, error } = viewList
+  const [isInitialRender, setIsInitialRender] = useState(page == 1 ? -1 : page)
 
   useEffect(() => {
     if (!token) return
+    if (isInitialRender === page) return
     loadViewList(page)
+    setIsInitialRender(page)
   }, [page, token])
 
   // useEffect(() => {

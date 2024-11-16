@@ -69,7 +69,7 @@ const HomePage: FC = () => {
     }
   }, [])
   return (
-    <div className="relative w-full h-full overflow-auto">
+    <div className="relative w-full h-full overflow-auto" id="recommendScrollableDiv">
       <HStack justifyContent="space-between" p="0px 16px" pt="16px">
         <Heading as="h3" fontSize="20px" color="#E0E2F6">
           Following

@@ -21,6 +21,9 @@ const RecommendList = ({ className }: PostListProps) => {
             <Spinner color="#4A3AFF" />
           </Box>
         }
+        scrollableTarget="recommendScrollableDiv"
+        scrollThreshold={0.8}
+        style={{ overflow: 'visible' }}
       >
         <ResourceList resources={list} />
       </InfiniteScroll>

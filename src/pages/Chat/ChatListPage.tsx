@@ -1,11 +1,9 @@
-import { FC, useCallback, useEffect } from 'react'
+import { FC, useCallback, useEffect, useState } from 'react'
 import ChatList from '@/components/Chat/ChatList'
-import { Menu } from '@/components/Menu'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { Spinner } from '@chakra-ui/react'
 import { cn, getWrappedMessage } from '@/utils/utils'
 import { useStore } from '@/store'
-import { Message } from 'wukongimjssdk/lib/model'
 import { useIM } from '@/store/hook/userIM'
 import BaeimSDK, {
   ConnectStatus,
@@ -51,11 +49,10 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
   const { receiveMessage } = useIM()
   const { getCurrentUid } = useTMAUtils()
   const currentUid = getCurrentUid()
-
-  // const handleDelete = (id: string) => {
-  //   log('Delete chat:', id)
-  //   // Implement delete logic
-  // }
+  const [resetTrigger, setResetTrigger] = useState(0)
+  const handleContainerClick = () => {
+    setResetTrigger((prev) => prev + 1)
+  }
 
   const handleMessage = useCallback(
     (message: FormattedMessage) => {
@@ -168,6 +165,7 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
   return (
     <div
       className={cn('bg-black min-h-screen pt-[32px] overflow-auto', 'scrollbar-hide', className)}
+      onClick={handleContainerClick}
     >
       {isChatListLoaded && chatList.length > 0 && (
         <InfiniteScroll
@@ -180,7 +178,7 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
             </div>
           }
         >
-          <ChatList chats={chatList} />
+          <ChatList chats={chatList} resetTrigger={resetTrigger} />
         </InfiniteScroll>
       )}
       {isChatListLoaded && chatList.length === 0 && (

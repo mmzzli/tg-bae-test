@@ -336,7 +336,6 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     try {
       get().setFavLoading(true)
       get().setFavError(null)
-      console.log(123)
       const { posts } = await favList({
         page_num: page,
         records: recordsNum,
@@ -349,7 +348,6 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         media:
           post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
       }))
-      console.log(updatedPosts)
       get().setFavList(updatedPosts, page > 1)
       get().setFavHasMore(hasMore)
     } catch (error) {

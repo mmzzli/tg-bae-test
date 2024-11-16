@@ -10,7 +10,7 @@ const Shares: FC = () => {
   const navigate = useNavigate()
   const { sharedPostList } = useSharedList()
   return (
-    <>
+    <div id="recommendScrollableDiv" className="relative w-full h-full overflow-auto no-scroll">
       <div className="flex items-center justify-between mt-4 mx-4">
         <div className="font-bold text-xl text-[#E0E2F6]">Shared</div>
         <Button
@@ -32,7 +32,7 @@ const Shares: FC = () => {
       </div>
       <div className="font-bold text-xl text-[#E0E2F6] mt-4 mx-4">Selected Posts</div>
       <RecommendList className="mb-12" />
-    </>
+    </div>
   )
 }
 

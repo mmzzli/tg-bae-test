@@ -5,6 +5,8 @@ import { memo, useCallback, useEffect, useReducer, useRef } from 'react'
 import { useThrottleFn } from 'ahooks'
 import closeIcon from '@/assets/icons/closeIcon.svg'
 import Image from '@/components/Image/Image'
+import playIcon from '@/assets/icons/videoSwitch.svg'
+import { useTouch } from '@/hooks/useTouch'
 
 type State = {
   isPlaying: boolean
@@ -133,12 +135,8 @@ export function VideoDialog({
       const deltaX = e.touches[0].clientX - touchStartXRef.current
       const screenWidth = window.innerWidth
 
-      if (state.slideOffset === 0) {
-        if (deltaX > 0) return onClose()
-      } else {
-        const newOffset = Math.max(screenWidth, deltaX)
-        dispatch({ type: 'SET_SLIDE_OFFSET', payload: newOffset })
-      }
+      const newOffset = Math.max(-screenWidth, Math.min(0, deltaX))
+      dispatch({ type: 'SET_SLIDE_OFFSET', payload: newOffset })
     },
     { wait: 16 }
   )
@@ -147,12 +145,21 @@ export function VideoDialog({
     dispatch({ type: 'SET_SLIDING', payload: false })
     const screenWidth = window.innerWidth
 
-    if (Math.abs(state.slideOffset) > screenWidth * 0.4) {
+    if (Math.abs(state.slideOffset) > screenWidth * 0.33) {
       dispatch({ type: 'SET_SLIDE_OFFSET', payload: -screenWidth })
     } else {
       dispatch({ type: 'SET_SLIDE_OFFSET', payload: 0 })
     }
   }, [state.slideOffset])
+
+  const { touchHandlers } = useTouch({
+    onTap: () => {
+      togglePlay()
+    },
+    onTouchStartProp: handleTouchStart,
+    onTouchMoveProp: handleTouchMove,
+    onTouchEndProp: handleTouchEnd,
+  })
 
   const handleProgressChange = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     const video = videoRef.current
@@ -251,40 +258,33 @@ export function VideoDialog({
         <div
           ref={containerRef}
           className="absolute w-screen h-screen bg-black overflow-hidden"
-          style={{ touchAction: 'manipulation' }}
-          onClick={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            togglePlay()
-          }}
+          {...touchHandlers}
         >
-          {/* <div
+          <div
             className="absolute right-2 top-2 z-20 w-8 h-8 bg-black/30 rounded-full overflow-hidden flex items-center justify-center"
-            onClick={(e) => {
+            onTouchEnd={(e) => {
               e.preventDefault()
               e.stopPropagation()
-              console.log('close')
               onClose()
             }}
+            onClick={onClose}
           >
             <img src={closeIcon} alt="close" />
-          </div> */}
+          </div>
 
           <video
             ref={videoRef}
             className="absolute w-full h-full object-contain z-10"
             src={info?.media[0]}
             onEnded={() => dispatch({ type: 'SET_PLAYING', payload: false })}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
             controls={false}
-            playsInline // prevent iOS full screen
+            playsInline={true} // prevent iOS full screen
             webkit-playsinline="true" // for old iOS WebKit
             x5-playsinline="true" // for X5 kernel
             x5-video-player-type="h5" // enable H5 player
-            x5-video-player-fullscreen="true" // full screen handle
+            x5-video-player-fullscreen="false" // full screen handle
             preload="auto" // preload
+            x-webkit-airplay="allow" // 允许 AirPlay
           />
 
           {state.isLoading && (
@@ -296,16 +296,14 @@ export function VideoDialog({
           {!state.isPlaying && (
             <div
               onClick={(e) => {
+                console.log('play')
                 e.preventDefault()
                 e.stopPropagation()
                 togglePlay()
               }}
               className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 no-tap z-20"
-              style={{ touchAction: 'manipulation' }}
             >
-              <div className="w-20 h-20 bg-white/50 rounded-full flex items-center justify-center">
-                <div className="w-0 h-0 border-t-[15px] border-t-transparent border-l-[25px] border-l-white border-b-[15px] border-b-transparent ml-2" />
-              </div>
+              <Image src={playIcon} alt="play" className="w-[72px] h-[72px] no-tap" />
             </div>
           )}
 

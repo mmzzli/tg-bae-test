@@ -125,7 +125,7 @@ export const NewPost: FC = () => {
         ...(title ? { title } : {}),
         type: 0,
         currency: 0,
-        price:price || 0,
+        price: price || 0,
       })
       navigate('/profile')
     }
@@ -221,7 +221,11 @@ export const NewPost: FC = () => {
   }, [imgAttr])
 
   return (
-    <Box h="100vh" overflow="hidden" className='fixed w-screen h-screen bg-black z-10 overflow-auto scrollbar-hide'>
+    <Box
+      h="100vh"
+      overflow="hidden"
+      className="fixed w-screen h-screen bg-black z-10 overflow-auto scrollbar-hide"
+    >
       <Box p="0 16px">
         <HStack justifyContent="space-between" pt="16px">
           <Heading as="h3" fontSize="20px" color="#E0E2F6">
@@ -322,7 +326,7 @@ export const NewPost: FC = () => {
             )}
           </Box>
           <Textarea
-            className="placeholder-[#424048]"
+            className="placeholder-[#424048] mt-6"
             value={title}
             onChange={(event) => setTitle(event.target.value)}
             mt="10px"

@@ -1,84 +1,70 @@
 import { useEffect, type FC, useRef, useState } from 'react'
 import { HStack, Heading, Image, Button } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
-import { Menu } from '@/components/Menu'
 import { AddIcon1 } from '@/assets/icons'
 import { COMMUNITY_LINK } from '@/utils/constants'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
-import { retrieveLaunchParams } from '@tma.js/sdk'
-import { useStore } from '@/store'
 import RecommendList from '@/components/RecommendList/RecommendList'
 import BaseButton from '@/components/BaseButton/BaseButton'
-import { getSingleMedia } from '@/api/list'
-const SHARE_POST = 1
-const SHARE_PROFILE = 2
 const HomePage: FC = () => {
   const navigate = useNavigate()
-  const { shareLink, isInTMA } = useTMAUtils()
-  const { startParam } = retrieveLaunchParams()
-  const { token, setSharedPostList, setOthersUserInfo } = useStore((state) => ({
-    setSharedPostList: state.setSharedPostList,
-    setOthersUserInfo: state.setOthersUserInfo,
-    token: state.token,
-  }))
+  const { shareLink } = useTMAUtils()
+  // const { startParam } = retrieveLaunchParams()
+  // const { token, setSharedPostList, setOthersUserInfo } = useStore((state) => ({
+  //   setSharedPostList: state.setSharedPostList,
+  //   setOthersUserInfo: state.setOthersUserInfo,
+  //   token: state.token,
+  // }))
   const selectedPostsRef = useRef<HTMLDivElement>(null)
-  const [title, setTitle] = useState("Following")
+  const [title, setTitle] = useState('Following')
 
-  const handleNavigate = async (ref: string) => {
-    if (!token) {
-      console.log('waiting for token...')
-      setTimeout(() => {
-        handleNavigate(ref)
-      }, 100)
-      return
-    }
-    console.log('token ready, navigating...')
-    // Get Ref Data
-    try {
-      const data = await getSingleMedia(ref)
-      console.log('getSingleMedia', data)
-      if (data.type === SHARE_POST) {
-        setSharedPostList(data.media)
-        navigate(`/shares?ref=${ref}`)
-      } else if (data.type === SHARE_PROFILE) {
-        setOthersUserInfo({ ...data.userInfo, uid: data.userInfo.user_id })
-        navigate(`/profile/${data.userInfo.uid || data.userInfo.user_id}`)
-      }
-    } catch (error) {
-      console.warn('API ERROR', error)
-    }
-  }
+  // const handleNavigate = async (ref: string) => {
+  //   if (!token) {
+  //     console.log('waiting for token...')
+  //     setTimeout(() => {
+  //       handleNavigate(ref)
+  //     }, 100)
+  //     return
+  //   }
+  //   console.log('token ready, navigating...')
+  //   // Get Ref Data
+  //   try {
+  //     const data = await getSingleMedia(ref)
+  //     console.log('getSingleMedia', data)
+  //     if (data.type === SHARE_POST) {
+  //       setSharedPostList(data.media)
+  //       navigate(`/shares?ref=${ref}`)
+  //     } else if (data.type === SHARE_PROFILE) {
+  //       setOthersUserInfo({ ...data.userInfo, uid: data.userInfo.user_id })
+  //       navigate(`/profile/${data.userInfo.uid || data.userInfo.user_id}`)
+  //     }
+  //   } catch (error) {
+  //     console.warn('API ERROR', error)
+  //   }
+  // }
 
-  useEffect(() => {
-    if (!isInTMA || !startParam || history.length > 2) return
-    const params = startParam.split('_')
-    console.log('startParam', params)
+  // useEffect(() => {
+  //   if (!isInTMA || !startParam || history.length > 2) return
+  //   const params = startParam.split('_')
+  //   console.log('startParam', params)
 
-    params.forEach((p) => {
-      const pairs = p.split('=')
-      if (pairs[0] === 'ref' && pairs[1]) {
-        handleNavigate(pairs[1])
-      }
-    })
-  }, [startParam, isInTMA])
+  //   params.forEach((p) => {
+  //     const pairs = p.split('=')
+  //     if (pairs[0] === 'ref' && pairs[1]) {
+  //       handleNavigate(pairs[1])
+  //     }
+  //   })
+  // }, [startParam, isInTMA])
 
-  console.log('HomePage render')
-
-  useEffect(() => {
-    console.log('HomePage mounted')
-    return () => {
-      console.log('HomePage unmounted')
-    }
-  }, [])
   useEffect(() => {
     const handleScroll = () => {
       if (selectedPostsRef.current) {
         const rect = selectedPostsRef.current.getBoundingClientRect()
         const isVisible = rect.top < 0
         if (isVisible) {
-          setTitle("Selected Posts")
+          setTitle('Selected Posts')
         } else {
-          setTitle("Following")
+          setTitle('Following')
         }
       }
     }
@@ -94,7 +80,14 @@ const HomePage: FC = () => {
   }, [])
   return (
     <div className="relative w-full h-full overflow-auto" id="recommendScrollableDiv">
-      <HStack justifyContent="space-between" p="10px 16px" position="fixed" w="100%" bg="#000" zIndex="111">
+      <HStack
+        justifyContent="space-between"
+        p="10px 16px"
+        position="fixed"
+        w="100%"
+        bg="#000"
+        zIndex="111"
+      >
         <Heading as="h3" fontSize="20px" color="#E0E2F6">
           {title}
         </Heading>
@@ -127,7 +120,9 @@ const HomePage: FC = () => {
         Community
       </button> */}
       <div className="px-4">
-        <h3 className="text-[#E0E2F6] font-bold text-xl" ref={selectedPostsRef}>Selected Posts</h3>
+        <h3 className="text-[#E0E2F6] font-bold text-xl" ref={selectedPostsRef}>
+          Selected Posts
+        </h3>
       </div>
       <RecommendList />
     </div>

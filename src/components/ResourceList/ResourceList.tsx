@@ -33,6 +33,8 @@ const POST_TYPE_IMAGE = 1
 const POST_TYPE_VIDEO = 0
 
 const ResourceList = ({ resources: initialResources }: { resources: FormatterListItem[] }) => {
+  console.log(initialResources,'=====')
+
   const isMobile = useMobile()
   const [resources, setResources] = useState<FormatterListItem[]>([])
   const [likes, setLikes] = useSafeState<Like[]>([])
@@ -88,6 +90,8 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
         return item
       })
       setResources(res)
+    }else{
+      setResources([])
     }
   }, [initialResources])
   useEffect(() => {

@@ -19,6 +19,7 @@ import Follow from './pages/Follow'
 import ProfileGuard from './pages/OthersProfile/routeGuard'
 import { MessagePage } from './pages/Chat'
 import MessagePageRouteGuard from './pages/Chat/MessagePageRouteGuard'
+import { useEffect } from 'react'
 
 // import { mockTelegramEnv, parseInitData } from '@tma.js/sdk'
 // import { DEV_INIT_DATA_RAW } from './utils/constants'
@@ -46,6 +47,25 @@ import MessagePageRouteGuard from './pages/Chat/MessagePageRouteGuard'
 // })
 
 function App() {
+  useEffect(()=>{
+    const root = document.querySelector('#root');
+    if (root instanceof HTMLElement) {
+      const onFocusIn = () => {
+        root.style.paddingBottom = '300px'; // 键盘高度
+      };
+      const onFocusOut = () => {
+        root.style.paddingBottom = '0px'; // 键盘高度
+      };
+
+      document.addEventListener('focusin', onFocusIn);
+      document.addEventListener('focusout', onFocusOut);
+
+      return () => {
+        document.removeEventListener('focusin', onFocusIn);
+        document.removeEventListener('focusout', onFocusOut);
+      };
+    }
+  },[])
   return (
     <>
       <ChakraProvider resetCSS theme={theme}>

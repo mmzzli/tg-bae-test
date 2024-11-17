@@ -1,4 +1,4 @@
-name: build ditto-app
+name: build bae-tg-app
 on:
   push:
     branches:

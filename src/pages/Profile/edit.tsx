@@ -1,7 +1,7 @@
 import { FC, useState, useEffect, ChangeEvent, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios, { AxiosResponse } from 'axios'
-import { useToast } from '@chakra-ui/react'
+import { useToast, Button } from '@chakra-ui/react'
 
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { profileEdit, putProfile } from '@/api'
@@ -20,6 +20,7 @@ const ProfileEdit: FC = () => {
   const { launchParams } = useTMAUtils()
   const uid = launchParams.initData?.user?.id ?? 0
   const toast = useToast()
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const [profileData, setProfileData] = useState<UserInfoProfile>({
     username: '',
@@ -83,6 +84,18 @@ const ProfileEdit: FC = () => {
       }
     }
   }
+  const doneEve = async()=>{
+    setIsLoading(true)
+    await putProfile(profileData)
+    toast({
+      title: 'successfully',
+      status: 'success',
+      position: 'top',
+      onCloseComplete: () => {
+        location.href = '/profile'
+      },
+    })
+  }
 
   return (
     <div className="pt-[10px] px-[16px] fixed w-screen h-screen bg-black z-10 overflow-auto scrollbar-hide">
@@ -133,22 +146,9 @@ const ProfileEdit: FC = () => {
             </div>
           </div>
           <div className="pt-[28px] px-[18px] pb-[43px]">
-            <BaseButton
-              text="Done"
-              width="100%"
-              height="48px"
-              handler={async () => {
-                await putProfile(profileData)
-                toast({
-                  title: 'successfully',
-                  status: 'success',
-                  position: 'top',
-                  onCloseComplete: () => {
-                    location.href = '/profile'
-                  },
-                })
-              }}
-            />
+            <Button variant="primary-dark" w="100%" h="48px" isLoading={isLoading} onClick={doneEve}>
+              Done
+            </Button>
           </div>
         </>
       ) : (

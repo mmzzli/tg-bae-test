@@ -12,8 +12,8 @@ const theme = extendTheme({
       baseStyle: {
         fontWeight: '500',
         _loading: {
-          opacity: 0.8,
-          background: '#4A3AFF33',
+          opacity: 0.6,
+          background: '#4A3AFF',
           cursor: 'not-allowed',
         },
       },

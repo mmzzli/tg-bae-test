@@ -1,4 +1,4 @@
-import { useEffect, type FC } from 'react'
+import { useEffect, type FC, useRef, useState } from 'react'
 import { HStack, Heading, Image, Button } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { Menu } from '@/components/Menu'
@@ -21,6 +21,8 @@ const HomePage: FC = () => {
     setOthersUserInfo: state.setOthersUserInfo,
     token: state.token,
   }))
+  const selectedPostsRef = useRef<HTMLDivElement>(null)
+  const [title, setTitle] = useState("Following")
 
   const handleNavigate = async (ref: string) => {
     if (!token) {
@@ -68,11 +70,33 @@ const HomePage: FC = () => {
       console.log('HomePage unmounted')
     }
   }, [])
+  useEffect(() => {
+    const handleScroll = () => {
+      if (selectedPostsRef.current) {
+        const rect = selectedPostsRef.current.getBoundingClientRect()
+        const isVisible = rect.top < 0
+        if (isVisible) {
+          setTitle("Selected Posts")
+        } else {
+          setTitle("Following")
+        }
+      }
+    }
+    const scrollableDiv = document.getElementById('recommendScrollableDiv')
+    if (scrollableDiv) {
+      scrollableDiv.addEventListener('scroll', handleScroll)
+    }
+    return () => {
+      if (scrollableDiv) {
+        scrollableDiv.removeEventListener('scroll', handleScroll)
+      }
+    }
+  }, [])
   return (
     <div className="relative w-full h-full overflow-auto" id="recommendScrollableDiv">
-      <HStack justifyContent="space-between" p="0px 16px" pt="16px">
+      <HStack justifyContent="space-between" p="10px 16px" position="fixed" w="100%" bg="#000" zIndex="111">
         <Heading as="h3" fontSize="20px" color="#E0E2F6">
-          Following
+          {title}
         </Heading>
         <BaseButton
           text="Create"
@@ -80,19 +104,8 @@ const HomePage: FC = () => {
           width="87px"
           handler={() => navigate('/post')}
         />
-        {/* <Button
-          size="xl"
-          fontSize="14px"
-          variant="primary-dark"
-          p="9px 12px"
-          onClick={() => {
-            navigate('/post')
-          }}
-        >
-          <Image src={AddIcon} mr="5px" /> Create
-        </Button> */}
       </HStack>
-      <div className="mt-[40px] mx-auto w-full text-center">
+      <div className="mx-auto w-full text-center pt-[92px]">
         <p className="text-[#62636F]">Join our community to meet creators</p>
         <p className="text-[#62636F]">and start to follow them</p>
       </div>
@@ -114,7 +127,7 @@ const HomePage: FC = () => {
         Community
       </button> */}
       <div className="px-4">
-        <h3 className="text-[#E0E2F6] font-bold text-xl">Selected Posts</h3>
+        <h3 className="text-[#E0E2F6] font-bold text-xl" ref={selectedPostsRef}>Selected Posts</h3>
       </div>
       <RecommendList />
     </div>

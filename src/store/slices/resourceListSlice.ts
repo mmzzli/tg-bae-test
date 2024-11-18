@@ -162,6 +162,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       get().setRecommendHasMore(hasMore)
     } catch (error) {
       get().setRecommendError(error instanceof Error ? error.message : 'Loading Failed')
+      get().setRecommendHasMore(false)
     } finally {
       get().setRecommendLoading(false)
     }
@@ -234,6 +235,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       get().setViewHasMore(hasMore)
     } catch (error) {
       get().setViewError(error instanceof Error ? error.message : 'Loading Failed')
+      get().setViewHasMore(false)
     } finally {
       get().setViewLoading(false)
     }
@@ -302,6 +304,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       get().setOthersViewHasMore(hasMore)
     } catch (error) {
       get().setOthersViewError(error instanceof Error ? error.message : 'Loading Failed')
+      get().setOthersViewHasMore(false)
     } finally {
       get().setOthersViewLoading(false)
     }
@@ -352,6 +355,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       get().setFavHasMore(hasMore)
     } catch (error) {
       get().setFavError(error instanceof Error ? error.message : 'Loading Failed')
+      get().setFavHasMore(false)
     } finally {
       get().setFavLoading(false)
     }
@@ -420,6 +424,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       get().setOrderHasMore(hasMore)
     } catch (error) {
       get().setOrderError(error instanceof Error ? error.message : 'Loading Failed')
+      get().setOrderHasMore(false)
     } finally {
       get().setOrderLoading(false)
     }

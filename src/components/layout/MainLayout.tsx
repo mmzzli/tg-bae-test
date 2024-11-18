@@ -80,20 +80,22 @@ export const MainLayout: React.FC = () => {
       tgApp.BackButton.onClick(() => {
         console.log('location.pathname', location.pathname)
         if (location.pathname === '/home') {
-          tgApp.showConfirm({
-            message: 'Are you sure you want to continue?',
-            ok_button: 'Yes',
-            cancel_button: 'No',
-          }).then((result:boolean) => {
-            if (result) {
-              tgApp.close()
-            } else {
-              console.log(1)
-            }
-          }).catch((error:Error) => {
-            console.error("Error showing confirmation:", error);
-          });
-
+          tgApp
+            .showConfirm({
+              message: 'Are you sure you want to continue?',
+              ok_button: 'Yes',
+              cancel_button: 'No',
+            })
+            .then((result: boolean) => {
+              if (result) {
+                tgApp.close()
+              } else {
+                console.log(1)
+              }
+            })
+            .catch((error: Error) => {
+              console.error('Error showing confirmation:', error)
+            })
 
           // tgApp.showConfirm("Changes that you m de may not besaved.", function (isConfirmed:boolean) {
           //   if (isConfirmed) {
@@ -103,7 +105,6 @@ export const MainLayout: React.FC = () => {
           //     console.log(1)
           //   }
           // });
-
         } else {
           window.history.back()
         }
@@ -113,6 +114,7 @@ export const MainLayout: React.FC = () => {
   }, [])
 
   useEffect(() => {
+    console.log('location.pathname', location.pathname)
     if (location.pathname.startsWith('/chat') && !shouldLoadChat) {
       setShouldLoadChat(true)
     }
@@ -123,7 +125,8 @@ export const MainLayout: React.FC = () => {
     }
     if (window.Telegram?.WebApp) {
       const tgApp = window.Telegram.WebApp
-      if (location.pathname === '/home') {
+      const HIDE_BACK_BUTTON_PATHS = ['/home', '/chat', '/profile']
+      if (HIDE_BACK_BUTTON_PATHS.includes(location.pathname)) {
         tgApp.BackButton.hide()
       } else {
         tgApp.BackButton.show()

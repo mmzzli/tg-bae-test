@@ -1,12 +1,13 @@
 import { Dialog, DialogContent } from '@/components/BaseDialog/BaseDialog'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import Hls from 'hls.js'
-import { memo, useCallback, useEffect, useReducer, useRef } from 'react'
+import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react'
 import { useThrottleFn } from 'ahooks'
 import closeIcon from '@/assets/icons/closeIcon.svg'
 import Image from '@/components/Image/Image'
 import playIcon from '@/assets/icons/videoSwitch.svg'
 import { useTouch } from '@/hooks/useTouch'
+import { useSafeArea } from '@/hooks/useSafeArea'
 
 type State = {
   isPlaying: boolean
@@ -58,12 +59,19 @@ const UserInfo = memo(
     avatar,
     username,
     content,
+    bottom,
   }: {
     avatar: string | undefined
     username: string | undefined
     content: string | undefined
+    bottom: number
   }) => (
-    <div className="absolute left-4 right-4 bottom-12 z-10 flex flex-col cursor-pointer no-tap">
+    <div
+      className="absolute left-4 right-4 bottom-12 z-10 flex flex-col cursor-pointer no-tap"
+      style={{
+        paddingBottom: `${bottom + 20}px`,
+      }}
+    >
       <div className="flex items-center">
         <Image rect src={avatar} alt="avatar" className="w-10 h-10 rounded-full" />
         <span className="text-white text-sm ml-2 shadow-sm">{username}</span>
@@ -110,7 +118,7 @@ export function VideoDialog({
   const progressRef = useRef(0)
   const touchStartXRef = useRef(0)
   const containerRef = useRef<HTMLDivElement>(null)
-
+  const { bottom } = useSafeArea()
   // video init
   useEffect(() => {
     const video = videoRef.current
@@ -326,11 +334,19 @@ export function VideoDialog({
               transform: `translateX(${state.slideOffset}px)`,
             }}
           >
-            <UserInfo avatar={info?.avatar} username={info?.username} content={info?.title} />
+            <UserInfo
+              avatar={info?.avatar}
+              username={info?.username}
+              content={info?.title}
+              bottom={bottom}
+            />
 
             <div
               ref={progressBarRef}
               className="absolute bottom-6 left-0 right-0 px-4 touch-none"
+              style={{
+                paddingBottom: `${bottom + 20}px`,
+              }}
               onMouseDown={handleDragStart}
               onMouseMove={(e) => state.isDragging && handleProgressChange(e)}
               onMouseUp={handleDragEnd}

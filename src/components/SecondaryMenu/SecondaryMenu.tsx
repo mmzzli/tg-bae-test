@@ -7,6 +7,7 @@ import { deletePost } from '@/api'
 import { useStore } from '@/store'
 import Report from './Report'
 import { cn } from '@/utils/utils'
+import { DeleteDialog } from '../Chat/DeleteDialog'
 
 type Props = {
   mediaData: FormatterListItem
@@ -26,7 +27,9 @@ const SecondaryMenu = ({ mediaData, currentUid, className }: Props) => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setVisible(false)
+        setTimeout(()=>{
+          setVisible(false)
+        },0)
       }
     }
 
@@ -41,6 +44,7 @@ const SecondaryMenu = ({ mediaData, currentUid, className }: Props) => {
   const handleDelete = async () => {
     await deleteHandlerAsync(id)
     deleteViewList(mediaData)
+    setVisible(false);
   }
   const handleReport = () => {
     console.log('report')
@@ -48,9 +52,9 @@ const SecondaryMenu = ({ mediaData, currentUid, className }: Props) => {
   const handleOptionClick = useCallback(
     async (option: 'delete' | 'report') => {
       switch (option) {
-        case 'delete':
-          await handleDelete()
-          break
+        // case 'delete':
+        //   await handleDelete()
+        //   break
         case 'report':
           setReportVisible(true)
           break
@@ -71,16 +75,14 @@ const SecondaryMenu = ({ mediaData, currentUid, className }: Props) => {
       {visible && (
         <div className="absolute right-0 mt-1 bg-[#19191E] text-[#E0E2F6] font-medium text-xs rounded-[4px] z-50">
           {currentUid === uid && (
-            <button
-              className="w-[83px] h-[40px] hover:bg-gray-500 rounded-[4px] flex items-center justify-center gap-1 text-[#FF5330]"
-              onClick={() => {
-                handleOptionClick('delete')
-                setVisible(false)
-              }}
-            >
-              <img src={DeleteIcon} alt="delete" />
-              Delete
-            </button>
+            <DeleteDialog title='Will Delete Post' onDelete={handleDelete}>
+              <button
+                className="w-[83px] h-[40px] hover:bg-gray-500 rounded-[4px] flex items-center justify-center gap-1 text-[#FF5330]"
+              >
+                <img src={DeleteIcon} alt="delete" />
+                Delete
+              </button>
+            </DeleteDialog>
           )}
           {currentUid !== uid && (
             <button

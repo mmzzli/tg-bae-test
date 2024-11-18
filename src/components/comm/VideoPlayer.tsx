@@ -6,26 +6,34 @@ interface VideoPlayerProps {
   src: string;
   style?: React.CSSProperties;
   videoRef?: React.RefObject<HTMLVideoElement>;
+  videoRefCover?: React.RefObject<HTMLVideoElement>;
 }
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, style, videoRef }) => {
+const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, style, videoRef, videoRefCover }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const togglePlayPause = () => {
-    if (videoRef?.current) {
-      if (videoRef.current.paused) {
-        videoRef.current.play();
-      } else {
-        videoRef.current.pause();
-      }
+    const videoElement = videoRef?.current;
+
+    if (!videoElement) return;
+
+    if (videoElement.paused) {
+      videoElement.play();
+      setTimeout(() => setIsHovered(false), 100);
+    } else {
+      videoElement.pause();
     }
   };
+  const videoEve = () => {
+    setIsHovered((prev) => !prev);
+  }
 
   return (
     <div
       // style={{ position: 'relative', width: '100%' }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      // onMouseEnter={() => setIsHovered(true)}
+      // onMouseLeave={() => setIsHovered(false)}
+      onClick={videoEve}
     >
       <video
         ref={videoRef}
@@ -35,6 +43,17 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, style, videoRef }) => {
         autoPlay
         playsInline
       />
+      <div style={{'display':'none'}}>
+      <video
+        ref={videoRefCover}
+        width="100%"
+        src={src}
+        style={style}
+        autoPlay
+        playsInline
+        muted
+      />
+      </div>
       {(isHovered || videoRef?.current?.paused) && (
         <Text
           onClick={togglePlayPause}

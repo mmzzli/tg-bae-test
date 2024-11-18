@@ -27,6 +27,7 @@ export const NewPost: FC = () => {
   const { toast } = createStandaloneToast()
   const [videoFile, setVideoFile] = useState<File | null>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const videoRefCover = useRef<HTMLVideoElement>(null)
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [videoSrc, setVideoSrc] = useState<string | null>(null)
   const [title, setTitle] = useState<string>('')
@@ -125,7 +126,7 @@ export const NewPost: FC = () => {
         ...(title ? { title } : {}),
         type: 0,
         currency: 0,
-        price:price || 0,
+        price: price || 0,
       })
       navigate('/profile')
     }
@@ -221,7 +222,11 @@ export const NewPost: FC = () => {
   }, [imgAttr])
 
   return (
-    <Box h="100vh" overflow="hidden" className='fixed w-screen h-screen bg-black z-10 overflow-auto scrollbar-hide'>
+    <Box
+      h="100vh"
+      overflow="hidden"
+      className="fixed w-screen h-screen bg-black z-10 overflow-auto scrollbar-hide"
+    >
       <Box p="0 16px">
         <HStack justifyContent="space-between" pt="16px">
           <Heading as="h3" fontSize="20px" color="#E0E2F6">
@@ -257,10 +262,11 @@ export const NewPost: FC = () => {
                   <Box maxW="600px" m="auto" position="relative">
                     <VideoPlayer
                       videoRef={videoRef}
+                      videoRefCover={videoRefCover}
                       src={videoSrc}
                       style={{ borderRadius: '4px', maxHeight: '380px' }}
                     />
-                    <VideoFrameSelector videoRef={videoRef} setCover={setCover} />
+                    <VideoFrameSelector videoRef={videoRefCover} setCover={setCover} />
                     <Image
                       onClick={() => setVideoSrc('')}
                       w="24px"
@@ -322,7 +328,7 @@ export const NewPost: FC = () => {
             )}
           </Box>
           <Textarea
-            className="placeholder-[#424048]"
+            className="placeholder-[#424048] mt-6"
             value={title}
             onChange={(event) => setTitle(event.target.value)}
             mt="10px"

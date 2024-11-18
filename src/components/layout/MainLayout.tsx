@@ -12,11 +12,17 @@ import { Spinner } from '@chakra-ui/react'
 import { Menu } from '../Menu'
 import { postEvent } from '@telegram-apps/sdk'
 
-const ChatListPage = lazy(() =>
-  import('@/pages/Chat').then((module) => ({
-    default: module.ChatListPage,
-  }))
-)
+const ChatListPageLoader = {
+  preload: () =>
+    import('@/pages/Chat').then((module) => ({
+      default: module.ChatListPage,
+    })),
+  Component: lazy(() =>
+    import('@/pages/Chat').then((module) => ({
+      default: module.ChatListPage,
+    }))
+  ),
+}
 
 export const MainLayout: React.FC = () => {
   const location = useLocation()
@@ -32,6 +38,7 @@ export const MainLayout: React.FC = () => {
     onSuccess({ token, api_token, user_info }) {
       setToken(token)
       setUserInfo({ ...user_info, api_token })
+      ChatListPageLoader.preload()
     },
   })
 
@@ -55,10 +62,13 @@ export const MainLayout: React.FC = () => {
 
   useEffect(() => {
     if (window.Telegram?.WebApp) {
+      document.getElementById('root')?.classList.add('root-wrap')
       const tgApp = window.Telegram.WebApp
       tgApp.ready()
+      postEvent('web_app_setup_swipe_behavior', {
+        allow_vertical_swipe: false,
+      })
       tgApp.expand()
-      document.getElementById('root')?.classList.add('root-wrap')
       tgApp.headerColor = '#000'
       tgApp.backgroundColor = '#0d0d0d'
       tgApp.MainButton.hide()
@@ -70,24 +80,15 @@ export const MainLayout: React.FC = () => {
       tgApp.BackButton.onClick(() => {
         console.log('location.pathname', location.pathname)
         if (location.pathname === '/home') {
-          tgApp.showConfirm(
-            {
-              text: 'Are you sure you want to continue?',
-              buttons: [
-                { type: 'ok', id: 'ok' }, // OK button
-                { type: 'cancel' }, // Cancel button
-              ],
-            },
-            function (button_id: string) {
-              if (button_id === 'ok') {
-                tgApp.close()
-              } else {
-                // User clicked 'Cancel'
-                console.log('Action cancelled')
-                // Optionally, cancel the deletion or do nothing
-              }
+          tgApp.showConfirm("Changes that you made may not besaved.", function (isConfirmed:boolean) {
+            if (isConfirmed) {
+              console.log("User confirmed the action.");
+              tgApp.close();
+            } else {
+              console.log(1)
             }
-          )
+          });
+
         } else {
           window.history.back()
         }
@@ -107,9 +108,6 @@ export const MainLayout: React.FC = () => {
     }
     if (window.Telegram?.WebApp) {
       const tgApp = window.Telegram.WebApp
-      postEvent('web_app_setup_swipe_behavior', {
-        allow_vertical_swipe: false,
-      })
       if (location.pathname === '/home') {
         tgApp.BackButton.hide()
       } else {
@@ -119,22 +117,20 @@ export const MainLayout: React.FC = () => {
   }, [location.pathname])
 
   return (
-    <div className="bg-black h-screen w-screen overflow-hidden flex pb-[84px]">
+    <div className="absolute inset-0 top-0 bottom-0 right-0 left-0 bg-black overflow-hidden flex pb-[84px]">
       <div
-        className="fixed w-screen top-0 bottom-[84px] flex-col bg-[#0D0D0D] overflow-hidden"
-        style={{ display: hiddenChatPage ? 'none' : 'flex', zIndex: hiddenChatPage ? -1 : 2 }}
+        className="absolute left-0 right-0 top-0 bottom-[84px] flex-col bg-[#0D0D0D] overflow-hidden"
+        style={{ display: hiddenChatPage ? 'none' : 'flex', zIndex: hiddenChatPage ? -1 : 200 }}
       >
-        {shouldLoadChat && (
-          <Suspense
-            fallback={
-              <div className="h-screen flex items-center justify-center">
-                <Spinner />
-              </div>
-            }
-          >
-            <ChatListPage />
-          </Suspense>
-        )}
+        <Suspense
+          fallback={
+            <div className="h-screen flex items-center justify-center">
+              <Spinner />
+            </div>
+          }
+        >
+          <ChatListPageLoader.Component />
+        </Suspense>
       </div>
 
       <div className="absolute inset-0 top-0 bottom-[84px] z-1">

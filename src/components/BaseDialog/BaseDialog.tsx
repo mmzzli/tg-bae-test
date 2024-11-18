@@ -17,7 +17,7 @@ const Dialog: React.FC<DialogProps> = ({ open, onOpenChange, children }) => {
 
   return createPortal(
     <div
-      className="fixed inset-0 w-screen h-screen z-50"
+      className="fixed inset-0 w-screen h-screen overflow-hidden z-[999]"
       aria-modal="true"
       role="dialog"
       onClick={() => onOpenChange?.(false)}

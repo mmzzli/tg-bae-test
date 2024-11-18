@@ -44,13 +44,6 @@ export default {
             display: 'none',
           },
         },
-        '.no-scroll': {
-          '-ms-overflow-style': 'none' /* IE and Edge */,
-          'scrollbar-width': 'none' /* Firefox */,
-          '&::-webkit-scrollbar': {
-            /* Chrome, Safari and Opera */ display: 'none',
-          },
-        },
       })
     },
   ],

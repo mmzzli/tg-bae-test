@@ -1,10 +1,13 @@
 import { Dialog, DialogContent } from '@/components/BaseDialog/BaseDialog'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import Hls from 'hls.js'
-import { memo, useCallback, useEffect, useReducer, useRef } from 'react'
+import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react'
 import { useThrottleFn } from 'ahooks'
 import closeIcon from '@/assets/icons/closeIcon.svg'
 import Image from '@/components/Image/Image'
+import playIcon from '@/assets/icons/videoSwitch.svg'
+import { useTouch } from '@/hooks/useTouch'
+import { useSafeArea } from '@/hooks/useSafeArea'
 
 type State = {
   isPlaying: boolean
@@ -51,6 +54,56 @@ function reducer(state: State, action: Action): State {
   }
 }
 
+const UserInfo = memo(
+  ({
+    avatar,
+    username,
+    content,
+    bottom,
+  }: {
+    avatar: string | undefined
+    username: string | undefined
+    content: string | undefined
+    bottom: number
+  }) => (
+    <div
+      className="absolute left-4 right-4 z-10 flex flex-col cursor-pointer no-tap"
+      style={{
+        bottom: `${bottom + 68}px`,
+      }}
+    >
+      <div className="flex items-center">
+        <Image rect src={avatar} alt="avatar" className="w-10 h-10 rounded-full" />
+        <span className="text-white text-sm ml-2 shadow-sm">{username}</span>
+      </div>
+      <p className="text-white text-xs mt-2 line-clamp-2 overflow-hidden">{content}</p>
+    </div>
+  )
+)
+
+const CloseButton = memo(({ onClose }: { onClose: () => void }) => (
+  <div
+    className="absolute right-2 top-2 z-20 w-8 h-8 bg-black/30 rounded-full overflow-hidden flex items-center justify-center"
+    onTouchEnd={(e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      onClose()
+    }}
+    onClick={onClose}
+  >
+    <img src={closeIcon} alt="close" />
+  </div>
+))
+
+const PlayButton = memo(({ onClick }: { onClick: (e: React.MouseEvent) => void }) => (
+  <div
+    onClick={onClick}
+    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 no-tap z-20"
+  >
+    <Image src={playIcon} alt="play" className="w-[72px] h-[72px] no-tap" />
+  </div>
+))
+
 export function VideoDialog({
   info,
   onClose,
@@ -65,7 +118,7 @@ export function VideoDialog({
   const progressRef = useRef(0)
   const touchStartXRef = useRef(0)
   const containerRef = useRef<HTMLDivElement>(null)
-
+  const { bottom } = useSafeArea()
   // video init
   useEffect(() => {
     const video = videoRef.current
@@ -86,10 +139,14 @@ export function VideoDialog({
       hlsRef.current = hls
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        dispatch({ type: 'SET_LOADING', payload: false })
-        video.play().catch(() => {
-          console.log('auto play failed')
-        })
+        video
+          .play()
+          .then(() => {
+            dispatch({ type: 'SET_LOADING', payload: false })
+          })
+          .catch(() => {
+            console.log('auto play failed')
+          })
       })
 
       hls.on(Hls.Events.ERROR, () => {
@@ -133,12 +190,8 @@ export function VideoDialog({
       const deltaX = e.touches[0].clientX - touchStartXRef.current
       const screenWidth = window.innerWidth
 
-      if (state.slideOffset === 0) {
-        if (deltaX > 0) return onClose()
-      } else {
-        const newOffset = Math.max(screenWidth, deltaX)
-        dispatch({ type: 'SET_SLIDE_OFFSET', payload: newOffset })
-      }
+      const newOffset = Math.max(-screenWidth, Math.min(0, deltaX))
+      dispatch({ type: 'SET_SLIDE_OFFSET', payload: newOffset })
     },
     { wait: 16 }
   )
@@ -147,12 +200,21 @@ export function VideoDialog({
     dispatch({ type: 'SET_SLIDING', payload: false })
     const screenWidth = window.innerWidth
 
-    if (Math.abs(state.slideOffset) > screenWidth * 0.4) {
+    if (Math.abs(state.slideOffset) > screenWidth * 0.33) {
       dispatch({ type: 'SET_SLIDE_OFFSET', payload: -screenWidth })
     } else {
       dispatch({ type: 'SET_SLIDE_OFFSET', payload: 0 })
     }
   }, [state.slideOffset])
+
+  const { touchHandlers } = useTouch({
+    onTap: () => {
+      togglePlay()
+    },
+    onTouchStartProp: handleTouchStart,
+    onTouchMoveProp: handleTouchMove,
+    onTouchEndProp: handleTouchEnd,
+  })
 
   const handleProgressChange = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     const video = videoRef.current
@@ -182,7 +244,6 @@ export function VideoDialog({
   }, [])
 
   const togglePlay = useCallback(() => {
-    console.log('togglePlay')
     if (videoRef.current) {
       if (state.isPlaying) {
         videoRef.current.pause()
@@ -226,88 +287,50 @@ export function VideoDialog({
     )
   )
 
-  const UserInfo = memo(
-    ({
-      avatar,
-      username,
-      content,
-    }: {
-      avatar: string | undefined
-      username: string | undefined
-      content: string | undefined
-    }) => (
-      <div className="absolute left-4 bottom-12 z-10 flex flex-col cursor-pointer no-tap">
-        <div className="flex items-center">
-          <Image rect src={avatar} alt="avatar" className="w-10 h-10 rounded-full" />
-          <span className="text-white text-sm ml-2 shadow-sm">{username}</span>
-        </div>
-        <p className="text-white text-xs mt-2 line-clamp-2 overflow-hidden">{content}</p>
-      </div>
-    )
+  const handlePlayClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      togglePlay()
+    },
+    [togglePlay]
   )
+
   return (
     <Dialog open={true}>
       <DialogContent className="p-0">
         <div
           ref={containerRef}
           className="absolute w-screen h-screen bg-black overflow-hidden"
-          style={{ touchAction: 'manipulation' }}
-          onClick={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            togglePlay()
-          }}
+          {...touchHandlers}
         >
-          {/* <div
-            className="absolute right-2 top-2 z-20 w-8 h-8 bg-black/30 rounded-full overflow-hidden flex items-center justify-center"
-            onClick={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              console.log('close')
-              onClose()
-            }}
-          >
-            <img src={closeIcon} alt="close" />
-          </div> */}
+          <CloseButton onClose={onClose} />
 
           <video
             ref={videoRef}
             className="absolute w-full h-full object-contain z-10"
             src={info?.media[0]}
             onEnded={() => dispatch({ type: 'SET_PLAYING', payload: false })}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
             controls={false}
-            playsInline // prevent iOS full screen
+            playsInline={true} // prevent iOS full screen
             webkit-playsinline="true" // for old iOS WebKit
             x5-playsinline="true" // for X5 kernel
             x5-video-player-type="h5" // enable H5 player
-            x5-video-player-fullscreen="true" // full screen handle
+            x5-video-player-fullscreen="false" // full screen handle
             preload="auto" // preload
+            x-webkit-airplay="allow" // 允许 AirPlay
           />
 
-          {state.isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-20">
-              <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin" />
-            </div>
-          )}
+          <div
+            style={{ display: state.isLoading ? 'flex' : 'none' }}
+            className="absolute inset-0 items-center justify-center bg-black/50 z-20"
+          >
+            <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin" />
+          </div>
 
-          {!state.isPlaying && (
-            <div
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                togglePlay()
-              }}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 no-tap z-20"
-              style={{ touchAction: 'manipulation' }}
-            >
-              <div className="w-20 h-20 bg-white/50 rounded-full flex items-center justify-center">
-                <div className="w-0 h-0 border-t-[15px] border-t-transparent border-l-[25px] border-l-white border-b-[15px] border-b-transparent ml-2" />
-              </div>
-            </div>
-          )}
+          <div style={{ display: state.isPlaying || state.isLoading ? 'none' : 'flex' }}>
+            <PlayButton onClick={handlePlayClick} />
+          </div>
 
           <div
             className="absolute left-0 right-0 bottom-0 z-10 flex flex-col transition-transform duration-300 ease-out safe-area-bottom"
@@ -315,11 +338,19 @@ export function VideoDialog({
               transform: `translateX(${state.slideOffset}px)`,
             }}
           >
-            <UserInfo avatar={info?.avatar} username={info?.username} content={info?.title} />
+            <UserInfo
+              avatar={info?.avatar}
+              username={info?.username}
+              content={info?.title}
+              bottom={bottom}
+            />
 
             <div
               ref={progressBarRef}
               className="absolute bottom-6 left-0 right-0 px-4 touch-none"
+              style={{
+                paddingBottom: `${bottom + 20}px`,
+              }}
               onMouseDown={handleDragStart}
               onMouseMove={(e) => state.isDragging && handleProgressChange(e)}
               onMouseUp={handleDragEnd}

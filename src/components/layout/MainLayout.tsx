@@ -12,11 +12,17 @@ import { Spinner } from '@chakra-ui/react'
 import { Menu } from '../Menu'
 import { postEvent } from '@telegram-apps/sdk'
 
-const ChatListPage = lazy(() =>
-  import('@/pages/Chat').then((module) => ({
-    default: module.ChatListPage,
-  }))
-)
+const ChatListPageLoader = {
+  preload: () =>
+    import('@/pages/Chat').then((module) => ({
+      default: module.ChatListPage,
+    })),
+  Component: lazy(() =>
+    import('@/pages/Chat').then((module) => ({
+      default: module.ChatListPage,
+    }))
+  ),
+}
 
 export const MainLayout: React.FC = () => {
   const location = useLocation()
@@ -32,6 +38,7 @@ export const MainLayout: React.FC = () => {
     onSuccess({ token, api_token, user_info }) {
       setToken(token)
       setUserInfo({ ...user_info, api_token })
+      ChatListPageLoader.preload()
     },
   })
 
@@ -55,10 +62,13 @@ export const MainLayout: React.FC = () => {
 
   useEffect(() => {
     if (window.Telegram?.WebApp) {
+      document.getElementById('root')?.classList.add('root-wrap')
       const tgApp = window.Telegram.WebApp
       tgApp.ready()
+      postEvent('web_app_setup_swipe_behavior', {
+        allow_vertical_swipe: false,
+      })
       tgApp.expand()
-      document.getElementById('root')?.classList.add('root-wrap')
       tgApp.headerColor = '#000'
       tgApp.backgroundColor = '#0d0d0d'
       tgApp.MainButton.hide()
@@ -115,29 +125,21 @@ export const MainLayout: React.FC = () => {
     }
   }, [location.pathname])
 
-  useEffect(() => {
-    postEvent('web_app_setup_swipe_behavior', {
-      allow_vertical_swipe: false,
-    })
-  }, [])
-
   return (
-    <div className="bg-black h-screen w-screen overflow-hidden flex pb-[84px]">
+    <div className="absolute inset-0 top-0 bottom-0 right-0 left-0 bg-black overflow-hidden flex pb-[84px]">
       <div
-        className="fixed w-screen top-0 bottom-[84px] flex-col bg-[#0D0D0D] overflow-hidden"
+        className="absolute left-0 right-0 top-0 bottom-[84px] flex-col bg-[#0D0D0D] overflow-hidden"
         style={{ display: hiddenChatPage ? 'none' : 'flex', zIndex: hiddenChatPage ? -1 : 200 }}
       >
-        {shouldLoadChat && (
-          <Suspense
-            fallback={
-              <div className="h-screen flex items-center justify-center">
-                <Spinner />
-              </div>
-            }
-          >
-            <ChatListPage />
-          </Suspense>
-        )}
+        <Suspense
+          fallback={
+            <div className="h-screen flex items-center justify-center">
+              <Spinner />
+            </div>
+          }
+        >
+          <ChatListPageLoader.Component />
+        </Suspense>
       </div>
 
       <div className="absolute inset-0 top-0 bottom-[84px] z-1">

@@ -110,6 +110,15 @@ const ProfileEdit: FC = () => {
       window.removeEventListener('focusout', handleKeyboardHide);
     };
   }, []);
+  useEffect(() => {
+    if(isFocused){
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: "smooth"
+      });
+    }
+
+  },[isFocused])
 
   return (
     <div className="pt-[10px] px-[16px] fixed w-screen h-screen bg-black z-10 overflow-auto scrollbar-hide">

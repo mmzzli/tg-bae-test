@@ -67,9 +67,9 @@ const UserInfo = memo(
     bottom: number
   }) => (
     <div
-      className="absolute left-4 right-4 bottom-12 z-10 flex flex-col cursor-pointer no-tap"
+      className="absolute left-4 right-4 z-10 flex flex-col cursor-pointer no-tap"
       style={{
-        paddingBottom: `${bottom + 20}px`,
+        bottom: `${bottom + 68}px`,
       }}
     >
       <div className="flex items-center">

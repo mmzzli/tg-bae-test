@@ -139,10 +139,14 @@ export function VideoDialog({
       hlsRef.current = hls
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        dispatch({ type: 'SET_LOADING', payload: false })
-        video.play().catch(() => {
-          console.log('auto play failed')
-        })
+        video
+          .play()
+          .then(() => {
+            dispatch({ type: 'SET_LOADING', payload: false })
+          })
+          .catch(() => {
+            console.log('auto play failed')
+          })
       })
 
       hls.on(Hls.Events.ERROR, () => {

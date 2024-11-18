@@ -63,7 +63,7 @@ export function DeleteDialog({
 }
 
 export const DeleteDialogWarp = NiceModal.create(
-  ({ title = 'Delete this chat?', data }: { title?: string; data: FormatterListItem; id: z }) => {
+  ({ title = 'Delete this chat?', data }: { title?: string; data: FormatterListItem; }) => {
     const { visible, hide, remove } = useModal()
     const [loading, setLoading] = useSafeState(false)
     const { id } = data

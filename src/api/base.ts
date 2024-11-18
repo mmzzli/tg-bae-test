@@ -38,13 +38,13 @@ class HttpClient {
 
   private showToast(title: string, status: 'info' | 'warning' | 'success' | 'error') {
     console.log(title)
-    // return this.toastInstance.toast({
-    //   title,
-    //   status,
-    //   position: 'top',
-    //   duration: 3000,
-    //   isClosable: true,
-    // })
+    return this.toastInstance.toast({
+      title,
+      status,
+      position: 'top',
+      duration: 3000,
+      isClosable: true,
+    })
   }
 
   private setupInterceptors() {
@@ -75,8 +75,8 @@ class HttpClient {
         }
 
         if (code === 212) {
-          const config = response.config as RequestConfig
-          !config.skipErrorHandler && this.showToast(message || 'Warning', 'warning')
+          // const config = response.config as RequestConfig
+          // !config.skipErrorHandler && this.showToast(message || 'Warning', 'warning')
           return Promise.reject(new Error(message))
         }
 
@@ -91,8 +91,8 @@ class HttpClient {
         return data
       },
       (error) => {
-        const config = error.config as RequestConfig
-        !config?.skipErrorHandler && this.showToast(`Request failed: ${error.message}`, 'error')
+        // const config = error.config as RequestConfig
+        // !config?.skipErrorHandler && this.showToast(`Request failed: ${error.message}`, 'error')
         return Promise.reject(error)
       }
     )

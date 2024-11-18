@@ -7,6 +7,7 @@ import BaseButton from '@/components/BaseButton/BaseButton'
 import { profileEdit, putProfile } from '@/api'
 import Skeleton from '@/components/Skeketon/Skeleton'
 import { uploadImgUrl } from '@/utils/env'
+import { isMobileDevice } from '@/utils/utils'
 
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useStore } from '@/store/store'
@@ -21,6 +22,7 @@ const ProfileEdit: FC = () => {
   const uid = launchParams.initData?.user?.id ?? 0
   const toast = useToast()
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isFocused, setIsFocused] = useState<boolean>(false);
 
   const [profileData, setProfileData] = useState<UserInfoProfile>({
     username: '',
@@ -97,6 +99,18 @@ const ProfileEdit: FC = () => {
     })
   }
 
+
+  useEffect(() => {
+    const handleKeyboardHide = () => {
+      window.scrollTo(0, 0);
+    };
+    window.addEventListener('focusout', handleKeyboardHide);
+
+    return () => {
+      window.removeEventListener('focusout', handleKeyboardHide);
+    };
+  }, []);
+
   return (
     <div className="pt-[10px] px-[16px] fixed w-screen h-screen bg-black z-10 overflow-auto scrollbar-hide">
       <h2 className="text-[20px] text-[#E0E2F6]">Profile</h2>
@@ -142,10 +156,12 @@ const ProfileEdit: FC = () => {
                 className="w-[100%] h-[218px] rounded-[10px] text-[#E0E2F6] text-[14px] bg-[#19191E] px-[16px] py-[15px]"
                 value={profileData?.bio}
                 onChange={(e) => changeEve(e, 'bio')}
+                onFocus={() => { isMobileDevice() && setIsFocused(true) }}
+                onBlur={() => { isMobileDevice() && setIsFocused(false) }}
               />
             </div>
           </div>
-          <div className="pt-[28px] px-[18px] pb-[43px]">
+          <div className={`pt-[28px] px-[18px] pb-[43px] h-[${isFocused ? "400px" : ""}]`}>
             <Button variant="primary-dark" w="100%" h="48px" isLoading={isLoading} onClick={doneEve}>
               Done
             </Button>

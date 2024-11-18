@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, memo, Suspense, useCallback, useEffect, useState } from 'react'
 import { Box, Flex, Text, IconButton, useBoolean, HStack } from '@chakra-ui/react'
 import { IconLike } from '@/components/icons/like'
 import { IconLiked } from '@/components/icons/liked'
@@ -21,6 +21,7 @@ import { getLink } from '@/api/list'
 const ImagePreview = lazy(() => import('../Image/ImagePreview'))
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import useMobile from '@/hooks/useMobile'
+import playIcon from '@/assets/icons/videoSwitch.svg'
 
 import { VideoDialog } from './VideoDialog'
 interface Like {
@@ -33,8 +34,6 @@ const POST_TYPE_IMAGE = 1
 const POST_TYPE_VIDEO = 0
 
 const ResourceList = ({ resources: initialResources }: { resources: FormatterListItem[] }) => {
-  console.log(initialResources, '=====')
-
   const isMobile = useMobile()
   const [resources, setResources] = useState<FormatterListItem[]>([])
   const [likes, setLikes] = useSafeState<Like[]>([])
@@ -57,16 +56,16 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
 
   const jumpToProfilePage = useProfileNavigation()
 
-  const handleImageClick = (images: string[], index: number) => {
-    console.log(images, 'images')
+  const handleImageClick = useCallback((images: string[], index: number) => {
     setPreviewImages(images)
     setCurrentIndex(index)
     setIsPreviewOpen(true)
-  }
-  const handleVideoClick = (video: FormatterListItem) => {
+  }, [])
+
+  const handleVideoClick = useCallback((video: FormatterListItem) => {
     setPreviewVideo(video)
     setIsVideoPreviewOpen(true)
-  }
+  }, [])
 
   const { runAsync: getLinkHandlerAsync } = useRequest(getLink, {
     manual: true,
@@ -125,6 +124,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
     const shareLink = `https://t.me/share/url?url=${copyLink}&text=${shareText}`
     setLinks({ shareLink, copyLink: decodeURIComponent(copyLink) })
   })
+
   const resourcesEve = (post_id: number, url: string) => {
     setPostId(post_id)
     const updatedUsers = resources.map((item) => {
@@ -241,8 +241,8 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                     <Image
                       src={data.media?.[0] ?? data?.media ?? ''}
                       alt={data.title}
-                      errorClassName="rounded-[2px] h-[150px]"
-                      className="object-left w-[100%] rounded-[2px] m-[auto]"
+                      errorClassName="rounded-[4px] h-[150px]"
+                      className="object-left w-[100%] rounded-[4px] m-[auto]"
                       onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
                     />
                     {data.media?.[0] === '' && (
@@ -259,10 +259,11 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                       <Image
                         src={data.mediaCover}
                         alt={data.title}
-                        errorClassName="rounded-[2px] h-[150px]"
-                        className="object-left w-[100%] rounded-[2px] m-[auto]"
+                        errorClassName="rounded-[4px] h-[150px]"
+                        className="object-left w-[100%] rounded-[4px] m-[auto]"
                         onClick={() => handleVideoClick(data)}
                       />
+                      <PlayButton onClick={() => handleVideoClick(data)} />
                     </Box>
                     <HStack
                       borderRadius="4px"
@@ -302,32 +303,19 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
           )
         }
       })}
-      {/* <ImagePreview
-        isOpen={isPreviewOpen}
-        onClose={() => setIsPreviewOpen(false)}
-        images={previewImages}
-        currentIndex={currentIndex}
-        onIndexChange={setCurrentIndex}
-      /> */}
 
       {isVideoPreviewOpen && (
         <VideoDialog info={previewVideo} onClose={() => setIsVideoPreviewOpen(false)} />
       )}
-      {/* {isVideoPreviewOpen && <VideoPreview
-        isOpen={isVideoPreviewOpen}
-        onClose={() => setIsVideoPreviewOpen(false)}
-        videoUrl={previewVideo}
-      />} */}
+
       {isPreviewOpen && (
-        <Suspense fallback={null}>
-          <ImagePreview
-            isOpen={isPreviewOpen}
-            onClose={() => setIsPreviewOpen(false)}
-            images={previewImages}
-            currentIndex={currentIndex}
-            onIndexChange={setCurrentIndex}
-          />
-        </Suspense>
+        <ImagePreviewWrapper
+          isOpen={isPreviewOpen}
+          onClose={() => setIsPreviewOpen(false)}
+          images={previewImages}
+          currentIndex={currentIndex}
+          onIndexChange={setCurrentIndex}
+        />
       )}
       {/* Components */}
       {renderBaseModal()}
@@ -341,7 +329,14 @@ interface ResourceHeaderProps {
   onProfileClick: (data: FormatterListItem) => void
 }
 
-const ResourceHeader: React.FC<ResourceHeaderProps> = ({ data, currentUid, onProfileClick }) => {
+interface ResourceFooterProps {
+  data: FormatterListItem
+  likes: Like[]
+  linkEve: (postId: number, isLike: boolean) => void
+  onShare: () => void
+}
+
+const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileClick }) => {
   return (
     <div className="p-4 flex items-center">
       <div className="flex items-center justify-between gap-2">
@@ -359,16 +354,9 @@ const ResourceHeader: React.FC<ResourceHeaderProps> = ({ data, currentUid, onPro
       <SecondaryMenu className="ml-auto" key={data.id} mediaData={data} currentUid={currentUid} />
     </div>
   )
-}
+})
 
-interface ResourceFooterProps {
-  data: FormatterListItem
-  likes: Like[]
-  linkEve: (postId: number, isLike: boolean) => void
-  onShare: () => void
-}
-
-const ResourceFooter: React.FC<ResourceFooterProps> = ({ data, likes, linkEve, onShare }) => {
+const ResourceFooter = memo<ResourceFooterProps>(({ data, likes, linkEve, onShare }) => {
   return (
     <>
       <div className="px-4 py-3">
@@ -408,6 +396,45 @@ const ResourceFooter: React.FC<ResourceFooterProps> = ({ data, likes, linkEve, o
       </div>
     </>
   )
-}
+})
+
+const ImagePreviewWrapper = memo(
+  ({
+    isOpen,
+    images,
+    currentIndex,
+    onClose,
+    onIndexChange,
+  }: {
+    isOpen: boolean
+    images: string[]
+    currentIndex: number
+    onClose: () => void
+    onIndexChange: (index: number) => void
+  }) => {
+    if (!isOpen) return null
+
+    return (
+      <Suspense fallback={null}>
+        <ImagePreview
+          isOpen={isOpen}
+          onClose={onClose}
+          images={images}
+          currentIndex={currentIndex}
+          onIndexChange={onIndexChange}
+        />
+      </Suspense>
+    )
+  }
+)
+
+const PlayButton = memo(({ onClick }: { onClick: (e: React.MouseEvent) => void }) => (
+  <div
+    onClick={onClick}
+    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 no-tap z-20"
+  >
+    <Image src={playIcon} alt="play" className="w-[72px] h-[72px] no-tap" />
+  </div>
+))
 
 export default ResourceList

@@ -1,7 +1,7 @@
 import { Dialog, DialogContent } from '@/components/BaseDialog/BaseDialog'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import Hls from 'hls.js'
-import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react'
+import { memo, useCallback, useEffect, useReducer, useRef } from 'react'
 import { useThrottleFn } from 'ahooks'
 import closeIcon from '@/assets/icons/closeIcon.svg'
 import Image from '@/components/Image/Image'
@@ -309,13 +309,16 @@ export function VideoDialog({
             x-webkit-airplay="allow" // 允许 AirPlay
           />
 
-          {state.isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-20">
-              <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin" />
-            </div>
-          )}
+          <div
+            style={{ display: state.isLoading ? 'flex' : 'none' }}
+            className="absolute inset-0 items-center justify-center bg-black/50 z-20"
+          >
+            <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin" />
+          </div>
 
-          {!state.isPlaying && <PlayButton onClick={handlePlayClick} />}
+          <div style={{ display: state.isPlaying || state.isLoading ? 'none' : 'flex' }}>
+            <PlayButton onClick={handlePlayClick} />
+          </div>
 
           <div
             className="absolute left-0 right-0 bottom-0 z-10 flex flex-col transition-transform duration-300 ease-out safe-area-bottom"

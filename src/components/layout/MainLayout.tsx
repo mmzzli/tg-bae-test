@@ -122,7 +122,7 @@ export const MainLayout: React.FC = () => {
     <div className="bg-black h-screen w-screen overflow-hidden flex pb-[84px]">
       <div
         className="fixed w-screen top-0 bottom-[84px] flex-col bg-[#0D0D0D] overflow-hidden"
-        style={{ display: hiddenChatPage ? 'none' : 'flex', zIndex: hiddenChatPage ? -1 : 2 }}
+        style={{ display: hiddenChatPage ? 'none' : 'flex', zIndex: hiddenChatPage ? -1 : 200 }}
       >
         {shouldLoadChat && (
           <Suspense

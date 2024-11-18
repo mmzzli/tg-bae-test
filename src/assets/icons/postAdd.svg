@@ -1,4 +1,5 @@
-<svg width="88" height="88" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect x="0.5" y="0.5" width="87" height="87" rx="3.5" stroke="white" stroke-opacity="0.1" stroke-dasharray="2 2"/>
-<path d="M43 43.0001V34.0005L45 34.0005V43.0001L54.0001 42.9999L54.0002 44.9999L45 45.0001L45.0001 54H43.0001V45.0001L34 45.0003L34 43.0003L43 43.0001Z" fill="#E0E2F6"/>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Frame">
+<path id="Vector" d="M11 11.0001V2.0005L13 2.00049V11.0001L22.0001 10.9999L22.0002 12.9999L13 13.0001L13.0001 22H11.0001V13.0001L2.00004 13.0003L2 11.0003L11 11.0001Z" fill="#E0E2F6"/>
+</g>
 </svg>

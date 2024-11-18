@@ -15,8 +15,9 @@ import BaeimSDK, {
 import { getConversationSync, getMessagesSync } from '@/api'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { log, error as logError } from 'console'
-import emptyChat from '@/assets/image/chat/nochat.png'
 import ChatSkeleton from '@/components/Skeketon/ChatSkeleton'
+import Empty from '@/components/comm/Empty'
+import Icon from '@/components/comm/Icon'
 
 const ChatListPage: FC<{ className?: string }> = ({ className }) => {
   const {
@@ -182,10 +183,7 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
         </InfiniteScroll>
       )}
       {isChatListLoaded && chatList.length === 0 && (
-        <div className="flex flex-col items-center justify-center min-h-screen pb-[120px]">
-          <img src={emptyChat} alt="empty" style={{ width: '164px' }} />
-          <span className="text-[#424048] text-sm mt-6">No Chat History</span>
-        </div>
+        <Empty icon={<Icon name="icon-none_chat" style={{width:'164px', height:'164px'}}></Icon>} title="No Chat History"></Empty>
       )}
       {!isChatListLoaded && (
         <div className="flex-1 pb-[80px]">

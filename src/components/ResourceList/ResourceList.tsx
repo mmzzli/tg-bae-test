@@ -22,6 +22,7 @@ const ImagePreview = lazy(() => import('../Image/ImagePreview'))
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import useMobile from '@/hooks/useMobile'
 import playIcon from '@/assets/icons/videoSwitch.svg'
+import { formatTime } from '@/utils/utils'
 
 import { VideoDialog } from './VideoDialog'
 interface Like {
@@ -274,13 +275,13 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                       borderRadius="4px"
                       bg="rgba(0, 0, 0, 0.20)"
                       position="absolute"
-                      top="12px"
-                      left="28px"
+                      top="18px"
+                      left="18px"
                       p="4px 8px"
                     >
                       <Image src={VideoIcon} />
                       <Text color="#E0E2F6" fontSize="12px">
-                        {data.duration}
+                        {formatTime(Number(data.duration))}
                       </Text>
                     </HStack>
 

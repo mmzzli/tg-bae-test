@@ -136,7 +136,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover }) 
             )}
           </div>
           <div className="bg-[#1C1C1C] rounded-tl-[16px] rounded-tr-[16px]">
-            <div className="px-[16px]">
+            <div>
               <p className="text-center text-[#808080] pt-[62px] pb-[15px]">
                 Swipe left and right to choose the best cover
               </p>
@@ -161,7 +161,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover }) 
                   />
                 ))}
               </div>
-              <div className="px-[26px] pt-[24px] pb-[44px]">
+              <div className="px-[20px] pt-[24px] pb-[44px]">
                 <BaseButton
                   text="Done"
                   width="100%"

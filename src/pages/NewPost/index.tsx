@@ -27,6 +27,7 @@ export const NewPost: FC = () => {
   const { toast } = createStandaloneToast()
   const [videoFile, setVideoFile] = useState<File | null>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const videoRefCover = useRef<HTMLVideoElement>(null)
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [videoSrc, setVideoSrc] = useState<string | null>(null)
   const [title, setTitle] = useState<string>('')
@@ -261,10 +262,11 @@ export const NewPost: FC = () => {
                   <Box maxW="600px" m="auto" position="relative">
                     <VideoPlayer
                       videoRef={videoRef}
+                      videoRefCover={videoRefCover}
                       src={videoSrc}
                       style={{ borderRadius: '4px', maxHeight: '380px' }}
                     />
-                    <VideoFrameSelector videoRef={videoRef} setCover={setCover} />
+                    <VideoFrameSelector videoRef={videoRefCover} setCover={setCover} />
                     <Image
                       onClick={() => setVideoSrc('')}
                       w="24px"

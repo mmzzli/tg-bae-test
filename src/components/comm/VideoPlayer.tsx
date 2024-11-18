@@ -6,9 +6,10 @@ interface VideoPlayerProps {
   src: string;
   style?: React.CSSProperties;
   videoRef?: React.RefObject<HTMLVideoElement>;
+  videoRefCover?: React.RefObject<HTMLVideoElement>;
 }
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, style, videoRef }) => {
+const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, style, videoRef, videoRefCover }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const togglePlayPause = () => {
@@ -42,6 +43,17 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, style, videoRef }) => {
         autoPlay
         playsInline
       />
+      <div style={{'display':'none'}}>
+      <video
+        ref={videoRefCover}
+        width="100%"
+        src={src}
+        style={style}
+        autoPlay
+        playsInline
+        muted
+      />
+      </div>
       {(isHovered || videoRef?.current?.paused) && (
         <Text
           onClick={togglePlayPause}

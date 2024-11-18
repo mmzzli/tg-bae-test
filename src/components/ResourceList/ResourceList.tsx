@@ -197,7 +197,10 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                 currentUid={launchParams.initData?.user?.id ?? 0}
                 onProfileClick={jumpToProfilePage}
               />
-              <div className="relative px-4">
+              <div
+                className="relative px-4"
+                style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}
+              >
                 <div className="grid grid-cols-3 gap-2">
                   {data.media.map((i, ind) => (
                     <Image
@@ -237,7 +240,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
               />
               <div className="relative px-4">
                 {data.type === POST_TYPE_IMAGE ? (
-                  <Box position="relative">
+                  <Box position="relative" minH={data.media?.[0] === '' ? '200px' : 'auto'}>
                     <Image
                       src={data.media?.[0] ?? data?.media ?? ''}
                       alt={data.title}
@@ -256,7 +259,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                   </Box>
                 ) : (
                   <Box position="relative">
-                    <Box minH="130px">
+                    <Box minH={data.media?.[0] === '' ? '200px' : '130px'}>
                       <Image
                         src={data.mediaCover}
                         alt={data.title}

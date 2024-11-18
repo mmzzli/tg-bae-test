@@ -12,20 +12,27 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, style, videoRef }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const togglePlayPause = () => {
-    if (videoRef?.current) {
-      if (videoRef.current.paused) {
-        videoRef.current.play();
-      } else {
-        videoRef.current.pause();
-      }
+    const videoElement = videoRef?.current;
+
+    if (!videoElement) return;
+
+    if (videoElement.paused) {
+      videoElement.play();
+      setTimeout(() => setIsHovered(false), 100);
+    } else {
+      videoElement.pause();
     }
   };
+  const videoEve = () => {
+    setIsHovered((prev) => !prev);
+  }
 
   return (
     <div
       // style={{ position: 'relative', width: '100%' }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      // onMouseEnter={() => setIsHovered(true)}
+      // onMouseLeave={() => setIsHovered(false)}
+      onClick={videoEve}
     >
       <video
         ref={videoRef}

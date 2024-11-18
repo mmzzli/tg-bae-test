@@ -114,7 +114,7 @@ const OrderList = () => {
       </InfiniteScroll>
     )
   }else{
-    return <Empty title="No post yet." icon={<Icon name="icon-none_post" style={{width:'164px', height:'164px', transform: 'rotate(180deg)'}}></Icon>}></Empty>
+    return <Empty title="No post yet." icon={<Icon name="icon-none_post" style={{width:'164px', height:'164px', transform: 'scaleY(-1)'}}></Icon>}></Empty>
   }
 
 }

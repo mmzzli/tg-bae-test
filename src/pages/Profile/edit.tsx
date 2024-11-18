@@ -141,7 +141,12 @@ const ProfileEdit: FC = () => {
               <textarea
                 className="w-[100%] h-[218px] rounded-[10px] text-[#E0E2F6] text-[14px] bg-[#19191E] px-[16px] py-[15px]"
                 value={profileData?.bio}
-                onChange={(e) => changeEve(e, 'bio')}
+                // onChange={(e) => changeEve(e, 'bio')}
+              />
+              <KeyboardAwareInput
+                value={profileData?.bio}
+                onChange={(e:any) => changeEve(e, 'bio')}
+                placeholder="Type something..."
               />
             </div>
           </div>
@@ -160,5 +165,76 @@ const ProfileEdit: FC = () => {
     </div>
   )
 }
+
+interface KeyboardAwareInputProps {
+  placeholder?: string;
+  value: string;
+  onChange: (value: string) => void;
+}
+
+const KeyboardAwareInput: React.FC<KeyboardAwareInputProps> = ({
+  placeholder,
+  value,
+  onChange,
+}) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [paddingBottom, setPaddingBottom] = useState(0);
+
+  useEffect(() => {
+    const handleFocus = () => {
+      if (inputRef.current) {
+        const inputRect = inputRef.current.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+
+        // 如果输入框被键盘遮挡，计算需要滚动的距离
+        if (inputRect.bottom > viewportHeight * 0.7) {
+          const offset = inputRect.bottom - viewportHeight * 0.7;
+          setPaddingBottom(offset + 20); // 添加一定的间距
+          window.scrollTo({
+            top: window.scrollY + offset,
+            behavior: 'smooth',
+          });
+        }
+      }
+    };
+
+    const handleBlur = () => {
+      setPaddingBottom(0); // 恢复页面布局
+    };
+
+    const inputElement = inputRef.current;
+    inputElement?.addEventListener('focus', handleFocus);
+    inputElement?.addEventListener('blur', handleBlur);
+
+    return () => {
+      inputElement?.removeEventListener('focus', handleFocus);
+      inputElement?.removeEventListener('blur', handleBlur);
+    };
+  }, []);
+
+  return (
+    <div
+      style={{
+        paddingBottom: `${paddingBottom}px`,
+        transition: 'padding-bottom 0.3s ease',
+      }}
+    >
+      <input
+        ref={inputRef}
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        style={{
+          width: '100%',
+          padding: '10px',
+          fontSize: '16px',
+          border: '1px solid #ccc',
+          borderRadius: '5px',
+        }}
+      />
+    </div>
+  );
+};
 
 export default ProfileEdit

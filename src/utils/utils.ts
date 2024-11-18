@@ -7,6 +7,14 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function formatTime(seconds: number): string {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  const formattedMinutes = minutes.toString().padStart(2, '0');
+  const formattedSeconds = remainingSeconds.toString().padStart(2, '0');
+  return `${formattedMinutes}:${formattedSeconds}`;
+}
+
 export const isMobileDevice = (): boolean => {
   const userAgent = navigator.userAgent || navigator.vendor || window.opera
   const mobileRegex = /android|iphone|ipad|ipod|opera mini|iemobile|wpdesktop/i

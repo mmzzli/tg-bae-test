@@ -22,18 +22,16 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, style, videoRef, videoRe
       setTimeout(() => setIsHovered(false), 100);
     } else {
       videoElement.pause();
+      setTimeout(() => setIsHovered(true), 100);
     }
   };
-  const videoEve = () => {
-    setIsHovered((prev) => !prev);
-  }
 
   return (
     <div
       // style={{ position: 'relative', width: '100%' }}
       // onMouseEnter={() => setIsHovered(true)}
       // onMouseLeave={() => setIsHovered(false)}
-      onClick={videoEve}
+      onClick={togglePlayPause}
     >
       <video
         ref={videoRef}
@@ -56,7 +54,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, style, videoRef, videoRe
       </div>
       {(isHovered || videoRef?.current?.paused) && (
         <Text
-          onClick={togglePlayPause}
           position="absolute"
           top="50%"
           left="50%"

@@ -80,14 +80,29 @@ export const MainLayout: React.FC = () => {
       tgApp.BackButton.onClick(() => {
         console.log('location.pathname', location.pathname)
         if (location.pathname === '/home') {
-          tgApp.showConfirm("Changes that you made may not besaved.", function (isConfirmed:boolean) {
-            if (isConfirmed) {
-              console.log("User confirmed the action.");
-              tgApp.close();
+          tgApp.showConfirm({
+            message: 'Are you sure you want to continue?',
+            ok_button: 'Yes',
+            cancel_button: 'No',
+          }).then((result:boolean) => {
+            if (result) {
+              tgApp.close()
             } else {
               console.log(1)
             }
+          }).catch((error:Error) => {
+            console.error("Error showing confirmation:", error);
           });
+
+
+          // tgApp.showConfirm("Changes that you m de may not besaved.", function (isConfirmed:boolean) {
+          //   if (isConfirmed) {
+          //     console.log("User confirmed the action.");
+          //     tgApp.close();
+          //   } else {
+          //     console.log(1)
+          //   }
+          // });
 
         } else {
           window.history.back()

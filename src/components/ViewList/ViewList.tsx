@@ -62,8 +62,8 @@ const ViewList = ({ className }: PostListProps) => {
           </InfiniteScroll>
           ):(<Empty title="No post yet." icon={<Icon name="icon-none_post" style={{width:'164px', height:'164px'}}></Icon>}></Empty>)
         )}
-        {ids === 'purchased' && <FavList />}
-        {ids === 'saved' && <OrderList />}
+        {ids === 'purchased' && < OrderList/>}
+        {ids === 'saved' && <FavList />}
       </div>
     </>
   )

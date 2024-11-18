@@ -63,7 +63,7 @@ const UserInfo = memo(
     username: string | undefined
     content: string | undefined
   }) => (
-    <div className="absolute left-4 bottom-12 z-10 flex flex-col cursor-pointer no-tap">
+    <div className="absolute left-4 right-4 bottom-12 z-10 flex flex-col cursor-pointer no-tap">
       <div className="flex items-center">
         <Image rect src={avatar} alt="avatar" className="w-10 h-10 rounded-full" />
         <span className="text-white text-sm ml-2 shadow-sm">{username}</span>

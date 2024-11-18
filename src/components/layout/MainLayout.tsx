@@ -80,15 +80,17 @@ export const MainLayout: React.FC = () => {
       tgApp.BackButton.onClick(() => {
         console.log('location.pathname', location.pathname)
         if (location.pathname === '/home') {
-          tgApp.showConfirm("Changes that you made may not besaved.", function (isConfirmed:boolean) {
-            if (isConfirmed) {
-              console.log("User confirmed the action.");
-              tgApp.close();
-            } else {
-              console.log(1)
+          tgApp.showConfirm(
+            'Changes that you made may not besaved.',
+            function (isConfirmed: boolean) {
+              if (isConfirmed) {
+                console.log('User confirmed the action.')
+                tgApp.close()
+              } else {
+                console.log(1)
+              }
             }
-          });
-
+          )
         } else {
           window.history.back()
         }
@@ -98,6 +100,7 @@ export const MainLayout: React.FC = () => {
   }, [])
 
   useEffect(() => {
+    console.log('location.pathname', location.pathname)
     if (location.pathname.startsWith('/chat') && !shouldLoadChat) {
       setShouldLoadChat(true)
     }
@@ -108,7 +111,8 @@ export const MainLayout: React.FC = () => {
     }
     if (window.Telegram?.WebApp) {
       const tgApp = window.Telegram.WebApp
-      if (location.pathname === '/home') {
+      const HIDE_BACK_BUTTON_PATHS = ['/home', '/chat', '/profile']
+      if (HIDE_BACK_BUTTON_PATHS.includes(location.pathname)) {
         tgApp.BackButton.hide()
       } else {
         tgApp.BackButton.show()

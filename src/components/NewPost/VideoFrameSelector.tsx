@@ -10,6 +10,8 @@ import { uploadImgUrl } from '@/utils/env'
 interface Frame {
   url: string
   time: number
+  height: number
+  width: number
 }
 interface VideoPlayerProps {
   videoRef: RefObject<HTMLVideoElement>
@@ -52,6 +54,8 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover }) 
         framesArray.push({
           url: canvas.toDataURL('image/png'),
           time: video.currentTime,
+          height: canvas.height,
+          width: canvas.width
         })
         setFrames([...framesArray])
       }
@@ -109,7 +113,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover }) 
       <BaseModal
         isOpen={isBaseModalOpen}
         onClose={off}
-        height="100vh"
+        height="90vh"
         animation={{
           duration: 400,
           timingFunction: 'ease-in-out',
@@ -124,19 +128,29 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover }) 
       >
         <div className="w-[100%]">
           <h2 className="text-[24px] text-[#E0E2F6] mt-[24px]">Select cover</h2>
-          <div className="rounded-[5px] mt-[16px] max-h-[300px] overflow-hidden">
-            {selectedFrame && (
+          {(selectedFrame && selectedFrame.width > selectedFrame.height) &&
+            <div className="rounded-[5px] mt-[16px] max-h-[300px] overflow-hidden">
               <img
-                // className="object-revert"
                 src={selectedFrame.url}
                 alt={`Selected Frame at ${selectedFrame.time}s`}
                 width="100%"
-                // style={{ maxHeight: '315px' }}
               />
-            )}
-          </div>
+          </div>}
+          {(selectedFrame && selectedFrame.width < selectedFrame.height) &&
+          <div className="mt-[16px]">
+              <img
+                src={selectedFrame.url}
+                className='rounded-[5px]'
+                style={{
+                  width: "243px",
+                  height: "315px",
+                  objectFit: "cover"
+                }}
+                alt={`Selected Frame at ${selectedFrame.time}s`}
+              />
+          </div>}
           <div className="bg-[#1C1C1C] rounded-tl-[16px] rounded-tr-[16px]">
-            <div className="px-[16px]">
+            <div>
               <p className="text-center text-[#808080] pt-[62px] pb-[15px]">
                 Swipe left and right to choose the best cover
               </p>
@@ -161,7 +175,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover }) 
                   />
                 ))}
               </div>
-              <div className="px-[26px] pt-[24px] pb-[44px]">
+              <div className="px-[20px] pt-[24px] pb-[44px]">
                 <BaseButton
                   text="Done"
                   width="100%"

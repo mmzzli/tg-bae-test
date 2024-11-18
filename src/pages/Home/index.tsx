@@ -17,6 +17,7 @@ const HomePage: FC = () => {
   // }))
   const selectedPostsRef = useRef<HTMLDivElement>(null)
   const [title, setTitle] = useState('Following')
+  const [fadeClass, setFadeClass] = useState('fade-in');
 
   // const handleNavigate = async (ref: string) => {
   //   if (!token) {
@@ -55,29 +56,49 @@ const HomePage: FC = () => {
   //     }
   //   })
   // }, [startParam, isInTMA])
-
+  const styles = {
+    fadeIn: {
+      opacity: 1,
+      transition: 'opacity 0.3s ease-in',
+    },
+    fadeOut: {
+      opacity: 0,
+      transition: 'opacity 0.3s ease-out',
+    },
+  };
   useEffect(() => {
     const handleScroll = () => {
       if (selectedPostsRef.current) {
-        const rect = selectedPostsRef.current.getBoundingClientRect()
-        const isVisible = rect.top < 0
-        if (isVisible) {
-          setTitle('Selected Posts')
-        } else {
-          setTitle('Following')
+        const rect = selectedPostsRef.current.getBoundingClientRect();
+        const isVisible = rect.top < 0;
+
+        if (isVisible && title !== 'Selected Posts') {
+          triggerTitleChange('Selected Posts');
+        } else if (!isVisible && title !== 'Following') {
+          triggerTitleChange('Following');
         }
       }
-    }
-    const scrollableDiv = document.getElementById('recommendScrollableDiv')
+    };
+
+    const scrollableDiv = document.getElementById('recommendScrollableDiv');
     if (scrollableDiv) {
-      scrollableDiv.addEventListener('scroll', handleScroll)
+      scrollableDiv.addEventListener('scroll', handleScroll);
     }
+
     return () => {
       if (scrollableDiv) {
-        scrollableDiv.removeEventListener('scroll', handleScroll)
+        scrollableDiv.removeEventListener('scroll', handleScroll);
       }
-    }
-  }, [])
+    };
+  }, [title]);
+
+  const triggerTitleChange = (newTitle:string) => {
+    setFadeClass('fade-out');
+    setTimeout(() => {
+      setTitle(newTitle);
+      setFadeClass('fade-in');
+    }, 300);
+  };
   return (
     <div className="relative w-full h-full overflow-auto" id="recommendScrollableDiv">
       <HStack
@@ -88,7 +109,7 @@ const HomePage: FC = () => {
         bg="#000"
         zIndex="111"
       >
-        <Heading as="h3" fontSize="20px" color="#E0E2F6">
+        <Heading as="h3" fontSize="20px" color="#E0E2F6" style={fadeClass === 'fade-in' ? styles.fadeIn : styles.fadeOut}>
           {title}
         </Heading>
         <BaseButton

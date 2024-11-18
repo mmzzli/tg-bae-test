@@ -4,7 +4,9 @@ import InfiniteScroll from 'react-infinite-scroll-component'
 import ResourceList from '../ResourceList/ResourceList'
 import { cn } from '@/utils/utils'
 import { useViewList, useFavList, useOrdersList } from '@/store/hook/useResourceList'
-
+import Empty from '../comm/Empty'
+import Icon from '../comm/Icon'
+import { rotate } from '@chakra-ui/react/dist/types/progress/progress.utils'
 interface PostListProps {
   className?: string
 }
@@ -42,7 +44,8 @@ const ViewList = ({ className }: PostListProps) => {
       </Box>
       <div className={cn(className, 'pb-24')}>
         {ids === 'posts' && (
-          <InfiniteScroll
+          list.length?(
+            <InfiniteScroll
             dataLength={list.length}
             next={fetchMoreData}
             hasMore={hasMore}
@@ -57,6 +60,7 @@ const ViewList = ({ className }: PostListProps) => {
           >
             <ResourceList resources={list} />
           </InfiniteScroll>
+          ):(<Empty title="No post yet." icon={<Icon name="icon-none_post" style={{width:'164px', height:'164px'}}></Icon>}></Empty>)
         )}
         {ids === 'purchased' && <FavList />}
         {ids === 'saved' && <OrderList />}
@@ -66,43 +70,53 @@ const ViewList = ({ className }: PostListProps) => {
 }
 const FavList = () => {
   const { list, hasMore, fetchMoreData } = useFavList()
-  return (
-    <InfiniteScroll
-      dataLength={list.length}
-      next={fetchMoreData}
-      hasMore={hasMore}
-      loader={
-        <Box textAlign="center" m="20px 0">
-          <Spinner color="#4A3AFF" />
-        </Box>
-      }
-      scrollableTarget="profileScrollableDiv"
-      scrollThreshold={0.8}
-      style={{ overflow: 'visible' }}
-    >
-      <ResourceList resources={list} />
-    </InfiniteScroll>
-  )
+  if(list.length){
+    return (
+      <InfiniteScroll
+        dataLength={list.length}
+        next={fetchMoreData}
+        hasMore={hasMore}
+        loader={
+          <Box textAlign="center" m="20px 0">
+            <Spinner color="#4A3AFF" />
+          </Box>
+        }
+        scrollableTarget="profileScrollableDiv"
+        scrollThreshold={0.8}
+        style={{ overflow: 'visible' }}
+      >
+        <ResourceList resources={list} />
+      </InfiniteScroll>
+    )
+  }else{
+    return <Empty title="No post yet." icon={<Icon name="icon-none_purchased" style={{width:'164px', height:'164px'}}></Icon>}></Empty>
+  }
+
 }
 const OrderList = () => {
   const { list, hasMore, fetchMoreData } = useOrdersList()
-  return (
-    <InfiniteScroll
-      dataLength={list.length}
-      next={fetchMoreData}
-      hasMore={hasMore}
-      loader={
-        <Box textAlign="center" m="20px 0">
-          <Spinner color="#4A3AFF" />
-        </Box>
-      }
-      scrollableTarget="profileScrollableDiv"
-      scrollThreshold={0.8}
-      style={{ overflow: 'visible' }}
-    >
-      <ResourceList resources={list} />
-    </InfiniteScroll>
-  )
+  if(list.length){
+    return (
+      <InfiniteScroll
+        dataLength={list.length}
+        next={fetchMoreData}
+        hasMore={hasMore}
+        loader={
+          <Box textAlign="center" m="20px 0">
+            <Spinner color="#4A3AFF" />
+          </Box>
+        }
+        scrollableTarget="profileScrollableDiv"
+        scrollThreshold={0.8}
+        style={{ overflow: 'visible' }}
+      >
+        <ResourceList resources={list} />
+      </InfiniteScroll>
+    )
+  }else{
+    return <Empty title="No post yet." icon={<Icon name="icon-none_post" style={{width:'164px', height:'164px', transform: 'rotate(180deg)'}}></Icon>}></Empty>
+  }
+
 }
 
 export default ViewList

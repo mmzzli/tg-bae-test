@@ -36,8 +36,9 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
         post_id: String(post_id),
         user_id: String(initData?.user?.id)
       })
-      shareLink(url)
-      // window.open(url)
+      if(url){
+        shareLink(url)
+      }
     }
 
     const items = setInterval(async()=>{

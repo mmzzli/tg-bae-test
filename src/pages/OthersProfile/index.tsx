@@ -9,7 +9,7 @@ const OthersProfile: FC = () => {
   return (
     <div
       id="ProfileScrollableDiv"
-      className="absolute inset-0 top-0 bottom-0 flex flex-col bg-[#000000] z-10 overflow-auto no-scroll"
+      className="absolute inset-0 top-0 bottom-0 flex flex-col bg-[#000000] z-10 overflow-auto scrollbar-hide"
     >
       <OtherUserProfile />
       <PostList list={list} hasMore={hasMore} fetchMoreData={fetchMoreData} />

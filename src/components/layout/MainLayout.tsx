@@ -107,9 +107,6 @@ export const MainLayout: React.FC = () => {
     }
     if (window.Telegram?.WebApp) {
       const tgApp = window.Telegram.WebApp
-      postEvent('web_app_setup_swipe_behavior', {
-        allow_vertical_swipe: false,
-      })
       if (location.pathname === '/home') {
         tgApp.BackButton.hide()
       } else {
@@ -117,6 +114,12 @@ export const MainLayout: React.FC = () => {
       }
     }
   }, [location.pathname])
+
+  useEffect(() => {
+    postEvent('web_app_setup_swipe_behavior', {
+      allow_vertical_swipe: false,
+    })
+  }, [])
 
   return (
     <div className="bg-black h-screen w-screen overflow-hidden flex pb-[84px]">

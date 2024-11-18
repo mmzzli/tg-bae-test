@@ -33,7 +33,7 @@ const POST_TYPE_IMAGE = 1
 const POST_TYPE_VIDEO = 0
 
 const ResourceList = ({ resources: initialResources }: { resources: FormatterListItem[] }) => {
-  console.log(initialResources,'=====')
+  console.log(initialResources, '=====')
 
   const isMobile = useMobile()
   const [resources, setResources] = useState<FormatterListItem[]>([])
@@ -90,7 +90,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
         return item
       })
       setResources(res)
-    }else{
+    } else {
       setResources([])
     }
   }, [initialResources])
@@ -140,7 +140,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
     <BaseModal
       isOpen={isBaseModalOpen}
       onClose={off}
-      height={isMobile ? '60vh' : '300px'}
+      height={isMobile ? '342px' : '300px'}
       animation={{
         duration: 400,
         timingFunction: 'ease-in-out',

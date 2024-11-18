@@ -8,10 +8,12 @@ import { useMemoizedFn, useRequest, useSetState } from 'ahooks'
 import { IUserInfo } from '@/types'
 import useCopy from '@/hooks/useCopy'
 import { getLink } from '@/api/list'
+import useMobile from '@/hooks/useMobile'
 
 const ShareUser = ({ userInfo }: { userInfo: IUserInfo }) => {
   const { shareLink, launchParams } = useTMAUtils()
   const [isBaseModalOpen, { toggle, off }] = useBoolean(false)
+  const isMobile = useMobile()
   const [links, setLinks] = useSetState<{ shareLink: string; copyLink: string }>({
     shareLink: '',
     copyLink: '',
@@ -50,7 +52,7 @@ const ShareUser = ({ userInfo }: { userInfo: IUserInfo }) => {
       <BaseModal
         isOpen={isBaseModalOpen}
         onClose={off}
-        height="340px"
+        height={isMobile ? '342px' : '300px'}
         animation={{
           duration: 400,
           timingFunction: 'ease-in-out',
@@ -66,18 +68,21 @@ const ShareUser = ({ userInfo }: { userInfo: IUserInfo }) => {
         <div className="mt-4 w-full">
           <h3 className="font-bold text-2xl mb-[10px] text-[24px]">Share from Bae</h3>
           <div className="text-[15px] text-[#808080]">Earn $Bae every time you share from Bae</div>
-          <div className="mt-12 mb-[18px] mx-4">
-            <BaseButton
-              text="Share via Telegram"
-              height="48px"
-              icon={<Image src={TelegramIcon} />}
-              handler={() => {
-                shareLink(links.shareLink ?? '')
-                off()
-              }}
-            />
-          </div>
-          <div className="mx-4">
+          {isMobile && (
+            <div className="mt-12 mb-[18px] mx-4">
+              <BaseButton
+                text="Share via Telegram"
+                height="48px"
+                icon={<Image src={TelegramIcon} />}
+                handler={() => {
+                  shareLink(links.shareLink ?? '')
+                  off()
+                }}
+              />
+            </div>
+          )}
+
+          <div className={isMobile ? 'mx-4' : 'mx-4 mt-[50px]'}>
             <BaseButton
               text="Copy link"
               height="48px"

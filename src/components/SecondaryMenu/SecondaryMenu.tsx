@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { MoreHorizontal } from 'lucide-react'
-import { useRequest, useSafeState } from 'ahooks'
+import { useSafeState } from 'ahooks'
 import { DeleteIcon, ReportIcon } from '@/assets/icons'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
-import { deletePost } from '@/api'
-import { useStore } from '@/store'
 import Report from './Report'
 import { cn } from '@/utils/utils'
-import { DeleteDialog } from '../Chat/DeleteDialog'
+import { DeleteDialogWarp } from '../Chat/DeleteDialog'
+import { useModal } from '@ebay/nice-modal-react'
 
 type Props = {
   mediaData: FormatterListItem
@@ -21,8 +20,7 @@ const SecondaryMenu = ({ mediaData, currentUid, className }: Props) => {
   const menuRef = useRef<HTMLDivElement>(null)
   const [reportVisible, setReportVisible] = useSafeState(false)
 
-  const { runAsync: deleteHandlerAsync } = useRequest(deletePost, { manual: true })
-  const deleteViewList = useStore((state) => state.deleteViewList)
+  const deleteDialogWrap = useModal(DeleteDialogWarp)
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -41,11 +39,7 @@ const SecondaryMenu = ({ mediaData, currentUid, className }: Props) => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [visible])
-  const handleDelete = async () => {
-    await deleteHandlerAsync(id)
-    deleteViewList(mediaData)
-    setVisible(false);
-  }
+
   const handleReport = () => {
     console.log('report')
   }
@@ -75,14 +69,16 @@ const SecondaryMenu = ({ mediaData, currentUid, className }: Props) => {
       {visible && (
         <div className="absolute right-0 mt-1 bg-[#19191E] text-[#E0E2F6] font-medium text-xs rounded-[4px] z-50">
           {currentUid === uid && (
-            <DeleteDialog title='Will Delete Post' onDelete={handleDelete}>
               <button
+              onClick={()=>{
+                deleteDialogWrap.show({data:mediaData});
+                setVisible(false)
+              }}
                 className="w-[83px] h-[40px] hover:bg-gray-500 rounded-[4px] flex items-center justify-center gap-1 text-[#FF5330]"
               >
                 <img src={DeleteIcon} alt="delete" />
                 Delete
               </button>
-            </DeleteDialog>
           )}
           {currentUid !== uid && (
             <button

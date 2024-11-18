@@ -20,6 +20,7 @@ import ProfileGuard from './pages/OthersProfile/routeGuard'
 import { MessagePage } from './pages/Chat'
 import MessagePageRouteGuard from './pages/Chat/MessagePageRouteGuard'
 import { useEffect } from 'react'
+import NiceModal from '@ebay/nice-modal-react'
 
 // import { mockTelegramEnv, parseInitData } from '@tma.js/sdk'
 // import { DEV_INIT_DATA_RAW } from './utils/constants'
@@ -47,68 +48,70 @@ import { useEffect } from 'react'
 // })
 
 function App() {
-  useEffect(()=>{
-    const root = document.querySelector('#root');
+  useEffect(() => {
+    const root = document.querySelector('#root')
     if (root instanceof HTMLElement) {
       const onFocusIn = () => {
-        root.style.paddingBottom = '300px'; // 键盘高度
-      };
+        root.style.paddingBottom = '300px' // 键盘高度
+      }
       const onFocusOut = () => {
-        root.style.paddingBottom = '0px'; // 键盘高度
-      };
+        root.style.paddingBottom = '0px' // 键盘高度
+      }
 
-      document.addEventListener('focusin', onFocusIn);
-      document.addEventListener('focusout', onFocusOut);
+      document.addEventListener('focusin', onFocusIn)
+      document.addEventListener('focusout', onFocusOut)
 
       return () => {
-        document.removeEventListener('focusin', onFocusIn);
-        document.removeEventListener('focusout', onFocusOut);
-      };
+        document.removeEventListener('focusin', onFocusIn)
+        document.removeEventListener('focusout', onFocusOut)
+      }
     }
-  },[])
+  }, [])
   return (
     <>
-      <ChakraProvider resetCSS theme={theme}>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<MainLayout />}>
-              <Route index element={<Splash />} />
-              <Route path="/home" element={<HomePage />} />
-              <Route path="post" element={<NewPost />} />
-              <Route path="shares" element={<Shares />} />
+      <NiceModal.Provider>
+        <ChakraProvider resetCSS theme={theme}>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<MainLayout />}>
+                <Route index element={<Splash />} />
+                <Route path="/home" element={<HomePage />} />
+                <Route path="post" element={<NewPost />} />
+                <Route path="shares" element={<Shares />} />
 
-              {/* Profile  */}
-              <Route path="profile">
-                <Route index element={<Profile />} />
-                <Route path="edit" element={<ProfileEdit />} />
-                <Route path="earningsHistory" element={<EarningsHistory />} />
+                {/* Profile  */}
+                <Route path="profile">
+                  <Route index element={<Profile />} />
+                  <Route path="edit" element={<ProfileEdit />} />
+                  <Route path="earningsHistory" element={<EarningsHistory />} />
+                  <Route
+                    path=":uid"
+                    element={
+                      <ProfileGuard>
+                        <OthersProfile />
+                      </ProfileGuard>
+                    }
+                  />
+                </Route>
+
+                {/* Follow */}
+                <Route path="follow/:uid" element={<Follow />} />
+
+                {/* Chat */}
+                <Route path="chat" element={<></>} />
                 <Route
-                  path=":uid"
+                  path="chat/:uid"
                   element={
-                    <ProfileGuard>
-                      <OthersProfile />
-                    </ProfileGuard>
+                    <MessagePageRouteGuard>
+                      <MessagePage />
+                    </MessagePageRouteGuard>
                   }
                 />
               </Route>
-
-              {/* Follow */}
-              <Route path="follow/:uid" element={<Follow />} />
-
-              {/* Chat */}
-              <Route path="chat" element={<></>} />
-              <Route
-                path="chat/:uid"
-                element={
-                  <MessagePageRouteGuard>
-                    <MessagePage />
-                  </MessagePageRouteGuard>
-                }
-              />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </ChakraProvider>
+            </Routes>
+          </BrowserRouter>
+        </ChakraProvider>
+      </NiceModal.Provider>
     </>
   )
 }

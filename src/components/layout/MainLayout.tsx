@@ -70,20 +70,15 @@ export const MainLayout: React.FC = () => {
       tgApp.BackButton.onClick(() => {
         console.log('location.pathname', location.pathname)
         if (location.pathname === '/home') {
-          tgApp.showPopup({
-            title: "Confirmation",
-            message: "Are you sure you want to continue?",
-            buttons: [
-              { id: "ok", type: "default", text: "OK" },
-              { id: "cancel", type: "default", text: "Cancel" },
-            ],
-          }, (buttonId:string) => {
-            if (buttonId === "ok") {
+          tgApp.showConfirm("Changes that you made may not besaved.", function (isConfirmed:boolean) {
+            if (isConfirmed) {
+              console.log("User confirmed the action.");
               tgApp.close();
-            } else if (buttonId === "cancel") {
-              console.log("Action cancelled");
+            } else {
+              console.log(1)
             }
           });
+
         } else {
           window.history.back()
         }

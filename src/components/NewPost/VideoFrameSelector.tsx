@@ -109,7 +109,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover }) 
       <BaseModal
         isOpen={isBaseModalOpen}
         onClose={off}
-        height="100vh"
+        height="90vh"
         animation={{
           duration: 400,
           timingFunction: 'ease-in-out',

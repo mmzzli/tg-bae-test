@@ -161,7 +161,7 @@ const ProfileEdit: FC = () => {
               />
             </div>
           </div>
-          <div className={`pt-[28px] px-[18px] pb-[43px] h-[${isFocused ? "400px" : ""}]`}>
+          <div className={`pt-[28px] px-[18px] pb-[43px]`} style={{height:`${isFocused ? "400px" : ""}`}}>
             <Button variant="primary-dark" w="100%" h="48px" isLoading={isLoading} onClick={doneEve}>
               Done
             </Button>

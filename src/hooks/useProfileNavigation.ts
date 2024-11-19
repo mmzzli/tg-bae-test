@@ -23,7 +23,7 @@ export function useProfileNavigation() {
         // reset view list and set new user info
         if (Number(user.uid) !== othersUserInfo.uid) {
           resetOthersViewList()
-          setOthersUserInfo({ ...user, user_id: user.uid, bio: '' })
+          // setOthersUserInfo({ ...user, user_id: user.uid, bio: '' })
         }
         navigate(`/profile/${user.uid}`)
       }

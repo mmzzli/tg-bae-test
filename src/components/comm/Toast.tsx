@@ -1,7 +1,8 @@
 export enum typeOptions {
   success='success',
   error="error",
-  warning="warning"
+  warning="warning",
+  info="info"
 }
 export const IconMap = {
   [typeOptions.success]:{
@@ -15,6 +16,10 @@ export const IconMap = {
   [typeOptions.warning]:{
     icon:'icon-icon_warn',
     color:"#FF7C3F"
+  },
+  [typeOptions.info]:{
+    icon:"icon-icon_info",
+    color:'#097AFE'
   }
 }
 interface ToastProps{

@@ -1,6 +1,7 @@
 import { FC, useMemo } from 'react'
 import {
-  createStandaloneToast
+  createStandaloneToast,
+  useToast
 } from '@chakra-ui/react'
 import BaseButton from '../BaseButton/BaseButton'
 import { follow, getSomeoneProfile } from '@/api'
@@ -28,7 +29,7 @@ const FollowButton: FC<{
   const isFollowing = useMemo(() => {
     return myFollow.some((item) => item.tg_id === tgid)
   }, [myFollow, tgid])
-  const { toast } = createStandaloneToast()
+  const toast = useToast()
 
   const { runAsync: followHandler, loading: followLoading } = useRequest(follow, {
     manual: true,

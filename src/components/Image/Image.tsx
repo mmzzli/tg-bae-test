@@ -106,7 +106,7 @@ const Image = React.memo(
             wrapperClassName,
             hasError && errorClassName
           )}
-          style={{ aspectRatio: 1 }}
+          // style={{ aspectRatio: 1 }}
         >
           {rect ? (
             <div

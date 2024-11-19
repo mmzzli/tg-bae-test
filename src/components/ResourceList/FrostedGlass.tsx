@@ -9,6 +9,7 @@ import { useStore } from '@/store/store'
 
 
 import { LockIcon, StarsIcon } from '@/assets/icons'
+import { FrostedGlassImg } from '@/assets/image'
 import { botInvoice, logIn, viewPid } from '@/api'
 
 type FrostedGlassProps = {
@@ -56,7 +57,9 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
   return (
     <>
       <Box
-        bg="linear-gradient(135deg, #ccc, #000)"
+        // bg="linear-gradient(135deg, #ccc, #000)"
+        bgImage={FrostedGlassImg}
+        bgSize="100% 100%"
         color="#333"
         textAlign="center"
         position="absolute"

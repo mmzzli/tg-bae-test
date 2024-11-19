@@ -94,7 +94,7 @@ export const NewPost: FC = () => {
     if (firstFileType === 'image') {
       try{
         setIsLoading(true)
-        imgUpload(files)
+        await imgUpload(files)
         toast({
           render: () => {
             return <CustomToast title="Your post was sent." type={typeOptions.success} />

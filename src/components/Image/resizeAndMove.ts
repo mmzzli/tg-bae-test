@@ -3,6 +3,9 @@ import { Swiper as SwiperType } from 'swiper'
 // Smoothing factor for zoom (you can adjust this value)//
 const SMOOTH_FACTOR = 0.1
 
+const WIN_WIDTH = window.innerWidth
+const WIN_HEIGHT = window.innerHeight
+
 export const handleZoomAndPan = (imageElement: HTMLImageElement, swiper: SwiperType) => {
   let currentScale = 1
   let initialDistance = 0
@@ -40,24 +43,14 @@ export const handleZoomAndPan = (imageElement: HTMLImageElement, swiper: SwiperT
       dimension === 'width' ? getScaledImageSize().width : getScaledImageSize().height
 
     // get port size
-    const viewportSize = dimension === 'width' ? window.innerWidth : window.innerHeight
+    const viewportSize = dimension === 'width' ? WIN_WIDTH : WIN_HEIGHT
 
-    if (dimension === 'height') {
-      if (scaledSize <= imageSize) {
-        return 0
-      } else {
-        // calc max trans
-        const maxTranslate = (scaledSize - viewportSize) / (2 * currentScale)
-
-        // protected transform
-        return Math.min(Math.max(value, -maxTranslate), maxTranslate)
-      }
-    } else {
-      // calc max trans
+    if (scaledSize >= imageSize) {
       const maxTranslate = (scaledSize - viewportSize) / (2 * currentScale)
-
       // protected transform
       return Math.min(Math.max(value, -maxTranslate), maxTranslate)
+    } else {
+      return 0
     }
   }
 

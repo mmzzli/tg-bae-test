@@ -23,6 +23,7 @@ const ProfileEdit: FC = () => {
   const uid = launchParams.initData?.user?.id ?? 0
   const toast = useToast()
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isFocused, setIsFocused] = useState<boolean>(false);
 
   const [profileData, setProfileData] = useState<UserInfoProfile>({
     username: '',
@@ -99,6 +100,27 @@ const ProfileEdit: FC = () => {
       },
     })
   }
+  useEffect(() => {
+    const handleKeyboardHide = () => {
+      window.scrollTo(0, 0);
+    };
+    window.addEventListener('focusout', handleKeyboardHide);
+
+    return () => {
+      window.removeEventListener('focusout', handleKeyboardHide);
+    };
+  }, []);
+  useEffect(() => {
+    if(isFocused){
+      setTimeout(()=>{
+        window.scrollTo({
+          top: document.body.scrollHeight,
+          behavior: "smooth"
+        });
+      },100)
+    }
+
+  },[isFocused])
 
 
   return (
@@ -146,6 +168,8 @@ const ProfileEdit: FC = () => {
                 className="w-[100%] h-[218px] rounded-[10px] text-[#E0E2F6] text-[14px] bg-[#19191E] px-[16px] py-[15px]"
                 value={profileData?.bio}
                 onChange={(e) => changeEve(e, 'bio')}
+                onFocus={() => { isMobileDevice() && setIsFocused(true) }}
+                onBlur={() => { isMobileDevice() && setIsFocused(false) }}
               />
             </div>
           </div>

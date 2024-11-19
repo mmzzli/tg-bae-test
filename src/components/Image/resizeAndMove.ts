@@ -24,7 +24,10 @@ export const handleZoomAndPan = (imageElement: HTMLImageElement, swiper: SwiperT
   // limit the range of dragging
   const clampTranslate = (value: number, scale: number, dimension: 'width' | 'height') => {
     const imageSize = dimension === 'width' ? imageElement.offsetWidth : imageElement.offsetHeight
-    const maxTranslate = (imageSize * (scale - 1)) / 2
+    const scaledSize =
+      dimension === 'width' ? getScaledImageSize().width : getScaledImageSize().height
+    const maxTranslate = (scaledSize - imageSize) / 2
+
     return Math.min(Math.max(value, -maxTranslate), maxTranslate)
   }
 
@@ -41,6 +44,14 @@ export const handleZoomAndPan = (imageElement: HTMLImageElement, swiper: SwiperT
       startX = e.touches[0].clientX - translateX
       startY = e.touches[0].clientY - translateY
       if (swiper) swiper.allowTouchMove = false
+    }
+  }
+
+  // Get the image's size after scaling
+  const getScaledImageSize = () => {
+    return {
+      width: imageElement.offsetWidth * currentScale,
+      height: imageElement.offsetHeight * currentScale,
     }
   }
 

@@ -16,7 +16,7 @@ const ProfileGuard: FC<ProfileGuardProps> = ({ children }) => {
   const { getCurrentUid } = useTMAUtils()
   const current_uid = getCurrentUid()
 
-  const { othersUserInfo, resetOthersViewList, setOthersUserInfo } = useStore()
+  const { othersUserInfo, resetOthersViewList, setOthersUserInfo, resetOthersUserInfo } = useStore()
   const { token, myFollow, setMyFollow } = useStore((state) => ({
     token: state.token,
     myFollow: state.myFollow,
@@ -26,6 +26,7 @@ const ProfileGuard: FC<ProfileGuardProps> = ({ children }) => {
     const prepare = async () => {
       try {
         resetOthersViewList()
+        resetOthersUserInfo()
         // Reset user info if viewing a different user's profile
         // if (othersUserInfo.uid !== -1 && othersUserInfo.uid !== Number(uid)) {
         //   setOthersUserInfo({

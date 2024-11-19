@@ -27,7 +27,7 @@ const PostList = ({ className, list, hasMore, fetchMoreData }: PostListProps) =>
               <Spinner color="#4A3AFF" />
             </Box>
           }
-          scrollableTarget="ProfileScrollableDiv"
+          scrollableTarget="profileScrollableDiv"
           scrollThreshold={0.8}
           style={{ overflow: 'visible' }}
         >

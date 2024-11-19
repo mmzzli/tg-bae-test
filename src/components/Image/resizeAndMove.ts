@@ -43,7 +43,7 @@ export const handleZoomAndPan = (imageElement: HTMLImageElement, swiper: SwiperT
     const viewportSize = dimension === 'width' ? window.innerWidth : window.innerHeight
 
     // calc max trans
-    const maxTranslate = (scaledSize - viewportSize) / (2 * currentScale)
+    const maxTranslate = scaledSize > viewportSize ? (scaledSize - viewportSize) / 2 : 0
 
     // protected transform
     return Math.min(Math.max(value, -maxTranslate), maxTranslate)

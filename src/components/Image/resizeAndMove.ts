@@ -15,9 +15,9 @@ export const handleZoomAndPan = (imageElement: HTMLImageElement, swiper: SwiperT
   let translateX = 0
   let translateY = 0
 
-  // 监听 Swiper 切换事件，重置缩放状态
+  // listen swiper
   swiper.on('slideChange', () => {
-    // 只有在切换到当前图片时，才需要重置缩放
+    // slide other image fix the variable is default value
     currentScale = 1
     translateX = 0
     translateY = 0

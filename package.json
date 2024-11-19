@@ -31,6 +31,7 @@
     "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
+    "@ebay/nice-modal-react": "1.2.13",
     "@fullpage/react-fullpage": "^0.1.42",
     "@orbs-network/ton-access": "^2.2.2",
     "@tanstack/react-query": "^4.24.4",

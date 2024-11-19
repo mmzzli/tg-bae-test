@@ -1,5 +1,8 @@
 import { Swiper as SwiperType } from 'swiper'
 
+// Smoothing factor for zoom (you can adjust this value)//
+const SMOOTH_FACTOR = 0.1
+
 export const handleZoomAndPan = (imageElement: HTMLImageElement, swiper: SwiperType) => {
   let currentScale = 1
   let initialDistance = 0
@@ -12,6 +15,15 @@ export const handleZoomAndPan = (imageElement: HTMLImageElement, swiper: SwiperT
   let translateX = 0
   let translateY = 0
 
+  // 监听 Swiper 切换事件，重置缩放状态
+  swiper.on('slideChange', () => {
+    // 只有在切换到当前图片时，才需要重置缩放
+    currentScale = 1
+    translateX = 0
+    translateY = 0
+    updateTransform()
+  })
+
   const getTouchDistance = (touch1: Touch, touch2: Touch) => {
     const dx = touch1.clientX - touch2.clientX
     const dy = touch1.clientY - touch2.clientY
@@ -21,7 +33,10 @@ export const handleZoomAndPan = (imageElement: HTMLImageElement, swiper: SwiperT
   // limit the range of dragging
   const clampTranslate = (value: number, scale: number, dimension: 'width' | 'height') => {
     const imageSize = dimension === 'width' ? imageElement.offsetWidth : imageElement.offsetHeight
-    const maxTranslate = (imageSize * (scale - 1)) / 2
+    const scaledSize =
+      dimension === 'width' ? getScaledImageSize().width : getScaledImageSize().height
+    const maxTranslate = (scaledSize - imageSize) / 2
+
     return Math.min(Math.max(value, -maxTranslate), maxTranslate)
   }
 
@@ -41,12 +56,27 @@ export const handleZoomAndPan = (imageElement: HTMLImageElement, swiper: SwiperT
     }
   }
 
+  // Get the image's size after scaling
+  const getScaledImageSize = () => {
+    return {
+      width: imageElement.offsetWidth * currentScale,
+      height: imageElement.offsetHeight * currentScale,
+    }
+  }
+
   const handleTouchMove = (e: TouchEvent) => {
     if (e.touches.length === 2) {
       e.preventDefault()
       const currentDistance = getTouchDistance(e.touches[0], e.touches[1])
-      const scale = (currentDistance / initialDistance) * currentScale
-      currentScale = Math.min(Math.max(scale, 0.5), 3)
+
+      let scale = (currentDistance / initialDistance) * currentScale
+      // Smoothly adjust the scale
+      scale = currentScale + (scale - currentScale) * SMOOTH_FACTOR
+
+      // Restrict scale to be between 0.5 and 3
+      scale = Math.min(Math.max(scale, 0.5), 3)
+
+      currentScale = scale
 
       // reset dragging position when the scale is 1
       if (currentScale <= 1) {

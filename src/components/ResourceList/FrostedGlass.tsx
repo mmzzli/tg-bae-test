@@ -8,7 +8,8 @@ import { useRequest, useSafeState } from 'ahooks'
 import { useStore } from '@/store/store'
 
 
-import { LockIcon } from '@/assets/icons'
+import { LockIcon, StarsIcon } from '@/assets/icons'
+import { FrostedGlassImg } from '@/assets/image'
 import { botInvoice, logIn, viewPid } from '@/api'
 
 type FrostedGlassProps = {
@@ -19,7 +20,7 @@ type FrostedGlassProps = {
 
 const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) => {
   const userInfo = useStore((state) => state.userInfo)
-  const { launchParams, shareLink } = useTMAUtils()
+  const { launchParams, openLink } = useTMAUtils()
   const { initData } = launchParams
 
 
@@ -37,7 +38,7 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
         user_id: String(initData?.user?.id)
       })
       if(url){
-        shareLink(url)
+        openLink(url)
       }
     }
 
@@ -56,7 +57,9 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
   return (
     <>
       <Box
-        bg="linear-gradient(135deg, #ccc, #000)"
+        // bg="linear-gradient(135deg, #ccc, #000)"
+        bgImage={FrostedGlassImg}
+        bgSize="100% 100%"
         color="#333"
         textAlign="center"
         position="absolute"
@@ -65,11 +68,13 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
         width="100%"
         height="100%"
         minH="100px"
+        borderRadius="4px"
       >
         <Box position="absolute" top="50%" left="50%" transform=" translate(-50%, -50%)" w="220px">
           <BaseButton
             text={`Unlock Post for ${price}`}
             icon={<Image src={LockIcon} />}
+            iconRight={<Image src={StarsIcon} />}
             handler={() => invoiceEve()}
           />
         </Box>

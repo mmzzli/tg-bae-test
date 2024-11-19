@@ -9,6 +9,7 @@ import {
   Textarea,
   Input,
   createStandaloneToast,
+  useToast,
   Grid,
   GridItem,
   Toast,
@@ -21,10 +22,12 @@ import { PostIcon, PostAddIcon, RemoveIcon, VideoSwitchIcon } from '@/assets/ico
 import { useStore } from '@/store'
 import VideoFrameSelector from '@/components/NewPost/VideoFrameSelector'
 import VideoPlayer from '@/components/comm/VideoPlayer'
+import { CustomToast, typeOptions } from '@/components/comm/Toast'
 
 export const NewPost: FC = () => {
   const navigate = useNavigate()
-  const { toast } = createStandaloneToast()
+  // const { toast } = createStandaloneToast()
+  const toast = useToast()
   const [videoFile, setVideoFile] = useState<File | null>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const videoRefCover = useRef<HTMLVideoElement>(null)
@@ -84,60 +87,89 @@ export const NewPost: FC = () => {
     navigate('/profile')
   }
   const handleUpload = async () => {
+
     // if (!title) {
     //   return
     // }
     if (firstFileType === 'image') {
-      setIsLoading(true)
-      imgUpload(files)
+      try{
+        setIsLoading(true)
+        await imgUpload(files)
+        toast({
+          render: () => {
+            return <CustomToast title="Your post was sent." type={typeOptions.success} />
+          },
+          position: 'top',
+
+        })
+      }catch(e){
+        toast({
+          render: () => {
+            return <CustomToast title="Your post failed to send." type={typeOptions.error} />
+          },
+          position: 'top',
+        })
+      }
       return
     }
     if (!videoFile) {
       return
     }
-    setIsLoading(true)
-    const postreqUrl: any = await postReq()
-    const id = postreqUrl.split('/').pop()
-    const formData = new FormData()
-    formData.append('file', videoFile)
-    formData.append('name', videoFile.name)
-    formData.append('type', 'bae')
+    try{
+      setIsLoading(true)
+      const postreqUrl: any = await postReq()
+      const id = postreqUrl.split('/').pop()
+      const formData = new FormData()
+      formData.append('file', videoFile)
+      formData.append('name', videoFile.name)
+      formData.append('type', 'bae')
 
-    formData.append(
-      'meta',
-      JSON.stringify({
-        name: videoFile.name,
-        type: 'bae',
+      formData.append(
+        'meta',
+        JSON.stringify({
+          name: videoFile.name,
+          type: 'bae',
+        })
+      )
+      const response = await axios.post(postreqUrl, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       })
-    )
-    const response = await axios.post(postreqUrl, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
-    if (response.status === 200) {
-      const url = `https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${id}/manifest/video.m3u8`
-      await checkVideoURL(url)
-      const medias = [url]
-      cover && medias.unshift(cover)
-      await postResources({
-        duration: Math.floor(videoRef?.current?.duration || 0),
-        media: medias.join(','),
-        ...(title ? { title } : {}),
-        type: 0,
-        currency: 0,
-        price: price || 0,
+      if (response.status === 200) {
+        const url = `https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${id}/manifest/video.m3u8`
+        await checkVideoURL(url)
+        const medias = [url]
+        cover && medias.unshift(cover)
+        await postResources({
+          duration: Math.floor(videoRef?.current?.duration || 0),
+          media: medias.join(','),
+          ...(title ? { title } : {}),
+          type: 0,
+          currency: 0,
+          price: price || 0,
+        })
+        toast({
+          render: () => {
+            return <CustomToast title="Your post was sent." type={typeOptions.success} />
+          },
+          position: 'top',
+
+        })
+        navigate('/profile')
+      }
+    }catch(e){
+      toast({
+        render: () => {
+          return <CustomToast title="Your post failed to send." type={typeOptions.error} />
+        },
+        position: 'top',
       })
-      navigate('/profile')
     }
+
   }
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    Toast({
-      title: '1',
-      status: 'info',
-      position: 'top',
-    })
     const newFiles = event.target.files
     if (!newFiles || newFiles.length === 0) return
     const fileArray = Array.from(newFiles)
@@ -149,13 +181,10 @@ export const NewPost: FC = () => {
     )
     if (!allSameType) {
       toast({
-        title: 'Please select only images or only videos',
-        status: 'warning',
-        position: 'top',
-        containerStyle: {
-          marginTop: '50vh',
-          transform: 'translateY(-50%)',
+        render: () => {
+          return <CustomToast title="Please select only images or only videos" type={typeOptions.warning} />
         },
+        position: 'top',
       })
       return
     }
@@ -163,13 +192,10 @@ export const NewPost: FC = () => {
     if (firstFileType === 'video') {
       if (fileArray.length > 1) {
         toast({
-          title: 'Please select only one video.',
-          position: 'top',
-          containerStyle: {
-            marginTop: '50vh',
-            transform: 'translateY(-50%)',
+          render: () => {
+            return <CustomToast title="Please select only one video." type={typeOptions.warning} />
           },
-          status: 'warning',
+          position: 'top',
         })
         return
       }
@@ -180,14 +206,20 @@ export const NewPost: FC = () => {
       const totalImages = files.length + fileArray.length
       if (totalImages > 9) {
         toast({
-          title: 'Maximum 9 images allowed',
-          status: 'warning',
-          position: 'top',
-          containerStyle: {
-            marginTop: '50vh',
-            transform: 'translateY(-50%)',
+          render: () => {
+            return <CustomToast title="Maximum 9 images allowed" type={typeOptions.warning} />
           },
+          position: 'top',
         })
+        // toast({
+        //   title: 'Maximum 9 images allowed',
+        //   status: 'warning',
+        //   position: 'top',
+        //   containerStyle: {
+        //     marginTop: '50vh',
+        //     transform: 'translateY(-50%)',
+        //   },
+        // })
         return
       }
       const updatedFiles = [...files, ...fileArray]
@@ -201,11 +233,7 @@ export const NewPost: FC = () => {
   }
 
   const handleChooseFile = () => {
-    Toast({
-      title: '1',
-      status: 'info',
-      position: 'top',
-    })
+
     console.log(inputRef.current)
     inputRef.current?.click()
   }

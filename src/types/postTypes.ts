@@ -13,6 +13,7 @@ export type ViewListItem = {
   media: string[] | string
   like: number
   is_liked: boolean
+  is_collected: boolean
   comment: number
   created_at: string
 }
@@ -42,6 +43,7 @@ export type PostItem = {
   currency: number
   id: number
   is_liked: boolean
+  is_collected: boolean
   like: number
   media: string
   price: number

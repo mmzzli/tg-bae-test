@@ -4,14 +4,14 @@ import { IconLike } from '@/components/icons/like'
 import { IconLiked } from '@/components/icons/liked'
 // import { IconCommit } from '@/components/icons/commit'
 import { IconShare } from '@/components/icons/share'
-import { postLike } from '@/api'
+import { postLike, favPost, favDel } from '@/api'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { BaseModal } from '../Modal/BaseModal'
 import BaseButton from '../BaseButton/BaseButton'
 import useCopy from '@/hooks/useCopy'
 import { useMemoizedFn, useRequest, useSafeState, useSetState } from 'ahooks'
 import dayjs from 'dayjs'
-import { LinkIcon, TelegramIcon, VideoIcon } from '@/assets/icons'
+import { LinkIcon, TelegramIcon, VideoIcon, FavIcon, Fav1Icon } from '@/assets/icons'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import Image from '../Image/Image'
 import FrostedGlass from '@/components/ResourceList/FrostedGlass'
@@ -22,12 +22,17 @@ const ImagePreview = lazy(() => import('../Image/ImagePreview'))
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import useMobile from '@/hooks/useMobile'
 import playIcon from '@/assets/icons/videoSwitch.svg'
+import { formatTime } from '@/utils/utils'
 
 import { VideoDialog } from './VideoDialog'
 interface Like {
   id: number
   liked: boolean
   like: number
+}
+interface Saveds {
+  id: number
+  saveds: boolean
 }
 
 const POST_TYPE_IMAGE = 1
@@ -37,6 +42,8 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
   const isMobile = useMobile()
   const [resources, setResources] = useState<FormatterListItem[]>([])
   const [likes, setLikes] = useSafeState<Like[]>([])
+  const [saveds, setSaveds] = useState<Saveds[]>([])
+
   const { shareLink, launchParams } = useTMAUtils()
   const [isBaseModalOpen, { toggle, off }] = useBoolean(false)
   const [links, setLinks] = useSetState<{ shareLink: string; copyLink: string }>({
@@ -76,7 +83,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
 
   useEffect(() => {
     if (initialResources.length) {
-      console.log(initialResources)
+      console.log('initialResources', initialResources)
       const res = initialResources.map((item) => {
         if (item.type === 0 && item.media.length > 0) {
           const [mediaCover, media] = item.media[0].split(',')
@@ -93,9 +100,11 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
       setResources([])
     }
   }, [initialResources])
+
   useEffect(() => {
     if (resources.length > 0) {
       setLikes(resources.map((item) => ({ id: item.id, liked: item.is_liked, like: item.like })))
+      setSaveds(resources.map((item) => ({ id: item.id, saveds: item.is_collected })))
     }
   }, [resources])
 
@@ -111,6 +120,16 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
       act_type: boll ? 1 : 2,
       post_id,
     })
+  }
+  const savedEve = async (pid: number, boll: boolean) => {
+    setSaveds((prevLikes) =>
+      prevLikes.map((item: any) => (item.id === pid ? { ...item, saveds: boll } : item))
+    )
+    if (boll) {
+      await favPost(pid)
+    } else {
+      await favDel(pid)
+    }
   }
 
   const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
@@ -222,7 +241,9 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
               <ResourceFooter
                 data={data}
                 likes={likes}
+                saveds={saveds}
                 linkEve={linkEve}
+                savedEve={savedEve}
                 onShare={() => {
                   getShareLink(data.title, data.id, data.uid)
                   toggle()
@@ -274,13 +295,14 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                       borderRadius="4px"
                       bg="rgba(0, 0, 0, 0.20)"
                       position="absolute"
-                      top="12px"
-                      left="28px"
+                      top="18px"
+                      left="18px"
                       p="4px 8px"
+                      gap="4px"
                     >
                       <Image src={VideoIcon} />
                       <Text color="#E0E2F6" fontSize="12px">
-                        {data.duration}
+                        {formatTime(Number(data.duration))}
                       </Text>
                     </HStack>
 
@@ -298,7 +320,9 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
               <ResourceFooter
                 data={data}
                 likes={likes}
+                saveds={saveds}
                 linkEve={linkEve}
+                savedEve={savedEve}
                 onShare={() => {
                   getShareLink(data.title, data.id, data.uid)
                   toggle()
@@ -337,20 +361,21 @@ interface ResourceHeaderProps {
 interface ResourceFooterProps {
   data: FormatterListItem
   likes: Like[]
+  saveds: Saveds[]
   linkEve: (postId: number, isLike: boolean) => void
+  savedEve: (postId: number, isSaveds: boolean) => void
   onShare: () => void
 }
 
 const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileClick }) => {
   return (
     <div className="p-4 flex items-center">
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex items-center justify-between gap-2" onClick={() => onProfileClick(data)}>
         <Image
           rect
           width={48}
           height={48}
           className="rounded-full"
-          onClick={() => onProfileClick(data)}
           src={data.avatar}
           alt={data.username}
         />
@@ -361,47 +386,60 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
   )
 })
 
-const ResourceFooter = memo<ResourceFooterProps>(({ data, likes, linkEve, onShare }) => {
-  return (
-    <>
-      <div className="px-4 py-3">
-        <p className="text-[#62636F] text-sm leading-6">{data.title}</p>
-        <p className="text-[#424048] text-xs pt-2">
-          {dayjs(data.created_at).format('YYYY-MM-DD HH:mm')}
-        </p>
-      </div>
-      <div className="px-4 flex items-center justify-between">
-        <Flex>
-          <Flex
-            as={'button'}
-            alignItems={'center'}
-            onClick={() =>
-              linkEve(data.id, likes.find((like) => like.id === data.id)?.liked === false)
-            }
-          >
-            {likes.find((like) => like.id === data.id)?.liked === true ? (
-              <IconLiked />
-            ) : (
-              <IconLike />
-            )}
-            <Text fontSize={'sm'} color={'#E0E2F6'} pl={1}>
-              {likes.find((like) => like.id === data.id)?.like}
-            </Text>
+const ResourceFooter = memo<ResourceFooterProps>(
+  ({ data, likes, linkEve, onShare, savedEve, saveds }) => {
+    return (
+      <>
+        <div className="px-4 py-3">
+          <p className="text-[#62636F] text-sm leading-6">{data.title}</p>
+          <p className="text-[#424048] text-xs pt-2">
+            {dayjs(data.created_at).format('YYYY-MM-DD HH:mm')}
+          </p>
+        </div>
+        <div className="px-4 flex items-center justify-between">
+          <Flex gap="16px">
+            <Flex
+              as={'button'}
+              alignItems={'center'}
+              onClick={() =>
+                linkEve(data.id, likes.find((like) => like.id === data.id)?.liked === false)
+              }
+            >
+              {likes.find((like) => like.id === data.id)?.liked === true ? (
+                <IconLiked />
+              ) : (
+                <IconLike />
+              )}
+              <Text fontSize={'sm'} color={'#E0E2F6'} pl={1}>
+                {likes.find((like) => like.id === data.id)?.like}
+              </Text>
+            </Flex>
+            <Box
+              onClick={() =>
+                savedEve(data.id, saveds.find((saved) => saved.id === data.id)?.saveds === false)
+              }
+            >
+              {saveds.find((saved) => saved.id === data.id)?.saveds === true ? (
+                <Image src={FavIcon} />
+              ) : (
+                <Image src={Fav1Icon} />
+              )}
+            </Box>
           </Flex>
-        </Flex>
-        <IconButton
-          onClick={onShare}
-          aria-label="share"
-          background={'transparent'}
-          colorScheme={'transparent'}
-          h={6}
-          w={6}
-          icon={<IconShare />}
-        />
-      </div>
-    </>
-  )
-})
+          <IconButton
+            onClick={onShare}
+            aria-label="share"
+            background={'transparent'}
+            colorScheme={'transparent'}
+            h={6}
+            w={6}
+            icon={<IconShare />}
+          />
+        </div>
+      </>
+    )
+  }
+)
 
 const ImagePreviewWrapper = memo(
   ({

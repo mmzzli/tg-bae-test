@@ -200,8 +200,9 @@ export const useOthersViewList = () => {
 
   useEffect(() => {
     if (!token) return
+    if (othersUserInfo.uid == -1) return
     loadOthersViewList(page)
-  }, [page, token])
+  }, [page, token, othersUserInfo.uid])
 
   // useEffect(() => {
   //   return () => {
@@ -209,12 +210,13 @@ export const useOthersViewList = () => {
   //   }
   // }, [])
 
-  useEffect(() => {
-    if (othersUserInfo.uid != -1) {
-      resetOthersViewList()
-      loadOthersViewList(page)
-    }
-  }, [othersUserInfo.uid])
+  // useEffect(() => {
+  //   console.log('othersUserInfo.uid', othersUserInfo.uid)
+  //   if (othersUserInfo.uid != -1) {
+  //     resetOthersViewList()
+  //     loadOthersViewList(page)
+  //   }
+  // }, [othersUserInfo.uid])
 
   const fetchMoreData = () => {
     if (!isLoading && hasMore) {

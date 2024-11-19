@@ -16,6 +16,18 @@ export const useTMAUtils = () => {
     getTMAEnv()
   }, [])
 
+  const openLink = async (url: string) => {
+    try {
+      if (isInTMA) {
+        utils.openLink(url)
+      } else {
+        window.open(url)
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   const shareLink = async (url: string) => {
     try {
       if (isInTMA) {
@@ -37,5 +49,6 @@ export const useTMAUtils = () => {
     shareLink,
     getCurrentUid,
     launchParams,
+    openLink
   }
 }

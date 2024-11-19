@@ -22,6 +22,7 @@ button,
 /* add CSS variables to handle safe area */
 :root {
   --safe-area-inset-bottom: env(safe-area-inset-bottom, 24px);
+  --Dark-T1: #E0E2F6;
 }
 
 /* create a utility class */
@@ -36,3 +37,7 @@ button,
   font-style: normal;
   font-display: swap;
 } */
+
+.swiper-slide{
+  overflow: hidden !important;
+}

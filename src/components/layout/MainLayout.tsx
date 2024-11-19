@@ -38,7 +38,7 @@ export const MainLayout: React.FC = () => {
     onSuccess({ token, api_token, user_info }) {
       setToken(token)
       setUserInfo({ ...user_info, api_token })
-      ChatListPageLoader.preload()
+      // ChatListPageLoader.preload()
     },
   })
 
@@ -80,15 +80,31 @@ export const MainLayout: React.FC = () => {
       tgApp.BackButton.onClick(() => {
         console.log('location.pathname', location.pathname)
         if (location.pathname === '/home') {
-          tgApp.showConfirm("Changes that you made may not besaved.", function (isConfirmed:boolean) {
-            if (isConfirmed) {
-              console.log("User confirmed the action.");
-              tgApp.close();
-            } else {
-              console.log(1)
-            }
-          });
+          tgApp
+            .showConfirm({
+              message: 'Are you sure you want to continue?',
+              ok_button: 'Yes',
+              cancel_button: 'No',
+            })
+            .then((result: boolean) => {
+              if (result) {
+                tgApp.close()
+              } else {
+                console.log(1)
+              }
+            })
+            .catch((error: Error) => {
+              console.error('Error showing confirmation:', error)
+            })
 
+          // tgApp.showConfirm("Changes that you m de may not besaved.", function (isConfirmed:boolean) {
+          //   if (isConfirmed) {
+          //     console.log("User confirmed the action.");
+          //     tgApp.close();
+          //   } else {
+          //     console.log(1)
+          //   }
+          // });
         } else {
           window.history.back()
         }
@@ -108,7 +124,8 @@ export const MainLayout: React.FC = () => {
     }
     if (window.Telegram?.WebApp) {
       const tgApp = window.Telegram.WebApp
-      if (location.pathname === '/home') {
+      const HIDE_BACK_BUTTON_PATHS = ['/home', '/chat', '/profile']
+      if (HIDE_BACK_BUTTON_PATHS.includes(location.pathname)) {
         tgApp.BackButton.hide()
       } else {
         tgApp.BackButton.show()
@@ -117,7 +134,7 @@ export const MainLayout: React.FC = () => {
   }, [location.pathname])
 
   return (
-    <div className="absolute inset-0 top-0 bottom-0 right-0 left-0 bg-black overflow-hidden flex pb-[84px]">
+    <div className="absolute inset-0 top-0 right-0 bottom-0 left-0 bg-black overflow-hidden flex pb-[84px] transition-all duration-300">
       <div
         className="absolute left-0 right-0 top-0 bottom-[84px] flex-col bg-[#0D0D0D] overflow-hidden"
         style={{ display: hiddenChatPage ? 'none' : 'flex', zIndex: hiddenChatPage ? -1 : 200 }}

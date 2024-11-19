@@ -23,11 +23,20 @@ export default {
             opacity: '1',
           },
         },
+        shimmer: {
+          '0%': {
+            transform: `skew(-30deg) translateX(-60px)`,
+          },
+          '100%': {
+            transform: `skew(-30deg) translateX(600px)`,
+          },
+        },
       },
       animation: {
         ripple: 'ripple 1s ease-out infinite',
         'zoom-in': 'zoom-in 0.5s ease-out forwards',
         'fade-in': 'fade-in 0.2s ease-out',
+        shimmer: `shimmer 1s infinite`,
       },
     },
   },

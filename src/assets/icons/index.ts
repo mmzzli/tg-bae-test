@@ -31,4 +31,6 @@ export { default as MessageIcon } from './message.svg'
 export { default as AttachIcon } from './attach.svg'
 export { default as VideoIcon } from './video.svg'
 export { default as VideoSwitchIcon } from './videoSwitch.svg'
+export { default as FavIcon } from './fav.svg'
+export { default as Fav1Icon } from './fav1.svg'
 

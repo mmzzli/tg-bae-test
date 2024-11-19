@@ -1,5 +1,11 @@
 import { Swiper as SwiperType } from 'swiper'
 
+// Smoothing factor for zoom (you can adjust this value)//
+const SMOOTH_FACTOR = 0.1
+
+const WIN_WIDTH = window.innerWidth
+const WIN_HEIGHT = window.innerHeight
+
 export const handleZoomAndPan = (imageElement: HTMLImageElement, swiper: SwiperType) => {
   let currentScale = 1
   let initialDistance = 0
@@ -12,6 +18,15 @@ export const handleZoomAndPan = (imageElement: HTMLImageElement, swiper: SwiperT
   let translateX = 0
   let translateY = 0
 
+  // listen swiper
+  swiper.on('slideChange', () => {
+    // slide other image fix the variable is default value
+    currentScale = 1
+    translateX = 0
+    translateY = 0
+    updateTransform()
+  })
+
   const getTouchDistance = (touch1: Touch, touch2: Touch) => {
     const dx = touch1.clientX - touch2.clientX
     const dy = touch1.clientY - touch2.clientY
@@ -20,9 +35,23 @@ export const handleZoomAndPan = (imageElement: HTMLImageElement, swiper: SwiperT
 
   // limit the range of dragging
   const clampTranslate = (value: number, scale: number, dimension: 'width' | 'height') => {
+    // get image origin size
     const imageSize = dimension === 'width' ? imageElement.offsetWidth : imageElement.offsetHeight
-    const maxTranslate = (imageSize * (scale - 1)) / 2
-    return Math.min(Math.max(value, -maxTranslate), maxTranslate)
+
+    // get image scale size
+    const scaledSize =
+      dimension === 'width' ? getScaledImageSize().width : getScaledImageSize().height
+
+    // get port size
+    const viewportSize = dimension === 'width' ? WIN_WIDTH : WIN_HEIGHT
+
+    if (scaledSize >= imageSize) {
+      const maxTranslate = (scaledSize - viewportSize) / (2 * currentScale)
+      // protected transform
+      return Math.min(Math.max(value, -maxTranslate), maxTranslate)
+    } else {
+      return 0
+    }
   }
 
   const updateTransform = () => {
@@ -41,12 +70,27 @@ export const handleZoomAndPan = (imageElement: HTMLImageElement, swiper: SwiperT
     }
   }
 
+  // Get the image's size after scaling
+  const getScaledImageSize = () => {
+    return {
+      width: imageElement.offsetWidth * currentScale,
+      height: imageElement.offsetHeight * currentScale,
+    }
+  }
+
   const handleTouchMove = (e: TouchEvent) => {
     if (e.touches.length === 2) {
       e.preventDefault()
       const currentDistance = getTouchDistance(e.touches[0], e.touches[1])
-      const scale = (currentDistance / initialDistance) * currentScale
-      currentScale = Math.min(Math.max(scale, 0.5), 3)
+
+      let scale = (currentDistance / initialDistance) * currentScale
+      // Smoothly adjust the scale
+      scale = currentScale + (scale - currentScale) * SMOOTH_FACTOR
+
+      // Restrict scale to be between 0.5 and 3
+      scale = Math.min(Math.max(scale, 0.5), 3)
+
+      currentScale = scale
 
       // reset dragging position when the scale is 1
       if (currentScale <= 1) {

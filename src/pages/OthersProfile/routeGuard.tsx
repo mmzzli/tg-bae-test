@@ -25,6 +25,7 @@ const ProfileGuard: FC<ProfileGuardProps> = ({ children }) => {
   useEffect(() => {
     const prepare = async () => {
       try {
+        resetOthersViewList()
         // Reset user info if viewing a different user's profile
         // if (othersUserInfo.uid !== -1 && othersUserInfo.uid !== Number(uid)) {
         //   setOthersUserInfo({
@@ -42,7 +43,7 @@ const ProfileGuard: FC<ProfileGuardProps> = ({ children }) => {
         // Fetch user profile data if uid and token are available
         if (uid && token) {
           const user = await getSomeoneProfile(Number(uid))
-          setOthersUserInfo({ ...user, user_id: user.uid }, true)
+          setOthersUserInfo({ ...user, user_id: user.uid })
         }
 
         // Get following list if accessed via share link

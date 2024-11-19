@@ -370,13 +370,12 @@ interface ResourceFooterProps {
 const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileClick }) => {
   return (
     <div className="p-4 flex items-center">
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex items-center justify-between gap-2" onClick={() => onProfileClick(data)}>
         <Image
           rect
           width={48}
           height={48}
           className="rounded-full"
-          onClick={() => onProfileClick(data)}
           src={data.avatar}
           alt={data.username}
         />

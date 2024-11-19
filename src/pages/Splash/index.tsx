@@ -7,6 +7,7 @@ import { getSingleMedia } from '@/api/list'
 import Lottie from 'lottie-react'
 import logoData from '@/assets/animations/logo.json'
 import Icon from '@/components/comm/Icon'
+import { useSafeState } from 'ahooks'
 
 const SHARE_POST = 1
 const SHARE_PROFILE = 2
@@ -19,12 +20,14 @@ const Splash: FC = () => {
     setOthersUserInfo: state.setOthersUserInfo,
     token: state.token,
   }))
+  const [animationEnding,setAnimationEnding] = useSafeState(false)
 
   const { isInTMA } = useTMAUtils()
   const { startParam } = retrieveLaunchParams()
   useEffect(() => {
     if (userInfo.user_id && token) {
-      if (!isInTMA || !startParam || history.length > 2) return navigate('/home')
+      if(!animationEnding) return;
+      if ((!isInTMA || !startParam || history.length > 2)) return navigate('/home')
       const params = startParam.split('_')
       console.log('startParam', params)
 
@@ -43,7 +46,7 @@ const Splash: FC = () => {
         navigate('/home')
       }
     }
-  }, [userInfo])
+  }, [userInfo,animationEnding])
 
   const handleNavigate = async (ref: string) => {
     console.log('token ready, navigating...')
@@ -84,8 +87,9 @@ const Splash: FC = () => {
         <div className="w-[210px] h-[210px]">
           <Lottie
             animationData={logoData}
-            loop={true}
+            loop={false}
             autoplay={true}
+            onComplete={()=>{setAnimationEnding(true)}}
           ></Lottie>
         </div>
         <div className="text-[var(--Dark-T1)]  text-[24px] font-bold leading-[1.5] capitalize text-center">welcome to Bae</div>

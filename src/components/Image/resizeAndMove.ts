@@ -42,11 +42,23 @@ export const handleZoomAndPan = (imageElement: HTMLImageElement, swiper: SwiperT
     // get port size
     const viewportSize = dimension === 'width' ? window.innerWidth : window.innerHeight
 
-    // calc max trans
-    const maxTranslate = scaledSize > viewportSize ? (scaledSize - viewportSize) / 2 : 0
+    if (dimension === 'height') {
+      if (scaledSize <= imageSize) {
+        return 0
+      } else {
+        // calc max trans
+        const maxTranslate = (scaledSize - viewportSize) / (2 * currentScale)
 
-    // protected transform
-    return Math.min(Math.max(value, -maxTranslate), maxTranslate)
+        // protected transform
+        return Math.min(Math.max(value, -maxTranslate), maxTranslate)
+      }
+    } else {
+      // calc max trans
+      const maxTranslate = (scaledSize - viewportSize) / (2 * currentScale)
+
+      // protected transform
+      return Math.min(Math.max(value, -maxTranslate), maxTranslate)
+    }
   }
 
   const updateTransform = () => {

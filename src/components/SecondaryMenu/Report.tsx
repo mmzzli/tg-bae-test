@@ -76,7 +76,7 @@ const Report: React.FC<ReportProps> = ({ isOpen, onClose }) => {
               onClose(false)
               toast({
                 render: () => {
-                  return <CustomToast title={`Report successfully`} type={typeOptions.success} />
+                  return <CustomToast title={`Report submitted.`} type={typeOptions.success} />
                 },
                 position: 'top',
               })

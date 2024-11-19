@@ -9,7 +9,7 @@ const OthersProfile: FC = () => {
 
   return (
     <div
-      id="ProfileScrollableDiv"
+      id="profileScrollableDiv"
       className="absolute inset-0 top-0 bottom-0 flex flex-col bg-[#000000] z-10 overflow-auto scrollbar-hide"
     >
       <OtherUserProfile />

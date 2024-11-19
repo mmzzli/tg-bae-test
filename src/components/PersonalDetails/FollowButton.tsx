@@ -34,17 +34,12 @@ const FollowButton: FC<{
   const { runAsync: followHandler, loading: followLoading } = useRequest(follow, {
     manual: true,
     onSuccess: () => {
-      toast({
-        position: 'top',
-        status: 'success',
-        containerStyle: {
-          marginTop: '50vh',
-          transform: 'translateY(-50%)',
-        },
-        render: () => {
-          return <CustomToast title="success" type={typeOptions.success} />
-        },
-      })
+      // toast({
+      //   position: 'top',
+      //   render: () => {
+      //     return <CustomToast title="success" type={typeOptions.success} />
+      //   },
+      // })
       if (isFollowing) {
         setMyFollow(myFollow.filter((item) => item.tg_id !== tgid))
       } else {

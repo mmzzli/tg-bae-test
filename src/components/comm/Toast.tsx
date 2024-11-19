@@ -1,3 +1,5 @@
+import { theme } from "@chakra-ui/react"
+
 export enum typeOptions {
   success='success',
   error="error",
@@ -7,19 +9,24 @@ export enum typeOptions {
 export const IconMap = {
   [typeOptions.success]:{
     icon:'icon-checkbox-circle-fill',
-    color:'#2CC069'
+    color:'#2CC069',
+    background:"#202623"
   },
   [typeOptions.error]:{
     icon:"icon-close-circle-fill",
-    color:'#E94242'
+    color:'#E94242',
+    background:"#262120"
   },
   [typeOptions.warning]:{
     icon:'icon-icon_warn',
-    color:"#FF7C3F"
+    color:"#FF7C3F",
+    background:"#1F1D1B"
+
   },
   [typeOptions.info]:{
     icon:"icon-icon_info",
-    color:'#097AFE'
+    color:'#097AFE',
+    background:"#1F1D1B"
   }
 }
 interface ToastProps{
@@ -35,7 +42,8 @@ export const ToastBeforeIcon:React.FC<{type:typeOptions}> = ({type})=>{
 }
 
 export const CustomToast:React.FC<ToastProps> = ({title,type}) =>{
-  return <div className="rounded-lg bg-[#202623] p-2.5 justify-center items-center gap-1">
+  const theme = IconMap[type]
+  return <div className={`rounded-lg p-2.5 justify-center items-center gap-1`} style={{background: theme.background}}>
     {
       <ToastBeforeIcon type={type}></ToastBeforeIcon>
     }

@@ -13,6 +13,7 @@ import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useStore } from '@/store/store'
 import { UserInfoProfile } from '@/types'
 import { CameraIcon } from '@/assets/icons'
+import { CustomToast, typeOptions } from '@/components/comm/Toast'
 
 const ProfileEdit: FC = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
@@ -89,11 +90,12 @@ const ProfileEdit: FC = () => {
     setIsLoading(true)
     await putProfile(profileData)
     toast({
-      title: 'successfully',
-      status: 'success',
       position: 'top',
       onCloseComplete: () => {
         location.href = '/profile'
+      },
+      render: () => {
+        return <CustomToast title="successfully" type={typeOptions.success} />
       },
     })
   }

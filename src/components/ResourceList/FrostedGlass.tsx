@@ -20,7 +20,7 @@ type FrostedGlassProps = {
 
 const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) => {
   const userInfo = useStore((state) => state.userInfo)
-  const { launchParams, shareLink } = useTMAUtils()
+  const { launchParams, openLink } = useTMAUtils()
   const { initData } = launchParams
 
 
@@ -38,7 +38,7 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
         user_id: String(initData?.user?.id)
       })
       if(url){
-        shareLink(url)
+        openLink(url)
       }
     }
 

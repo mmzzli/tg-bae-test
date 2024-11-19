@@ -8,6 +8,8 @@ import Image from '@/components/Image/Image'
 import playIcon from '@/assets/icons/videoSwitch.svg'
 import { useTouch } from '@/hooks/useTouch'
 import { useSafeArea } from '@/hooks/useSafeArea'
+import { useProfileNavigation } from '@/hooks/useProfileNavigation'
+import { UserItem } from '@/types'
 
 type State = {
   isPlaying: boolean
@@ -59,26 +61,37 @@ const UserInfo = memo(
     avatar,
     username,
     content,
+    uid,
     bottom,
   }: {
     avatar: string | undefined
     username: string | undefined
     content: string | undefined
+    uid: number | undefined
     bottom: number
-  }) => (
-    <div
-      className="absolute left-4 right-4 z-10 flex flex-col cursor-pointer no-tap"
-      style={{
-        bottom: `${bottom + 68}px`,
-      }}
-    >
-      <div className="flex items-center">
-        <Image rect src={avatar} alt="avatar" className="w-10 h-10 rounded-full" />
-        <span className="text-white text-sm ml-2 shadow-sm">{username}</span>
+  }) => {
+    const jumpToProfilePage = useProfileNavigation()
+    return (
+      <div
+        className="absolute left-4 right-4 z-10 flex flex-col cursor-pointer no-tap"
+        onClick={() => jumpToProfilePage({ uid } as UserItem)}
+        onTouchEnd={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          jumpToProfilePage({ uid } as UserItem)
+        }}
+        style={{
+          bottom: `${bottom + 68}px`,
+        }}
+      >
+        <div className="flex items-center">
+          <Image rect src={avatar} alt="avatar" className="w-10 h-10 rounded-full" />
+          <span className="text-white text-sm ml-2 shadow-sm">{username}</span>
+        </div>
+        <p className="text-white text-xs mt-2 line-clamp-2 overflow-hidden">{content}</p>
       </div>
-      <p className="text-white text-xs mt-2 line-clamp-2 overflow-hidden">{content}</p>
-    </div>
-  )
+    )
+  }
 )
 
 const CloseButton = memo(({ onClose }: { onClose: () => void }) => (
@@ -341,6 +354,7 @@ export function VideoDialog({
               avatar={info?.avatar}
               username={info?.username}
               content={info?.title}
+              uid={info?.uid}
               bottom={bottom}
             />
 

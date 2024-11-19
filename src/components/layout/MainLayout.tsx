@@ -38,7 +38,7 @@ export const MainLayout: React.FC = () => {
     onSuccess({ token, api_token, user_info }) {
       setToken(token)
       setUserInfo({ ...user_info, api_token })
-      ChatListPageLoader.preload()
+      // ChatListPageLoader.preload()
     },
   })
 
@@ -114,7 +114,6 @@ export const MainLayout: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    console.log('location.pathname', location.pathname)
     if (location.pathname.startsWith('/chat') && !shouldLoadChat) {
       setShouldLoadChat(true)
     }
@@ -135,7 +134,7 @@ export const MainLayout: React.FC = () => {
   }, [location.pathname])
 
   return (
-    <div className="absolute inset-0 top-0 bottom-0 right-0 left-0 bg-black overflow-hidden flex pb-[84px]">
+    <div className="absolute inset-0 top-0 right-0 bottom-0 left-0 bg-black overflow-hidden flex pb-[84px] transition-all duration-300">
       <div
         className="absolute left-0 right-0 top-0 bottom-[84px] flex-col bg-[#0D0D0D] overflow-hidden"
         style={{ display: hiddenChatPage ? 'none' : 'flex', zIndex: hiddenChatPage ? -1 : 200 }}

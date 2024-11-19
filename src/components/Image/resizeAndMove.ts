@@ -15,6 +15,15 @@ export const handleZoomAndPan = (imageElement: HTMLImageElement, swiper: SwiperT
   let translateX = 0
   let translateY = 0
 
+  // 监听 Swiper 切换事件，重置缩放状态
+  swiper.on('slideChange', () => {
+    // 只有在切换到当前图片时，才需要重置缩放
+    currentScale = 1
+    translateX = 0
+    translateY = 0
+    updateTransform()
+  })
+
   const getTouchDistance = (touch1: Touch, touch2: Touch) => {
     const dx = touch1.clientX - touch2.clientX
     const dy = touch1.clientY - touch2.clientY

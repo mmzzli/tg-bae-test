@@ -15,7 +15,7 @@ interface PostListProps {
 }
 
 const PostList = ({ className, list, hasMore, fetchMoreData }: PostListProps) => {
-  if([].length){
+  if(list.length){
     return (
       <div className={cn(className, 'pb-24')}>
         <InfiniteScroll

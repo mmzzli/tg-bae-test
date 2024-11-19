@@ -1,5 +1,8 @@
 import { Swiper as SwiperType } from 'swiper'
 
+// Smoothing factor for zoom (you can adjust this value)//
+const SMOOTH_FACTOR = 0.1
+
 export const handleZoomAndPan = (imageElement: HTMLImageElement, swiper: SwiperType) => {
   let currentScale = 1
   let initialDistance = 0
@@ -45,8 +48,15 @@ export const handleZoomAndPan = (imageElement: HTMLImageElement, swiper: SwiperT
     if (e.touches.length === 2) {
       e.preventDefault()
       const currentDistance = getTouchDistance(e.touches[0], e.touches[1])
-      const scale = (currentDistance / initialDistance) * currentScale
-      currentScale = Math.min(Math.max(scale, 0.5), 3)
+
+      let scale = (currentDistance / initialDistance) * currentScale
+      // Smoothly adjust the scale
+      scale = currentScale + (scale - currentScale) * SMOOTH_FACTOR
+
+      // Restrict scale to be between 0.5 and 3
+      scale = Math.min(Math.max(scale, 0.5), 3)
+
+      currentScale = scale
 
       // reset dragging position when the scale is 1
       if (currentScale <= 1) {

@@ -83,7 +83,7 @@ const UserInfo = memo(
 
 const CloseButton = memo(({ onClose }: { onClose: () => void }) => (
   <div
-    className="absolute right-2 top-2 z-20 w-8 h-8 bg-black/30 rounded-full overflow-hidden flex items-center justify-center"
+    className="absolute right-2 top-2 z-[999] w-8 h-8 bg-black/30 rounded-full overflow-hidden flex items-center justify-center"
     onTouchEnd={(e) => {
       e.preventDefault()
       e.stopPropagation()
@@ -139,14 +139,10 @@ export function VideoDialog({
       hlsRef.current = hls
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        video
-          .play()
-          .then(() => {
-            dispatch({ type: 'SET_LOADING', payload: false })
-          })
-          .catch(() => {
-            console.log('auto play failed')
-          })
+        video.play().catch(() => {
+          dispatch({ type: 'SET_LOADING', payload: false })
+          console.log('auto play failed')
+        })
       })
 
       hls.on(Hls.Events.ERROR, () => {
@@ -174,6 +170,9 @@ export function VideoDialog({
       const currentProgress = (video.currentTime / video.duration) * 100
       progressRef.current = currentProgress
       dispatch({ type: 'SET_PROGRESS', payload: currentProgress })
+      if (currentProgress > 0) {
+        dispatch({ type: 'SET_LOADING', payload: false })
+      }
     },
     { wait: 16 }
   )

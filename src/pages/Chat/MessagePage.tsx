@@ -222,9 +222,12 @@ const MessagePage = () => {
             }
           }}
           className="flex items-center flex-1 h-[36px] text-default bg-black border-[0.5px]
-        border-[#4B4B4D] rounded-full px-3 text-[#5D5D60]"
+        border-[#4B4B4D] rounded-full px-3"
+          style={{
+            color: message ? '#FFFFFF' : '#5D5D60',
+          }}
         >
-          Type a Message Fake...
+          {message ? message : 'Type a Message....'}
         </div>
       </div>
 

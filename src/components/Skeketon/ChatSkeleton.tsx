@@ -11,7 +11,7 @@ export default function ChatSkeleton() {
   )
 }
 
-const SkeletonShine = () =>{
+export const SkeletonShine = () =>{
   return <div className="absolute top-0 left-[-120px] w-[120px] h-full animate-shimmer" style={{
     background: `linear-gradient(
       90deg,

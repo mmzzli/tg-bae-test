@@ -36,11 +36,6 @@ const FollowButton: FC<{
     onSuccess: () => {
       toast({
         position: 'top',
-        status: 'success',
-        containerStyle: {
-          marginTop: '50vh',
-          transform: 'translateY(-50%)',
-        },
         render: () => {
           return <CustomToast title="success" type={typeOptions.success} />
         },

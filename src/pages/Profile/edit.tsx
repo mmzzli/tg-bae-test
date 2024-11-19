@@ -112,19 +112,17 @@ const ProfileEdit: FC = () => {
   }, []);
   useEffect(() => {
     if(isFocused){
-      setTimeout(()=>{
-        window.scrollTo({
-          top: document.body.scrollHeight,
-          behavior: "smooth"
-        });
-      },100)
+      const scrollable:any = document.getElementById('scrollable');
+      scrollable.scrollTo({
+        top: 100000,
+        behavior: 'smooth',
+      });
     }
-
   },[isFocused])
 
 
   return (
-    <div className="pt-[10px] px-[16px] fixed w-screen h-screen bg-black z-10 overflow-auto scrollbar-hide">
+    <div className="pt-[10px] px-[16px] fixed w-screen h-screen bg-black z-10 overflow-auto scrollbar-hide" id="scrollable">
       <h2 className="text-[20px] text-[#E0E2F6]">Profile</h2>
       {profileData.avatar ? (
         <>

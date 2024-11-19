@@ -11,29 +11,29 @@ interface PostListProps {
 }
 
 const FollowingList = ({ className }: PostListProps) => {
-  const { list, hasMore, fetchMoreData } = useRecommendList()
+  // const { list, hasMore, fetchMoreData } = useRecommendList()
   const { shareLink } = useTMAUtils()
 
   if([].length){
-    return (
-      <div className={cn(className, 'pb-24 pt-[20px]')}>
-        <InfiniteScroll
-          dataLength={list.length}
-          next={fetchMoreData}
-          hasMore={hasMore}
-          loader={
-            <Box textAlign="center" m="20px 0">
-              <Spinner color="#4A3AFF" />
-            </Box>
-          }
-          scrollableTarget="recommendScrollableDiv"
-          scrollThreshold={0.8}
-          style={{ overflow: 'visible' }}
-        >
-          <ResourceList resources={list} />
-        </InfiniteScroll>
-      </div>
-    )
+    // return (
+    //   <div className={cn(className, 'pb-24 pt-[20px]')}>
+    //     <InfiniteScroll
+    //       dataLength={list.length}
+    //       next={fetchMoreData}
+    //       hasMore={hasMore}
+    //       loader={
+    //         <Box textAlign="center" m="20px 0">
+    //           <Spinner color="#4A3AFF" />
+    //         </Box>
+    //       }
+    //       scrollableTarget="recommendScrollableDiv"
+    //       scrollThreshold={0.8}
+    //       style={{ overflow: 'visible' }}
+    //     >
+    //       <ResourceList resources={list} />
+    //     </InfiniteScroll>
+    //   </div>
+    // )
   }else{
     return(
 

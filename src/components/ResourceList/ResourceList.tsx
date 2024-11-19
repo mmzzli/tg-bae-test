@@ -392,10 +392,6 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
 })
 
 const ResourceFooter = memo<ResourceFooterProps>(({ data, likes, linkEve, onShare, savedEve, saveds }) => {
-  const ss = async(pid:number)=>{
-    await favPost(pid)
-    await favDel(pid)
-  }
   return (
     <>
       <div className="px-4 py-3">

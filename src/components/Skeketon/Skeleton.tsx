@@ -1,15 +1,16 @@
-import React from "react";
+import React from 'react'
+import { SkeletonShine } from './ChatSkeleton'
 
 interface EditSkeletonProps {
-  childClassName?: string;
+  childClassName?: string
 }
 
-const Skeleton: React.FC<EditSkeletonProps> = ({ childClassName = "" }) => {
+const Skeleton: React.FC<EditSkeletonProps> = ({ childClassName = '' }) => {
   return (
-    <div className="animate-pulse">
-      <div className={`bg-[#272727] ${childClassName}`}></div>
+    <div className={`bg-[#272727] ${childClassName} relative overflow-hidden`}>
+      <SkeletonShine></SkeletonShine>
     </div>
-  );
-};
+  )
+}
 
-export default Skeleton;
+export default Skeleton

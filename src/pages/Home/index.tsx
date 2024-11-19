@@ -5,6 +5,7 @@ import { AddIcon1 } from '@/assets/icons'
 import { COMMUNITY_LINK } from '@/utils/constants'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import RecommendList from '@/components/RecommendList/RecommendList'
+import FollowingList from '@/components/RecommendList/FollowingList'
 import BaseButton from '@/components/BaseButton/BaseButton'
 const HomePage: FC = () => {
   const navigate = useNavigate()
@@ -81,21 +82,7 @@ const HomePage: FC = () => {
           handler={() => navigate('/post')}
         />
       </HStack>
-      <div className="mx-auto w-full text-center pt-[92px]">
-        <p className="text-[#62636F]">Join our community to meet creators</p>
-        <p className="text-[#62636F]">and start to follow them</p>
-      </div>
-      <div className="mt-[28px] mb-[48px] text-center">
-        <Button
-          variant="primary-dark-border"
-          m="auto"
-          w="126px"
-          h="40px"
-          onClick={() => shareLink(COMMUNITY_LINK)}
-        >
-          Community
-        </Button>
-      </div>
+      <FollowingList />
       {/* <button
         onClick={() => shareLink(COMMUNITY_LINK)}
         className="text-[14px] py-[14px] px-6 w-[126px] h-[40px] bg-[#4A3AFF] rounded-[32px] flex items-center justify-center font-medium text-[#fff] mx-auto mt-[28px] mb-12"

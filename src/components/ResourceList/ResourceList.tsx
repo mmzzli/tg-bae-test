@@ -104,7 +104,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
   useEffect(() => {
     if (resources.length > 0) {
       setLikes(resources.map((item) => ({ id: item.id, liked: item.is_liked, like: item.like })))
-      setSaveds(resources.map((item) => ({ id: item.id, saveds: false })))
+      setSaveds(resources.map((item) => ({ id: item.id, saveds: item.is_collected })))
     }
   }, [resources])
 
@@ -121,9 +121,19 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
       post_id,
     })
   }
-  const savedEve = async(pid:number)=>{
-    // await favPost(pid)
-    // await favDel(pid)
+  const savedEve = async(pid:number, boll:boolean)=>{
+    setSaveds((prevLikes) =>
+      prevLikes.map((item: any) =>
+        item.id === pid
+          ? { ...item, saveds: boll }
+          : item
+      )
+    )
+    if(boll){
+      await favPost(pid)
+    }else{
+      await favDel(pid)
+    }
   }
 
   const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
@@ -235,6 +245,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
               <ResourceFooter
                 data={data}
                 likes={likes}
+                saveds={saveds}
                 linkEve={linkEve}
                 savedEve={savedEve}
                 onShare={() => {
@@ -313,6 +324,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
               <ResourceFooter
                 data={data}
                 likes={likes}
+                saveds={saveds}
                 linkEve={linkEve}
                 savedEve={savedEve}
                 onShare={() => {
@@ -353,6 +365,7 @@ interface ResourceHeaderProps {
 interface ResourceFooterProps {
   data: FormatterListItem
   likes: Like[]
+  saveds: Saveds[]
   linkEve: (postId: number, isLike: boolean) => void
   savedEve: (postId: number, isSaveds: boolean) => void
   onShare: () => void
@@ -378,11 +391,7 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
   )
 })
 
-const ResourceFooter = memo<ResourceFooterProps>(({ data, likes, linkEve, onShare, savedEve }) => {
-  const ss = async(pid:number)=>{
-    await favPost(pid)
-    await favDel(pid)
-  }
+const ResourceFooter = memo<ResourceFooterProps>(({ data, likes, linkEve, onShare, savedEve, saveds }) => {
   return (
     <>
       <div className="px-4 py-3">
@@ -409,9 +418,11 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, likes, linkEve, onShar
               {likes.find((like) => like.id === data.id)?.like}
             </Text>
           </Flex>
-          <Box onClick={()=>savedEve(data.id, false)}>
-            {/* <Image src={FavIcon}/> */}
-            {/* <Image src={Fav1Icon}/> */}
+          <Box onClick={()=>savedEve(data.id, saveds.find((saved) => saved.id === data.id)?.saveds === false)}>
+            {saveds.find((saved) => saved.id === data.id)?.saveds === true ?
+              <Image src={FavIcon}/>:
+              <Image src={Fav1Icon}/>
+            }
           </Box>
         </Flex>
         <IconButton

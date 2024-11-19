@@ -50,7 +50,6 @@ const SecondaryMenu = ({ mediaData, currentUid, className }: Props) => {
     async (option: 'report') => {
       switch (option) {
         case 'report':
-<<<<<<< HEAD
           // toast({
           //   render: () => {
           //     return <CustomToast title={`Report successfully`} type={typeOptions.success} />
@@ -58,14 +57,6 @@ const SecondaryMenu = ({ mediaData, currentUid, className }: Props) => {
           //   status: 'success',
           //   position: 'top',
           // })
-=======
-          toast({
-            render: () => {
-              return <CustomToast title={`Report successfully`} type={typeOptions.success} />
-            },
-            position: 'top',
-          })
->>>>>>> fix/toast
           setReportVisible(true)
           break
         default:

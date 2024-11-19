@@ -54,7 +54,6 @@ const SecondaryMenu = ({ mediaData, currentUid, className }: Props) => {
             render: () => {
               return <CustomToast title={`Report successfully`} type={typeOptions.success} />
             },
-            status: 'success',
             position: 'top',
           })
           setReportVisible(true)

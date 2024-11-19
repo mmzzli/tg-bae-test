@@ -283,6 +283,9 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     })),
   loadOthersViewList: async (page) => {
     try {
+      const currentPage = get().othersViewList.page
+      const currentData = get().othersViewList.list
+      if (currentPage === page && currentData.length > 0) return
       const othersUserInfo = useStore.getState().othersUserInfo
       if (othersUserInfo.uid === -1) return
       get().setOthersViewLoading(true)
@@ -293,7 +296,6 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         uid: othersUserInfo.uid,
       })
       const hasMore = posts.length === recordsNum
-
       const updatedPosts = posts.map((post) => ({
         ...post,
         ...othersUserInfo,

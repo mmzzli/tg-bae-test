@@ -39,9 +39,12 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     if (/^\d*$/.test(newValue)) {
-      setPrice(Number(newValue));
+      const numericValue = Number(newValue);
+      if (numericValue <= 100000) {
+        setPrice(numericValue);
+      }
     }
-  }
+  };
   useEffect(() => {
     const timer = setTimeout(() => {
       setBoll(isOpen);

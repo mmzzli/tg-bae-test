@@ -4,14 +4,14 @@ import { IconLike } from '@/components/icons/like'
 import { IconLiked } from '@/components/icons/liked'
 // import { IconCommit } from '@/components/icons/commit'
 import { IconShare } from '@/components/icons/share'
-import { postLike } from '@/api'
+import { postLike, favPost, favDel } from '@/api'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { BaseModal } from '../Modal/BaseModal'
 import BaseButton from '../BaseButton/BaseButton'
 import useCopy from '@/hooks/useCopy'
 import { useMemoizedFn, useRequest, useSafeState, useSetState } from 'ahooks'
 import dayjs from 'dayjs'
-import { LinkIcon, TelegramIcon, VideoIcon } from '@/assets/icons'
+import { LinkIcon, TelegramIcon, VideoIcon, FavIcon, Fav1Icon } from '@/assets/icons'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import Image from '../Image/Image'
 import FrostedGlass from '@/components/ResourceList/FrostedGlass'
@@ -30,6 +30,11 @@ interface Like {
   liked: boolean
   like: number
 }
+interface Saveds {
+  id: number
+  saveds: boolean
+}
+
 
 const POST_TYPE_IMAGE = 1
 const POST_TYPE_VIDEO = 0
@@ -38,6 +43,8 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
   const isMobile = useMobile()
   const [resources, setResources] = useState<FormatterListItem[]>([])
   const [likes, setLikes] = useSafeState<Like[]>([])
+  const [saveds, setSaveds] = useState<Saveds[]>([])
+
   const { shareLink, launchParams } = useTMAUtils()
   const [isBaseModalOpen, { toggle, off }] = useBoolean(false)
   const [links, setLinks] = useSetState<{ shareLink: string; copyLink: string }>({
@@ -97,6 +104,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
   useEffect(() => {
     if (resources.length > 0) {
       setLikes(resources.map((item) => ({ id: item.id, liked: item.is_liked, like: item.like })))
+      setSaveds(resources.map((item) => ({ id: item.id, saveds: false })))
     }
   }, [resources])
 
@@ -112,6 +120,10 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
       act_type: boll ? 1 : 2,
       post_id,
     })
+  }
+  const savedEve = async(pid:number)=>{
+    // await favPost(pid)
+    // await favDel(pid)
   }
 
   const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
@@ -224,6 +236,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                 data={data}
                 likes={likes}
                 linkEve={linkEve}
+                savedEve={savedEve}
                 onShare={() => {
                   getShareLink(data.title, data.id, data.uid)
                   toggle()
@@ -278,6 +291,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                       top="18px"
                       left="18px"
                       p="4px 8px"
+                      gap="4px"
                     >
                       <Image src={VideoIcon} />
                       <Text color="#E0E2F6" fontSize="12px">
@@ -300,6 +314,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                 data={data}
                 likes={likes}
                 linkEve={linkEve}
+                savedEve={savedEve}
                 onShare={() => {
                   getShareLink(data.title, data.id, data.uid)
                   toggle()
@@ -339,6 +354,7 @@ interface ResourceFooterProps {
   data: FormatterListItem
   likes: Like[]
   linkEve: (postId: number, isLike: boolean) => void
+  savedEve: (postId: number, isSaveds: boolean) => void
   onShare: () => void
 }
 
@@ -362,7 +378,11 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
   )
 })
 
-const ResourceFooter = memo<ResourceFooterProps>(({ data, likes, linkEve, onShare }) => {
+const ResourceFooter = memo<ResourceFooterProps>(({ data, likes, linkEve, onShare, savedEve }) => {
+  const ss = async(pid:number)=>{
+    await favPost(pid)
+    await favDel(pid)
+  }
   return (
     <>
       <div className="px-4 py-3">
@@ -372,7 +392,7 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, likes, linkEve, onShar
         </p>
       </div>
       <div className="px-4 flex items-center justify-between">
-        <Flex>
+        <Flex gap="16px">
           <Flex
             as={'button'}
             alignItems={'center'}
@@ -389,6 +409,10 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, likes, linkEve, onShar
               {likes.find((like) => like.id === data.id)?.like}
             </Text>
           </Flex>
+          <Box onClick={()=>savedEve(data.id, false)}>
+            {/* <Image src={FavIcon}/> */}
+            {/* <Image src={Fav1Icon}/> */}
+          </Box>
         </Flex>
         <IconButton
           onClick={onShare}

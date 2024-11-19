@@ -1,27 +1,20 @@
 import { AttachIcon } from '@/assets/icons'
 import Image from '@/components/Image/Image'
-import { useEffect, useRef, useState } from 'react'
-import { MessageType } from './types'
-
-export const MessageInput = ({
-  onSend,
-}: {
-  onSend: ({ type, text }: { type: MessageType; text?: string }) => void
-}) => {
+import { useEffect, useRef, useState, forwardRef } from 'react'
+import { Message, MessageType } from './types'
+interface MessageInputProps {
+  onSend: (message: Message) => void
+  setIsFocused: (focused: boolean) => void
+  className?: string
+}
+const MessageInput = forwardRef<HTMLInputElement, MessageInputProps>((props, ref) => {
+  const { onSend, setIsFocused, className } = props
   const [message, setMessage] = useState('')
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  // auto focus
-  useEffect(() => {
-    inputRef.current?.focus()
-  }, [])
 
   const handleSendText = () => {
     if (message.trim()) {
       onSend({ type: MessageType.TEXT, text: message.trim() })
       setMessage('')
-      // after send, keep focus
-      inputRef.current?.focus()
     }
   }
 
@@ -39,13 +32,16 @@ export const MessageInput = ({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex h-[68px] w-full bg-[#0D0D0D] pr-4 pt-[8px]">
-      <div className="flex items-center h-[34px] w-full bg-[#0D0D0D] pr-4 pl-6">
+    <form
+      onSubmit={handleSubmit}
+      className={`flex h-[68px] w-full bg-[#000000] pr-4 pt-[8px] ${className}`}
+    >
+      <div className="flex items-center h-[34px] w-full bg-[#000000] pr-4 pl-6">
         {/* <div className="w-[28px] h-[28px] mx-[10px] cursor-pointer">
           <Image src={AttachIcon} />
         </div> */}
         <input
-          ref={inputRef}
+          ref={ref}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyPress}
@@ -56,4 +52,6 @@ export const MessageInput = ({
       </div>
     </form>
   )
-}
+})
+
+export default MessageInput

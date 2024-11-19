@@ -9,8 +9,8 @@ import { MessageRender } from './MessageRender'
 import { OthersUserInfo } from '@/types/postTypes'
 interface MessageListProps {
   messages: WrappedMessage[]
-  loadMore: () => void
-  hasMore: boolean
+  loadMore?: () => void
+  hasMore?: boolean
   className?: string
   channelInfo: OthersUserInfo | null
 }
@@ -22,6 +22,7 @@ export const MessageList = ({
   className,
   channelInfo,
 }: MessageListProps) => {
+  console.log('MessageList render', messages)
   const scrollRef = useRef<HTMLDivElement>(null)
   const scrollPositionKey = 'chat-scroll-position'
   const { getCurrentUid } = useTMAUtils()
@@ -136,8 +137,8 @@ export const MessageList = ({
     >
       <InfiniteScroll
         dataLength={messages.length}
-        next={loadMore}
-        hasMore={hasMore}
+        next={() => {}}
+        hasMore={hasMore || false}
         loader={<div className="text-center py-4">Loading...</div>}
         scrollableTarget="scrollableDiv"
         style={{ display: 'flex', flexDirection: 'column' }} // start from bottom

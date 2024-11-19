@@ -91,8 +91,8 @@ class HttpClient {
         return data
       },
       (error) => {
-        const config = error.config as RequestConfig
-        !config?.skipErrorHandler && error.status === 500 && this.showToast(`Request failed: ${error.message}`, 'error')
+        // const config = error.config as RequestConfig
+        // !config?.skipErrorHandler && error.status === 500 && this.showToast(`Request failed: ${error.message}`, 'error')
         return Promise.reject(error)
       }
     )

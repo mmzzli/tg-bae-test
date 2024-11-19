@@ -7,6 +7,8 @@ import Report from './Report'
 import { cn } from '@/utils/utils'
 import { DeleteDialogWarp } from '../Chat/DeleteDialog'
 import { useModal } from '@ebay/nice-modal-react'
+import { useToast } from '@chakra-ui/react'
+import { CustomToast, typeOptions } from '../comm/Toast'
 
 type Props = {
   mediaData: FormatterListItem
@@ -19,6 +21,7 @@ const SecondaryMenu = ({ mediaData, currentUid, className }: Props) => {
   const [visible, setVisible] = useSafeState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const [reportVisible, setReportVisible] = useSafeState(false)
+  const toast = useToast();
 
   const deleteDialogWrap = useModal(DeleteDialogWarp)
 
@@ -44,12 +47,16 @@ const SecondaryMenu = ({ mediaData, currentUid, className }: Props) => {
     console.log('report')
   }
   const handleOptionClick = useCallback(
-    async (option: 'delete' | 'report') => {
+    async (option: 'report') => {
       switch (option) {
-        // case 'delete':
-        //   await handleDelete()
-        //   break
         case 'report':
+          toast({
+            render: () => {
+              return <CustomToast title={`Report successfully`} type={typeOptions.success} />
+            },
+            status: 'success',
+            position: 'top',
+          })
           setReportVisible(true)
           break
         default:

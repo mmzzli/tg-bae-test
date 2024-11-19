@@ -43,7 +43,7 @@ const OtherUserProfile: FC = () => {
           </div>
         </div>
       </HStack>
-      <Heading as="h3" color="#E0E2F6" fontWeight="500" className="mt-4">
+      <Heading as="h3" color="#E0E2F6" fontWeight="500" className="mt-4" fontSize="20px">
         {userInfo.username}
       </Heading>
       <HStack pt="24px" gap="56px">

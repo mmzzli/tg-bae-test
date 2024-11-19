@@ -3,6 +3,7 @@ import { ReactNode } from 'react'
 type Props = {
   text: string
   icon?: ReactNode
+  iconRight?: ReactNode
   handler: () => void
   width?: string // Optional width prop
   height?: string // Optional width prop
@@ -13,6 +14,7 @@ type Props = {
 const BaseButton = ({
   text,
   icon,
+  iconRight,
   handler,
   width,
   height = '36px',
@@ -28,6 +30,7 @@ const BaseButton = ({
       >
         {icon}
         <span className='font-medium !important'>{text}</span>
+        {iconRight}
       </div>
     </div>
   )

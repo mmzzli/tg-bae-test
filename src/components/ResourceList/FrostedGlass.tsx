@@ -8,7 +8,7 @@ import { useRequest, useSafeState } from 'ahooks'
 import { useStore } from '@/store/store'
 
 
-import { LockIcon } from '@/assets/icons'
+import { LockIcon, StarsIcon } from '@/assets/icons'
 import { botInvoice, logIn, viewPid } from '@/api'
 
 type FrostedGlassProps = {
@@ -65,11 +65,13 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
         width="100%"
         height="100%"
         minH="100px"
+        borderRadius="4px"
       >
         <Box position="absolute" top="50%" left="50%" transform=" translate(-50%, -50%)" w="220px">
           <BaseButton
             text={`Unlock Post for ${price}`}
             icon={<Image src={LockIcon} />}
+            iconRight={<Image src={StarsIcon} />}
             handler={() => invoiceEve()}
           />
         </Box>

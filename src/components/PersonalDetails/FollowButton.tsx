@@ -6,6 +6,7 @@ import BaseButton from '../BaseButton/BaseButton'
 import { follow, getSomeoneProfile } from '@/api'
 import { useRequest } from 'ahooks'
 import { useStore } from '@/store'
+import { CustomToast, typeOptions } from '../comm/Toast'
 
 // Object is Follow, I Follow Someone, so fansid is current user id
 const FollowButton: FC<{
@@ -33,12 +34,14 @@ const FollowButton: FC<{
     manual: true,
     onSuccess: () => {
       toast({
-        title: 'success',
-        status: 'success',
         position: 'top',
+        status: 'success',
         containerStyle: {
           marginTop: '50vh',
           transform: 'translateY(-50%)',
+        },
+        render: () => {
+          return <CustomToast title="success" type={typeOptions.success} />
         },
       })
       if (isFollowing) {

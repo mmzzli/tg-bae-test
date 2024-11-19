@@ -1,6 +1,9 @@
 import { BaseModal } from '@/components/Modal/BaseModal'
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { useState } from 'react'
+import { useToast } from '@chakra-ui/react'
+import { CustomToast, typeOptions } from '../comm/Toast'
+
 
 interface ReportProps {
   isOpen: boolean
@@ -18,6 +21,7 @@ const options = [
 
 const Report: React.FC<ReportProps> = ({ isOpen, onClose }) => {
   const [checked, setChecked] = useState<string[]>([])
+  const toast = useToast()
 
   const handleCheck = (option: string) => {
     setChecked((prev) =>
@@ -70,6 +74,13 @@ const Report: React.FC<ReportProps> = ({ isOpen, onClose }) => {
             text="Report"
             handler={() => {
               onClose(false)
+              toast({
+                render: () => {
+                  return <CustomToast title="Delete post success" type={typeOptions.success} />
+                },
+                status: 'success',
+                position: 'top',
+              })
             }}
           />
         </div>

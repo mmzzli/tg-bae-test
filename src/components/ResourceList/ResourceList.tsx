@@ -35,7 +35,6 @@ interface Saveds {
   saveds: boolean
 }
 
-
 const POST_TYPE_IMAGE = 1
 const POST_TYPE_VIDEO = 0
 
@@ -84,7 +83,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
 
   useEffect(() => {
     if (initialResources.length) {
-      console.log(initialResources)
+      console.log('initialResources', initialResources)
       const res = initialResources.map((item) => {
         if (item.type === 0 && item.media.length > 0) {
           const [mediaCover, media] = item.media[0].split(',')
@@ -101,6 +100,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
       setResources([])
     }
   }, [initialResources])
+
   useEffect(() => {
     if (resources.length > 0) {
       setLikes(resources.map((item) => ({ id: item.id, liked: item.is_liked, like: item.like })))
@@ -121,17 +121,13 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
       post_id,
     })
   }
-  const savedEve = async(pid:number, boll:boolean)=>{
+  const savedEve = async (pid: number, boll: boolean) => {
     setSaveds((prevLikes) =>
-      prevLikes.map((item: any) =>
-        item.id === pid
-          ? { ...item, saveds: boll }
-          : item
-      )
+      prevLikes.map((item: any) => (item.id === pid ? { ...item, saveds: boll } : item))
     )
-    if(boll){
+    if (boll) {
       await favPost(pid)
-    }else{
+    } else {
       await favDel(pid)
     }
   }
@@ -374,13 +370,12 @@ interface ResourceFooterProps {
 const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileClick }) => {
   return (
     <div className="p-4 flex items-center">
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex items-center justify-between gap-2" onClick={() => onProfileClick(data)}>
         <Image
           rect
           width={48}
           height={48}
           className="rounded-full"
-          onClick={() => onProfileClick(data)}
           src={data.avatar}
           alt={data.username}
         />
@@ -391,53 +386,60 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
   )
 })
 
-const ResourceFooter = memo<ResourceFooterProps>(({ data, likes, linkEve, onShare, savedEve, saveds }) => {
-  return (
-    <>
-      <div className="px-4 py-3">
-        <p className="text-[#62636F] text-sm leading-6">{data.title}</p>
-        <p className="text-[#424048] text-xs pt-2">
-          {dayjs(data.created_at).format('YYYY-MM-DD HH:mm')}
-        </p>
-      </div>
-      <div className="px-4 flex items-center justify-between">
-        <Flex gap="16px">
-          <Flex
-            as={'button'}
-            alignItems={'center'}
-            onClick={() =>
-              linkEve(data.id, likes.find((like) => like.id === data.id)?.liked === false)
-            }
-          >
-            {likes.find((like) => like.id === data.id)?.liked === true ? (
-              <IconLiked />
-            ) : (
-              <IconLike />
-            )}
-            <Text fontSize={'sm'} color={'#E0E2F6'} pl={1}>
-              {likes.find((like) => like.id === data.id)?.like}
-            </Text>
+const ResourceFooter = memo<ResourceFooterProps>(
+  ({ data, likes, linkEve, onShare, savedEve, saveds }) => {
+    return (
+      <>
+        <div className="px-4 py-3">
+          <p className="text-[#62636F] text-sm leading-6">{data.title}</p>
+          <p className="text-[#424048] text-xs pt-2">
+            {dayjs(data.created_at).format('YYYY-MM-DD HH:mm')}
+          </p>
+        </div>
+        <div className="px-4 flex items-center justify-between">
+          <Flex gap="16px">
+            <Flex
+              as={'button'}
+              alignItems={'center'}
+              onClick={() =>
+                linkEve(data.id, likes.find((like) => like.id === data.id)?.liked === false)
+              }
+            >
+              {likes.find((like) => like.id === data.id)?.liked === true ? (
+                <IconLiked />
+              ) : (
+                <IconLike />
+              )}
+              <Text fontSize={'sm'} color={'#E0E2F6'} pl={1}>
+                {likes.find((like) => like.id === data.id)?.like}
+              </Text>
+            </Flex>
+            <Box
+              onClick={() =>
+                savedEve(data.id, saveds.find((saved) => saved.id === data.id)?.saveds === false)
+              }
+            >
+              {saveds.find((saved) => saved.id === data.id)?.saveds === true ? (
+                <Image src={FavIcon} />
+              ) : (
+                <Image src={Fav1Icon} />
+              )}
+            </Box>
           </Flex>
-          <Box onClick={()=>savedEve(data.id, saveds.find((saved) => saved.id === data.id)?.saveds === false)}>
-            {saveds.find((saved) => saved.id === data.id)?.saveds === true ?
-              <Image src={FavIcon}/>:
-              <Image src={Fav1Icon}/>
-            }
-          </Box>
-        </Flex>
-        <IconButton
-          onClick={onShare}
-          aria-label="share"
-          background={'transparent'}
-          colorScheme={'transparent'}
-          h={6}
-          w={6}
-          icon={<IconShare />}
-        />
-      </div>
-    </>
-  )
-})
+          <IconButton
+            onClick={onShare}
+            aria-label="share"
+            background={'transparent'}
+            colorScheme={'transparent'}
+            h={6}
+            w={6}
+            icon={<IconShare />}
+          />
+        </div>
+      </>
+    )
+  }
+)
 
 const ImagePreviewWrapper = memo(
   ({

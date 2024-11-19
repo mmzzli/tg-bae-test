@@ -15,7 +15,7 @@ interface PostListProps {
 }
 
 const PostList = ({ className, list, hasMore, fetchMoreData }: PostListProps) => {
-  if(list.length){
+  if (list.length) {
     return (
       <div className={cn(className, 'pb-24')}>
         <InfiniteScroll
@@ -27,7 +27,7 @@ const PostList = ({ className, list, hasMore, fetchMoreData }: PostListProps) =>
               <Spinner color="#4A3AFF" />
             </Box>
           }
-          scrollableTarget="ProfileScrollableDiv"
+          scrollableTarget="profileScrollableDiv"
           scrollThreshold={0.8}
           style={{ overflow: 'visible' }}
         >
@@ -35,8 +35,13 @@ const PostList = ({ className, list, hasMore, fetchMoreData }: PostListProps) =>
         </InfiniteScroll>
       </div>
     )
-  }else{
-    return <Empty title="No post yet." icon={<Icon name="icon-none_post" style={{width:'164px', height:'164px'}}></Icon>}></Empty>
+  } else {
+    return (
+      <Empty
+        title="No post yet."
+        icon={<Icon name="icon-none_post" style={{ width: '164px', height: '164px' }}></Icon>}
+      ></Empty>
+    )
   }
 }
 

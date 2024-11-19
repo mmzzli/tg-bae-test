@@ -15,9 +15,9 @@ export const handleZoomAndPan = (imageElement: HTMLImageElement, swiper: SwiperT
   let translateX = 0
   let translateY = 0
 
-  // 监听 Swiper 切换事件，重置缩放状态
+  // listen swiper
   swiper.on('slideChange', () => {
-    // 只有在切换到当前图片时，才需要重置缩放
+    // slide other image fix the variable is default value
     currentScale = 1
     translateX = 0
     translateY = 0
@@ -32,11 +32,20 @@ export const handleZoomAndPan = (imageElement: HTMLImageElement, swiper: SwiperT
 
   // limit the range of dragging
   const clampTranslate = (value: number, scale: number, dimension: 'width' | 'height') => {
+    // get image origin size
     const imageSize = dimension === 'width' ? imageElement.offsetWidth : imageElement.offsetHeight
+
+    // get image scale size
     const scaledSize =
       dimension === 'width' ? getScaledImageSize().width : getScaledImageSize().height
-    const maxTranslate = (scaledSize - imageSize) / 2
 
+    // get port size
+    const viewportSize = dimension === 'width' ? window.innerWidth : window.innerHeight
+
+    // calc max trans
+    const maxTranslate = scaledSize > viewportSize ? (scaledSize - viewportSize) / 2 : 0
+
+    // protected transform
     return Math.min(Math.max(value, -maxTranslate), maxTranslate)
   }
 

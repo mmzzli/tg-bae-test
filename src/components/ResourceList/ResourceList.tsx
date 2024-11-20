@@ -22,7 +22,7 @@ const ImagePreview = lazy(() => import('../Image/ImagePreview'))
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import useMobile from '@/hooks/useMobile'
 import playIcon from '@/assets/icons/videoSwitch.svg'
-import { formatTime } from '@/utils/utils'
+import { formatImage, formatTime } from '@/utils/utils'
 
 import { VideoDialog } from './VideoDialog'
 interface Like {
@@ -83,7 +83,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
 
   useEffect(() => {
     if (initialResources.length) {
-      console.log('initialResources', initialResources)
+      console.log('initialResources',JSON.stringify(initialResources))
       const res = initialResources.map((item) => {
         if (item.type === 0 && item.media.length > 0) {
           const [mediaCover, media] = item.media[0].split(',')
@@ -95,6 +95,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
         }
         return item
       })
+      console.log(res,'=======');
       setResources(res)
     } else {
       setResources([])
@@ -223,7 +224,8 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                 <div className="grid grid-cols-3 gap-2">
                   {data.media.map((i, ind) => (
                     <Image
-                      src={i}
+                      src={formatImage(i)}
+                      // src={i}
                       alt={data.title}
                       width="100%"
                       height="100%"

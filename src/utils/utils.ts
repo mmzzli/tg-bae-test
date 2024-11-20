@@ -132,11 +132,15 @@ const dateFormat = function (date: Date, fmt: string) {
   return fmt
 }
 
-export const formatImage = (url: string) => {
+export const formatImage = (url: string, grid = true) => {
   // regexp format
   const reg = /^https:\/\/([\w.-]+)\/(.+)$/gi
-  return url.replace(
-    reg,
-    'https://$1/cdn-cgi/image/width=500,height=500,fit=crop,gravity=center,quality=75/$2'
-  )
+  if (grid) {
+    return url.replace(
+      reg,
+      'https://$1/cdn-cgi/image/width=500,height=500,fit=crop,gravity=center,quality=75/$2'
+    )
+  } else {
+    return url.replace(reg, 'https://$1/cdn-cgi/image/width=800,fit=contain,quality=75/$2')
+  }
 }

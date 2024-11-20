@@ -223,7 +223,6 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                   {data.media.map((i, ind) => (
                     <Image
                       src={formatImage(i)}
-                      // src={i}
                       alt={data.title}
                       width="100%"
                       height="100%"
@@ -263,7 +262,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                 {data.type === POST_TYPE_IMAGE ? (
                   <Box position="relative" minH={data.media?.[0] === '' ? '200px' : 'auto'}>
                     <Image
-                      src={data.media?.[0] ?? data?.media ?? ''}
+                      src={ formatImage(data.media?.[0] ?? data?.media ?? '',false) }
                       alt={data.title}
                       errorClassName="rounded-[4px] h-[150px]"
                       // wrapperClassName="rounded-[4px] overflow-hidden"

@@ -30,24 +30,37 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
   useEffect(() => {
     if (swiper && swiper.activeIndex !== currentIndex) {
       swiper.slideTo(currentIndex, 0)
-      setLoading(true)
+      console.log('333')
     }
   }, [currentIndex, swiper])
 
+  useEffect(()=>{
+    loadImage(currentIndex)
+  },[currentIndex])
+
   // load the current image
   const loadImage = (index: number) => {
-    const img = new Image()
-    img.src = images[index]
-    console.log(images[index], '-----')
+    try{
+      console.log(images)
+      const img = new Image()
+      img.src = images[index]
+      console.log(images[index])
 
-    img.onload = () => {
-      setLoading(false)
+      img.onload = () => {
+        console.log('3333')
+        setLoading(false)
+      }
+
+      img.onerror = () => {
+        console.log('444')
+        setLoading(false)
+      }
+    }catch(e){
+      console.log(e)
     }
 
-    img.onerror = () => {
-      setLoading(false)
-    }
   }
+
 
   // prevent scroll
   useEffect(() => {
@@ -107,7 +120,6 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
         onSwiper={setSwiper}
         onSlideChange={(swiper: SwiperType) => {
           // 加载当前大图
-          console.log(swiper.activeIndex, '=====')
           setLoading(true)
           loadImage(swiper.activeIndex)
           onIndexChange(swiper.activeIndex)

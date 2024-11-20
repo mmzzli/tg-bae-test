@@ -460,14 +460,16 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
   return (
     <div className="p-4 flex items-center">
       <div className="flex items-center justify-between gap-2" onClick={() => onProfileClick(data)}>
-        <Image
-          rect
-          width={48}
-          height={48}
-          className="rounded-full"
-          src={data.avatar}
-          alt={data.username}
-        />
+        <div className='w-[48px] h-[48px] overflow-hidden rounded-[50%]'>
+          <Image
+            rect
+            width={48}
+            height={48}
+            className="rounded-full"
+            src={data.avatar}
+            alt={data.username}
+          />
+        </div>
         <div className="text-[#E0E2F6] font-bold text-base">{data.username}</div>
       </div>
       <SecondaryMenu className="ml-auto" key={data.id} mediaData={data} currentUid={currentUid} />

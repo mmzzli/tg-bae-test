@@ -9,6 +9,7 @@ import logoData from '@/assets/animations/logo.json'
 import Icon from '@/components/comm/Icon'
 import { useSafeState } from 'ahooks'
 import { useRecommendList } from '@/store/hook/useResourceList'
+import {FormatterListItem} from '@/store/slices/resourceListSlice'
 import Hls from "hls.js";
 
 const SHARE_POST = 1
@@ -23,20 +24,20 @@ const Splash: FC = () => {
     token: state.token,
   }))
   const [animationEnding, setAnimationEnding] = useSafeState(false)
-  const { list: resources } = useRecommendList()
+  const { list } = useRecommendList()
   const [isCached, setIsCached] = useState(false);
 
   const { isInTMA } = useTMAUtils()
   const { startParam } = retrieveLaunchParams()
 
   useEffect(() => {
-    const cacheVideos = async () => {
+    const cacheVideos = async (resources:any) => {
       const totalVideos = resources.length;
       const progressArray = new Array(totalVideos).fill(0);
-      resources.map((item, index) =>{
+      resources.map((item:any, index:number) =>{
           if (Hls.isSupported()) {
             const hls = new Hls();
-            const targetFragments = 5;
+            const targetFragments = 1;
             let bufferedFragments = 0;
 
             hls.loadSource(item.media[0]);
@@ -47,7 +48,7 @@ const Splash: FC = () => {
               progressArray[index] = bufferedFragments;
               console.log(`视频 ${index + 1} 缓存分片数量: ${bufferedFragments}`);
               if (bufferedFragments >= targetFragments) {
-                if (index + 1 === 5) {
+                if (index + 1 === resources.length) {
                   console.log('缓存完成')
                   setIsCached(true);
                 }
@@ -70,13 +71,19 @@ const Splash: FC = () => {
       );
     };
 
+<<<<<<< HEAD
     if (resources && resources.length > 0) {
       cacheVideos();
       setTimeout(()=>{
         setIsCached(true);
       },1000)
+=======
+    if (list && list.length > 0) {
+      const resources = list.filter(item => item.type === 0);
+      cacheVideos(resources);
+>>>>>>> 78ddcea39b3b3f27c068c7f58d328fa9a00ec993
     }
-  }, [resources]);
+  }, [list]);
 
 
 

@@ -83,7 +83,6 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
 
   useEffect(() => {
     if (initialResources.length) {
-      console.log('initialResources',JSON.stringify(initialResources))
       const res = initialResources.map((item) => {
         if (item.type === 0 && item.media.length > 0) {
           const [mediaCover, media] = item.media[0].split(',')
@@ -95,7 +94,6 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
         }
         return item
       })
-      console.log(res,'=======');
       setResources(res)
     } else {
       setResources([])

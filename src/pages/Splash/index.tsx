@@ -72,6 +72,9 @@ const Splash: FC = () => {
 
     if (resources && resources.length > 0) {
       cacheVideos();
+      setTimeout(()=>{
+        setIsCached(true);
+      },1000)
     }
   }, [resources]);
 

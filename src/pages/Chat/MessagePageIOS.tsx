@@ -86,49 +86,56 @@ const MessagePageIOS = () => {
   }
 
   const isFocusedRef = useRef(isFocused)
+  const initTgViewportHeightRef = useRef(0)
 
   useEffect(() => {
     isFocusedRef.current = isFocused
   }, [isFocused])
 
   useEffect(() => {
+    initTgViewportHeightRef.current = initTgViewportHeight
+  }, [initTgViewportHeight])
+
+  useEffect(() => {
     if (!containerRef.current) return
     const tg = window.Telegram?.WebApp
-    // update：还是不可以 需要等待键盘收起或弹出完成之后 处理页面input才不会有问题
-    // IOS  tg.viewportHeight
-    // other window.visualViewport.height
-    tg && setInitTgViewportHeight(tg?.viewportStableHeight)
+    setInitTgViewportHeight(tg.viewportStableHeight)
     const handleViewportChange = () => {
+      console.log(
+        'handleViewportChange------------------',
+        tg.viewportStableHeight,
+        initTgViewportHeight
+      )
       if (tg.viewportStableHeight < initTgViewportHeight) {
         console.log('keyboard up')
       } else {
         console.log('keyboard down')
       }
-      setInitTgViewportHeight(tg.viewportStableHeight)
+      setTgViewportHeight(tg.viewportStableHeight)
     }
 
     const handleVisualViewportResize = () => {
       if (!window.visualViewport) return
       const currentHeight = window.visualViewport.height
-      const windowHeight = window.innerHeight
 
-      if (containerRef.current && isFocusedRef.current) {
-        containerRef.current.style.height = `${currentHeight}px`
-      } else if (containerRef.current) {
-        containerRef.current.style.height = `${currentHeight - 84}px`
-      }
-      setVh(currentHeight)
-      setTgViewportHeight(windowHeight + '')
+      // if (containerRef.current && isFocusedRef.current) {
+      //   containerRef.current.style.height = `${currentHeight}px`
+      // } else if (containerRef.current) {
+      //   containerRef.current.style.height = `${currentHeight - 84}px`
+      // }
 
-      if (tg.viewportStableHeight < initTgViewportHeight) {
+      console.log('currentHeight', tg.viewportStableHeight, initTgViewportHeightRef.current)
+      // 这个有时候会获取不到初始的高度
+      if (tg.viewportStableHeight < initTgViewportHeightRef.current) {
         console.log('keyboard up 2')
-        // containerRef.current!.style.height = `${currentHeight}px`
+        containerRef.current!.style.height = `${currentHeight}px`
       } else {
         console.log('keyboard down 2')
         containerRef.current!.style.height = `${currentHeight - 84}px`
         setIsFocused(false)
         document.body.scrollIntoView()
       }
+      setVh(currentHeight)
     }
 
     // IOS
@@ -164,13 +171,13 @@ const MessagePageIOS = () => {
       }}
     >
       {/* TEST CODE */}
-      {/* <div className="absolute bottom-1/2  left-0 bg-[#f39292] z-[9999] translate-y-20">
+      <div className="absolute bottom-1/2  left-0 bg-[#f39292] z-[9999] translate-y-20">
         <div>{showInput ? 'showInput true' : 'showInput false'}</div>
         <div>{showInput ? 'bottom-0 bg-slate-100' : '-top-32 bg-slate-200'}</div>
         {vh}/{tgViewportHeight}
         <div>initTgViewportHeight: {initTgViewportHeight}</div>
         {'ios true'}
-      </div> */}
+      </div>
 
       <div className="fixed flex items-center left-0 right-0 top-[10px] px-[16px] pt-[24px] h-[56px]">
         <Image

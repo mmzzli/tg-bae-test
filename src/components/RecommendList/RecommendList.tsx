@@ -3,6 +3,7 @@ import InfiniteScroll from 'react-infinite-scroll-component'
 import ResourceList from '../ResourceList/ResourceList'
 import { cn } from '@/utils/utils'
 import { useRecommendList } from '@/store/hook/useResourceList'
+import PostSkeleton from '../Skeketon/PostSkeleton'
 
 interface PostListProps {
   className?: string
@@ -17,8 +18,8 @@ const RecommendList = ({ className }: PostListProps) => {
         next={fetchMoreData}
         hasMore={hasMore}
         loader={
-          <Box textAlign="center" m="20px 0">
-            <Spinner color="#4A3AFF" />
+          <Box textAlign="center" m="20px 0" className='p-4'>
+              <PostSkeleton/>
           </Box>
         }
         scrollableTarget="recommendScrollableDiv"

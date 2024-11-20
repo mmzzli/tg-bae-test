@@ -1,4 +1,4 @@
-import { useEffect, type FC, useRef, useState } from 'react'
+import { useEffect, type FC, useRef, useState, useMemo } from 'react'
 import { HStack, Heading, Image, Button } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { AddIcon1 } from '@/assets/icons'
@@ -7,13 +7,18 @@ import { useTMAUtils } from '@/hooks/useTMAUtils'
 import RecommendList from '@/components/RecommendList/RecommendList'
 import FollowingList from '@/components/RecommendList/FollowingList'
 import BaseButton from '@/components/BaseButton/BaseButton'
+import { useRecommendList } from '@/store/hook/useResourceList'
+import { useSafeState } from 'ahooks'
+import PostSkeleton from '@/components/Skeketon/PostSkeleton'
+import PostWrapSkeleton from '@/components/Skeketon/PostWrapSkeleton'
 const HomePage: FC = () => {
   const navigate = useNavigate()
   const { shareLink } = useTMAUtils()
   const selectedPostsRef = useRef<HTMLDivElement>(null)
   const [title, setTitle] = useState('Following')
   const [fadeClass, setFadeClass] = useState('fade-in')
-
+  const { list, page } = useRecommendList()
+  const [loading, setLoading] = useSafeState(true)
   const styles = {
     fadeIn: {
       opacity: 1,
@@ -57,44 +62,57 @@ const HomePage: FC = () => {
       setFadeClass('fade-in')
     }, 300)
   }
+
+  useEffect(() => {
+    setLoading(!list.length && page<=1)
+  }, [list,page])
+
   return (
     <div className="relative w-full h-full overflow-auto" id="recommendScrollableDiv">
-      <HStack
-        justifyContent="space-between"
-        p="10px 16px"
-        position="fixed"
-        w="100%"
-        bg="#000"
-        zIndex="111"
-      >
-        <Heading
-          as="h3"
-          fontSize="20px"
-          color="#E0E2F6"
-          style={fadeClass === 'fade-in' ? styles.fadeIn : styles.fadeOut}
-        >
-          {title}
-        </Heading>
-        <BaseButton
-          text="Create"
-          icon={<Image src={AddIcon1} />}
-          width="87px"
-          handler={() => navigate('/post')}
-        />
-      </HStack>
-      <FollowingList />
-      {/* <button
+      {loading ? (
+        <>
+        <PostWrapSkeleton/>
+        </>
+      ) : (
+        <>
+          <HStack
+            justifyContent="space-between"
+            p="10px 16px"
+            position="fixed"
+            w="100%"
+            bg="#000"
+            zIndex="111"
+          >
+            <Heading
+              as="h3"
+              fontSize="20px"
+              color="#E0E2F6"
+              style={fadeClass === 'fade-in' ? styles.fadeIn : styles.fadeOut}
+            >
+              {title}
+            </Heading>
+            <BaseButton
+              text="Create"
+              icon={<Image src={AddIcon1} />}
+              width="87px"
+              handler={() => navigate('/post')}
+            />
+          </HStack>
+          <FollowingList />
+          {/* <button
         onClick={() => shareLink(COMMUNITY_LINK)}
         className="text-[14px] py-[14px] px-6 w-[126px] h-[40px] bg-[#4A3AFF] rounded-[32px] flex items-center justify-center font-medium text-[#fff] mx-auto mt-[28px] mb-12"
       >
         Community
       </button> */}
-      <div className="px-4">
-        <h3 className="text-[#E0E2F6] font-bold text-xl" ref={selectedPostsRef}>
-          Selected Posts
-        </h3>
-      </div>
-      <RecommendList />
+          <div className="px-4">
+            <h3 className="text-[#E0E2F6] font-bold text-xl" ref={selectedPostsRef}>
+              Selected Posts
+            </h3>
+          </div>
+          <RecommendList />
+        </>
+      )}
     </div>
   )
 }

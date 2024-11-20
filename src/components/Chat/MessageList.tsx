@@ -155,9 +155,9 @@ export const MessageList = ({ messages, className, channelInfo }: MessageListPro
 
   useEffect(() => {
     setHasMore(false)
-    setTimeout(() => {
-      setHasMore(true)
-    }, 5000)
+    // setTimeout(() => {
+    //   setHasMore(true)
+    // }, 5000)
     console.log('preMessageId', preMessageId)
   }, [messages])
 

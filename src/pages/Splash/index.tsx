@@ -73,6 +73,9 @@ const Splash: FC = () => {
 
     if (list && list.length > 0) {
       const resources = list.filter(item => item.type === 0);
+      if(!resources.length){
+        setIsCached(true)
+      }
       cacheVideos(resources);
     }
   }, [list]);

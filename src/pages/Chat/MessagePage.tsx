@@ -235,7 +235,7 @@ const MessagePage = () => {
       <form
         onSubmit={handleSubmit}
         className={cn(
-          'flex h-[68px] absolute left-0 right-0 bg-[#000000] pr-4 pt-[8px]',
+          'flex h-[68px] absolute left-0 right-0 bg-[#000000] pr-4 pt-[8px] overflow-hidden',
           isFocused || !isIOS() ? 'opacity-100' : 'opacity-0',
           showInput || !isIOS() ? 'bottom-0' : '-top-32'
         )}
@@ -255,16 +255,16 @@ const MessagePage = () => {
             type="text"
             className="flex-1 h-[36px] pr-[60px] text-default bg-black border-[0.5px] border-[#4B4B4D] focus:border-[#4B4B4D] rounded-full px-3 outline-none text-white placeholder:text-[#5D5D60]"
             placeholder="Type a Message..."
-          ></input>
-          <div
-            onClick={handleSubmit}
-            className="absolute items-center justify-center h-[34px] right-[47px] cursor-pointer text-[#6761FF] text-sm"
-            style={{
-              display: message ? 'flex' : 'none',
-            }}
-          >
-            Send
-          </div>
+          />
+        </div>
+        <div
+          onClick={handleSubmit}
+          className="absolute items-center justify-center h-[34px] right-[47px] cursor-pointer text-[#6761FF] text-sm"
+          style={{
+            display: message ? 'flex' : 'none',
+          }}
+        >
+          Send
         </div>
       </form>
     </div>

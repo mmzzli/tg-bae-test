@@ -31,10 +31,10 @@ const Splash: FC = () => {
   const { startParam } = retrieveLaunchParams()
 
   useEffect(() => {
-    const cacheVideos = async (resources) => {
+    const cacheVideos = async (resources:any) => {
       const totalVideos = resources.length;
       const progressArray = new Array(totalVideos).fill(0);
-      resources.map((item, index) =>{
+      resources.map((item:any, index:number) =>{
           if (Hls.isSupported()) {
             const hls = new Hls();
             const targetFragments = resources.length;

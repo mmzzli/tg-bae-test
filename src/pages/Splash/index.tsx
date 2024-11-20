@@ -37,7 +37,7 @@ const Splash: FC = () => {
       resources.map((item:any, index:number) =>{
           if (Hls.isSupported()) {
             const hls = new Hls();
-            const targetFragments = resources.length;
+            const targetFragments = 1;
             let bufferedFragments = 0;
 
             hls.loadSource(item.media[0]);

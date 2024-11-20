@@ -110,7 +110,7 @@ const Image = React.memo(
         >
           {rect ? (
             <div
-              className="rounded-[50%] overflow-hidden"
+              className="rounded-[2px] overflow-hidden"
               style={{
                 width: props.width ? props.width : '',
                 height: props.height ? props.height : '',

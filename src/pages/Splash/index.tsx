@@ -36,7 +36,7 @@ const Splash: FC = () => {
       resources.map((item, index) =>{
           if (Hls.isSupported()) {
             const hls = new Hls();
-            const targetFragments = 5;
+            const targetFragments = resources.length;
             let bufferedFragments = 0;
 
             hls.loadSource(item.media[0]);
@@ -47,7 +47,7 @@ const Splash: FC = () => {
               progressArray[index] = bufferedFragments;
               console.log(`视频 ${index + 1} 缓存分片数量: ${bufferedFragments}`);
               if (bufferedFragments >= targetFragments) {
-                if (index + 1 === 5) {
+                if (index + 1 === resources.length) {
                   console.log('缓存完成')
                   setIsCached(true);
                 }

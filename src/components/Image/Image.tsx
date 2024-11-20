@@ -110,7 +110,7 @@ const Image = React.memo(
         >
           {rect ? (
             <div
-              className="rounded-[50%] overflow-hidden"
+              className="rounded-[2px] overflow-hidden"
               style={{
                 width: props.width ? props.width : '',
                 height: props.height ? props.height : '',
@@ -160,7 +160,8 @@ const Image = React.memo(
             <div
               className={cn(
                 'absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-400 w-full h-full',
-                errorClassName
+                errorClassName,
+                className
               )}
             >
               <div className="text-center">

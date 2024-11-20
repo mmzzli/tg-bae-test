@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Box, Spinner } from '@chakra-ui/react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import ResourceList from '../ResourceList/ResourceList'
@@ -7,6 +7,9 @@ import { useViewList, useFavList, useOrdersList } from '@/store/hook/useResource
 import Empty from '../comm/Empty'
 import Icon from '../comm/Icon'
 import { rotate } from '@chakra-ui/react/dist/types/progress/progress.utils'
+import { useSafeState } from 'ahooks'
+import ProfileSkeleton from '../Skeketon/ProfileSkeleton'
+import PostSkeleton from '../Skeketon/PostSkeleton'
 interface PostListProps {
   className?: string
 }
@@ -51,7 +54,7 @@ const ViewList = ({ className }: PostListProps) => {
             hasMore={hasMore}
             loader={
               <Box textAlign="center" m="20px 0">
-                <Spinner color="#4A3AFF" />
+                <PostSkeleton/>
               </Box>
             }
             scrollableTarget="profileScrollableDiv"
@@ -78,7 +81,8 @@ const FavList = () => {
         hasMore={hasMore}
         loader={
           <Box textAlign="center" m="20px 0">
-            <Spinner color="#4A3AFF" />
+                            <PostSkeleton/>
+
           </Box>
         }
         scrollableTarget="profileScrollableDiv"
@@ -103,7 +107,8 @@ const OrderList = () => {
         hasMore={hasMore}
         loader={
           <Box textAlign="center" m="20px 0">
-            <Spinner color="#4A3AFF" />
+                            <PostSkeleton/>
+
           </Box>
         }
         scrollableTarget="profileScrollableDiv"

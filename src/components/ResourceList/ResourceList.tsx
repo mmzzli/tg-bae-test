@@ -109,49 +109,49 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
   }, [resources])
 
 
-  useEffect(() => {
-    const cacheVideos = async (resources:any) => {
-      const totalVideos = resources.length;
-      const progressArray = new Array(totalVideos).fill(0);
-      resources.map((item:any, index:number) =>{
-          if (Hls.isSupported()) {
-            const hls = new Hls();
-            const targetFragments = 1;
-            let bufferedFragments = 0;
+  // useEffect(() => {
+  //   const cacheVideos = async (resources:any) => {
+  //     const totalVideos = resources.length;
+  //     const progressArray = new Array(totalVideos).fill(0);
+  //     resources.map((item:any, index:number) =>{
+  //         if (Hls.isSupported()) {
+  //           const hls = new Hls();
+  //           const targetFragments = 1;
+  //           let bufferedFragments = 0;
 
-            hls.loadSource(item.media[0]);
-            hls.attachMedia(document.createElement("video"));
+  //           hls.loadSource(item.media[0]);
+  //           hls.attachMedia(document.createElement("video"));
 
-            hls.on(Hls.Events.FRAG_BUFFERED, () => {
-              bufferedFragments++;
-              progressArray[index] = bufferedFragments;
-              console.log(`视频 ${index + 1} 缓存分片数量: ${bufferedFragments}`);
-              if (bufferedFragments >= targetFragments) {
-                if (index + 1 === resources.length) {
-                  console.log('缓存完成')
-                }
-                hls.destroy();
-              }
-            });
-            hls.on(Hls.Events.MANIFEST_PARSED, () => {
-              console.log(`视频 ${index + 1} 流解析完成，开始缓存`);
-            });
+  //           hls.on(Hls.Events.FRAG_BUFFERED, () => {
+  //             bufferedFragments++;
+  //             progressArray[index] = bufferedFragments;
+  //             console.log(`视频 ${index + 1} 缓存分片数量: ${bufferedFragments}`);
+  //             if (bufferedFragments >= targetFragments) {
+  //               if (index + 1 === resources.length) {
+  //                 console.log('缓存完成')
+  //               }
+  //               hls.destroy();
+  //             }
+  //           });
+  //           hls.on(Hls.Events.MANIFEST_PARSED, () => {
+  //             console.log(`视频 ${index + 1} 流解析完成，开始缓存`);
+  //           });
 
-            hls.on(Hls.Events.ERROR, (event, data) => {
-              hls.destroy();
-            });
-          } else {
-            console.error("HLS.js 不支持当前浏览器环境");
-          }
-        }
-      );
-    };
+  //           hls.on(Hls.Events.ERROR, (event, data) => {
+  //             hls.destroy();
+  //           });
+  //         } else {
+  //           console.error("HLS.js 不支持当前浏览器环境");
+  //         }
+  //       }
+  //     );
+  //   };
 
-    if (initialResources && initialResources.length > 0) {
-      const resources = initialResources.filter(item => item.type === 0);
-      cacheVideos(resources);
-    }
-  }, [initialResources]);
+  //   if (initialResources && initialResources.length > 0) {
+  //     const resources = initialResources.filter(item => item.type === 0);
+  //     cacheVideos(resources);
+  //   }
+  // }, [initialResources]);
 
   const linkEve = async (post_id: number, boll: boolean) => {
     setLikes((prevLikes) =>
@@ -255,7 +255,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
       {resources.map((data, index: number) => {
         if (data.type === POST_TYPE_IMAGE && data.media.length > 1) {
           if(data.media.length === 4){
-            <Box pt="32px" key={data.id}>
+            return <Box pt="32px" key={data.id}>
               <ResourceHeader
                 data={data}
                 currentUid={launchParams.initData?.user?.id ?? 0}
@@ -265,18 +265,23 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                 className="relative px-4"
                 style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}
               >
-                <div className="grid grid-cols-2 gap-2">
-                  {data.media.map((i, ind) => (
-                    <Image
-                      src={formatImage(i)}
-                      alt={data.title}
-                      width="100%"
-                      height="100%"
-                      key={i}
-                      onClick={() => handleImageClick(data.media, ind)}
-                      rect
-                    />
-                  ))}
+                <div className="grid grid-cols-3 gap-2">
+                  <div className='grid grid-cols-2 gap-2 col-span-2'>
+                    {data.media.map((i, ind) => (
+                      <Image
+                        src={formatImage(i)}
+                        alt={data.title}
+                        width="100%"
+                        height="100%"
+                        key={i}
+                        onClick={() => handleImageClick(data.media, ind)}
+                        rect
+                      />
+                    ))}
+                  </div>
+                  <div className="">
+
+                  </div>
                 </div>
                 {data.media?.[0] == '' && (
                   <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} />
@@ -460,14 +465,16 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
   return (
     <div className="p-4 flex items-center">
       <div className="flex items-center justify-between gap-2" onClick={() => onProfileClick(data)}>
-        <Image
-          rect
-          width={48}
-          height={48}
-          className="rounded-full"
-          src={data.avatar}
-          alt={data.username}
-        />
+        <div className='w-[48px] h-[48px] overflow-hidden rounded-[50%]'>
+          <Image
+            rect
+            width={48}
+            height={48}
+            className="rounded-full"
+            src={data.avatar}
+            alt={data.username}
+          />
+        </div>
         <div className="text-[#E0E2F6] font-bold text-base">{data.username}</div>
       </div>
       <SecondaryMenu className="ml-auto" key={data.id} mediaData={data} currentUid={currentUid} />

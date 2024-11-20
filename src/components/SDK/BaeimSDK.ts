@@ -186,11 +186,23 @@ class BaeimSDK {
     }
   }
 
-  public async getMessages(channel: string, opt: GetMessagesOpt): Promise<Message[]> {
-    return await WKSDK.shared().chatManager.syncMessages(
+  public async getMessages(channel: string, opt: GetMessagesOpt): Promise<FormattedMessage[]> {
+    return (await WKSDK.shared().chatManager.syncMessages(
       new Channel(channel, ChannelTypePerson),
       opt
-    )
+    )) as FormattedMessage[]
+    // console.log('messages in sdk', messages)
+    // let formattedMessages: FormattedMessage[] = []
+    // if (messages.messages) {
+    //   formattedMessages = messages.map((message) => ({
+    //     ...message,
+    //   toUID: message.channel.channelID,
+    //   send: message.send,
+    //   contentType: message.content.type,
+    //     streamOn: false,
+    //   }))
+    // }
+    // return formattedMessages
   }
 
   private messageHandler = (message: Message) => {
@@ -220,5 +232,5 @@ class BaeimSDK {
   }
 }
 
-export { ConnectStatus, ConversationAction, SyncOptions, Channel, Message }
+export { ConnectStatus, ConversationAction, SyncOptions, Channel, Message, PullMode }
 export default BaeimSDK

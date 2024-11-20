@@ -25,6 +25,7 @@ export const useFormatMessage = () => {
       receiver: to,
       timestamp: Date.now() / 1000,
       messageSeq: -1,
+      channelID: to.toString(),
     }
   }
 

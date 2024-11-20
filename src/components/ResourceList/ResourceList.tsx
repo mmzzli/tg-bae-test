@@ -265,18 +265,23 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                 className="relative px-4"
                 style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}
               >
-                <div className="grid grid-cols-2 gap-2">
-                  {data.media.map((i, ind) => (
-                    <Image
-                      src={formatImage(i)}
-                      alt={data.title}
-                      width="100%"
-                      height="100%"
-                      key={i}
-                      onClick={() => handleImageClick(data.media, ind)}
-                      rect
-                    />
-                  ))}
+                <div className="grid grid-cols-3 gap-2">
+                  <div className='grid grid-cols-2 gap-2 col-span-2'>
+                    {data.media.map((i, ind) => (
+                      <Image
+                        src={formatImage(i)}
+                        alt={data.title}
+                        width="100%"
+                        height="100%"
+                        key={i}
+                        onClick={() => handleImageClick(data.media, ind)}
+                        rect
+                      />
+                    ))}
+                  </div>
+                  <div className="">
+
+                  </div>
                 </div>
                 {data.media?.[0] == '' && (
                   <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} />

@@ -21,8 +21,8 @@ import MessagePageRouteGuard from './pages/Chat/MessagePageRouteGuard'
 import { useEffect } from 'react'
 import NiceModal from '@ebay/nice-modal-react'
 
-import { mockTelegramEnv, parseInitData } from '@tma.js/sdk'
-import { DEV_INIT_DATA_RAW } from './utils/constants'
+// import { mockTelegramEnv, parseInitData } from '@tma.js/sdk'
+// import { DEV_INIT_DATA_RAW } from './utils/constants'
 
 // mockTelegramEnv({
 //   themeParams: {

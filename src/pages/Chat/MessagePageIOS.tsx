@@ -192,7 +192,6 @@ const MessagePageIOS = () => {
 
       <MemoizedMessageList
         messages={messages}
-        hasMore={false}
         channelInfo={chatPeople}
         className="flex-1 mb-[68px]"
       />
@@ -240,9 +239,18 @@ const MessagePageIOS = () => {
               setIsFocused(false)
             }}
             type="text"
-            className="flex-1 h-[36px] text-default bg-black border-[0.5px] border-[#4B4B4D] focus:border-[#4B4B4D] rounded-full px-3 outline-none text-white placeholder:text-[#5D5D60]"
+            className="flex-1 pr-[60px] h-[36px] text-default bg-black border-[0.5px] border-[#4B4B4D] focus:border-[#4B4B4D] rounded-full px-3 outline-none text-white placeholder:text-[#5D5D60]"
             placeholder="Type a Message..."
           />
+          <div
+            onClick={handleSubmit}
+            className="absolute h-[34px] items-center justify-center right-[47px] cursor-pointer text-[#6761FF] text-sm"
+            style={{
+              display: message ? 'flex' : 'none',
+            }}
+          >
+            Send
+          </div>
         </div>
       </form>
     </div>

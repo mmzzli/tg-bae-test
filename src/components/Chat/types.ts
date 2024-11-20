@@ -27,6 +27,7 @@ export type WrappedMessage = Message & {
   sender: number
   receiver: number
   messageSeq: number
+  channelID: string
 }
 export interface ChatListProps {
   chats: Conversation[]

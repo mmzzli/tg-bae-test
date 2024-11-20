@@ -59,20 +59,31 @@ export const useIM = () => {
     updateMessage(message, message.receiver)
   }
 
-  const receiveMessage = (message: WrappedMessage) => {
-    if (message.sender !== current_uid) {
-      updateMessage(message, message.sender)
+  const receiveMessage = (message: WrappedMessage | WrappedMessage[], messageWindowId = '') => {
+    console.log('receiveMessage', message)
+    if (messageWindowId) {
+      return updateMessage(message, Number(messageWindowId))
+    }
+    const sender = Array.isArray(message) ? message[0].sender : message.sender
+    if (sender !== current_uid) {
+      updateMessage(message, sender)
     } else {
       // TODO: set msg status to sent
     }
   }
 
-  const updateMessage = (message: WrappedMessage, channelId: number) => {
+  const updateMessage = (
+    message: WrappedMessage | WrappedMessage[],
+    channelId: number,
+    isHistory = false
+  ) => {
     const messageWindow = getMessageWindow(String(channelId))
     if (messageWindow) {
       updateMessageWindowListItem({
         ...messageWindow,
-        messages: [...messageWindow.messages, message],
+        messages: isHistory
+          ? [...(Array.isArray(message) ? message : [message]), ...messageWindow.messages]
+          : [...messageWindow.messages, ...(Array.isArray(message) ? message : [message])],
       })
     }
   }
@@ -84,5 +95,6 @@ export const useIM = () => {
     getChatPeopleInfo,
     sendMessage,
     receiveMessage,
+    updateMessage,
   }
 }

@@ -100,14 +100,15 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
           syncMessagesCallback: async (channel: Channel, opts: SyncOptions) => {
             const resp = await getMessagesSync({
               uid: String(currentUid),
+              login_uid: String(currentUid),
               channel_id: channel.channelID,
               channel_type: channel.channelType,
               start_message_seq: opts.startMessageSeq,
               end_message_seq: opts.endMessageSeq,
               pull_mode: opts.pullMode,
-              limit: 30,
+              limit: 10,
             })
-            return resp
+            return resp.messages || []
           },
         })
         sdk.start()
@@ -183,7 +184,10 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
         </InfiniteScroll>
       )}
       {isChatListLoaded && chatList.length === 0 && (
-        <Empty icon={<Icon name="icon-none_chat" style={{width:'164px', height:'164px'}}></Icon>} title="No Chat History"></Empty>
+        <Empty
+          icon={<Icon name="icon-none_chat" style={{ width: '164px', height: '164px' }}></Icon>}
+          title="No Chat History"
+        ></Empty>
       )}
       {!isChatListLoaded && (
         <div className="flex-1 pb-[80px]">

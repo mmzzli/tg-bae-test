@@ -56,6 +56,7 @@ export const getConversationSync = (params: { uid: string; msg_count: number }) 
 
 export const getMessagesSync = (params: {
   uid: string
+  login_uid: string
   channel_id: string
   channel_type: number
   start_message_seq: number
@@ -63,9 +64,13 @@ export const getMessagesSync = (params: {
   pull_mode: number
   limit: number
 }) => {
-  return post<Message[]>(`${import.meta.env.VITE_APP_IM_URL}channel/messagesync`, params, {
-    headers: { token: import.meta.env.VITE_APP_IM_TOKEN },
-  })
+  return post<{ messages: Message[] }>(
+    `${import.meta.env.VITE_APP_IM_URL}channel/messagesync`,
+    params,
+    {
+      headers: { token: import.meta.env.VITE_APP_IM_TOKEN },
+    }
+  )
 }
 
 export const setUnread = (params: {

@@ -112,17 +112,17 @@ const MessagePageIOS = () => {
       const currentHeight = window.visualViewport.height
       const windowHeight = window.innerHeight
 
-      // if (containerRef.current && isFocusedRef.current) {
-      //   containerRef.current.style.height = `${currentHeight}px`
-      // } else if (containerRef.current) {
-      //   containerRef.current.style.height = `${currentHeight - 84}px`
-      // }
+      if (containerRef.current && isFocusedRef.current) {
+        containerRef.current.style.height = `${currentHeight}px`
+      } else if (containerRef.current) {
+        containerRef.current.style.height = `${currentHeight - 84}px`
+      }
       setVh(currentHeight)
       setTgViewportHeight(windowHeight + '')
 
-      if (tg && tg.viewportStableHeight < initTgViewportHeight) {
+      if (tg.viewportStableHeight < initTgViewportHeight) {
         console.log('keyboard up 2')
-        containerRef.current!.style.height = `${currentHeight}px`
+        // containerRef.current!.style.height = `${currentHeight}px`
       } else {
         console.log('keyboard down 2')
         containerRef.current!.style.height = `${currentHeight - 84}px`

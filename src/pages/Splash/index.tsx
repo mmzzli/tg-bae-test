@@ -59,9 +59,11 @@ const Splash: FC = () => {
             });
 
             hls.on(Hls.Events.ERROR, (event, data) => {
+              setIsCached(true);
               hls.destroy();
             });
           } else {
+            setIsCached(true);
             console.error("HLS.js 不支持当前浏览器环境");
           }
         }

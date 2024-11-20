@@ -23,6 +23,7 @@ import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import useMobile from '@/hooks/useMobile'
 import playIcon from '@/assets/icons/videoSwitch.svg'
 import { formatImage, formatTime } from '@/utils/utils'
+import Hls from "hls.js";
 
 import { VideoDialog } from './VideoDialog'
 interface Like {
@@ -106,6 +107,51 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
       setSaveds(resources.map((item) => ({ id: item.id, saveds: item.is_collected })))
     }
   }, [resources])
+
+
+  useEffect(() => {
+    const cacheVideos = async (resources:any) => {
+      const totalVideos = resources.length;
+      const progressArray = new Array(totalVideos).fill(0);
+      resources.map((item:any, index:number) =>{
+          if (Hls.isSupported()) {
+            const hls = new Hls();
+            const targetFragments = 1;
+            let bufferedFragments = 0;
+
+            hls.loadSource(item.media[0]);
+            hls.attachMedia(document.createElement("video"));
+
+            hls.on(Hls.Events.FRAG_BUFFERED, () => {
+              bufferedFragments++;
+              progressArray[index] = bufferedFragments;
+              console.log(`视频 ${index + 1} 缓存分片数量: ${bufferedFragments}`);
+              if (bufferedFragments >= targetFragments) {
+                if (index + 1 === resources.length) {
+                  console.log('缓存完成')
+                }
+                hls.destroy();
+              }
+            });
+            hls.on(Hls.Events.MANIFEST_PARSED, () => {
+              console.log(`视频 ${index + 1} 流解析完成，开始缓存`);
+            });
+
+            hls.on(Hls.Events.ERROR, (event, data) => {
+              hls.destroy();
+            });
+          } else {
+            console.error("HLS.js 不支持当前浏览器环境");
+          }
+        }
+      );
+    };
+
+    if (initialResources && initialResources.length > 0) {
+      const resources = initialResources.filter(item => item.type === 0);
+      cacheVideos(resources);
+    }
+  }, [initialResources]);
 
   const linkEve = async (post_id: number, boll: boolean) => {
     setLikes((prevLikes) =>

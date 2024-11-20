@@ -255,7 +255,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
       {resources.map((data, index: number) => {
         if (data.type === POST_TYPE_IMAGE && data.media.length > 1) {
           if(data.media.length === 4){
-            <Box pt="32px" key={data.id}>
+            return <Box pt="32px" key={data.id}>
               <ResourceHeader
                 data={data}
                 currentUid={launchParams.initData?.user?.id ?? 0}

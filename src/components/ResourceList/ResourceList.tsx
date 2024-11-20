@@ -268,8 +268,9 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                       src={data.media?.[0] ?? data?.media ?? ''}
                       alt={data.title}
                       errorClassName="rounded-[4px] h-[150px]"
-                      wrapperClassName="rounded-[4px] overflow-hidden"
-                      className="object-left w-[100%] m-[auto]"
+                      // wrapperClassName="rounded-[4px] overflow-hidden"
+                      // className="object-left w-[100%] m-[auto]"
+                      className='w-[230px] rounded-[4px]'
                       onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
                     />
                     {data.media?.[0] === '' && (

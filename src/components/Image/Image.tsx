@@ -80,7 +80,7 @@ const Image = React.memo(
       return (
         <div className={cn('w-full h-full bg-gray-200 rounded-full', errorClassName)}>
           <div
-            className="rounded-[2px] overflow-hidden"
+            className="rounded-[50%] overflow-hidden"
             style={{
               width: props.width ? props.width : '',
               height: props.height ? props.height : '',
@@ -110,7 +110,7 @@ const Image = React.memo(
         >
           {rect ? (
             <div
-              className="rounded-[2px] overflow-hidden"
+              className="rounded-[50%] overflow-hidden"
               style={{
                 width: props.width ? props.width : '',
                 height: props.height ? props.height : '',

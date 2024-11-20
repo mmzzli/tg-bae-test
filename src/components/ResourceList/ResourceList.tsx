@@ -208,7 +208,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
     <>
       {resources.map((data, index: number) => {
         if (data.type === POST_TYPE_IMAGE && data.media.length > 1) {
-          return (
+          if(data.media.length === 4){
             <Box pt="32px" key={data.id}>
               <ResourceHeader
                 data={data}
@@ -219,7 +219,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                 className="relative px-4"
                 style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}
               >
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   {data.media.map((i, ind) => (
                     <Image
                       src={formatImage(i)}
@@ -249,7 +249,50 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                 }}
               />
             </Box>
-          )
+          }else{
+            return (
+              <Box pt="32px" key={data.id}>
+                <ResourceHeader
+                  data={data}
+                  currentUid={launchParams.initData?.user?.id ?? 0}
+                  onProfileClick={jumpToProfilePage}
+                />
+                <div
+                  className="relative px-4"
+                  style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}
+                >
+                  <div className="grid grid-cols-3 gap-2">
+                    {data.media.map((i, ind) => (
+                      <Image
+                        src={formatImage(i)}
+                        alt={data.title}
+                        width="100%"
+                        height="100%"
+                        key={i}
+                        onClick={() => handleImageClick(data.media, ind)}
+                        rect
+                      />
+                    ))}
+                  </div>
+                  {data.media?.[0] == '' && (
+                    <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} />
+                  )}
+                </div>
+
+                <ResourceFooter
+                  data={data}
+                  likes={likes}
+                  saveds={saveds}
+                  linkEve={linkEve}
+                  savedEve={savedEve}
+                  onShare={() => {
+                    getShareLink(data.title, data.id, data.uid)
+                    toggle()
+                  }}
+                />
+              </Box>
+            )
+          }
         } else {
           return (
             <Box pt="32px" key={index}>

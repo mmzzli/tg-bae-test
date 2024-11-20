@@ -9,6 +9,7 @@ import logoData from '@/assets/animations/logo.json'
 import Icon from '@/components/comm/Icon'
 import { useSafeState } from 'ahooks'
 import { useRecommendList } from '@/store/hook/useResourceList'
+import {FormatterListItem} from '@/store/slices/resourceListSlice'
 import Hls from "hls.js";
 
 const SHARE_POST = 1
@@ -23,14 +24,14 @@ const Splash: FC = () => {
     token: state.token,
   }))
   const [animationEnding, setAnimationEnding] = useSafeState(false)
-  const { list: resources } = useRecommendList()
+  const { list } = useRecommendList()
   const [isCached, setIsCached] = useState(false);
 
   const { isInTMA } = useTMAUtils()
   const { startParam } = retrieveLaunchParams()
 
   useEffect(() => {
-    const cacheVideos = async () => {
+    const cacheVideos = async (resources) => {
       const totalVideos = resources.length;
       const progressArray = new Array(totalVideos).fill(0);
       resources.map((item, index) =>{
@@ -70,10 +71,11 @@ const Splash: FC = () => {
       );
     };
 
-    if (resources && resources.length > 0) {
-      cacheVideos();
+    if (list && list.length > 0) {
+      const resources = list.filter(item => item.type === 0);
+      cacheVideos(resources);
     }
-  }, [resources]);
+  }, [list]);
 
 
 

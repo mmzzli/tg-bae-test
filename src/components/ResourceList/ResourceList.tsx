@@ -22,7 +22,8 @@ const ImagePreview = lazy(() => import('../Image/ImagePreview'))
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import useMobile from '@/hooks/useMobile'
 import playIcon from '@/assets/icons/videoSwitch.svg'
-import { formatTime } from '@/utils/utils'
+import { formatImage, formatTime } from '@/utils/utils'
+import Hls from "hls.js";
 
 import { VideoDialog } from './VideoDialog'
 interface Like {
@@ -83,7 +84,6 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
 
   useEffect(() => {
     if (initialResources.length) {
-      console.log('initialResources', initialResources)
       const res = initialResources.map((item) => {
         if (item.type === 0 && item.media.length > 0) {
           const [mediaCover, media] = item.media[0].split(',')
@@ -107,6 +107,51 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
       setSaveds(resources.map((item) => ({ id: item.id, saveds: item.is_collected })))
     }
   }, [resources])
+
+
+  // useEffect(() => {
+  //   const cacheVideos = async (resources:any) => {
+  //     const totalVideos = resources.length;
+  //     const progressArray = new Array(totalVideos).fill(0);
+  //     resources.map((item:any, index:number) =>{
+  //         if (Hls.isSupported()) {
+  //           const hls = new Hls();
+  //           const targetFragments = 1;
+  //           let bufferedFragments = 0;
+
+  //           hls.loadSource(item.media[0]);
+  //           hls.attachMedia(document.createElement("video"));
+
+  //           hls.on(Hls.Events.FRAG_BUFFERED, () => {
+  //             bufferedFragments++;
+  //             progressArray[index] = bufferedFragments;
+  //             console.log(`视频 ${index + 1} 缓存分片数量: ${bufferedFragments}`);
+  //             if (bufferedFragments >= targetFragments) {
+  //               if (index + 1 === resources.length) {
+  //                 console.log('缓存完成')
+  //               }
+  //               hls.destroy();
+  //             }
+  //           });
+  //           hls.on(Hls.Events.MANIFEST_PARSED, () => {
+  //             console.log(`视频 ${index + 1} 流解析完成，开始缓存`);
+  //           });
+
+  //           hls.on(Hls.Events.ERROR, (event, data) => {
+  //             hls.destroy();
+  //           });
+  //         } else {
+  //           console.error("HLS.js 不支持当前浏览器环境");
+  //         }
+  //       }
+  //     );
+  //   };
+
+  //   if (initialResources && initialResources.length > 0) {
+  //     const resources = initialResources.filter(item => item.type === 0);
+  //     cacheVideos(resources);
+  //   }
+  // }, [initialResources]);
 
   const linkEve = async (post_id: number, boll: boolean) => {
     setLikes((prevLikes) =>
@@ -209,8 +254,8 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
     <>
       {resources.map((data, index: number) => {
         if (data.type === POST_TYPE_IMAGE && data.media.length > 1) {
-          return (
-            <Box pt="32px" key={data.id}>
+          if(data.media.length === 4){
+            return <Box pt="32px" key={data.id}>
               <ResourceHeader
                 data={data}
                 currentUid={launchParams.initData?.user?.id ?? 0}
@@ -220,10 +265,10 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                 className="relative px-4"
                 style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}
               >
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   {data.media.map((i, ind) => (
                     <Image
-                      src={i}
+                      src={formatImage(i)}
                       alt={data.title}
                       width="100%"
                       height="100%"
@@ -250,7 +295,50 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                 }}
               />
             </Box>
-          )
+          }else{
+            return (
+              <Box pt="32px" key={data.id}>
+                <ResourceHeader
+                  data={data}
+                  currentUid={launchParams.initData?.user?.id ?? 0}
+                  onProfileClick={jumpToProfilePage}
+                />
+                <div
+                  className="relative px-4"
+                  style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}
+                >
+                  <div className="grid grid-cols-3 gap-2">
+                    {data.media.map((i, ind) => (
+                      <Image
+                        src={formatImage(i)}
+                        alt={data.title}
+                        width="100%"
+                        height="100%"
+                        key={i}
+                        onClick={() => handleImageClick(data.media, ind)}
+                        rect
+                      />
+                    ))}
+                  </div>
+                  {data.media?.[0] == '' && (
+                    <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} />
+                  )}
+                </div>
+
+                <ResourceFooter
+                  data={data}
+                  likes={likes}
+                  saveds={saveds}
+                  linkEve={linkEve}
+                  savedEve={savedEve}
+                  onShare={() => {
+                    getShareLink(data.title, data.id, data.uid)
+                    toggle()
+                  }}
+                />
+              </Box>
+            )
+          }
         } else {
           return (
             <Box pt="32px" key={index}>
@@ -263,7 +351,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                 {data.type === POST_TYPE_IMAGE ? (
                   <Box position="relative" minH={data.media?.[0] === '' ? '200px' : 'auto'}>
                     <Image
-                      src={data.media?.[0] ?? data?.media ?? ''}
+                      src={ formatImage(data.media?.[0] ?? data?.media ?? '',false) }
                       alt={data.title}
                       errorClassName="rounded-[4px] h-[150px]"
                       // wrapperClassName="rounded-[4px] overflow-hidden"
@@ -372,14 +460,16 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
   return (
     <div className="p-4 flex items-center">
       <div className="flex items-center justify-between gap-2" onClick={() => onProfileClick(data)}>
-        <Image
-          rect
-          width={48}
-          height={48}
-          className="rounded-full"
-          src={data.avatar}
-          alt={data.username}
-        />
+        <div className='w-[48px] h-[48px] overflow-hidden rounded-[50%]'>
+          <Image
+            rect
+            width={48}
+            height={48}
+            className="rounded-full"
+            src={data.avatar}
+            alt={data.username}
+          />
+        </div>
         <div className="text-[#E0E2F6] font-bold text-base">{data.username}</div>
       </div>
       <SecondaryMenu className="ml-auto" key={data.id} mediaData={data} currentUid={currentUid} />

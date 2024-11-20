@@ -88,7 +88,7 @@ export const handleZoomAndPan = (imageElement: HTMLImageElement, swiper: SwiperT
       scale = currentScale + (scale - currentScale) * SMOOTH_FACTOR
 
       // Restrict scale to be between 0.5 and 3
-      scale = Math.min(Math.max(scale, 0.5), 3)
+      scale = Math.min(Math.max(scale, 1), 3)
 
       currentScale = scale
 
@@ -124,6 +124,7 @@ export const handleZoomAndPan = (imageElement: HTMLImageElement, swiper: SwiperT
 
   // PC mouse dragging support
   const handleMouseDown = (e: MouseEvent) => {
+    console.log('down')
     if (currentScale > 1) {
       e.preventDefault()
       isDragging = true

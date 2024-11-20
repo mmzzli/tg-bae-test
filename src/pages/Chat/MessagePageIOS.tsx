@@ -171,13 +171,13 @@ const MessagePageIOS = () => {
       }}
     >
       {/* TEST CODE */}
-      <div className="absolute bottom-1/2  left-0 bg-[#f39292] z-[9999] translate-y-20">
+      {/* <div className="absolute bottom-1/2  left-0 bg-[#f39292] z-[9999] translate-y-20">
         <div>{showInput ? 'showInput true' : 'showInput false'}</div>
         <div>{showInput ? 'bottom-0 bg-slate-100' : '-top-32 bg-slate-200'}</div>
         {vh}/{tgViewportHeight}
         <div>initTgViewportHeight: {initTgViewportHeight}</div>
         {'ios true'}
-      </div>
+      </div> */}
 
       <div className="fixed flex items-center left-0 right-0 top-[10px] px-[16px] pt-[24px] h-[56px]">
         <Image

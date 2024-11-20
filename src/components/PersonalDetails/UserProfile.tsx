@@ -19,6 +19,7 @@ const UserProfile: FC = () => {
   return (
     <Box padding="0 16px" paddingTop="30px">
       <HStack gap="16px" paddingLeft="8px" justifyContent="space-between">
+      <div className='w-[64px] h-[64px] overflow-hidden rounded-[50%]'>
         <Image
           rect
           width={64}
@@ -27,6 +28,7 @@ const UserProfile: FC = () => {
           src={userInfo.avatar || profileImg}
           alt={userInfo.username}
         />
+        </div>
         <Box display="flex" alignItems="center">
           <EarningsPage />
           <ShareUser userInfo={userInfo} />

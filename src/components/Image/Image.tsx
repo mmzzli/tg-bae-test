@@ -160,7 +160,8 @@ const Image = React.memo(
             <div
               className={cn(
                 'absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-400 w-full h-full',
-                errorClassName
+                errorClassName,
+                className
               )}
             >
               <div className="text-center">

@@ -8,11 +8,11 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatTime(seconds: number): string {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  const formattedMinutes = minutes.toString().padStart(2, '0');
-  const formattedSeconds = remainingSeconds.toString().padStart(2, '0');
-  return `${formattedMinutes}:${formattedSeconds}`;
+  const minutes = Math.floor(seconds / 60)
+  const remainingSeconds = seconds % 60
+  const formattedMinutes = minutes.toString().padStart(2, '0')
+  const formattedSeconds = remainingSeconds.toString().padStart(2, '0')
+  return `${formattedMinutes}:${formattedSeconds}`
 }
 
 export const isMobileDevice = (): boolean => {
@@ -32,6 +32,7 @@ export const getWrappedMessage = (message: FormattedMessage): WrappedMessage => 
     receiver: Number(message.toUID),
     messageSeq: message.messageSeq,
     timestamp: message.timestamp,
+    channelID: message.channel.channelID,
   }
 }
 

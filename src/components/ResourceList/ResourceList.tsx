@@ -22,7 +22,7 @@ const ImagePreview = lazy(() => import('../Image/ImagePreview'))
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import useMobile from '@/hooks/useMobile'
 import playIcon from '@/assets/icons/videoSwitch.svg'
-import { formatTime } from '@/utils/utils'
+import { formatImage, formatTime } from '@/utils/utils'
 
 import { VideoDialog } from './VideoDialog'
 interface Like {
@@ -83,7 +83,6 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
 
   useEffect(() => {
     if (initialResources.length) {
-      console.log('initialResources', initialResources)
       const res = initialResources.map((item) => {
         if (item.type === 0 && item.media.length > 0) {
           const [mediaCover, media] = item.media[0].split(',')
@@ -223,7 +222,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                 <div className="grid grid-cols-3 gap-2">
                   {data.media.map((i, ind) => (
                     <Image
-                      src={i}
+                      src={formatImage(i)}
                       alt={data.title}
                       width="100%"
                       height="100%"
@@ -263,11 +262,12 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                 {data.type === POST_TYPE_IMAGE ? (
                   <Box position="relative" minH={data.media?.[0] === '' ? '200px' : 'auto'}>
                     <Image
-                      src={data.media?.[0] ?? data?.media ?? ''}
+                      src={ formatImage(data.media?.[0] ?? data?.media ?? '',false) }
                       alt={data.title}
                       errorClassName="rounded-[4px] h-[150px]"
-                      wrapperClassName="rounded-[4px] overflow-hidden"
-                      className="object-left w-[100%] m-[auto]"
+                      // wrapperClassName="rounded-[4px] overflow-hidden"
+                      // className="object-left w-[100%] m-[auto]"
+                      className='w-[230px] rounded-[4px]'
                       onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
                     />
                     {data.media?.[0] === '' && (

@@ -8,11 +8,11 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatTime(seconds: number): string {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  const formattedMinutes = minutes.toString().padStart(2, '0');
-  const formattedSeconds = remainingSeconds.toString().padStart(2, '0');
-  return `${formattedMinutes}:${formattedSeconds}`;
+  const minutes = Math.floor(seconds / 60)
+  const remainingSeconds = seconds % 60
+  const formattedMinutes = minutes.toString().padStart(2, '0')
+  const formattedSeconds = remainingSeconds.toString().padStart(2, '0')
+  return `${formattedMinutes}:${formattedSeconds}`
 }
 
 export const isMobileDevice = (): boolean => {
@@ -130,4 +130,17 @@ const dateFormat = function (date: Date, fmt: string) {
         RegExp.$1.length === 1 ? o[k] : ('00' + o[k]).substr(('' + o[k]).length)
       )
   return fmt
+}
+
+export const formatImage = (url: string, grid = true) => {
+  // regexp format
+  const reg = /^https:\/\/([\w.-]+)\/(.+)$/gi
+  if (grid) {
+    return url.replace(
+      reg,
+      'https://$1/cdn-cgi/image/width=500,height=500,fit=crop,gravity=center,quality=75/$2'
+    )
+  } else {
+    return url.replace(reg, 'https://$1/cdn-cgi/image/width=800,fit=contain,quality=75/$2')
+  }
 }

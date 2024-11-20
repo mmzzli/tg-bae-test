@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react'
-import { cn } from '@/utils/utils'
+import { cn, formatImage } from '@/utils/utils'
 import { DefaultAvatarIcon } from '@/assets/icons'
 
 interface ImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'onClick'> {

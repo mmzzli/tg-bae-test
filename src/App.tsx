@@ -17,7 +17,6 @@ import OthersProfile from '@/pages/OthersProfile'
 import EarningsHistory from '@/components/PersonalDetails/Earnings/History'
 import Follow from './pages/Follow'
 import ProfileGuard from './pages/OthersProfile/routeGuard'
-import { MessagePage } from './pages/Chat'
 import MessagePageRouteGuard from './pages/Chat/MessagePageRouteGuard'
 import { useEffect } from 'react'
 import NiceModal from '@ebay/nice-modal-react'
@@ -99,14 +98,7 @@ function App() {
 
                 {/* Chat */}
                 <Route path="chat" element={<></>} />
-                <Route
-                  path="chat/:uid"
-                  element={
-                    <MessagePageRouteGuard>
-                      <MessagePage />
-                    </MessagePageRouteGuard>
-                  }
-                />
+                <Route path="chat/:uid" element={<MessagePageRouteGuard />} />
               </Route>
             </Routes>
           </BrowserRouter>

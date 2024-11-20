@@ -12,16 +12,13 @@ import { cn } from '@/utils/utils'
 // const PAGE_SIZE = 20
 
 const defaultMessages: WrappedMessage[] = []
-const isIOS = () => {
-  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
-}
+
 const MemoizedMessageList = memo(MessageList)
-const MessagePage = () => {
+const MessagePageIOS = () => {
   const { uid } = useParams()
   const [messages, setMessages] = useState<WrappedMessage[]>(defaultMessages)
   const [message, setMessage] = useState('')
   const [chatPeople, setChatPeople] = useState<OthersUserInfo | null>(null)
-  const [iosFirstRender, setIosFirstRender] = useState(true)
   // const [page, setPage] = useState(1)
   // const [hasMore, setHasMore] = useState(true)
   const { formatMessage } = useFormatMessage()
@@ -34,7 +31,8 @@ const MessagePage = () => {
   const [vh, setVh] = useState(0)
   const [tgViewportHeight, setTgViewportHeight] = useState('')
   const containerRef = useRef<HTMLDivElement>(null)
-  const [keyboardHeight, setKeyboardHeight] = useState(0)
+
+  const [initTgViewportHeight, setInitTgViewportHeight] = useState(0)
 
   useEffect(() => {
     if (messageWindow) {
@@ -88,72 +86,73 @@ const MessagePage = () => {
   }
 
   const isFocusedRef = useRef(isFocused)
+  const initTgViewportHeightRef = useRef(0)
 
   useEffect(() => {
     isFocusedRef.current = isFocused
   }, [isFocused])
 
   useEffect(() => {
+    initTgViewportHeightRef.current = initTgViewportHeight
+  }, [initTgViewportHeight])
+
+  useEffect(() => {
     if (!containerRef.current) return
     const tg = window.Telegram?.WebApp
-    // update：还是不可以 需要等待键盘收起或弹出完成之后 处理页面input才不会有问题
-    // IOS  tg.viewportHeight
-    // other window.visualViewport.height
-    const handleViewportChange = (firstRender: boolean = false) => {
-      if (containerRef.current && isFocusedRef.current) {
-        containerRef.current.style.height = `${tg.viewportHeight}px`
-      } else if (containerRef.current) {
-        containerRef.current.style.height = `${tg.viewportHeight - 84}px`
-      }
-      if (iosFirstRender) {
-        setTimeout(() => {
-          setVh(window.visualViewport!.height)
-          setTgViewportHeight(tg.viewportHeight + '')
-        }, 0)
+    setInitTgViewportHeight(tg.viewportStableHeight)
+    const handleViewportChange = () => {
+      console.log(
+        'handleViewportChange------------------',
+        tg.viewportStableHeight,
+        initTgViewportHeight
+      )
+      if (tg.viewportStableHeight < initTgViewportHeight) {
+        console.log('keyboard up')
       } else {
-        setVh(window.visualViewport!.height)
-        setTgViewportHeight(tg.viewportHeight + '')
+        console.log('keyboard down')
       }
-      setIosFirstRender(firstRender)
+      setTgViewportHeight(tg.viewportStableHeight)
     }
 
     const handleVisualViewportResize = () => {
       if (!window.visualViewport) return
       const currentHeight = window.visualViewport.height
-      const windowHeight = window.innerHeight
-      const keyboardHeight = windowHeight - currentHeight
 
-      if (containerRef.current && isFocusedRef.current) {
-        containerRef.current.style.height = `${currentHeight}px`
-      } else if (containerRef.current) {
-        containerRef.current.style.height = `${currentHeight - 84}px`
+      // if (containerRef.current && isFocusedRef.current) {
+      //   containerRef.current.style.height = `${currentHeight}px`
+      // } else if (containerRef.current) {
+      //   containerRef.current.style.height = `${currentHeight - 84}px`
+      // }
+
+      console.log('currentHeight', tg.viewportStableHeight, initTgViewportHeightRef.current)
+      // 这个有时候会获取不到初始的高度
+      if (tg.viewportStableHeight < initTgViewportHeightRef.current) {
+        console.log('keyboard up 2')
+        containerRef.current!.style.height = `${currentHeight}px`
+      } else {
+        console.log('keyboard down 2')
+        containerRef.current!.style.height = `${currentHeight - 84}px`
+        setIsFocused(false)
+        document.body.scrollIntoView()
       }
       setVh(currentHeight)
-      setTgViewportHeight(windowHeight + '')
-      setKeyboardHeight(keyboardHeight)
-      console.log('containerRef.current', currentHeight)
     }
 
     // IOS
-    // if (isIOS()) {
-    //   handleViewportChange(true)
-    //   tg.onEvent('viewportChanged', handleViewportChange)
-    // } else {
-    // Other Device
+    tg?.onEvent('viewportChanged', handleViewportChange)
+
     handleVisualViewportResize()
-    if (isIOS()) {
-      window.visualViewport?.addEventListener('resize', handleVisualViewportResize)
-      window.visualViewport?.addEventListener('scroll', handleVisualViewportResize)
-    }
-    // }
+    window.visualViewport?.addEventListener('resize', handleVisualViewportResize)
+    window.visualViewport?.addEventListener('scroll', handleVisualViewportResize)
 
     return () => {
-      tg.offEvent('viewportChanged', handleViewportChange)
+      tg?.offEvent('viewportChanged', handleViewportChange)
       window.visualViewport?.removeEventListener('resize', handleVisualViewportResize)
       window.visualViewport?.removeEventListener('scroll', handleVisualViewportResize)
     }
   }, [])
 
+  // show real input after height change
   useEffect(() => {
     if (isFocused) {
       setShowInput(true)
@@ -166,25 +165,18 @@ const MessagePage = () => {
   return (
     <div
       ref={containerRef}
-      className="absolute top-0 left-0 right-0 flex flex-col bg-[#000000] z-10 pt-[76px] overflow-auto scrollbar-hide"
+      className="absolute top-0 left-0 right-0 flex flex-col bg-[#000000] z-[999] pt-[76px] overflow-auto scrollbar-hide"
       style={{
-        bottom: isIOS() ? '' : 0,
         WebkitOverflowScrolling: 'touch',
-        // transition: isFocused ? 'height 0.3s ease-out' : 'none',
       }}
     >
       {/* TEST CODE */}
-      {/* <div className="absolute bottom-1/2 left-0 bg-[#f39292] z-[9999] translate-y-10">
-        {vh}/{tgViewportHeight}
+      {/* <div className="absolute bottom-1/2  left-0 bg-[#f39292] z-[9999] translate-y-20">
         <div>{showInput ? 'showInput true' : 'showInput false'}</div>
         <div>{showInput ? 'bottom-0 bg-slate-100' : '-top-32 bg-slate-200'}</div>
         {vh}/{tgViewportHeight}
-        <div>
-          {' '}
-          {vh}/{tgViewportHeight}/{keyboardHeight}
-        </div>
-        {isIOS() ? 'ios true' : 'ios false'}
-        <div>{iosFirstRender ? 'iosFirstRender true' : 'iosFirstRender false'}</div>
+        <div>initTgViewportHeight: {initTgViewportHeight}</div>
+        {'ios true'}
       </div> */}
 
       <div className="fixed flex items-center left-0 right-0 top-[10px] px-[16px] pt-[24px] h-[56px]">
@@ -208,18 +200,13 @@ const MessagePage = () => {
       {/* FAKE INPUT */}
       <div
         className={`'flex h-[68px] absolute bottom-0 left-0 right-0 bg-[#000000] pr-8 pl-6 pt-[8px] ${
-          isFocused || !isIOS() ? 'hidden' : 'block'
+          isFocused ? 'hidden' : 'block'
         }`}
       >
         <div
           onClick={() => {
             inputRef.current?.focus()
             setIsFocused(true)
-            if (!isIOS()) {
-              setTimeout(() => {
-                inputRef.current?.scrollIntoView(false)
-              }, 400)
-            }
           }}
           className="flex items-center flex-1 h-[36px] text-default bg-black border-[0.5px]
         border-[#4B4B4D] rounded-full px-3"
@@ -236,8 +223,8 @@ const MessagePage = () => {
         onSubmit={handleSubmit}
         className={cn(
           'flex h-[68px] absolute left-0 right-0 bg-[#000000] pr-4 pt-[8px]',
-          isFocused || !isIOS() ? 'opacity-100' : 'opacity-0',
-          showInput || !isIOS() ? 'bottom-0' : '-top-32'
+          isFocused ? 'opacity-100' : 'opacity-0',
+          showInput ? 'bottom-0' : '-top-32'
         )}
       >
         <div className="flex items-center h-[34px] w-full bg-[#000000] pr-4 pl-6">
@@ -261,4 +248,4 @@ const MessagePage = () => {
     </div>
   )
 }
-export default MessagePage
+export default MessagePageIOS

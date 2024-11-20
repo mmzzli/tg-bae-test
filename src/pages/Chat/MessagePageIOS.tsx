@@ -221,12 +221,12 @@ const MessagePageIOS = () => {
       <form
         onSubmit={handleSubmit}
         className={cn(
-          'flex h-[68px] absolute left-0 right-0 bg-[#000000] pr-4 pt-[8px] overflow-hidden',
+          'flex h-[68px] absolute left-0 right-0 bg-[#000000] pl-6 pr-8 pt-[8px] overflow-hidden',
           isFocused ? 'opacity-100' : 'opacity-0',
           showInput ? 'bottom-0' : '-top-32'
         )}
       >
-        <div className="flex items-center h-[34px] w-full bg-[#000000] pr-4 pl-6">
+        <div className="absolute left-[14px] right-[14px] flex items-center h-[34px] bg-[#000000]">
           {/* <div className="w-[28px] h-[28px] mx-[10px] cursor-pointer">
           <Image src={AttachIcon} />
         </div> */}
@@ -239,13 +239,13 @@ const MessagePageIOS = () => {
               setIsFocused(false)
             }}
             type="text"
-            className="flex-1 pr-[60px] h-[36px] text-default bg-black border-[0.5px] border-[#4B4B4D] focus:border-[#4B4B4D] rounded-full px-3 outline-none text-white placeholder:text-[#5D5D60]"
+            className="flex-1 h-[36px] text-default bg-black border-[0.5px] border-[#4B4B4D] focus:border-[#4B4B4D] rounded-full px-3 outline-none text-white placeholder:text-[#5D5D60] pr-[60px]"
             placeholder="Type a Message..."
           />
         </div>
         <div
           onClick={handleSubmit}
-          className="absolute h-[34px] items-center justify-center right-[47px] cursor-pointer text-[#6761FF] text-sm"
+          className="absolute items-center justify-center h-[34px] right-[27px] cursor-pointer text-[#6761FF] text-sm"
           style={{
             display: message ? 'flex' : 'none',
           }}

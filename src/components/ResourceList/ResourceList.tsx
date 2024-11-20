@@ -350,7 +350,6 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
               <div className="relative px-4">
                 {data.type === POST_TYPE_IMAGE ? (
                   <Box position="relative" minH={data.media?.[0] === '' ? '200px' : 'auto'}>
-                    {JSON.stringify(data.media)}
                     <Image
                       src={ formatImage(data.media?.[0] ?? data?.media ?? '',false) }
                       alt={data.title}

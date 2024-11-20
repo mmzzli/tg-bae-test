@@ -71,17 +71,9 @@ const Splash: FC = () => {
       );
     };
 
-<<<<<<< HEAD
-    if (resources && resources.length > 0) {
-      cacheVideos();
-      setTimeout(()=>{
-        setIsCached(true);
-      },1000)
-=======
     if (list && list.length > 0) {
       const resources = list.filter(item => item.type === 0);
       cacheVideos(resources);
->>>>>>> 78ddcea39b3b3f27c068c7f58d328fa9a00ec993
     }
   }, [list]);
 

@@ -3,12 +3,14 @@ import { useIM } from '@/store/hook/userIM'
 import { Spinner } from '@chakra-ui/react'
 import { FC, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import MessagePage from './MessagePage'
+import MessagePageIOS from './MessagePageIOS'
 
-interface MessagePageRouteGuardProps {
-  children: React.ReactNode
+const isIOS = () => {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
 }
 
-const MessagePageRouteGuard: FC<MessagePageRouteGuardProps> = ({ children }) => {
+const MessagePageRouteGuard: FC = () => {
   const [ready, setReady] = useState(false)
   const { uid } = useParams()
   const { getMessageWindow } = useIM()
@@ -53,7 +55,7 @@ const MessagePageRouteGuard: FC<MessagePageRouteGuardProps> = ({ children }) => 
     )
   }
 
-  return <>{children}</>
+  return <>{isIOS() ? <MessagePageIOS /> : <MessagePage />}</>
 }
 
 export default MessagePageRouteGuard

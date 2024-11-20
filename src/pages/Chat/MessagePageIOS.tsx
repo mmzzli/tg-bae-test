@@ -194,7 +194,7 @@ const MessagePageIOS = () => {
         messages={messages}
         hasMore={false}
         channelInfo={chatPeople}
-        className="flex-1 pb-[68px]"
+        className="flex-1 mb-[68px]"
       />
 
       {/* FAKE INPUT */}

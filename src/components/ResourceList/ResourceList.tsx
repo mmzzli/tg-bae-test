@@ -23,7 +23,7 @@ import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import useMobile from '@/hooks/useMobile'
 import playIcon from '@/assets/icons/videoSwitch.svg'
 import { formatImage, formatTime } from '@/utils/utils'
-import Hls from "hls.js";
+import Hls from 'hls.js'
 
 import { VideoDialog } from './VideoDialog'
 interface Like {
@@ -39,7 +39,13 @@ interface Saveds {
 const POST_TYPE_IMAGE = 1
 const POST_TYPE_VIDEO = 0
 
-const ResourceList = ({ resources: initialResources, type }: { resources: FormatterListItem[], type?:string }) => {
+const ResourceList = ({
+  resources: initialResources,
+  type,
+}: {
+  resources: FormatterListItem[]
+  type?: string
+}) => {
   const isMobile = useMobile()
   const [resources, setResources] = useState<FormatterListItem[]>([])
   const [likes, setLikes] = useSafeState<Like[]>([])
@@ -125,10 +131,8 @@ const ResourceList = ({ resources: initialResources, type }: { resources: Format
     setSaveds((prevLikes) =>
       prevLikes.map((item: any) => (item.id === pid ? { ...item, saveds: boll } : item))
     )
-    if(type === 'fav'){
-      setResources((favResources)=>(
-        favResources.filter(item => item.id !== pid)
-      ))
+    if (type === 'fav') {
+      setResources((favResources) => favResources.filter((item) => item.id !== pid))
     }
     if (boll) {
       await favPost(pid)
@@ -212,58 +216,66 @@ const ResourceList = ({ resources: initialResources, type }: { resources: Format
 
   return (
     <>
+    <div className="pt-4">
       {resources.map((data, index: number) => {
         if (data.type === POST_TYPE_IMAGE && data.media.length > 1) {
-          if(data.media.length === 4){
-            return <Box pt="32px" key={data.id}>
-              <ResourceHeader
-                data={data}
-                currentUid={launchParams.initData?.user?.id ?? 0}
-                onProfileClick={jumpToProfilePage}
-              />
-              <div
-                className="relative px-4"
-                style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}
-              >
-                <div className="grid grid-cols-3 gap-2">
-                  <div className='grid grid-cols-2 gap-2 col-span-2'>
-                    {data.media.map((i, ind) => (
-                      <Image
-                        src={formatImage(i)}
-                        alt={data.title}
-                        width="100%"
-                        height="100%"
-                        key={i}
-                        onClick={() => handleImageClick(data.media, ind)}
-                        rect
-                      />
-                    ))}
-                  </div>
-                  <div className="">
-
-                  </div>
-                </div>
-                {data.media?.[0] == '' && (
-                  <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} />
-                )}
-              </div>
-
-              <ResourceFooter
-                data={data}
-                likes={likes}
-                saveds={saveds}
-                linkEve={linkEve}
-                savedEve={savedEve}
-                type={type}
-                onShare={() => {
-                  getShareLink(data.title, data.id, data.uid)
-                  toggle()
-                }}
-              />
-            </Box>
-          }else{
+          if (data.media.length === 4) {
             return (
-              <Box pt="32px" key={data.id}>
+              <Box key={data.id}>
+                <ResourceHeader
+                  data={data}
+                  currentUid={launchParams.initData?.user?.id ?? 0}
+                  onProfileClick={jumpToProfilePage}
+                />
+                <div
+                  className="relative px-4"
+                  style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}
+                >
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-2 gap-2 col-span-2">
+                      {data.media.map((i, ind) => (
+                        <Image
+                          src={formatImage(i)}
+                          alt={data.title}
+                          width="100%"
+                          height="100%"
+                          key={i}
+                          onClick={() => handleImageClick(data.media, ind)}
+                          rect
+                        />
+                      ))}
+                    </div>
+                    <div className=""></div>
+                  </div>
+                  {data.media?.[0] == '' && (
+                    <FrostedGlass
+                      price={data.price}
+                      post_id={data.id}
+                      resourcesEve={resourcesEve}
+                    />
+                  )}
+                </div>
+
+                <ResourceFooter
+                  data={data}
+                  likes={likes}
+                  saveds={saveds}
+                  linkEve={linkEve}
+                  savedEve={savedEve}
+                  type={type}
+                  onShare={() => {
+                    getShareLink(data.title, data.id, data.uid)
+                    toggle()
+                  }}
+                />
+                <div className="pt-8 pb-8 pl-4 pr-4">
+                  <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.10)' }}></div>
+                </div>
+              </Box>
+            )
+          } else {
+            return (
+              <Box key={data.id}>
                 <ResourceHeader
                   data={data}
                   currentUid={launchParams.initData?.user?.id ?? 0}
@@ -287,7 +299,11 @@ const ResourceList = ({ resources: initialResources, type }: { resources: Format
                     ))}
                   </div>
                   {data.media?.[0] == '' && (
-                    <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} />
+                    <FrostedGlass
+                      price={data.price}
+                      post_id={data.id}
+                      resourcesEve={resourcesEve}
+                    />
                   )}
                 </div>
 
@@ -303,12 +319,15 @@ const ResourceList = ({ resources: initialResources, type }: { resources: Format
                     toggle()
                   }}
                 />
+                <div className="pt-8 pb-8 pl-4 pr-4">
+                  <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.10)' }}></div>
+                </div>
               </Box>
             )
           }
         } else {
           return (
-            <Box pt="32px" key={index}>
+            <Box key={index}>
               <ResourceHeader
                 data={data}
                 currentUid={launchParams.initData?.user?.id ?? 0}
@@ -318,12 +337,12 @@ const ResourceList = ({ resources: initialResources, type }: { resources: Format
                 {data.type === POST_TYPE_IMAGE ? (
                   <Box position="relative" minH={data.media?.[0] === '' ? '200px' : 'auto'}>
                     <Image
-                      src={ formatImage(data.media?.[0] ?? data?.media ?? '',false) }
+                      src={formatImage(data.media?.[0] ?? data?.media ?? '', false)}
                       alt={data.title}
                       errorClassName="rounded-[4px] h-[150px]"
                       // wrapperClassName="rounded-[4px] overflow-hidden"
                       // className="object-left w-[100%] m-[auto]"
-                      className='w-[230px] rounded-[4px]'
+                      className="w-[230px] rounded-[4px]"
                       onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
                     />
                     {data.media?.[0] === '' && (
@@ -385,6 +404,9 @@ const ResourceList = ({ resources: initialResources, type }: { resources: Format
                   toggle()
                 }}
               />
+              <div className="pt-8 pb-8 pl-4 pr-4">
+                <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.10)' }}></div>
+              </div>
             </Box>
           )
         }
@@ -405,6 +427,7 @@ const ResourceList = ({ resources: initialResources, type }: { resources: Format
       )}
       {/* Components */}
       {renderBaseModal()}
+      </div>
     </>
   )
 }
@@ -421,15 +444,15 @@ interface ResourceFooterProps {
   saveds: Saveds[]
   linkEve: (postId: number, isLike: boolean) => void
   savedEve: (postId: number, isSaveds: boolean) => void
-  onShare: () => void,
+  onShare: () => void
   type?: string
 }
 
 const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileClick }) => {
   return (
-    <div className="p-4 flex items-center">
+    <div className="pl-4 pr-4 pb-4 flex items-center">
       <div className="flex items-center justify-between gap-2" onClick={() => onProfileClick(data)}>
-        <div className='w-[48px] h-[48px] overflow-hidden rounded-[50%]'>
+        <div className="w-[48px] h-[48px] overflow-hidden rounded-[50%]">
           <Image
             rect
             width={48}
@@ -439,7 +462,10 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
             alt={data.username}
           />
         </div>
-        <div className="text-[#E0E2F6] font-bold text-base">{data.username}</div>
+        <div className="flex flex-col">
+          <div className="text-[#E0E2F6] font-bold text-base">{data.username}</div>
+          {!data.is_collected && <div className="text-[#62636F] text-[12px]">Bae selected</div>}
+        </div>
       </div>
       <SecondaryMenu className="ml-auto" key={data.id} mediaData={data} currentUid={currentUid} />
     </div>
@@ -451,17 +477,17 @@ const ResourceFooter = memo<ResourceFooterProps>(
     return (
       <>
         <div className="px-4 py-3">
-          <p className="text-[#62636F] text-sm leading-6">{data.title}</p>
+          <p className="text-[#ccc] text-sm leading-6">{data.title}</p>
           <HStack pt="2" justifyContent="space-between">
             <p className="text-[#424048] text-xs">
               {dayjs(data.created_at).format('YYYY-MM-DD HH:mm')}
             </p>
-            { type === 'payment' && <HStack gap="4px">
-              <p className="text-[#424048] text-[12px]">
-                Purchased for {data.price}
-              </p>
-              <Image src={StarsIcon}/>
-            </HStack>}
+            {type === 'payment' && (
+              <HStack gap="4px">
+                <p className="text-[#424048] text-[12px]">Purchased for {data.price}</p>
+                <Image src={StarsIcon} />
+              </HStack>
+            )}
           </HStack>
         </div>
         <div className="px-4 flex items-center justify-between">

@@ -23,18 +23,21 @@ const Profile: FC = () => {
       getFollowingList(current_uid).then((res) => setMyFollow(res))
     }
   }, [token])
-  const { list,  isLoading } = useViewList()
-  const [loading,setLoading] = useSafeState(true)
-  useEffect(()=>{
+  const { list, isLoading } = useViewList()
+  const [loading, setLoading] = useSafeState(true)
+  useEffect(() => {
     setLoading(!list.length && isLoading)
-  },[list,isLoading])
+  }, [list, isLoading])
   return (
     <div className="relative w-full h-full overflow-auto" id="profileScrollableDiv">
-      {
-        loading && <ProfileSkeleton/>
-      }
-      <UserProfile />
-      <ViewList />
+      {loading ? (
+        <ProfileSkeleton />
+      ) : (
+        <>
+          <UserProfile />
+          <ViewList />
+        </>
+      )}
     </div>
   )
 }

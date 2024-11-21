@@ -77,23 +77,25 @@ const FollowPage: FC = () => {
   const FollowItem = ({ item }: { item: Follow }) => {
     return (
       <div key={item.tg_id} className="flex items-center h-[80px] my-3">
-        <Image
-          src={item.avatar}
-          alt={item.tgname}
-          width={56}
-          height={56}
-          rect
-          onClick={() => {
-            jumpToProfilePage({
-              avatar: item.avatar,
-              uid: item.tg_id,
-              username: item.tgname,
-              fans: 0,
-              follower: 0,
-            })
-          }}
-          className="rounded-full"
-        />
+        <div className="rounded-full overflow-hidden">
+          <Image
+            src={item.avatar}
+            alt={item.tgname}
+            width={56}
+            height={56}
+            rect
+            onClick={() => {
+              jumpToProfilePage({
+                avatar: item.avatar,
+                uid: item.tg_id,
+                username: item.tgname,
+                fans: 0,
+                follower: 0,
+              })
+            }}
+            className="rounded-full"
+          />
+        </div>
         <div className="flex-1 ml-3 truncate overflow-hidden whitespace-nowrap">{item.tgname}</div>
         {item.tg_id !== currentUid && (
           <FollowButton

@@ -93,7 +93,7 @@ const FavList = () => {
       </InfiniteScroll>
     )
   }else{
-    return <Empty title="No post yet." icon={<Icon name="icon-none_purchased" style={{width:'164px', height:'164px'}}></Icon>}></Empty>
+    return <Empty title="No post yet." icon={<Icon name="icon-none_post" style={{width:'164px', height:'164px'}}></Icon>}></Empty>
   }
 
 }
@@ -119,7 +119,7 @@ const OrderList = () => {
       </InfiniteScroll>
     )
   }else{
-    return <Empty title="No post yet." icon={<Icon name="icon-none_post" style={{width:'164px', height:'164px'}}></Icon>}></Empty>
+    return <Empty title="No post yet." icon={<Icon name="icon-none_purchased" style={{width:'164px', height:'164px'}}></Icon>}></Empty>
   }
 
 }

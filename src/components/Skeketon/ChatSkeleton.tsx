@@ -26,5 +26,5 @@ export const SkeletonShine = () =>{
 
 
 export const DrawSkeletonItem:React.FC<{className:string}> = ({className}) => {
-  return <div className={` relative overflow-hidden  bg-[#272727]  ${className ? className :'rounded-[2px]'}`}><SkeletonShine/></div>
+  return <div className={` relative overflow-hidden  bg-[#272727]  ${className ? className :''} rounded-[4px]`}><SkeletonShine/></div>
 }

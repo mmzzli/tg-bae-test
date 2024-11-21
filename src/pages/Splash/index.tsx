@@ -9,8 +9,8 @@ import logoData from '@/assets/animations/logo.json'
 import Icon from '@/components/comm/Icon'
 import { useSafeState } from 'ahooks'
 import { useRecommendList } from '@/store/hook/useResourceList'
-import {FormatterListItem} from '@/store/slices/resourceListSlice'
-import Hls from "hls.js";
+import { FormatterListItem } from '@/store/slices/resourceListSlice'
+import Hls from 'hls.js'
 
 const SHARE_POST = 1
 const SHARE_PROFILE = 2
@@ -18,6 +18,7 @@ const SHARE_PROFILE = 2
 const Splash: FC = () => {
   const navigate = useNavigate()
   const userInfo = useStore((state) => state.userInfo)
+  const setBackToHome = useStore((state) => state.setBackToHome)
   const { token, setSharedPostList, setOthersUserInfo } = useStore((state) => ({
     setSharedPostList: state.setSharedPostList,
     setOthersUserInfo: state.setOthersUserInfo,
@@ -25,68 +26,65 @@ const Splash: FC = () => {
   }))
   const [animationEnding, setAnimationEnding] = useSafeState(false)
   const { list } = useRecommendList()
-  const [isCached, setIsCached] = useState(false);
+  const [isCached, setIsCached] = useState(false)
 
   const { isInTMA } = useTMAUtils()
   const { startParam } = retrieveLaunchParams()
 
   useEffect(() => {
-    const cacheVideos = async (resources:any) => {
-      const totalVideos = resources.length;
-      const progressArray = new Array(totalVideos).fill(0);
-      resources.map((item:any, index:number) =>{
-          if (Hls.isSupported()) {
-            const hls = new Hls();
-            const targetFragments = 1;
-            let bufferedFragments = 0;
+    const cacheVideos = async (resources: any) => {
+      const totalVideos = resources.length
+      const progressArray = new Array(totalVideos).fill(0)
+      resources.map((item: any, index: number) => {
+        if (Hls.isSupported()) {
+          const hls = new Hls()
+          const targetFragments = 1
+          let bufferedFragments = 0
 
-            hls.loadSource(item.media[0]);
-            hls.attachMedia(document.createElement("video"));
+          hls.loadSource(item.media[0])
+          hls.attachMedia(document.createElement('video'))
 
-            hls.on(Hls.Events.FRAG_BUFFERED, () => {
-              bufferedFragments++;
-              progressArray[index] = bufferedFragments;
-              console.log(`视频 ${index + 1} 缓存分片数量: ${bufferedFragments}`);
-              if (bufferedFragments >= targetFragments) {
-                if (index + 1 === resources.length) {
-                  console.log('缓存完成')
-                  setIsCached(true);
-                }
-                hls.destroy();
+          hls.on(Hls.Events.FRAG_BUFFERED, () => {
+            bufferedFragments++
+            progressArray[index] = bufferedFragments
+            console.log(`视频 ${index + 1} 缓存分片数量: ${bufferedFragments}`)
+            if (bufferedFragments >= targetFragments) {
+              if (index + 1 === resources.length) {
+                console.log('缓存完成')
+                setIsCached(true)
               }
-            });
-            hls.on(Hls.Events.MANIFEST_PARSED, () => {
-              console.log(`视频 ${index + 1} 流解析完成，开始缓存`);
-            });
+              hls.destroy()
+            }
+          })
+          hls.on(Hls.Events.MANIFEST_PARSED, () => {
+            console.log(`视频 ${index + 1} 流解析完成，开始缓存`)
+          })
 
-            hls.on(Hls.Events.ERROR, (event, data) => {
-              setIsCached(true);
-              hls.destroy();
-            });
-          } else {
-            setIsCached(true);
-            console.error("HLS.js 不支持当前浏览器环境");
-          }
+          hls.on(Hls.Events.ERROR, (event, data) => {
+            setIsCached(true)
+            hls.destroy()
+          })
+        } else {
+          setIsCached(true)
+          console.error('HLS.js 不支持当前浏览器环境')
         }
-      );
-    };
+      })
+    }
 
     if (list && list.length > 0) {
-      const resources = list.filter(item => item.type === 0);
-      if(!resources.length){
+      const resources = list.filter((item) => item.type === 0)
+      if (!resources.length) {
         setIsCached(true)
       }
-      cacheVideos(resources);
+      cacheVideos(resources)
     }
-  }, [list]);
-
-
+  }, [list])
 
   useEffect(() => {
     if (userInfo.user_id && token && isCached) {
       console.log(isCached)
-      if (!animationEnding) return;
-      if ((!isInTMA || !startParam || history.length > 2)) return navigate('/home')
+      if (!animationEnding) return
+      if (!isInTMA || !startParam || history.length > 2) return navigate('/home')
       const params = startParam.split('_')
       console.log('startParam', params)
 
@@ -100,6 +98,7 @@ const Splash: FC = () => {
         return false
       })
       if (isShare) {
+        setBackToHome(true)
         handleNavigate(sharedRef)
       } else {
         navigate('/home')
@@ -148,11 +147,17 @@ const Splash: FC = () => {
             animationData={logoData}
             loop={false}
             autoplay={true}
-            onComplete={() => { setAnimationEnding(true) }}
+            onComplete={() => {
+              setAnimationEnding(true)
+            }}
           ></Lottie>
         </div>
-        <div className="text-[var(--Dark-T1)]  text-[24px] font-bold leading-[1.5] capitalize text-center">welcome to Bae</div>
-        <div className="mt-[12px] text-[var(--Dark-T1)] opacity-50 pl-[36px] pr-[36px] text-center tracking-[1px]">Connect with people you like on a deeper level.</div>
+        <div className="text-[var(--Dark-T1)]  text-[24px] font-bold leading-[1.5] capitalize text-center">
+          welcome to Bae
+        </div>
+        <div className="mt-[12px] text-[var(--Dark-T1)] opacity-50 pl-[36px] pr-[36px] text-center tracking-[1px]">
+          Connect with people you like on a deeper level.
+        </div>
       </div>
       <div className="absolute left-[-7px] bottom-[-8px]">
         <Icon name={'icon-chatu_zuoxia'} style={{ width: '138.11px', height: '154px' }}></Icon>

@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { retrieveLaunchParams } from '@telegram-apps/sdk'
 import { logIn } from '@/api'
 import { DEV_INIT_DATA_RAW } from '@/utils/constants'
@@ -31,8 +31,10 @@ export const MainLayout: React.FC = () => {
   const resetAllLists = useStore((state) => state.resetAllLists)
   const resetUserInfo = useStore((state) => state.resetUserInfo)
   const resetToken = useStore((state) => state.resetToken)
+  const setBackToHome = useStore((state) => state.setBackToHome)
   const [shouldLoadChat, setShouldLoadChat] = useState(false)
   const [hiddenChatPage, setHiddenChatPage] = useState(false)
+  const navigate = useNavigate()
   const { run: runLogin } = useRequest(logIn, {
     manual: true,
     onSuccess({ token, api_token, user_info }) {
@@ -80,6 +82,12 @@ export const MainLayout: React.FC = () => {
       tgApp.BackButton.onClick(() => {
         console.log('location.pathname', location.pathname)
         console.log('window.location.pathname', window.location.pathname)
+        console.log('location previous', location.state?.from)
+        console.log('location previous backToHome', useStore.getState().backToHome)
+        if (useStore.getState().backToHome) {
+          setBackToHome(false)
+          return navigate('/home')
+        }
         if (window.location.pathname === '/home') {
           tgApp
             .showConfirm({
@@ -116,6 +124,11 @@ export const MainLayout: React.FC = () => {
   }, [])
 
   useEffect(() => {
+    console.log('pathname-------------------------------_>', location.pathname)
+    const BASE_PATHS = ['/home', '/chat', '/profile']
+    if (BASE_PATHS.includes(location.pathname)) {
+      setBackToHome(false)
+    }
     if (location.pathname.startsWith('/chat') && !shouldLoadChat) {
       setShouldLoadChat(true)
     }

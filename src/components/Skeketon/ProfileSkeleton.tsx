@@ -3,7 +3,7 @@ import PostSkeleton from './PostSkeleton'
 
 const ProfileSkeleton = () => {
   return (
-    <div className="p-4  h-[56px] mt-[14px] absolute left-0 top-0 z-10  w-full h-full  flex-col bg-[#000000]">
+    <div className="p-4  mt-[14px] absolute left-0 top-0 z-10  w-full h-full  flex-col bg-[#000000]">
       <div className="flex  gap-4 w-full justify-between">
         <div>
           <DrawSkeletonItem className="w-[64px] rounded-full h-[64px] ml-[8px]"></DrawSkeletonItem>
@@ -34,7 +34,7 @@ const ProfileSkeleton = () => {
         className="mt-[14px] mb-[45px]"
         style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}
       ></div>
-      <PostSkeleton/>
+      <PostSkeleton></PostSkeleton>
     </div>
   )
 }

@@ -5,9 +5,6 @@ import ViewList from '@/components/ViewList/ViewList'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useStore } from '@/store'
 import { getFollowingList } from '@/api'
-import ProfileSkeleton from '@/components/Skeketon/ProfileSkeleton'
-import { useSafeState } from 'ahooks'
-import { useViewList } from '@/store/hook/useResourceList'
 
 const Profile: FC = () => {
   const { launchParams } = useTMAUtils()
@@ -23,21 +20,11 @@ const Profile: FC = () => {
       getFollowingList(current_uid).then((res) => setMyFollow(res))
     }
   }, [token])
-  const { list, isLoading } = useViewList()
-  const [loading, setLoading] = useSafeState(true)
-  useEffect(() => {
-    setLoading(!list.length && isLoading)
-  }, [list, isLoading])
+
   return (
     <div className="relative w-full h-full overflow-auto" id="profileScrollableDiv">
-      {loading ? (
-        <ProfileSkeleton />
-      ) : (
-        <>
-          <UserProfile />
-          <ViewList />
-        </>
-      )}
+      <UserProfile />
+      <ViewList />
     </div>
   )
 }

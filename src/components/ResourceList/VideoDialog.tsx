@@ -100,19 +100,23 @@ const UserInfo = memo(
   }
 )
 
-const CloseButton = memo(({ onClose }: { onClose: () => void }) => (
-  <div
-    className="absolute right-2 top-2 z-[999] w-8 h-8 bg-black/30 rounded-full overflow-hidden flex items-center justify-center"
-    onTouchEnd={(e) => {
-      e.preventDefault()
-      e.stopPropagation()
+const CloseButton = memo(({ onClose }: { onClose: () => void }) => {
+  const { touchHandlers } = useTouch({
+    onTap: () => {
       onClose()
-    }}
-    onClick={onClose}
-  >
-    <img src={closeIcon} alt="close" />
-  </div>
-))
+    },
+  })
+
+  return (
+    <div
+      className="absolute right-2 top-2 z-[999] w-8 h-8 bg-black/30 rounded-full overflow-hidden flex items-center justify-center"
+      {...touchHandlers}
+      onClick={onClose}
+    >
+      <img src={closeIcon} alt="close" />
+    </div>
+  )
+})
 
 const PlayButton = memo(({ onClick }: { onClick: (e: React.MouseEvent) => void }) => (
   <div

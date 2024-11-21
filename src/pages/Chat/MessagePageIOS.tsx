@@ -198,7 +198,7 @@ const MessagePageIOS = () => {
 
       {/* FAKE INPUT */}
       <div
-        className={`'flex h-[68px] absolute bottom-0 left-0 right-0 bg-[#000000] pr-8 pl-6 pt-[8px] ${
+        className={`'flex h-[68px] absolute bottom-0 left-0 right-0 bg-[#000000] px-[14px] pt-[8px] ${
           isFocused ? 'hidden' : 'block'
         }`}
       >
@@ -207,7 +207,7 @@ const MessagePageIOS = () => {
             inputRef.current?.focus()
             setIsFocused(true)
           }}
-          className="flex items-center flex-1 h-[36px] text-default bg-black border-[0.5px]
+          className="flex items-center flex-1 h-[36px] text-sm bg-black border-[1px]
         border-[#4B4B4D] rounded-full px-3"
           style={{
             color: message ? '#FFFFFF' : '#5D5D60',
@@ -239,7 +239,7 @@ const MessagePageIOS = () => {
               setIsFocused(false)
             }}
             type="text"
-            className="flex-1 h-[36px] text-default bg-black border-[0.5px] border-[#4B4B4D] focus:border-[#4B4B4D] rounded-full px-3 outline-none text-white placeholder:text-[#5D5D60] pr-[60px]"
+            className="flex-1 h-[36px] text-sm bg-black border-[1px] border-[#4B4B4D] focus:border-[#4B4B4D] rounded-full px-3 outline-none text-white placeholder:text-[#5D5D60] pr-[60px]"
             placeholder="Type a Message..."
           />
         </div>

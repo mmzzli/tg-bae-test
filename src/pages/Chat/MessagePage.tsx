@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, memo } from 'react'
-import { MessageList } from '@/components/Chat/MessageList'
+import { MessageList } from '@/components/Chat/NewMessageList'
 // import MessageInput from '@/components/Chat/MessageInput'
 import { MessageType, WrappedMessage } from '@/components/Chat/types'
 import { useParams } from 'react-router-dom'
@@ -221,7 +221,7 @@ const MessagePage = () => {
               }, 400)
             }
           }}
-          className="flex items-center flex-1 h-[36px] text-default bg-black border-[0.5px]
+          className="flex items-center flex-1 h-[36px] text-default bg-black border-[1px]
         border-[#4B4B4D] rounded-full px-3"
           style={{
             color: message ? '#FFFFFF' : '#5D5D60',
@@ -253,7 +253,7 @@ const MessagePage = () => {
               setIsFocused(false)
             }}
             type="text"
-            className="flex-1 h-[36px] text-default bg-black border-[0.5px] border-[#4B4B4D] focus:border-[#4B4B4D] rounded-full px-3 outline-none text-white placeholder:text-[#5D5D60] pr-[60px]"
+            className="flex-1 h-[36px] text-default bg-black border-[1px] border-[#4B4B4D] focus:border-[#4B4B4D] rounded-full px-3 outline-none text-white placeholder:text-[#5D5D60] pr-[60px]"
             placeholder="Type a Message..."
           />
         </div>

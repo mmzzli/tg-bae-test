@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, memo } from 'react'
-import { MessageList } from '@/components/Chat/NewMessageList'
-// import MessageInput from '@/components/Chat/MessageInput'
+import { MessageList } from '@/components/Chat/MessageList'
+import MessageInput from '@/components/Chat/MessageInput'
 import { MessageType, WrappedMessage } from '@/components/Chat/types'
 import { useParams } from 'react-router-dom'
 import { useFormatMessage } from '@/hooks/useFormatMessage'
@@ -35,6 +35,7 @@ const MessagePage = () => {
   const [tgViewportHeight, setTgViewportHeight] = useState('')
   const containerRef = useRef<HTMLDivElement>(null)
   const [keyboardHeight, setKeyboardHeight] = useState(0)
+  const [toBottomTrigger, setToBottomTrigger] = useState(false)
 
   useEffect(() => {
     console.log('messageWindow | messageWindowList change', messageWindow, messageWindowList)
@@ -66,6 +67,9 @@ const MessagePage = () => {
       to: Number(uid),
     })
     sendMessage(newMessage)
+    setTimeout(() => {
+      setToBottomTrigger((prev) => !prev)
+    }, 0)
   }
 
   const handleSendText = () => {
@@ -202,6 +206,7 @@ const MessagePage = () => {
       <MemoizedMessageList
         messages={messages}
         channelInfo={chatPeople}
+        // toBottomTrigger={toBottomTrigger}
         className="flex-1 mb-[68px]"
       />
 

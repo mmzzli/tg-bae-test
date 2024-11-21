@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, memo } from 'react'
-import { MessageList } from '@/components/Chat/NewMessageList'
+import { MessageList } from '@/components/Chat/MessageList'
 // import MessageInput from '@/components/Chat/MessageInput'
 import { MessageType, WrappedMessage } from '@/components/Chat/types'
 import { useParams } from 'react-router-dom'

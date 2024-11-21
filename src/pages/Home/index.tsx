@@ -11,6 +11,7 @@ import PostWrapSkeleton from '@/components/Skeketon/PostWrapSkeleton'
 import { useStore } from '@/store'
 import { getRecommendMedia } from '@/api/list'
 import Hls from 'hls.js'
+import { CardRecommendProvider } from '@/utils/constants'
 
 const HomePage: FC = () => {
   const navigate = useNavigate()
@@ -173,7 +174,9 @@ const HomePage: FC = () => {
             Selected Posts
           </h3>
         </div> */}
+        <CardRecommendProvider.Provider value={{recommend:true}}>
         <RecommendList />
+        </CardRecommendProvider.Provider>
       </>
     </div>
   )

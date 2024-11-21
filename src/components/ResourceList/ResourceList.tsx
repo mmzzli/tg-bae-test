@@ -1,4 +1,4 @@
-import { lazy, memo, Suspense, useCallback, useEffect, useState } from 'react'
+import { lazy, memo, Suspense, useCallback, useContext, useEffect, useState } from 'react'
 import { Box, Flex, Text, IconButton, useBoolean, HStack } from '@chakra-ui/react'
 import { IconLike } from '@/components/icons/like'
 import { IconLiked } from '@/components/icons/liked'
@@ -26,6 +26,7 @@ import { formatImage, formatTime } from '@/utils/utils'
 import Hls from 'hls.js'
 
 import { VideoDialog } from './VideoDialog'
+import { CardRecommendProvider } from '@/utils/constants'
 interface Like {
   id: number
   liked: boolean
@@ -449,6 +450,7 @@ interface ResourceFooterProps {
 }
 
 const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileClick }) => {
+  const cardValue = useContext(CardRecommendProvider)
   return (
     <div className="pl-4 pr-4 pb-4 flex items-center">
       <div className="flex items-center justify-between gap-2" onClick={() => onProfileClick(data)}>
@@ -464,7 +466,7 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
         </div>
         <div className="flex flex-col">
           <div className="text-[#E0E2F6] font-bold text-base">{data.username}</div>
-          {!data.is_collected && <div className="text-[#62636F] text-[12px]">Bae selected</div>}
+          {(cardValue?.recommend && !data.is_collected) && <div className="text-[#62636F] text-[12px]">Bae selected</div>}
         </div>
       </div>
       <SecondaryMenu className="ml-auto" key={data.id} mediaData={data} currentUid={currentUid} />

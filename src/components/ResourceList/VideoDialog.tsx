@@ -70,16 +70,22 @@ const UserInfo = memo(
     uid: number | undefined
     bottom: number
   }) => {
+    const { touchHandlers } = useTouch({
+      onTap: () => {
+        jumpToProfilePage({ uid } as UserItem)
+      },
+    })
     const jumpToProfilePage = useProfileNavigation()
     return (
       <div
         className="absolute left-4 right-4 z-10 flex flex-col cursor-pointer no-tap"
         onClick={() => jumpToProfilePage({ uid } as UserItem)}
-        onTouchEnd={(e) => {
-          e.preventDefault()
-          e.stopPropagation()
-          jumpToProfilePage({ uid } as UserItem)
-        }}
+        // onTouchEnd={(e) => {
+        //   e.preventDefault()
+        //   e.stopPropagation()
+        //   jumpToProfilePage({ uid } as UserItem)
+        // }}
+        {...touchHandlers}
         style={{
           bottom: `${bottom + 68}px`,
         }}

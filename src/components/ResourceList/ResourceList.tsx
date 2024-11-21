@@ -11,7 +11,7 @@ import BaseButton from '../BaseButton/BaseButton'
 import useCopy from '@/hooks/useCopy'
 import { useMemoizedFn, useRequest, useSafeState, useSetState } from 'ahooks'
 import dayjs from 'dayjs'
-import { LinkIcon, TelegramIcon, VideoIcon, FavIcon, Fav1Icon } from '@/assets/icons'
+import { LinkIcon, TelegramIcon, VideoIcon, FavIcon, Fav1Icon, StarsIcon } from '@/assets/icons'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import Image from '../Image/Image'
 import FrostedGlass from '@/components/ResourceList/FrostedGlass'
@@ -254,6 +254,7 @@ const ResourceList = ({ resources: initialResources, type }: { resources: Format
                 saveds={saveds}
                 linkEve={linkEve}
                 savedEve={savedEve}
+                type={type}
                 onShare={() => {
                   getShareLink(data.title, data.id, data.uid)
                   toggle()
@@ -296,6 +297,7 @@ const ResourceList = ({ resources: initialResources, type }: { resources: Format
                   saveds={saveds}
                   linkEve={linkEve}
                   savedEve={savedEve}
+                  type={type}
                   onShare={() => {
                     getShareLink(data.title, data.id, data.uid)
                     toggle()
@@ -377,6 +379,7 @@ const ResourceList = ({ resources: initialResources, type }: { resources: Format
                 saveds={saveds}
                 linkEve={linkEve}
                 savedEve={savedEve}
+                type={type}
                 onShare={() => {
                   getShareLink(data.title, data.id, data.uid)
                   toggle()
@@ -418,7 +421,8 @@ interface ResourceFooterProps {
   saveds: Saveds[]
   linkEve: (postId: number, isLike: boolean) => void
   savedEve: (postId: number, isSaveds: boolean) => void
-  onShare: () => void
+  onShare: () => void,
+  type?: string
 }
 
 const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileClick }) => {
@@ -443,14 +447,22 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
 })
 
 const ResourceFooter = memo<ResourceFooterProps>(
-  ({ data, likes, linkEve, onShare, savedEve, saveds }) => {
+  ({ data, likes, linkEve, onShare, savedEve, saveds, type }) => {
     return (
       <>
         <div className="px-4 py-3">
           <p className="text-[#62636F] text-sm leading-6">{data.title}</p>
-          <p className="text-[#424048] text-xs pt-2">
-            {dayjs(data.created_at).format('YYYY-MM-DD HH:mm')}
-          </p>
+          <HStack pt="2" justifyContent="space-between">
+            <p className="text-[#424048] text-xs">
+              {dayjs(data.created_at).format('YYYY-MM-DD HH:mm')}
+            </p>
+            { type === 'payment' && <HStack gap="4px">
+              <p className="text-[#424048] text-[12px]">
+                Purchased for {data.price}
+              </p>
+              <Image src={StarsIcon}/>
+            </HStack>}
+          </HStack>
         </div>
         <div className="px-4 flex items-center justify-between">
           <Flex gap="16px">

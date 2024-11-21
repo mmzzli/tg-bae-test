@@ -11,7 +11,7 @@ import BaseButton from '../BaseButton/BaseButton'
 import useCopy from '@/hooks/useCopy'
 import { useMemoizedFn, useRequest, useSafeState, useSetState } from 'ahooks'
 import dayjs from 'dayjs'
-import { LinkIcon, TelegramIcon, VideoIcon, FavIcon, Fav1Icon } from '@/assets/icons'
+import { LinkIcon, TelegramIcon, VideoIcon, FavIcon, Fav1Icon, StarsIcon } from '@/assets/icons'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import Image from '../Image/Image'
 import FrostedGlass from '@/components/ResourceList/FrostedGlass'
@@ -39,7 +39,7 @@ interface Saveds {
 const POST_TYPE_IMAGE = 1
 const POST_TYPE_VIDEO = 0
 
-const ResourceList = ({ resources: initialResources }: { resources: FormatterListItem[] }) => {
+const ResourceList = ({ resources: initialResources, type }: { resources: FormatterListItem[], type?:string }) => {
   const isMobile = useMobile()
   const [resources, setResources] = useState<FormatterListItem[]>([])
   const [likes, setLikes] = useSafeState<Like[]>([])
@@ -108,51 +108,6 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
     }
   }, [resources])
 
-
-  // useEffect(() => {
-  //   const cacheVideos = async (resources:any) => {
-  //     const totalVideos = resources.length;
-  //     const progressArray = new Array(totalVideos).fill(0);
-  //     resources.map((item:any, index:number) =>{
-  //         if (Hls.isSupported()) {
-  //           const hls = new Hls();
-  //           const targetFragments = 1;
-  //           let bufferedFragments = 0;
-
-  //           hls.loadSource(item.media[0]);
-  //           hls.attachMedia(document.createElement("video"));
-
-  //           hls.on(Hls.Events.FRAG_BUFFERED, () => {
-  //             bufferedFragments++;
-  //             progressArray[index] = bufferedFragments;
-  //             console.log(`视频 ${index + 1} 缓存分片数量: ${bufferedFragments}`);
-  //             if (bufferedFragments >= targetFragments) {
-  //               if (index + 1 === resources.length) {
-  //                 console.log('缓存完成')
-  //               }
-  //               hls.destroy();
-  //             }
-  //           });
-  //           hls.on(Hls.Events.MANIFEST_PARSED, () => {
-  //             console.log(`视频 ${index + 1} 流解析完成，开始缓存`);
-  //           });
-
-  //           hls.on(Hls.Events.ERROR, (event, data) => {
-  //             hls.destroy();
-  //           });
-  //         } else {
-  //           console.error("HLS.js 不支持当前浏览器环境");
-  //         }
-  //       }
-  //     );
-  //   };
-
-  //   if (initialResources && initialResources.length > 0) {
-  //     const resources = initialResources.filter(item => item.type === 0);
-  //     cacheVideos(resources);
-  //   }
-  // }, [initialResources]);
-
   const linkEve = async (post_id: number, boll: boolean) => {
     setLikes((prevLikes) =>
       prevLikes.map((item: any) =>
@@ -170,6 +125,11 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
     setSaveds((prevLikes) =>
       prevLikes.map((item: any) => (item.id === pid ? { ...item, saveds: boll } : item))
     )
+    if(type === 'fav'){
+      setResources((favResources)=>(
+        favResources.filter(item => item.id !== pid)
+      ))
+    }
     if (boll) {
       await favPost(pid)
     } else {
@@ -294,6 +254,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                 saveds={saveds}
                 linkEve={linkEve}
                 savedEve={savedEve}
+                type={type}
                 onShare={() => {
                   getShareLink(data.title, data.id, data.uid)
                   toggle()
@@ -336,6 +297,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                   saveds={saveds}
                   linkEve={linkEve}
                   savedEve={savedEve}
+                  type={type}
                   onShare={() => {
                     getShareLink(data.title, data.id, data.uid)
                     toggle()
@@ -417,6 +379,7 @@ const ResourceList = ({ resources: initialResources }: { resources: FormatterLis
                 saveds={saveds}
                 linkEve={linkEve}
                 savedEve={savedEve}
+                type={type}
                 onShare={() => {
                   getShareLink(data.title, data.id, data.uid)
                   toggle()
@@ -458,7 +421,8 @@ interface ResourceFooterProps {
   saveds: Saveds[]
   linkEve: (postId: number, isLike: boolean) => void
   savedEve: (postId: number, isSaveds: boolean) => void
-  onShare: () => void
+  onShare: () => void,
+  type?: string
 }
 
 const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileClick }) => {
@@ -483,14 +447,22 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
 })
 
 const ResourceFooter = memo<ResourceFooterProps>(
-  ({ data, likes, linkEve, onShare, savedEve, saveds }) => {
+  ({ data, likes, linkEve, onShare, savedEve, saveds, type }) => {
     return (
       <>
         <div className="px-4 py-3">
           <p className="text-[#62636F] text-sm leading-6">{data.title}</p>
-          <p className="text-[#424048] text-xs pt-2">
-            {dayjs(data.created_at).format('YYYY-MM-DD HH:mm')}
-          </p>
+          <HStack pt="2" justifyContent="space-between">
+            <p className="text-[#424048] text-xs">
+              {dayjs(data.created_at).format('YYYY-MM-DD HH:mm')}
+            </p>
+            { type === 'payment' && <HStack gap="4px">
+              <p className="text-[#424048] text-[12px]">
+                Purchased for {data.price}
+              </p>
+              <Image src={StarsIcon}/>
+            </HStack>}
+          </HStack>
         </div>
         <div className="px-4 flex items-center justify-between">
           <Flex gap="16px">

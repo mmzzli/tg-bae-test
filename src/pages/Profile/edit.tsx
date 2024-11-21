@@ -64,14 +64,79 @@ const ProfileEdit: FC = () => {
     fileInputRef.current?.click()
   }
 
+  const compressImage = (file: File):Promise<string> =>{
+    return new Promise((resolve,reject)=>{
+      const reader = new FileReader();
+      reader.onload =  (event:ProgressEvent<FileReader>) =>{
+        const img:HTMLImageElement = new Image();
+        img.src = event!.target!.result as string;
+
+        img.onload =  ()=> {
+          const minSize = 200;  // 最小尺寸200px
+          let width = img.width;
+          let height = img.height;
+
+          // calc scale
+          const scale = Math.max(minSize / width, minSize / height);
+
+          // calc scaleed with and height
+          const newWidth = width * scale;
+          const newHeight = height * scale;
+
+          // set canvans and with and height
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          canvas.width = newWidth;
+          canvas.height = newHeight;
+
+          if(ctx){
+            // 将图片绘制到 canvas 上
+            ctx.drawImage(img, 0, 0, width, height, 0, 0, newWidth, newHeight);
+            // 从 canvas 获取缩放后的图片
+            const resizedImage = canvas.toDataURL('image/jpeg', 0.8);  // 压缩质量可以调节
+            resolve(resizedImage)
+          }
+        };
+        img.onerror = ()=>{
+          reject('Image loading failed')
+        }
+      };
+      reader.onerror = () =>{
+        reject('File reading failed.');
+      }
+      reader.readAsDataURL(file);  // 读取文件为 Data URL
+    })
+
+
+  }
+
+    // 将 Base64 转换为 Blob 类型
+    const base64ToBlob = (base64: string, mimeType: string): Blob => {
+      const byteString = atob(base64.split(',')[1]);
+      const arrayBuffer = new ArrayBuffer(byteString.length);
+      const uintArray = new Uint8Array(arrayBuffer);
+      for (let i = 0; i < byteString.length; i++) {
+        uintArray[i] = byteString.charCodeAt(i);
+      }
+      return new Blob([uintArray], { type: mimeType });
+    };
+
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
-      const url = `${import.meta.env.VITE_APP_UPLOAD_URL}upload/${file.name}`
-      const formData = new FormData()
-      formData.append('file', file)
+
       try {
-        const response = await axios.put(url, formData, {
+        const url = await compressImage(file);
+
+        setProfileData((prevData) => ({
+          ...prevData,
+          ['avatar']: url,
+        }));
+        const imageBlob = base64ToBlob(url,'image/jpeg');
+        const upFileUrl = `${import.meta.env.VITE_APP_UPLOAD_URL}upload/${file.name}`
+        const formData = new FormData()
+        formData.append('file', imageBlob, file.name)
+        const response = await axios.put(upFileUrl, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
             Authorization: `Bearer ${token}`,

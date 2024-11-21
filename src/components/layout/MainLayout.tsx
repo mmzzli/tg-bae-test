@@ -79,10 +79,11 @@ export const MainLayout: React.FC = () => {
       })
       tgApp.BackButton.onClick(() => {
         console.log('location.pathname', location.pathname)
-        if (location.pathname === '/home') {
+        console.log('window.location.pathname', window.location.pathname)
+        if (window.location.pathname === '/home') {
           tgApp
             .showConfirm({
-              message: 'Are you sure you want to continue?',
+              message: 'Are you sure you want to Exit?',
               ok_button: 'Yes',
               cancel_button: 'No',
             })
@@ -105,6 +106,7 @@ export const MainLayout: React.FC = () => {
           //     console.log(1)
           //   }
           // });
+          // window.history.back()
         } else {
           window.history.back()
         }
@@ -124,7 +126,7 @@ export const MainLayout: React.FC = () => {
     }
     if (window.Telegram?.WebApp) {
       const tgApp = window.Telegram.WebApp
-      const HIDE_BACK_BUTTON_PATHS = ['/home', '/chat', '/profile']
+      const HIDE_BACK_BUTTON_PATHS = ['/home', '/chat', '/profile', '/']
       if (HIDE_BACK_BUTTON_PATHS.includes(location.pathname)) {
         tgApp.BackButton.hide()
       } else {

@@ -89,11 +89,11 @@ const FavList = () => {
         scrollThreshold={0.8}
         style={{ overflow: 'visible' }}
       >
-        <ResourceList resources={list} />
+        <ResourceList resources={list} type="fav" />
       </InfiniteScroll>
     )
   }else{
-    return <Empty title="No post yet." icon={<Icon name="icon-none_purchased" style={{width:'164px', height:'164px'}}></Icon>}></Empty>
+    return <Empty title="No post yet." icon={<Icon name="icon-none_post" style={{width:'164px', height:'164px'}}></Icon>}></Empty>
   }
 
 }
@@ -115,11 +115,11 @@ const OrderList = () => {
         scrollThreshold={0.8}
         style={{ overflow: 'visible' }}
       >
-        <ResourceList resources={list} />
+        <ResourceList resources={list} type="payment" />
       </InfiniteScroll>
     )
   }else{
-    return <Empty title="No post yet." icon={<Icon name="icon-none_post" style={{width:'164px', height:'164px'}}></Icon>}></Empty>
+    return <Empty title="You haven't purchased any post yet." icon={<Icon name="icon-none_purchased" style={{width:'164px', height:'164px'}}></Icon>}></Empty>
   }
 
 }

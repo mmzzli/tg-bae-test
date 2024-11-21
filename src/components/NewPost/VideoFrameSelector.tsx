@@ -23,6 +23,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover }) 
   const [selectedFrame, setSelectedFrame] = useState<Frame | null>(null)
   const [isBaseModalOpen, { toggle, on, off }] = useBoolean(false)
   const token = useStore((state) => state.token)
+  const [loading, setLoading] = useState(false)
 
   const extractFramesFromVideo = async () => {
     if (!videoRef.current) return
@@ -55,7 +56,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover }) 
           url: canvas.toDataURL('image/png'),
           time: video.currentTime,
           height: canvas.height,
-          width: canvas.width
+          width: canvas.width,
         })
         setFrames([...framesArray])
       }
@@ -128,27 +129,29 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover }) 
       >
         <div className="w-[100%]">
           <h2 className="text-[24px] text-[#E0E2F6] mt-[24px]">Select cover</h2>
-          {(selectedFrame && selectedFrame.width > selectedFrame.height) &&
+          {selectedFrame && selectedFrame.width > selectedFrame.height && (
             <div className="rounded-[5px] mt-[16px] max-h-[300px] overflow-hidden">
               <img
                 src={selectedFrame.url}
                 alt={`Selected Frame at ${selectedFrame.time}s`}
                 width="100%"
               />
-          </div>}
-          {(selectedFrame && selectedFrame.width < selectedFrame.height) &&
-          <div className="mt-[16px]">
+            </div>
+          )}
+          {selectedFrame && selectedFrame.width < selectedFrame.height && (
+            <div className="mt-[16px]">
               <img
                 src={selectedFrame.url}
-                className='rounded-[5px]'
+                className="rounded-[5px]"
                 style={{
-                  width: "243px",
-                  height: "315px",
-                  objectFit: "cover"
+                  width: '243px',
+                  height: '315px',
+                  objectFit: 'cover',
                 }}
                 alt={`Selected Frame at ${selectedFrame.time}s`}
               />
-          </div>}
+            </div>
+          )}
           <div className="bg-[#1C1C1C] rounded-tl-[16px] rounded-tr-[16px]">
             <div>
               <p className="text-center text-[#808080] pt-[62px] pb-[15px]">
@@ -179,8 +182,10 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover }) 
                 <BaseButton
                   text="Done"
                   width="100%"
+                  loading={loading}
                   className="h-[48px]"
                   handler={async () => {
+                    setLoading(true)
                     const timestamp: number = new Date().getTime()
                     const url = `${import.meta.env.VITE_APP_UPLOAD_URL}upload/${timestamp}`
                     const file = base64ToFile(selectedFrame?.url, 'image.png')
@@ -195,6 +200,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover }) 
                         },
                       })
                       setCover(response.data)
+                      setLoading(false)
                       off()
                     } catch (error) {
                       console.error(`Error uploading ${file.name}:`, error)

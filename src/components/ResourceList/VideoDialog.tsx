@@ -355,7 +355,7 @@ export function VideoDialog({
           </div>
 
           <div
-            className="absolute left-0 right-0 bottom-0 z-10 flex flex-col transition-transform duration-300 ease-out safe-area-bottom"
+            className="absolute left-0 right-0 bottom-0 z-10 flex flex-col transition-transform duration-300 ease-out"
             style={{
               transform: `translateX(${state.slideOffset}px)`,
             }}

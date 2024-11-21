@@ -37,11 +37,11 @@ const HomePage: FC = () => {
         const rect = selectedPostsRef.current.getBoundingClientRect()
         const isVisible = rect.top < 0
 
-        if (isVisible && title !== 'Selected Posts') {
-          triggerTitleChange('Selected Posts')
-        } else if (!isVisible && title !== 'Following') {
-          triggerTitleChange('Following')
-        }
+        // if (isVisible && title !== 'Selected Posts') {
+        //   triggerTitleChange('Selected Posts')
+        // } else if (!isVisible && title !== 'Following') {
+        //   triggerTitleChange('Following')
+        // }
       }
     }
 
@@ -168,11 +168,11 @@ const HomePage: FC = () => {
       >
         Community
       </button> */}
-        <div className="px-4">
+        {/* <div className="px-4">
           <h3 className="text-[#E0E2F6] font-bold text-xl" ref={selectedPostsRef}>
             Selected Posts
           </h3>
-        </div>
+        </div> */}
         <RecommendList />
       </>
     </div>

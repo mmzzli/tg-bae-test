@@ -1,12 +1,15 @@
 import { useEffect } from 'react'
-import { Box, Flex, Image, Text, IconButton, useBoolean } from '@chakra-ui/react'
+import { Box, Flex, Image, Text, IconButton, useBoolean, useToast } from '@chakra-ui/react'
 
 import { BaseModal } from '@/components/Modal/BaseModal'
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { StarsIcon, MoneyIcon, RightIcon } from '@/assets/icons'
+import { CustomToast, typeOptions } from '@/components/comm/Toast'
 
 const Earnings = () => {
   const [isBaseModalOpen, { toggle, on, off }] = useBoolean(false)
+  const toast = useToast()
+
   return (
     <>
       {/* <Text onClick={()=>toggle()} color="#fff">️Earnings</Text> */}
@@ -17,7 +20,13 @@ const Earnings = () => {
         width="104px"
         height="36px"
         handler={() => {
-          toggle()
+          // toggle()
+          toast({
+            render: () => {
+              return <CustomToast title="coming soon" type={typeOptions.warning} />
+            },
+            position: 'top',
+          })
         }}
       />
       <BaseModal

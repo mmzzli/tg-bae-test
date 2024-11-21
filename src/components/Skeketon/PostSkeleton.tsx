@@ -2,7 +2,7 @@ import { DrawSkeletonItem } from './ChatSkeleton'
 
 const PostSkeleton = () => {
   return (
-    <div className="flex gap-[12px] w-full flex-col mb-[30px]">
+    <div className="flex gap-[12px] w-full flex-col mb-[30px] relative top-[-30px]">
       <div className="flex gap-[8px]">
         <DrawSkeletonItem className="w-[48px] rounded-full h-[48px]"></DrawSkeletonItem>
         <DrawSkeletonItem className="w-[56px]  h-[20px] mt-[18px]"></DrawSkeletonItem>

@@ -126,7 +126,7 @@ export const MainLayout: React.FC = () => {
     }
     if (window.Telegram?.WebApp) {
       const tgApp = window.Telegram.WebApp
-      const HIDE_BACK_BUTTON_PATHS = ['/home', '/chat', '/profile']
+      const HIDE_BACK_BUTTON_PATHS = ['/home', '/chat', '/profile', '/']
       if (HIDE_BACK_BUTTON_PATHS.includes(location.pathname)) {
         tgApp.BackButton.hide()
       } else {

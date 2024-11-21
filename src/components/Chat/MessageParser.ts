@@ -133,7 +133,9 @@ export class MessageParser {
 
     const preview = await getLinkMetadata(url)
     if (preview.image && !preview.image.startsWith('http')) {
-      preview.image = `${preview.url}/${preview.image}`
+      const trimmedStr1 = preview.url.endsWith('/') ? preview.url.slice(0, -1) : preview.url
+      const trimmedStr2 = preview.image.startsWith('/') ? preview.image.slice(1) : preview.image
+      preview.image = `${trimmedStr1}/${trimmedStr2}`
     }
     const res = {
       site_name: preview?.site_name,

@@ -24,12 +24,15 @@ const BaseButton = ({
   return (
     <div>
       <div
-        className={`no-tap flex items-center justify-center gap-2 bg-[#4A3AFF] rounded-[42px] text-[#E0E2F6] text-sm font-medium cursor-pointer ${className}`}
+        className={`no-tap flex items-center justify-center gap-2 bg-[#4A3AFF] rounded-[42px] text-[#E0E2F6] text-sm font-medium cursor-pointer ${className} ${loading ? 'bg-[#6a5cfc] cursor-not-allowed' : ''}`}
         onClick={() => !loading && handler()}
         style={{ width, height }}
       >
+        {loading && (
+          <div className="w-5 h-5 border-4 border-t-4 border-t-white border-transparent rounded-full animate-spin"></div>
+        )}
         {icon}
-        <span className='font-medium !important'>{text}</span>
+        <span className="font-medium !important">{text}</span>
         {iconRight}
       </div>
     </div>

@@ -1,4 +1,5 @@
 import PostSkeleton from './PostSkeleton'
+import { DrawSkeletonItem } from './ChatSkeleton'
 
 const PostWrapSkeleton = () => {
   return (

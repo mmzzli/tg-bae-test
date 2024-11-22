@@ -466,7 +466,7 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
         </div>
         <div className="flex flex-col">
           <div className="text-[#E0E2F6] font-bold text-base">{data.username}</div>
-          {(cardValue?.recommend && !data.is_collected) && <div className="text-[#62636F] text-[12px]">Bae selected</div>}
+          {(cardValue?.recommend && !data.is_follow) && <div className="text-[#62636F] text-[12px]">Bae selected</div>}
         </div>
       </div>
       <SecondaryMenu className="ml-auto" key={data.id} mediaData={data} currentUid={currentUid} />

@@ -170,7 +170,7 @@ export const MainLayout: React.FC = () => {
         </Suspense>
       </div>
 
-      <div className={`absolute inset-0 top-0 bottom-[84px] z-1 ${isExpanded ? 'pt-[80px]':''}`}>
+      <div className={`absolute inset-0 top-0 bottom-[84px] z-1`}>
         <Outlet />
       </div>
 

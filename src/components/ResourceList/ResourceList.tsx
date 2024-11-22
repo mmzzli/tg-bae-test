@@ -270,7 +270,7 @@ const ResourceList = ({
                   }}
                 />
                 <div className="pt-8 pb-8 pl-4 pr-4">
-                  <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.10)' }}></div>
+                  <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
                 </div>
               </Box>
             )
@@ -321,7 +321,7 @@ const ResourceList = ({
                   }}
                 />
                 <div className="pt-8 pb-8 pl-4 pr-4">
-                  <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.10)' }}></div>
+                  <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
                 </div>
               </Box>
             )
@@ -406,7 +406,7 @@ const ResourceList = ({
                 }}
               />
               <div className="pt-8 pb-8 pl-4 pr-4">
-                <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.10)' }}></div>
+                <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
               </div>
             </Box>
           )

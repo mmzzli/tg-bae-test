@@ -106,7 +106,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
       {/* loading */}
       {loading && (
         <div
-          className="absolute w-full h-full flex items-center justify-center  z-100"
+          className="absolute w-full h-full flex items-center justify-center  z-100 animate-spin"
           style={{ zIndex: '9', background: 'rgba(0,0,0,.15)' }}
         >
           <i className="iconfont icon-loading text-white text-[30px]"></i>

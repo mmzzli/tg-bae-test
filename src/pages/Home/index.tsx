@@ -34,6 +34,7 @@ const HomePage: FC = () => {
   const { token } = useStore((state) => ({
     token: state.token,
   }))
+
   const animation = useMemo(()=>{
     if(userInfo.user_id !== -1 && userInfo.fans === 0){
       return {

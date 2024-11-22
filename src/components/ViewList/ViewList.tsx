@@ -100,7 +100,7 @@ const FavList = () => {
       scrollThreshold={0.8}
       style={{ overflow: 'visible' }}
     >
-      <ResourceList resources={list} type="fav" />
+      <ResourceList resources={list} type="fav" hasMore={hasMore} />
     </InfiniteScroll>
   )
 }

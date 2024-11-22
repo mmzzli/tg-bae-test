@@ -45,9 +45,11 @@ const POST_TYPE_VIDEO = 0
 const ResourceList = ({
   resources: initialResources,
   type,
+  hasMore
 }: {
   resources: FormatterListItem[]
   type?: string
+  hasMore?: boolean
 }) => {
   const isMobile = useMobile()
   const [resources, setResources] = useState<FormatterListItem[]>([])
@@ -433,7 +435,7 @@ const ResourceList = ({
         </div>
       </>
     )
-  }else if(type === 'fav'){
+  }else if(type === 'fav' && !hasMore && !resources.length){
     return (
       <Empty
         title="No post yet."

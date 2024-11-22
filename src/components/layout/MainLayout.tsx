@@ -79,6 +79,7 @@ export const MainLayout: React.FC = () => {
       tgApp.onEvent('viewportChanged', () => {
         if (!tgApp.isExpanded) {
           tgApp.expand()
+          setExpanded(true)
         }
       })
       tgApp.BackButton.onClick(() => {
@@ -122,7 +123,6 @@ export const MainLayout: React.FC = () => {
         }
       })
       console.log(window.Telegram.WebApp.isExpanded,'window.Telegram.WebApp.isExpanded')
-      setExpanded(window.Telegram.WebApp.isExpanded)
     }
     onLogin()
   }, [])

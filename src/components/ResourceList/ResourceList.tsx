@@ -218,79 +218,33 @@ const ResourceList = ({
       </div>
     </BaseModal>
   )
-  if(resources.length){
+  if(type === 'fav' && !hasMore && !resources.length){
     return (
-      <>
-      <div className="pt-4">
-        {resources.map((data, index: number) => {
-          if (data.type === POST_TYPE_IMAGE && data.media.length > 1) {
-            if (data.media.length === 4) {
-              return (
-                <Box key={data.id}>
-                  <ResourceHeader
-                    data={data}
-                    currentUid={launchParams.initData?.user?.id ?? 0}
-                    onProfileClick={jumpToProfilePage}
-                  />
-                  <div
-                    className="relative px-4"
-                    style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}
-                  >
-                    <div className="grid grid-cols-3 gap-2">
-                      <div className="grid grid-cols-2 gap-2 col-span-2">
-                        {data.media.map((i, ind) => (
-                          <Image
-                            src={formatImage(i,false)}
-                            alt={data.title}
-                            width="100%"
-                            height="100%"
-                            key={i}
-                            onClick={() => handleImageClick(data.media, ind)}
-                            rect
-                          />
-                        ))}
-                      </div>
-                      <div className=""></div>
-                    </div>
-                    {data.media?.[0] == '' && (
-                      <FrostedGlass
-                        price={data.price}
-                        post_id={data.id}
-                        resourcesEve={resourcesEve}
-                      />
-                    )}
-                  </div>
-
-                  <ResourceFooter
-                    data={data}
-                    likes={likes}
-                    saveds={saveds}
-                    linkEve={linkEve}
-                    savedEve={savedEve}
-                    type={type}
-                    onShare={() => {
-                      getShareLink(data.title, data.id, data.uid)
-                      toggle()
-                    }}
-                  />
-                  <div className="pt-8 pb-8 pl-4 pr-4">
-                    <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
-                  </div>
-                </Box>
-              )
-            } else {
-              return (
-                <Box key={data.id}>
-                  <ResourceHeader
-                    data={data}
-                    currentUid={launchParams.initData?.user?.id ?? 0}
-                    onProfileClick={jumpToProfilePage}
-                  />
-                  <div
-                    className="relative px-4"
-                    style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}
-                  >
-                    <div className="grid grid-cols-3 gap-2">
+      <Empty
+        title="No post yet."
+        icon={<Icon name="icon-none_post" style={{ width: '164px', height: '164px' }}></Icon>}
+      ></Empty>
+    )
+  }
+  return (
+    <>
+    <div className="pt-4">
+      {resources.map((data, index: number) => {
+        if (data.type === POST_TYPE_IMAGE && data.media.length > 1) {
+          if (data.media.length === 4) {
+            return (
+              <Box key={data.id}>
+                <ResourceHeader
+                  data={data}
+                  currentUid={launchParams.initData?.user?.id ?? 0}
+                  onProfileClick={jumpToProfilePage}
+                />
+                <div
+                  className="relative px-4"
+                  style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}
+                >
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-2 gap-2 col-span-2">
                       {data.media.map((i, ind) => (
                         <Image
                           src={formatImage(i,false)}
@@ -303,146 +257,191 @@ const ResourceList = ({
                         />
                       ))}
                     </div>
-                    {data.media?.[0] == '' && (
+                    <div className=""></div>
+                  </div>
+                  {data.media?.[0] == '' && (
+                    <FrostedGlass
+                      price={data.price}
+                      post_id={data.id}
+                      resourcesEve={resourcesEve}
+                    />
+                  )}
+                </div>
+
+                <ResourceFooter
+                  data={data}
+                  likes={likes}
+                  saveds={saveds}
+                  linkEve={linkEve}
+                  savedEve={savedEve}
+                  type={type}
+                  onShare={() => {
+                    getShareLink(data.title, data.id, data.uid)
+                    toggle()
+                  }}
+                />
+                <div className="pt-8 pb-8 pl-4 pr-4">
+                  <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
+                </div>
+              </Box>
+            )
+          } else {
+            return (
+              <Box key={data.id}>
+                <ResourceHeader
+                  data={data}
+                  currentUid={launchParams.initData?.user?.id ?? 0}
+                  onProfileClick={jumpToProfilePage}
+                />
+                <div
+                  className="relative px-4"
+                  style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}
+                >
+                  <div className="grid grid-cols-3 gap-2">
+                    {data.media.map((i, ind) => (
+                      <Image
+                        src={formatImage(i,false)}
+                        alt={data.title}
+                        width="100%"
+                        height="100%"
+                        key={i}
+                        onClick={() => handleImageClick(data.media, ind)}
+                        rect
+                      />
+                    ))}
+                  </div>
+                  {data.media?.[0] == '' && (
+                    <FrostedGlass
+                      price={data.price}
+                      post_id={data.id}
+                      resourcesEve={resourcesEve}
+                    />
+                  )}
+                </div>
+
+                <ResourceFooter
+                  data={data}
+                  likes={likes}
+                  saveds={saveds}
+                  linkEve={linkEve}
+                  savedEve={savedEve}
+                  type={type}
+                  onShare={() => {
+                    getShareLink(data.title, data.id, data.uid)
+                    toggle()
+                  }}
+                />
+                <div className="pt-8 pb-8 pl-4 pr-4">
+                  <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
+                </div>
+              </Box>
+            )
+          }
+        } else {
+          return (
+            <Box key={index}>
+              <ResourceHeader
+                data={data}
+                currentUid={launchParams.initData?.user?.id ?? 0}
+                onProfileClick={jumpToProfilePage}
+              />
+              <div className="relative px-4">
+                {data.type === POST_TYPE_IMAGE ? (
+                  <Box position="relative" minH={data.media?.[0] === '' ? '200px' : 'auto'}>
+                    <Image
+                      src={formatImage(data.media?.[0] ?? data?.media ?? '', false)}
+                      alt={data.title}
+                      errorClassName="rounded-[4px] h-[150px]"
+                      // wrapperClassName="rounded-[4px] overflow-hidden"
+                      // className="object-left w-[100%] m-[auto]"
+                      className="w-[230px] rounded-[4px]"
+                      onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
+                    />
+                    {data.media?.[0] === '' && (
                       <FrostedGlass
                         price={data.price}
                         post_id={data.id}
                         resourcesEve={resourcesEve}
                       />
                     )}
-                  </div>
-
-                  <ResourceFooter
-                    data={data}
-                    likes={likes}
-                    saveds={saveds}
-                    linkEve={linkEve}
-                    savedEve={savedEve}
-                    type={type}
-                    onShare={() => {
-                      getShareLink(data.title, data.id, data.uid)
-                      toggle()
-                    }}
-                  />
-                  <div className="pt-8 pb-8 pl-4 pr-4">
-                    <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
-                  </div>
-                </Box>
-              )
-            }
-          } else {
-            return (
-              <Box key={index}>
-                <ResourceHeader
-                  data={data}
-                  currentUid={launchParams.initData?.user?.id ?? 0}
-                  onProfileClick={jumpToProfilePage}
-                />
-                <div className="relative px-4">
-                  {data.type === POST_TYPE_IMAGE ? (
-                    <Box position="relative" minH={data.media?.[0] === '' ? '200px' : 'auto'}>
+                  </Box>
+                ) : (
+                  <Box position="relative">
+                    <Box minH={data.media?.[0] === '' ? '200px' : '130px'}>
                       <Image
-                        src={formatImage(data.media?.[0] ?? data?.media ?? '', false)}
+                        src={data.mediaCover}
                         alt={data.title}
+                        wrapperClassName="rounded-[4px] overflow-hidden"
                         errorClassName="rounded-[4px] h-[150px]"
-                        // wrapperClassName="rounded-[4px] overflow-hidden"
-                        // className="object-left w-[100%] m-[auto]"
-                        className="w-[230px] rounded-[4px]"
-                        onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
+                        className="object-left w-[100%] rounded-[4px] m-[auto]"
+                        onClick={() => handleVideoClick(data)}
                       />
-                      {data.media?.[0] === '' && (
-                        <FrostedGlass
-                          price={data.price}
-                          post_id={data.id}
-                          resourcesEve={resourcesEve}
-                        />
-                      )}
+                      <PlayButton onClick={() => handleVideoClick(data)} />
                     </Box>
-                  ) : (
-                    <Box position="relative">
-                      <Box minH={data.media?.[0] === '' ? '200px' : '130px'}>
-                        <Image
-                          src={data.mediaCover}
-                          alt={data.title}
-                          wrapperClassName="rounded-[4px] overflow-hidden"
-                          errorClassName="rounded-[4px] h-[150px]"
-                          className="object-left w-[100%] rounded-[4px] m-[auto]"
-                          onClick={() => handleVideoClick(data)}
-                        />
-                        <PlayButton onClick={() => handleVideoClick(data)} />
-                      </Box>
-                      <HStack
-                        borderRadius="4px"
-                        bg="rgba(0, 0, 0, 0.20)"
-                        position="absolute"
-                        top="18px"
-                        left="18px"
-                        p="4px 8px"
-                        gap="4px"
-                      >
-                        <Image src={VideoIcon} />
-                        <Text color="#E0E2F6" fontSize="12px">
-                          {formatTime(Number(data.duration))}
-                        </Text>
-                      </HStack>
+                    <HStack
+                      borderRadius="4px"
+                      bg="rgba(0, 0, 0, 0.20)"
+                      position="absolute"
+                      top="18px"
+                      left="18px"
+                      p="4px 8px"
+                      gap="4px"
+                    >
+                      <Image src={VideoIcon} />
+                      <Text color="#E0E2F6" fontSize="12px">
+                        {formatTime(Number(data.duration))}
+                      </Text>
+                    </HStack>
 
-                      {data.media?.[0] === '' && (
-                        <FrostedGlass
-                          price={data.price}
-                          post_id={data.id}
-                          resourcesEve={resourcesEve}
-                        />
-                      )}
-                    </Box>
-                  )}
-                </div>
-
-              <ResourceFooter
-                data={data}
-                likes={likes}
-                saveds={saveds}
-                linkEve={linkEve}
-                savedEve={savedEve}
-                type={type}
-                onShare={() => {
-                  getShareLink(data.title, data.id, data.uid)
-                  toggle()
-                }}
-              />
-              <div className="pt-8 pb-8 pl-4 pr-4">
-                <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
+                    {data.media?.[0] === '' && (
+                      <FrostedGlass
+                        price={data.price}
+                        post_id={data.id}
+                        resourcesEve={resourcesEve}
+                      />
+                    )}
+                  </Box>
+                )}
               </div>
-            </Box>
-          )
-        }
-      })}
 
-        {isVideoPreviewOpen && (
-          <VideoDialog info={previewVideo} onClose={() => setIsVideoPreviewOpen(false)} />
-        )}
+            <ResourceFooter
+              data={data}
+              likes={likes}
+              saveds={saveds}
+              linkEve={linkEve}
+              savedEve={savedEve}
+              type={type}
+              onShare={() => {
+                getShareLink(data.title, data.id, data.uid)
+                toggle()
+              }}
+            />
+            <div className="pt-8 pb-8 pl-4 pr-4">
+              <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
+            </div>
+          </Box>
+        )
+      }
+    })}
 
-        {isPreviewOpen && (
-          <ImagePreviewWrapper
-            isOpen={isPreviewOpen}
-            onClose={() => setIsPreviewOpen(false)}
-            images={previewImages}
-            currentIndex={currentIndex}
-            onIndexChange={setCurrentIndex}
-          />
-        )}
-        {/* Components */}
-        {renderBaseModal()}
-        </div>
-      </>
-    )
-  }else if(type === 'fav' && !hasMore && !resources.length){
-    return (
-      <Empty
-        title="No post yet."
-        icon={<Icon name="icon-none_post" style={{ width: '164px', height: '164px' }}></Icon>}
-      ></Empty>
-    )
-  }
+      {isVideoPreviewOpen && (
+        <VideoDialog info={previewVideo} onClose={() => setIsVideoPreviewOpen(false)} />
+      )}
+
+      {isPreviewOpen && (
+        <ImagePreviewWrapper
+          isOpen={isPreviewOpen}
+          onClose={() => setIsPreviewOpen(false)}
+          images={previewImages}
+          currentIndex={currentIndex}
+          onIndexChange={setCurrentIndex}
+        />
+      )}
+      {/* Components */}
+      {renderBaseModal()}
+      </div>
+    </>
+  )
 }
 
 interface ResourceHeaderProps {

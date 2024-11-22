@@ -236,7 +236,7 @@ const ResourceList = ({
                     <div className="grid grid-cols-2 gap-2 col-span-2">
                       {data.media.map((i, ind) => (
                         <Image
-                          src={formatImage(i)}
+                          src={formatImage(i,false)}
                           alt={data.title}
                           width="100%"
                           height="100%"
@@ -289,7 +289,7 @@ const ResourceList = ({
                   <div className="grid grid-cols-3 gap-2">
                     {data.media.map((i, ind) => (
                       <Image
-                        src={formatImage(i)}
+                        src={formatImage(i,false)}
                         alt={data.title}
                         width="100%"
                         height="100%"
@@ -465,7 +465,8 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
           />
         </div>
         <div className="flex flex-col">
-          <div className="text-[#E0E2F6] font-bold text-base">{data.username}</div>
+          <div className="text-[#E0E2F6] font-bold text-base">{data.username}{data.is_follow}</div>
+
           {(cardValue?.recommend && !data.is_follow) && <div className="text-[#62636F] text-[12px]">Bae selected</div>}
         </div>
       </div>

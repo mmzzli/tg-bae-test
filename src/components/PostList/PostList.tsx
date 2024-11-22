@@ -13,7 +13,6 @@ interface PostListProps {
   list: FormatterListItem[]
   hasMore: boolean
   fetchMoreData: () => void
-  isLoading: boolean
 }
 
 const PostList = ({ className, list, hasMore, fetchMoreData }: PostListProps) => {

@@ -46,8 +46,13 @@ const ViewList = ({ className }: PostListProps) => {
         ))}
       </Box>
       <div className={cn(className, 'pb-24')}>
-        {ids === 'posts' &&
-          (list.length ? (
+        {ids === 'posts' && !hasMore && !list.length ? (
+          <Empty
+            title="No post yet."
+            icon={<Icon name="icon-none_post" style={{ width: '164px', height: '164px' }}></Icon>}
+          ></Empty>
+        ) : (
+          ids === 'posts' && (
             <InfiniteScroll
               dataLength={list.length}
               next={fetchMoreData}
@@ -63,12 +68,8 @@ const ViewList = ({ className }: PostListProps) => {
             >
               <ResourceList resources={list} />
             </InfiniteScroll>
-          ) : (
-            <Empty
-              title="No post yet."
-              icon={<Icon name="icon-none_post" style={{ width: '164px', height: '164px' }}></Icon>}
-            ></Empty>
-          ))}
+          )
+        )}
         {ids === 'purchased' && <OrderList />}
         {ids === 'saved' && <FavList />}
       </div>
@@ -77,25 +78,7 @@ const ViewList = ({ className }: PostListProps) => {
 }
 const FavList = () => {
   const { list, hasMore, fetchMoreData } = useFavList()
-  if (list.length) {
-    return (
-      <InfiniteScroll
-        dataLength={list.length}
-        next={fetchMoreData}
-        hasMore={hasMore}
-        loader={
-          <Box textAlign="center" m="20px ">
-            <PostSkeleton />
-          </Box>
-        }
-        scrollableTarget="profileScrollableDiv"
-        scrollThreshold={0.8}
-        style={{ overflow: 'visible' }}
-      >
-        <ResourceList resources={list} type="fav" />
-      </InfiniteScroll>
-    )
-  } else {
+  if (!hasMore && !list.length) {
     return (
       <Empty
         title="No post yet."
@@ -103,28 +86,27 @@ const FavList = () => {
       ></Empty>
     )
   }
+  return (
+    <InfiniteScroll
+      dataLength={list.length}
+      next={fetchMoreData}
+      hasMore={hasMore}
+      loader={
+        <Box textAlign="center" m="20px ">
+          <PostSkeleton />
+        </Box>
+      }
+      scrollableTarget="profileScrollableDiv"
+      scrollThreshold={0.8}
+      style={{ overflow: 'visible' }}
+    >
+      <ResourceList resources={list} type="fav" />
+    </InfiniteScroll>
+  )
 }
 const OrderList = () => {
   const { list, hasMore, fetchMoreData } = useOrdersList()
-  if (list.length) {
-    return (
-      <InfiniteScroll
-        dataLength={list.length}
-        next={fetchMoreData}
-        hasMore={hasMore}
-        loader={
-          <Box textAlign="center" m="20px">
-            <PostSkeleton />
-          </Box>
-        }
-        scrollableTarget="profileScrollableDiv"
-        scrollThreshold={0.8}
-        style={{ overflow: 'visible' }}
-      >
-        <ResourceList resources={list} type="payment" />
-      </InfiniteScroll>
-    )
-  } else {
+  if (!hasMore && !list.length) {
     return (
       <Empty
         title="You haven't purchased any post yet."
@@ -132,6 +114,23 @@ const OrderList = () => {
       ></Empty>
     )
   }
+  return (
+    <InfiniteScroll
+      dataLength={list.length}
+      next={fetchMoreData}
+      hasMore={hasMore}
+      loader={
+        <Box textAlign="center" m="20px">
+          <PostSkeleton />
+        </Box>
+      }
+      scrollableTarget="profileScrollableDiv"
+      scrollThreshold={0.8}
+      style={{ overflow: 'visible' }}
+    >
+      <ResourceList resources={list} type="payment" />
+    </InfiniteScroll>
+  )
 }
 
 export default ViewList

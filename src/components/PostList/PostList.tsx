@@ -4,8 +4,8 @@ import ResourceList from '../ResourceList/ResourceList'
 import { cn } from '@/utils/utils'
 import { FormatterListItem } from '../../store/slices/resourceListSlice'
 
-// import Empty from '../comm/Empty'
-// import Icon from '../comm/Icon'
+import Empty from '../comm/Empty'
+import Icon from '../comm/Icon'
 import PostSkeleton from '../Skeketon/PostSkeleton'
 
 interface PostListProps {
@@ -13,10 +13,19 @@ interface PostListProps {
   list: FormatterListItem[]
   hasMore: boolean
   fetchMoreData: () => void
+  isLoading: boolean
 }
 
 const PostList = ({ className, list, hasMore, fetchMoreData }: PostListProps) => {
-  // if (list.length) {
+  console.log('PostList---------->', hasMore, list.length)
+  if (!hasMore && !list.length) {
+    return (
+      <Empty
+        title="No post yet."
+        icon={<Icon name="icon-none_post" style={{ width: '164px', height: '164px' }}></Icon>}
+      ></Empty>
+    )
+  }
   return (
     <div className={cn(className, 'pb-24')}>
       <InfiniteScroll
@@ -36,14 +45,6 @@ const PostList = ({ className, list, hasMore, fetchMoreData }: PostListProps) =>
       </InfiniteScroll>
     </div>
   )
-  // } else {
-  //   return (
-  //     <Empty
-  //       title="No post yet."
-  //       icon={<Icon name="icon-none_post" style={{ width: '164px', height: '164px' }}></Icon>}
-  //     ></Empty>
-  //   )
-  // }
 }
 
 export default PostList

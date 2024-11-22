@@ -24,6 +24,8 @@ import useMobile from '@/hooks/useMobile'
 import playIcon from '@/assets/icons/videoSwitch.svg'
 import { formatImage, formatTime } from '@/utils/utils'
 import Hls from 'hls.js'
+import Empty from '../comm/Empty'
+import Icon from '../comm/Icon'
 
 import { VideoDialog } from './VideoDialog'
 import { CardRecommendProvider } from '@/utils/constants'
@@ -43,9 +45,11 @@ const POST_TYPE_VIDEO = 0
 const ResourceList = ({
   resources: initialResources,
   type,
+  hasMore
 }: {
   resources: FormatterListItem[]
   type?: string
+  hasMore?: boolean
 }) => {
   const isMobile = useMobile()
   const [resources, setResources] = useState<FormatterListItem[]>([])
@@ -214,26 +218,79 @@ const ResourceList = ({
       </div>
     </BaseModal>
   )
+  if(resources.length){
+    return (
+      <>
+      <div className="pt-4">
+        {resources.map((data, index: number) => {
+          if (data.type === POST_TYPE_IMAGE && data.media.length > 1) {
+            if (data.media.length === 4) {
+              return (
+                <Box key={data.id}>
+                  <ResourceHeader
+                    data={data}
+                    currentUid={launchParams.initData?.user?.id ?? 0}
+                    onProfileClick={jumpToProfilePage}
+                  />
+                  <div
+                    className="relative px-4"
+                    style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}
+                  >
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="grid grid-cols-2 gap-2 col-span-2">
+                        {data.media.map((i, ind) => (
+                          <Image
+                            src={formatImage(i,false)}
+                            alt={data.title}
+                            width="100%"
+                            height="100%"
+                            key={i}
+                            onClick={() => handleImageClick(data.media, ind)}
+                            rect
+                          />
+                        ))}
+                      </div>
+                      <div className=""></div>
+                    </div>
+                    {data.media?.[0] == '' && (
+                      <FrostedGlass
+                        price={data.price}
+                        post_id={data.id}
+                        resourcesEve={resourcesEve}
+                      />
+                    )}
+                  </div>
 
-  return (
-    <>
-    <div className="pt-4">
-      {resources.map((data, index: number) => {
-        if (data.type === POST_TYPE_IMAGE && data.media.length > 1) {
-          if (data.media.length === 4) {
-            return (
-              <Box key={data.id}>
-                <ResourceHeader
-                  data={data}
-                  currentUid={launchParams.initData?.user?.id ?? 0}
-                  onProfileClick={jumpToProfilePage}
-                />
-                <div
-                  className="relative px-4"
-                  style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}
-                >
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="grid grid-cols-2 gap-2 col-span-2">
+                  <ResourceFooter
+                    data={data}
+                    likes={likes}
+                    saveds={saveds}
+                    linkEve={linkEve}
+                    savedEve={savedEve}
+                    type={type}
+                    onShare={() => {
+                      getShareLink(data.title, data.id, data.uid)
+                      toggle()
+                    }}
+                  />
+                  <div className="pt-8 pb-8 pl-4 pr-4">
+                    <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
+                  </div>
+                </Box>
+              )
+            } else {
+              return (
+                <Box key={data.id}>
+                  <ResourceHeader
+                    data={data}
+                    currentUid={launchParams.initData?.user?.id ?? 0}
+                    onProfileClick={jumpToProfilePage}
+                  />
+                  <div
+                    className="relative px-4"
+                    style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}
+                  >
+                    <div className="grid grid-cols-3 gap-2">
                       {data.media.map((i, ind) => (
                         <Image
                           src={formatImage(i,false)}
@@ -246,152 +303,99 @@ const ResourceList = ({
                         />
                       ))}
                     </div>
-                    <div className=""></div>
+                    {data.media?.[0] == '' && (
+                      <FrostedGlass
+                        price={data.price}
+                        post_id={data.id}
+                        resourcesEve={resourcesEve}
+                      />
+                    )}
                   </div>
-                  {data.media?.[0] == '' && (
-                    <FrostedGlass
-                      price={data.price}
-                      post_id={data.id}
-                      resourcesEve={resourcesEve}
-                    />
-                  )}
-                </div>
 
-                <ResourceFooter
-                  data={data}
-                  likes={likes}
-                  saveds={saveds}
-                  linkEve={linkEve}
-                  savedEve={savedEve}
-                  type={type}
-                  onShare={() => {
-                    getShareLink(data.title, data.id, data.uid)
-                    toggle()
-                  }}
-                />
-                <div className="pt-8 pb-8 pl-4 pr-4">
-                  <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
-                </div>
-              </Box>
-            )
+                  <ResourceFooter
+                    data={data}
+                    likes={likes}
+                    saveds={saveds}
+                    linkEve={linkEve}
+                    savedEve={savedEve}
+                    type={type}
+                    onShare={() => {
+                      getShareLink(data.title, data.id, data.uid)
+                      toggle()
+                    }}
+                  />
+                  <div className="pt-8 pb-8 pl-4 pr-4">
+                    <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
+                  </div>
+                </Box>
+              )
+            }
           } else {
             return (
-              <Box key={data.id}>
+              <Box key={index}>
                 <ResourceHeader
                   data={data}
                   currentUid={launchParams.initData?.user?.id ?? 0}
                   onProfileClick={jumpToProfilePage}
                 />
-                <div
-                  className="relative px-4"
-                  style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}
-                >
-                  <div className="grid grid-cols-3 gap-2">
-                    {data.media.map((i, ind) => (
+                <div className="relative px-4">
+                  {data.type === POST_TYPE_IMAGE ? (
+                    <Box position="relative" minH={data.media?.[0] === '' ? '200px' : 'auto'}>
                       <Image
-                        src={formatImage(i,false)}
+                        src={formatImage(data.media?.[0] ?? data?.media ?? '', false)}
                         alt={data.title}
-                        width="100%"
-                        height="100%"
-                        key={i}
-                        onClick={() => handleImageClick(data.media, ind)}
-                        rect
+                        errorClassName="rounded-[4px] h-[150px]"
+                        // wrapperClassName="rounded-[4px] overflow-hidden"
+                        // className="object-left w-[100%] m-[auto]"
+                        className="w-[230px] rounded-[4px]"
+                        onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
                       />
-                    ))}
-                  </div>
-                  {data.media?.[0] == '' && (
-                    <FrostedGlass
-                      price={data.price}
-                      post_id={data.id}
-                      resourcesEve={resourcesEve}
-                    />
+                      {data.media?.[0] === '' && (
+                        <FrostedGlass
+                          price={data.price}
+                          post_id={data.id}
+                          resourcesEve={resourcesEve}
+                        />
+                      )}
+                    </Box>
+                  ) : (
+                    <Box position="relative">
+                      <Box minH={data.media?.[0] === '' ? '200px' : '130px'}>
+                        <Image
+                          src={data.mediaCover}
+                          alt={data.title}
+                          wrapperClassName="rounded-[4px] overflow-hidden"
+                          errorClassName="rounded-[4px] h-[150px]"
+                          className="object-left w-[100%] rounded-[4px] m-[auto]"
+                          onClick={() => handleVideoClick(data)}
+                        />
+                        <PlayButton onClick={() => handleVideoClick(data)} />
+                      </Box>
+                      <HStack
+                        borderRadius="4px"
+                        bg="rgba(0, 0, 0, 0.20)"
+                        position="absolute"
+                        top="18px"
+                        left="18px"
+                        p="4px 8px"
+                        gap="4px"
+                      >
+                        <Image src={VideoIcon} />
+                        <Text color="#E0E2F6" fontSize="12px">
+                          {formatTime(Number(data.duration))}
+                        </Text>
+                      </HStack>
+
+                      {data.media?.[0] === '' && (
+                        <FrostedGlass
+                          price={data.price}
+                          post_id={data.id}
+                          resourcesEve={resourcesEve}
+                        />
+                      )}
+                    </Box>
                   )}
                 </div>
-
-                <ResourceFooter
-                  data={data}
-                  likes={likes}
-                  saveds={saveds}
-                  linkEve={linkEve}
-                  savedEve={savedEve}
-                  type={type}
-                  onShare={() => {
-                    getShareLink(data.title, data.id, data.uid)
-                    toggle()
-                  }}
-                />
-                <div className="pt-8 pb-8 pl-4 pr-4">
-                  <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
-                </div>
-              </Box>
-            )
-          }
-        } else {
-          return (
-            <Box key={index}>
-              <ResourceHeader
-                data={data}
-                currentUid={launchParams.initData?.user?.id ?? 0}
-                onProfileClick={jumpToProfilePage}
-              />
-              <div className="relative px-4">
-                {data.type === POST_TYPE_IMAGE ? (
-                  <Box position="relative" minH={data.media?.[0] === '' ? '200px' : 'auto'}>
-                    <Image
-                      src={formatImage(data.media?.[0] ?? data?.media ?? '', false)}
-                      alt={data.title}
-                      errorClassName="rounded-[4px] h-[150px]"
-                      // wrapperClassName="rounded-[4px] overflow-hidden"
-                      // className="object-left w-[100%] m-[auto]"
-                      className="w-[230px] rounded-[4px]"
-                      onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
-                    />
-                    {data.media?.[0] === '' && (
-                      <FrostedGlass
-                        price={data.price}
-                        post_id={data.id}
-                        resourcesEve={resourcesEve}
-                      />
-                    )}
-                  </Box>
-                ) : (
-                  <Box position="relative">
-                    <Box minH={data.media?.[0] === '' ? '200px' : '130px'}>
-                      <Image
-                        src={data.mediaCover}
-                        alt={data.title}
-                        wrapperClassName="rounded-[4px] overflow-hidden"
-                        errorClassName="rounded-[4px] h-[150px]"
-                        className="object-left w-[100%] rounded-[4px] m-[auto]"
-                        onClick={() => handleVideoClick(data)}
-                      />
-                      <PlayButton onClick={() => handleVideoClick(data)} />
-                    </Box>
-                    <HStack
-                      borderRadius="4px"
-                      bg="rgba(0, 0, 0, 0.20)"
-                      position="absolute"
-                      top="18px"
-                      left="18px"
-                      p="4px 8px"
-                      gap="4px"
-                    >
-                      <Image src={VideoIcon} />
-                      <Text color="#E0E2F6" fontSize="12px">
-                        {formatTime(Number(data.duration))}
-                      </Text>
-                    </HStack>
-
-                    {data.media?.[0] === '' && (
-                      <FrostedGlass
-                        price={data.price}
-                        post_id={data.id}
-                        resourcesEve={resourcesEve}
-                      />
-                    )}
-                  </Box>
-                )}
-              </div>
 
               <ResourceFooter
                 data={data}
@@ -413,24 +417,32 @@ const ResourceList = ({
         }
       })}
 
-      {isVideoPreviewOpen && (
-        <VideoDialog info={previewVideo} onClose={() => setIsVideoPreviewOpen(false)} />
-      )}
+        {isVideoPreviewOpen && (
+          <VideoDialog info={previewVideo} onClose={() => setIsVideoPreviewOpen(false)} />
+        )}
 
-      {isPreviewOpen && (
-        <ImagePreviewWrapper
-          isOpen={isPreviewOpen}
-          onClose={() => setIsPreviewOpen(false)}
-          images={previewImages}
-          currentIndex={currentIndex}
-          onIndexChange={setCurrentIndex}
-        />
-      )}
-      {/* Components */}
-      {renderBaseModal()}
-      </div>
-    </>
-  )
+        {isPreviewOpen && (
+          <ImagePreviewWrapper
+            isOpen={isPreviewOpen}
+            onClose={() => setIsPreviewOpen(false)}
+            images={previewImages}
+            currentIndex={currentIndex}
+            onIndexChange={setCurrentIndex}
+          />
+        )}
+        {/* Components */}
+        {renderBaseModal()}
+        </div>
+      </>
+    )
+  }else if(type === 'fav' && !hasMore && !resources.length){
+    return (
+      <Empty
+        title="No post yet."
+        icon={<Icon name="icon-none_post" style={{ width: '164px', height: '164px' }}></Icon>}
+      ></Empty>
+    )
+  }
 }
 
 interface ResourceHeaderProps {

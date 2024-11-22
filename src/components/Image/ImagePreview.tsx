@@ -106,7 +106,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
       {/* loading */}
       {loading && (
         <div
-          className="absolute w-full h-full flex items-center justify-center  z-100"
+          className="absolute w-full h-full flex items-center justify-center  z-100 animate-spin"
           style={{ zIndex: '9', background: 'rgba(0,0,0,.15)' }}
         >
           <i className="iconfont icon-loading text-white text-[30px]"></i>
@@ -133,7 +133,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
         {images.map((src, index) => (
           <SwiperSlide key={index} className="flex items-center justify-center">
             <img
-              src={loading ? formatImage(src): src}
+              src={loading ? formatImage(src,false): src}
               alt={`Image ${index + 1}`}
               className={cn(
                 'max-h-[100vh] max-w-[100vw]',

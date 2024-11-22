@@ -24,6 +24,8 @@ import useMobile from '@/hooks/useMobile'
 import playIcon from '@/assets/icons/videoSwitch.svg'
 import { formatImage, formatTime } from '@/utils/utils'
 import Hls from 'hls.js'
+import Empty from '../comm/Empty'
+import Icon from '../comm/Icon'
 
 import { VideoDialog } from './VideoDialog'
 import { CardRecommendProvider } from '@/utils/constants'
@@ -43,9 +45,11 @@ const POST_TYPE_VIDEO = 0
 const ResourceList = ({
   resources: initialResources,
   type,
+  hasMore
 }: {
   resources: FormatterListItem[]
   type?: string
+  hasMore?: boolean
 }) => {
   const isMobile = useMobile()
   const [resources, setResources] = useState<FormatterListItem[]>([])
@@ -214,7 +218,14 @@ const ResourceList = ({
       </div>
     </BaseModal>
   )
-
+  if(type === 'fav' && !hasMore && !resources.length){
+    return (
+      <Empty
+        title="No post yet."
+        icon={<Icon name="icon-none_post" style={{ width: '164px', height: '164px' }}></Icon>}
+      ></Empty>
+    )
+  }
   return (
     <>
     <div className="pt-4">
@@ -236,7 +247,7 @@ const ResourceList = ({
                     <div className="grid grid-cols-2 gap-2 col-span-2">
                       {data.media.map((i, ind) => (
                         <Image
-                          src={formatImage(i)}
+                          src={formatImage(i,false)}
                           alt={data.title}
                           width="100%"
                           height="100%"
@@ -270,7 +281,7 @@ const ResourceList = ({
                   }}
                 />
                 <div className="pt-8 pb-8 pl-4 pr-4">
-                  <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.10)' }}></div>
+                  <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
                 </div>
               </Box>
             )
@@ -289,7 +300,7 @@ const ResourceList = ({
                   <div className="grid grid-cols-3 gap-2">
                     {data.media.map((i, ind) => (
                       <Image
-                        src={formatImage(i)}
+                        src={formatImage(i,false)}
                         alt={data.title}
                         width="100%"
                         height="100%"
@@ -321,7 +332,7 @@ const ResourceList = ({
                   }}
                 />
                 <div className="pt-8 pb-8 pl-4 pr-4">
-                  <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.10)' }}></div>
+                  <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
                 </div>
               </Box>
             )
@@ -393,25 +404,25 @@ const ResourceList = ({
                 )}
               </div>
 
-              <ResourceFooter
-                data={data}
-                likes={likes}
-                saveds={saveds}
-                linkEve={linkEve}
-                savedEve={savedEve}
-                type={type}
-                onShare={() => {
-                  getShareLink(data.title, data.id, data.uid)
-                  toggle()
-                }}
-              />
-              <div className="pt-8 pb-8 pl-4 pr-4">
-                <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.10)' }}></div>
-              </div>
-            </Box>
-          )
-        }
-      })}
+            <ResourceFooter
+              data={data}
+              likes={likes}
+              saveds={saveds}
+              linkEve={linkEve}
+              savedEve={savedEve}
+              type={type}
+              onShare={() => {
+                getShareLink(data.title, data.id, data.uid)
+                toggle()
+              }}
+            />
+            <div className="pt-8 pb-8 pl-4 pr-4">
+              <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
+            </div>
+          </Box>
+        )
+      }
+    })}
 
       {isVideoPreviewOpen && (
         <VideoDialog info={previewVideo} onClose={() => setIsVideoPreviewOpen(false)} />
@@ -465,8 +476,9 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
           />
         </div>
         <div className="flex flex-col">
-          <div className="text-[#E0E2F6] font-bold text-base">{data.username}</div>
-          {(cardValue?.recommend && !data.is_collected) && <div className="text-[#62636F] text-[12px]">Bae selected</div>}
+          <div className="text-[#E0E2F6] font-bold text-base">{data.username}{data.is_follow}</div>
+
+          {(cardValue?.recommend && !data.is_follow) && <div className="text-[#62636F] text-[12px]">Bae selected</div>}
         </div>
       </div>
       <SecondaryMenu className="ml-auto" key={data.id} mediaData={data} currentUid={currentUid} />

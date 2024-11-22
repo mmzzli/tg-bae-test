@@ -50,6 +50,7 @@ export type PostItem = {
   title: string
   type: number
   uid: number
+  is_follow: boolean
 }
 export type UserItem = {
   avatar: string

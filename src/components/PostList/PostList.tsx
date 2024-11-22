@@ -1,11 +1,11 @@
-import { Box, Spinner } from '@chakra-ui/react'
+import { Box } from '@chakra-ui/react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import ResourceList from '../ResourceList/ResourceList'
 import { cn } from '@/utils/utils'
 import { FormatterListItem } from '../../store/slices/resourceListSlice'
 
-import Empty from '../comm/Empty'
-import Icon from '../comm/Icon'
+// import Empty from '../comm/Empty'
+// import Icon from '../comm/Icon'
 import PostSkeleton from '../Skeketon/PostSkeleton'
 
 interface PostListProps {

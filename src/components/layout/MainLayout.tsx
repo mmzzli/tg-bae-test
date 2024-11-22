@@ -122,6 +122,7 @@ export const MainLayout: React.FC = () => {
           window.history.back()
         }
       })
+      setExpanded(window.Telegram.WebApp.isExpanded)
       console.log(window.Telegram.WebApp.isExpanded,'window.Telegram.WebApp.isExpanded')
     }
     onLogin()
@@ -169,7 +170,7 @@ export const MainLayout: React.FC = () => {
         </Suspense>
       </div>
 
-      <div className={`absolute inset-0 top-0 bottom-[84px] z-1 ${isExpanded ? 'pt-[40px]':''}`}>
+      <div className={`absolute inset-0 top-0 bottom-[84px] z-1 ${isExpanded ? 'pt-[80px]':''}`}>
         <Outlet />
       </div>
 

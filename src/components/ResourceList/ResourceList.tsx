@@ -119,7 +119,9 @@ const ResourceList = ({
     }
   }, [resources])
 
+  const [linksBoll, setLinksBoll] = useState(false)
   const linkEve = async (post_id: number, boll: boolean) => {
+    if(linksBoll) return
     setLikes((prevLikes) =>
       prevLikes.map((item: any) =>
         item.id === post_id
@@ -127,23 +129,29 @@ const ResourceList = ({
           : item
       )
     )
+    setLinksBoll((prev) => !prev);
     await postLike({
       act_type: boll ? 1 : 2,
       post_id,
     })
+    setLinksBoll((prev) => !prev);
   }
+  const [favBoll, setFavBoll] = useState(false)
   const savedEve = async (pid: number, boll: boolean) => {
+    if(favBoll) return
     setSaveds((prevLikes) =>
       prevLikes.map((item: any) => (item.id === pid ? { ...item, saveds: boll } : item))
     )
     if (type === 'fav') {
       setResources((favResources) => favResources.filter((item) => item.id !== pid))
     }
+    setFavBoll((prev) => !prev);
     if (boll) {
       await favPost(pid)
     } else {
       await favDel(pid)
     }
+    setFavBoll((prev) => !prev);
   }
 
   const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {

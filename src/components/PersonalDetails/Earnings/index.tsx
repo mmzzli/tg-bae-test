@@ -20,13 +20,7 @@ const Earnings = () => {
         width="104px"
         height="36px"
         handler={() => {
-          // toggle()
-          toast({
-            render: () => {
-              return <CustomToast title="coming soon" type={typeOptions.warning} />
-            },
-            position: 'top',
-          })
+          toggle()
         }}
       />
       <BaseModal
@@ -76,6 +70,12 @@ const Earnings = () => {
               width="100%"
               height="48px"
               handler={() => {
+                toast({
+                  render: () => {
+                    return <CustomToast title="coming soon" type={typeOptions.warning} />
+                  },
+                  position: 'top',
+                })
                 // shareLink(link ?? '')
               }}
             />

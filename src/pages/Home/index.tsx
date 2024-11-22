@@ -1,4 +1,4 @@
-import { useEffect, type FC, useRef, useState } from 'react'
+import { useEffect, type FC, useRef, useState, useMemo } from 'react'
 import { HStack, Heading, Image } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { AddIcon1 } from '@/assets/icons'
@@ -11,6 +11,7 @@ import PostWrapSkeleton from '@/components/Skeketon/PostWrapSkeleton'
 import { useStore } from '@/store'
 import { getRecommendMedia } from '@/api/list'
 import Hls from 'hls.js'
+import { CardRecommendProvider } from '@/utils/constants'
 
 const HomePage: FC = () => {
   const navigate = useNavigate()
@@ -18,6 +19,8 @@ const HomePage: FC = () => {
   const selectedPostsRef = useRef<HTMLDivElement>(null)
   const [title, setTitle] = useState('Following')
   const [fadeClass, setFadeClass] = useState('fade-in')
+  const userInfo = useStore((state) => state.userInfo);
+
   const styles = {
     fadeIn: {
       opacity: 1,
@@ -31,6 +34,15 @@ const HomePage: FC = () => {
   const { token } = useStore((state) => ({
     token: state.token,
   }))
+  const animation = useMemo(()=>{
+    if(userInfo.user_id !== -1 && userInfo.fans === 0){
+      return {
+        animation:`slide 600ms forwards 300ms`
+      }
+    }
+    return {}
+  },[userInfo.user_id,userInfo.fans])
+
   useEffect(() => {
     const handleScroll = () => {
       if (selectedPostsRef.current) {
@@ -161,7 +173,10 @@ const HomePage: FC = () => {
             handler={() => navigate('/post')}
           />
         </HStack>
-        <FollowingList />
+        <div className="overflow-hidden" style={{ height:'0px',opacity:0,...animation}}>
+            <FollowingList/>
+        </div>
+
         {/* <button
         onClick={() => shareLink(COMMUNITY_LINK)}
         className="text-[14px] py-[14px] px-6 w-[126px] h-[40px] bg-[#4A3AFF] rounded-[32px] flex items-center justify-center font-medium text-[#fff] mx-auto mt-[28px] mb-12"
@@ -173,7 +188,11 @@ const HomePage: FC = () => {
             Selected Posts
           </h3>
         </div> */}
-        <RecommendList />
+        <CardRecommendProvider.Provider value={{recommend:true}}>
+          <div className={`mt-10`}>
+            <RecommendList />
+          </div>
+        </CardRecommendProvider.Provider>
       </>
     </div>
   )

@@ -5,6 +5,7 @@ import { cn } from '@/utils/utils'
 import { useRecommendList } from '@/store/hook/useResourceList'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { COMMUNITY_LINK } from '@/utils/constants'
+import { useStore } from '@/store';
 
 interface PostListProps {
   className?: string

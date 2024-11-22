@@ -41,3 +41,18 @@ button,
 .swiper-slide{
   overflow: hidden !important;
 }
+
+@keyframes slide {
+  0%{
+    opacity: 0;
+    height: 0px;
+  }
+  50%{
+    opacity: 0;
+    height: 208px ;
+  }
+  100%{
+    opacity: 1;
+    height: 208px;
+  }
+}

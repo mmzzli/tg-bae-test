@@ -133,7 +133,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
         {images.map((src, index) => (
           <SwiperSlide key={index} className="flex items-center justify-center">
             <img
-              src={loading ? formatImage(src): src}
+              src={loading ? formatImage(src,false): src}
               alt={`Image ${index + 1}`}
               className={cn(
                 'max-h-[100vh] max-w-[100vw]',

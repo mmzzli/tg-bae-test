@@ -34,6 +34,8 @@ export const MainLayout: React.FC = () => {
   const setBackToHome = useStore((state) => state.setBackToHome)
   const [shouldLoadChat, setShouldLoadChat] = useState(false)
   const [hiddenChatPage, setHiddenChatPage] = useState(false)
+  const setExpanded = useStore(state=>state.setExpand);
+  const isExpanded = useStore(state=>state.expand)
   const navigate = useNavigate()
   const { run: runLogin } = useRequest(logIn, {
     manual: true,
@@ -119,6 +121,8 @@ export const MainLayout: React.FC = () => {
           window.history.back()
         }
       })
+      console.log(window.Telegram.WebApp.isExpanded,'window.Telegram.WebApp.isExpanded')
+      setExpanded(window.Telegram.WebApp.isExpanded)
     }
     onLogin()
   }, [])
@@ -165,7 +169,7 @@ export const MainLayout: React.FC = () => {
         </Suspense>
       </div>
 
-      <div className="absolute inset-0 top-0 bottom-[84px] z-1">
+      <div className={`absolute inset-0 top-0 bottom-[84px] z-1 ${isExpanded ? 'pt-[40px]':''}`}>
         <Outlet />
       </div>
 

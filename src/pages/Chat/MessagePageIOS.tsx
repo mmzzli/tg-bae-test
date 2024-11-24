@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, memo } from 'react'
 import { MessageList } from '@/components/Chat/MessageList'
+// import { MessageList } from '@/components/Chat/NewMessageListOrigin'
 // import MessageInput from '@/components/Chat/MessageInput'
 import { MessageType, WrappedMessage } from '@/components/Chat/types'
 import { useParams } from 'react-router-dom'
@@ -9,6 +10,7 @@ import { useStore } from '@/store'
 import { OthersUserInfo } from '@/types'
 import Image from '@/components/Image/Image'
 import { cn } from '@/utils/utils'
+import SendMediaModal from '@/components/Chat/SendMediaModal'
 // const PAGE_SIZE = 20
 
 const defaultMessages: WrappedMessage[] = []
@@ -198,7 +200,7 @@ const MessagePageIOS = () => {
 
       {/* FAKE INPUT */}
       <div
-        className={`'flex h-[68px] absolute bottom-0 left-0 right-0 bg-[#000000] px-[14px] pt-[8px] ${
+        className={`'flex h-[68px] absolute bottom-0 left-0 right-0 bg-[#000000] pr-[14px] pt-[8px] pl-[42px] ${
           isFocused ? 'hidden' : 'block'
         }`}
       >
@@ -217,42 +219,47 @@ const MessagePageIOS = () => {
         </div>
       </div>
 
+      <div className="absolute left-[10px] bottom-[28px] w-[28px] z-[99]">
+        <SendMediaModal
+          tgid={Number(uid)}
+          beforeOpen={() => {
+            inputRef.current?.blur()
+            setIsFocused(false)
+          }}
+        />
+      </div>
+
       {/* REAL INPUT */}
-      <form
-        onSubmit={handleSubmit}
+
+      <div
         className={cn(
-          'flex h-[68px] absolute left-0 right-0 bg-[#000000] pl-6 pr-8 pt-[8px] overflow-hidden',
+          'flex h-[68px] absolute left-0 right-0 bg-[#000000] pl-6 pr-8 overflow-hidden',
           isFocused ? 'opacity-100' : 'opacity-0',
           showInput ? 'bottom-0' : '-top-32'
         )}
       >
-        <div className="absolute left-[14px] right-[14px] flex items-center h-[34px] bg-[#000000]">
-          {/* <div className="w-[28px] h-[28px] mx-[10px] cursor-pointer">
-          <Image src={AttachIcon} />
-        </div> */}
-          <input
-            ref={inputRef}
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={handleKeyPress}
-            onBlur={() => {
-              setIsFocused(false)
-            }}
-            type="text"
-            className="flex-1 h-[36px] text-sm bg-black border-[1px] border-[#4B4B4D] focus:border-[#4B4B4D] rounded-full px-3 outline-none text-white placeholder:text-[#5D5D60] pr-[60px]"
-            placeholder="Type a Message..."
-          />
-        </div>
-        <div
-          onClick={handleSubmit}
-          className="absolute items-center justify-center h-[34px] right-[27px] cursor-pointer text-[#6761FF] text-sm"
-          style={{
-            display: message ? 'flex' : 'none',
+        <input
+          ref={inputRef}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={handleKeyPress}
+          onBlur={() => {
+            setIsFocused(false)
           }}
-        >
-          Send
-        </div>
-      </form>
+          type="text"
+          className="absolute left-[42px] right-0 top-[8px] h-[36px] text-sm bg-black border-[1px] border-[#4B4B4D] focus:border-[#4B4B4D] rounded-full px-3 outline-none text-white placeholder:text-[#5D5D60] pr-[60px]"
+          placeholder="Type a Message..."
+        />
+      </div>
+      <div
+        onClick={handleSubmit}
+        className="absolute items-center justify-center h-[34px] right-[27px] cursor-pointer text-[#6761FF] text-sm"
+        style={{
+          display: message ? 'flex' : 'none',
+        }}
+      >
+        Send
+      </div>
     </div>
   )
 }

@@ -46,17 +46,20 @@ export const useIM = () => {
     return useStore.getState().chatPeopleInfoList.find((item) => item.uid === user)
   }
 
-  const sendMessage = (message: WrappedMessage) => {
+  const sendMessage = (message: WrappedMessage, updateStore = true) => {
     useStore.getState().connection?.sendMessage(
       JSON.stringify({
         id: message.id,
         text: message.text,
         type: message.type,
         url: message.url,
+        metadata: message.metadata,
       }),
       String(message.receiver)
     )
-    updateMessage(message, message.receiver)
+    if (updateStore) {
+      updateMessage(message, message.receiver)
+    }
   }
 
   const receiveMessage = (message: WrappedMessage | WrappedMessage[], messageWindowId = '') => {
@@ -88,6 +91,16 @@ export const useIM = () => {
     }
   }
 
+  const updateMessageByID = (message: WrappedMessage) => {
+    const messageWindow = getMessageWindow(String(message.channelID))
+    if (messageWindow) {
+      updateMessageWindowListItem({
+        ...messageWindow,
+        messages: messageWindow.messages.map((msg) => (msg.id === message.id ? message : msg)),
+      })
+    }
+  }
+
   return {
     getMessageWindow,
     initChatPeopleInfo,
@@ -96,5 +109,6 @@ export const useIM = () => {
     sendMessage,
     receiveMessage,
     updateMessage,
+    updateMessageByID,
   }
 }

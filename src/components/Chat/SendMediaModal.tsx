@@ -1,0 +1,247 @@
+import { useBoolean } from '@chakra-ui/react'
+
+import BaseButton from '@/components/BaseButton/BaseButton'
+import { AttachIcon } from '@/assets/icons'
+import { useTouch } from '@/hooks/useTouch'
+import { useEffect, useRef, useState } from 'react'
+import { MessageType } from './types'
+import { useFormatMessage } from '@/hooks/useFormatMessage'
+import { useIM } from '@/store/hook/userIM'
+
+const formatDuration = (duration: number) => {
+  const minutes = Math.floor(duration / 60)
+  const seconds = Math.floor(duration % 60)
+  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+}
+
+const sheetStyle: React.CSSProperties = {
+  backgroundColor: '#1C1C1C',
+  transition: `transform 400ms ease-in-out`,
+  transform: 'translateZ(50px)',
+}
+
+type FileMetadata = {
+  name: string
+  size: number
+  type: string
+  file: File
+  url: string
+  width: number
+  height: number
+  duration: number
+}
+
+const SendMediaModal = ({ tgid, beforeOpen }: { tgid: number; beforeOpen?: () => void }) => {
+  const attachRef = useRef<HTMLInputElement>(null)
+  const [isBaseModalOpen, { toggle, off }] = useBoolean(false)
+  const [validFileList, setValidFileList] = useState<FileMetadata[]>([])
+  const { formatMessage } = useFormatMessage()
+  const { updateMessage } = useIM()
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    console.log('files------------>', files)
+    if (files.length > 0) {
+      beforeOpen?.()
+    }
+    const fileList = files.map((file) => {
+      return new Promise((resolve) => {
+        console.log(file)
+        const metadata = {
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          file,
+          url: '',
+          width: 0,
+          height: 0,
+          duration: 0,
+          resolution: '',
+        }
+
+        if (file.type.startsWith('image/')) {
+          const img = new Image()
+          const reader = new FileReader()
+
+          reader.onload = (event) => {
+            img.src = event.target?.result as string
+            img.onload = () => {
+              metadata.width = img.width
+              metadata.height = img.height
+              resolve(metadata)
+            }
+          }
+          reader.readAsDataURL(file)
+        } else if (file.type.startsWith('video/')) {
+          const video = document.createElement('video')
+          const reader = new FileReader()
+
+          reader.onload = (event) => {
+            video.src = event.target?.result as string
+            video.onloadedmetadata = () => {
+              metadata.resolution = `${video.videoWidth}x${video.videoHeight}`
+              metadata.width = video.videoWidth
+              metadata.height = video.videoHeight
+              metadata.duration = video.duration
+              resolve(metadata)
+            }
+            video.onerror = (e) => {
+              console.log(e)
+              resolve(null)
+            }
+          }
+          reader.readAsDataURL(file)
+        } else {
+          resolve(null)
+        }
+      })
+    })
+    Promise.all(fileList)
+      .then((file) => {
+        const validMetadataArray = file.filter(Boolean) as FileMetadata[]
+        setValidFileList(validMetadataArray)
+        console.log('筛选后的文件数量:', validMetadataArray.length)
+        toggle()
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
+  const { touchHandlers } = useTouch({
+    onTap: () => {
+      attachRef.current?.click()
+    },
+  })
+
+  const handleSubmit = () => {
+    // window.TelegramWebviewProxy.postEvent('web_app_request_fullscreen')
+    if (validFileList.length === 0) return off()
+    validFileList.forEach((metadata) => {
+      let newMessage
+      if (metadata.type.startsWith('image/')) {
+        newMessage = formatMessage({
+          type: MessageType.IMAGE,
+          url: '',
+          to: tgid,
+          metadata,
+        })
+      } else if (metadata.type.startsWith('video/')) {
+        newMessage = formatMessage({
+          type: MessageType.VIDEO,
+          url: '',
+          to: tgid,
+          metadata,
+        })
+      }
+      if (newMessage) {
+        updateMessage(newMessage, tgid)
+      }
+      setValidFileList([])
+      off()
+    })
+  }
+
+  useEffect(() => {
+    if (isBaseModalOpen) {
+      document.body.style.overflow = 'hidden'
+      return () => {
+        document.body.style.overflow = ''
+      }
+    }
+  }, [isBaseModalOpen])
+
+  return (
+    <>
+      <input
+        type="file"
+        accept="image/*,video/mp4,video/x-m4v,video/ogg,video/webm"
+        onClick={(e) => {
+          ;(e.target as HTMLInputElement).value = ''
+        }}
+        multiple
+        onChange={handleFileChange}
+        className="fixed -top-12"
+        style={{ display: 'none' }}
+        ref={attachRef}
+      />
+
+      <div {...touchHandlers} className="w-[29px] h-[29px] cursor-pointer mr-[8px] mt-[3px] no-tap">
+        <img src={AttachIcon} />
+      </div>
+
+      <div
+        className={`fixed inset-0 z-50 ${
+          isBaseModalOpen ? 'visible bg-black/80' : 'invisible'
+        } transition-all duration-300`}
+        role="dialog"
+        aria-modal="true"
+        aria-hidden={!isBaseModalOpen}
+        style={{ transform: 'translateZ(50px)' }}
+      >
+        <div
+          className={`fixed z-50 bottom-0 left-0 right-0 rounded-t-2xl bg-[#1C1C1C] dark:bg-gray-800 transition-transform ${
+            isBaseModalOpen ? 'translate-y-0' : 'translate-y-full'
+          }`}
+          style={sheetStyle}
+        >
+          <div className="relative px-[14px] pb-[14px] overflow-y-auto bg-[#1C1C1C] text-[#E0E2F6] rounded-t-2xl rounded-b-none border-[#1c1c1c] max-h-[70vh]">
+            <div className="sticky top-0 flex items-center h-11 bg-[#1C1C1C] z-10">
+              <button onClick={() => off()} className="text-white">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+              <span className="text-white flex-1 text-center text-ellipsis overflow-hidden whitespace-nowrap">
+                {validFileList.length} media selected
+              </span>
+            </div>
+            <div className="flex justify-center">
+              <div className="mt-4 w-full">
+                <div className="grid grid-cols-2 gap-3">
+                  {validFileList.map((metadata, index) => (
+                    <div
+                      key={index}
+                      className={`flex flex-col items-center justify-center
+                   h-[190px] rounded-lg overflow-hidden`}
+                    >
+                      {metadata.type.startsWith('image/') ? (
+                        <img
+                          src={URL.createObjectURL(new Blob([metadata.file]))}
+                          alt={metadata.name}
+                          className="object-cover w-full h-full"
+                        />
+                      ) : (
+                        <div className="relative w-full h-full">
+                          <video
+                            controls
+                            className="w-full h-full object-cover"
+                            src={URL.createObjectURL(new Blob([metadata.file]))}
+                          />
+                          <div className="absolute top-0 left-0 bg-black bg-opacity-60 text-white text-xs p-1">
+                            {formatDuration(metadata.duration)}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <BaseButton text="Send" className="w-full mt-4 h-[48px] mb-7" handler={handleSubmit} />
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+export default SendMediaModal

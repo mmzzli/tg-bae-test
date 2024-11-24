@@ -4,7 +4,7 @@ import InfiniteScroll from 'react-infinite-scroll-component'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import dayjs from 'dayjs'
 import Image from '@/components/Image/Image'
-import { WrappedMessage } from './types'
+import { MessageType, WrappedMessage } from './types'
 import { MessageRender } from './MessageRender'
 import { OthersUserInfo } from '@/types/postTypes'
 import { FormattedMessage, PullMode } from '../SDK/BaeimSDK'
@@ -75,7 +75,7 @@ export const MessageList = ({ messages, className, channelInfo }: MessageListPro
       channelInfo: OthersUserInfo | null
     }) => (
       <div
-        id={message.messageSeq.toString()}
+        id={message.id}
         className={`flex items-end gap-2 mx-4 my-2 text-white ${
           isCurrentUser ? 'flex-row-reverse' : 'flex-row'
         }`}
@@ -93,13 +93,12 @@ export const MessageList = ({ messages, className, channelInfo }: MessageListPro
           </div>
         )}
         <div
-          className={`p-3 rounded-lg ${
-            isCurrentUser ? 'bg-[#4A3AFF] max-w-[255px]' : 'bg-[#303030] max-w-[255px]'
-          }`}
+          className={`overflow-hidden rounded-lg max-w-[255px]
+            ${isCurrentUser && message.type === MessageType.TEXT ? 'bg-[#4A3AFF]' : 'bg-[#303030]'}
+            ${message.type === MessageType.TEXT ? 'p-3' : 'inline-block'}
+          `}
         >
-          <div className="text-sm">
-            <MessageRender message={message} />
-          </div>
+          <MessageRender message={message} />
         </div>
       </div>
     )
@@ -180,9 +179,9 @@ export const MessageList = ({ messages, className, channelInfo }: MessageListPro
         {messageGroups.map((group) => (
           <div key={`group-${group.timestamp}`}>
             <TimeDevider timestamp={group.timestamp} />
-            {group.messages.map((message) => (
+            {group.messages.map((message, index) => (
               <MessageItem
-                key={message.messageSeq.toString()}
+                key={message.id + index}
                 message={message}
                 isCurrentUser={message.sender === current_uid}
                 channelInfo={channelInfo}

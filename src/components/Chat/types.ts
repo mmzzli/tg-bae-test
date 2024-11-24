@@ -1,6 +1,7 @@
 import { Conversation, Channel } from '../SDK/BaeimSDK'
 
 export enum MessageStatus {
+  UNSENT = -1,
   SENT = 0,
   RECEIVED = 1,
   FAILED = 2,
@@ -42,7 +43,7 @@ export type WrappedMessage = Message & {
   receiver: number
   messageSeq: number
   channelID: string
-  status: MessageStatus
+  status?: MessageStatus
 }
 export interface ChatListProps {
   chats: Conversation[]

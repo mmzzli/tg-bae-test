@@ -24,6 +24,8 @@ import useMobile from '@/hooks/useMobile'
 import playIcon from '@/assets/icons/videoSwitch.svg'
 import { formatImage, formatTime } from '@/utils/utils'
 import Hls from 'hls.js'
+import Empty from '../comm/Empty'
+import Icon from '../comm/Icon'
 
 import { VideoDialog } from './VideoDialog'
 import { CardRecommendProvider } from '@/utils/constants'
@@ -43,9 +45,11 @@ const POST_TYPE_VIDEO = 0
 const ResourceList = ({
   resources: initialResources,
   type,
+  hasMore
 }: {
   resources: FormatterListItem[]
   type?: string
+  hasMore?: boolean
 }) => {
   const isMobile = useMobile()
   const [resources, setResources] = useState<FormatterListItem[]>([])
@@ -115,7 +119,9 @@ const ResourceList = ({
     }
   }, [resources])
 
+  const [linksBoll, setLinksBoll] = useState(false)
   const linkEve = async (post_id: number, boll: boolean) => {
+    if(linksBoll) return
     setLikes((prevLikes) =>
       prevLikes.map((item: any) =>
         item.id === post_id
@@ -123,23 +129,29 @@ const ResourceList = ({
           : item
       )
     )
+    setLinksBoll((prev) => !prev);
     await postLike({
       act_type: boll ? 1 : 2,
       post_id,
     })
+    setLinksBoll((prev) => !prev);
   }
+  const [favBoll, setFavBoll] = useState(false)
   const savedEve = async (pid: number, boll: boolean) => {
+    if(favBoll) return
     setSaveds((prevLikes) =>
       prevLikes.map((item: any) => (item.id === pid ? { ...item, saveds: boll } : item))
     )
     if (type === 'fav') {
       setResources((favResources) => favResources.filter((item) => item.id !== pid))
     }
+    setFavBoll((prev) => !prev);
     if (boll) {
       await favPost(pid)
     } else {
       await favDel(pid)
     }
+    setFavBoll((prev) => !prev);
   }
 
   const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
@@ -214,7 +226,14 @@ const ResourceList = ({
       </div>
     </BaseModal>
   )
-
+  if(type === 'fav' && !hasMore && !resources.length){
+    return (
+      <Empty
+        title="No post yet."
+        icon={<Icon name="icon-none_post" style={{ width: '164px', height: '164px' }}></Icon>}
+      ></Empty>
+    )
+  }
   return (
     <>
     <div className="pt-4">
@@ -270,7 +289,7 @@ const ResourceList = ({
                   }}
                 />
                 <div className="pt-8 pb-8 pl-4 pr-4">
-                  <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.10)' }}></div>
+                  <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
                 </div>
               </Box>
             )
@@ -321,7 +340,7 @@ const ResourceList = ({
                   }}
                 />
                 <div className="pt-8 pb-8 pl-4 pr-4">
-                  <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.10)' }}></div>
+                  <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
                 </div>
               </Box>
             )
@@ -393,25 +412,25 @@ const ResourceList = ({
                 )}
               </div>
 
-              <ResourceFooter
-                data={data}
-                likes={likes}
-                saveds={saveds}
-                linkEve={linkEve}
-                savedEve={savedEve}
-                type={type}
-                onShare={() => {
-                  getShareLink(data.title, data.id, data.uid)
-                  toggle()
-                }}
-              />
-              <div className="pt-8 pb-8 pl-4 pr-4">
-                <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.10)' }}></div>
-              </div>
-            </Box>
-          )
-        }
-      })}
+            <ResourceFooter
+              data={data}
+              likes={likes}
+              saveds={saveds}
+              linkEve={linkEve}
+              savedEve={savedEve}
+              type={type}
+              onShare={() => {
+                getShareLink(data.title, data.id, data.uid)
+                toggle()
+              }}
+            />
+            <div className="pt-8 pb-8 pl-4 pr-4">
+              <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
+            </div>
+          </Box>
+        )
+      }
+    })}
 
       {isVideoPreviewOpen && (
         <VideoDialog info={previewVideo} onClose={() => setIsVideoPreviewOpen(false)} />

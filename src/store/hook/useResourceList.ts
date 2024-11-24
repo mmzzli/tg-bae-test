@@ -100,12 +100,14 @@ export const useViewList = () => {
 }
 
 export const useFavList = () => {
-  const { favList, setFavPage, loadFavList, resetFavList, token } = useStore(
+  const { favList, setFavPage, loadFavList, resetFavList, token, setFavList, setFavHasMore } = useStore(
     (state) => ({
       favList: state.favList,
       setFavPage: state.setFavPage,
       loadFavList: state.loadFavList,
       resetFavList: state.resetFavList,
+      setFavList: state.setFavList,
+      setFavHasMore: state.setFavHasMore,
       token: state.token,
     }),
     shallow
@@ -135,6 +137,10 @@ export const useFavList = () => {
       resetFavList()
       loadFavList(1)
     },
+    initialize:()=>{
+      setFavList([])
+      setFavHasMore(true)
+    }
   }
 }
 export const useOrdersList = () => {

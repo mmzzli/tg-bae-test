@@ -16,6 +16,7 @@ interface PostListProps {
 
 const ViewList = ({ className }: PostListProps) => {
   const { list, hasMore, fetchMoreData } = useViewList()
+  const { initialize } = useFavList()
   const [ids, setIsd] = useState<string>('posts')
   const menuList = [
     {
@@ -31,6 +32,10 @@ const ViewList = ({ className }: PostListProps) => {
       id: 'saved',
     },
   ]
+  const tabEve = (id:string)=>{
+    initialize()
+    setIsd(id)
+  }
 
   return (
     <>
@@ -38,7 +43,7 @@ const ViewList = ({ className }: PostListProps) => {
         {menuList.map((item) => (
           <div
             className={`text-[16px] text-[${item.id === ids ? '#E0E2F6' : '#62636F'}]`}
-            onClick={() => setIsd(item.id)}
+            onClick={() => tabEve(item.id) }
           >
             {item.name}
             {item.id === ids && <p className="w-[32px] bg-[#4A3AFF] h-[2px] m-[auto] mt-[8px]"></p>}
@@ -100,7 +105,7 @@ const FavList = () => {
       scrollThreshold={0.8}
       style={{ overflow: 'visible' }}
     >
-      <ResourceList resources={list} type="fav" />
+      <ResourceList resources={list} type="fav" hasMore={hasMore} />
     </InfiniteScroll>
   )
 }

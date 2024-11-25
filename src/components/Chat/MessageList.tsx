@@ -77,7 +77,7 @@ export const MessageList = ({ messages, className, channelInfo }: MessageListPro
       })
     }
 
-    return groups
+    return groups.reverse()
   }, [messages])
 
   const MessageItem = memo(
@@ -183,7 +183,7 @@ export const MessageList = ({ messages, className, channelInfo }: MessageListPro
         scrollableTarget="scrollableDiv"
         style={{ display: 'flex', flexDirection: 'column-reverse', overflow: 'visible' }} // start from bottom
       >
-        {messageGroups.reverse().map((group) => (
+        {messageGroups.map((group) => (
           <div key={`group-${group.timestamp}`}>
             <TimeDevider timestamp={group.timestamp} />
             {group.messages.map((message, index) => (

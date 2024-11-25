@@ -160,7 +160,7 @@ export const MessageRender: React.FC<MessageRenderProps> = ({
   const [message, setMessage] = useState<WrappedMessage | null>(null)
   const [progress, setProgress] = useState(0)
   const progressRef = useRef(0)
-  const { sendMessage, updateMessageByID } = useIM()
+  const { sendMessage, updateMessageByID, getMessageByID } = useIM()
 
   const updateProgress = (value: number) => {
     progressRef.current = value
@@ -231,9 +231,13 @@ export const MessageRender: React.FC<MessageRenderProps> = ({
   useEffect(() => {
     return () => {
       if (isUploading && message) {
-        console.log('unmount ------------------>', isUploading, message, messageFromStore)
+        let newMessage = getMessageByID(message)
+        console.log('unmount ------------------>', isUploading, message, newMessage)
         // 暂时解决多次退出的问题
-        if (messageFromStore.status !== message.status) {
+        if (
+          messageFromStore.status !== message.status &&
+          newMessage?.status !== MessageStatus.UPLOADED
+        ) {
           updateMessageByID({ ...message } as WrappedMessage)
         }
       }

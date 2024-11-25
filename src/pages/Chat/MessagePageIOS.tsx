@@ -217,6 +217,15 @@ const MessagePageIOS = () => {
         >
           {message ? message : 'Type a Message....'}
         </div>
+        <div
+          onClick={handleSubmit}
+          className="absolute items-center justify-center top-[8px] h-[34px] right-[27px] cursor-pointer text-[#6761FF] text-sm z[999]"
+          style={{
+            display: message ? 'flex' : 'none',
+          }}
+        >
+          Send
+        </div>
       </div>
 
       <div className="absolute left-[10px] bottom-[28px] w-[28px] z-[99]">
@@ -250,15 +259,15 @@ const MessagePageIOS = () => {
           className="absolute left-[42px] right-0 top-[8px] h-[36px] text-sm bg-black border-[1px] border-[#4B4B4D] focus:border-[#4B4B4D] rounded-full px-3 outline-none text-white placeholder:text-[#5D5D60] pr-[60px]"
           placeholder="Type a Message..."
         />
-      </div>
-      <div
-        onClick={handleSubmit}
-        className="absolute items-center justify-center h-[34px] right-[27px] cursor-pointer text-[#6761FF] text-sm"
-        style={{
-          display: message ? 'flex' : 'none',
-        }}
-      >
-        Send
+        <div
+          onClick={handleSubmit}
+          className="absolute items-center justify-center top-[8px] h-[34px] right-[27px] cursor-pointer text-[#6761FF] text-sm z[999]"
+          style={{
+            display: message ? 'flex' : 'none',
+          }}
+        >
+          Send
+        </div>
       </div>
     </div>
   )

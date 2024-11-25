@@ -101,6 +101,11 @@ export const useIM = () => {
     }
   }
 
+  const getMessageByID = (message: WrappedMessage) => {
+    const messageWindow = getMessageWindow(String(message.channelID))
+    return messageWindow?.messages.find((msg) => msg.id === message.id) || null
+  }
+
   return {
     getMessageWindow,
     initChatPeopleInfo,
@@ -110,5 +115,6 @@ export const useIM = () => {
     receiveMessage,
     updateMessage,
     updateMessageByID,
+    getMessageByID,
   }
 }

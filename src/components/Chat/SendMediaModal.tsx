@@ -31,7 +31,15 @@ type FileMetadata = {
   duration: number
 }
 
-const SendMediaModal = ({ tgid, beforeOpen }: { tgid: number; beforeOpen?: () => void }) => {
+const SendMediaModal = ({
+  tgid,
+  beforeOpen,
+  beforeSelect,
+}: {
+  tgid: number
+  beforeOpen?: () => void
+  beforeSelect?: () => void
+}) => {
   const attachRef = useRef<HTMLInputElement>(null)
   const [isBaseModalOpen, { toggle, off }] = useBoolean(false)
   const [validFileList, setValidFileList] = useState<FileMetadata[]>([])
@@ -100,7 +108,9 @@ const SendMediaModal = ({ tgid, beforeOpen }: { tgid: number; beforeOpen?: () =>
         const validMetadataArray = file.filter(Boolean) as FileMetadata[]
         setValidFileList(validMetadataArray)
         console.log('筛选后的文件数量:', validMetadataArray.length)
-        toggle()
+        setTimeout(() => {
+          toggle()
+        }, 100)
       })
       .catch((err) => {
         console.log(err)
@@ -108,6 +118,7 @@ const SendMediaModal = ({ tgid, beforeOpen }: { tgid: number; beforeOpen?: () =>
   }
   const { touchHandlers } = useTouch({
     onTap: () => {
+      beforeSelect?.()
       attachRef.current?.click()
     },
   })

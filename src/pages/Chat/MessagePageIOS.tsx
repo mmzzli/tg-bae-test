@@ -21,17 +21,12 @@ const MessagePageIOS = () => {
   const [messages, setMessages] = useState<WrappedMessage[]>(defaultMessages)
   const [message, setMessage] = useState('')
   const [chatPeople, setChatPeople] = useState<OthersUserInfo | null>(null)
-  // const [page, setPage] = useState(1)
-  // const [hasMore, setHasMore] = useState(true)
   const { formatMessage } = useFormatMessage()
   const { sendMessage, getMessageWindow, getChatPeopleInfo } = useIM()
   const messageWindow = getMessageWindow(uid || '')
   const messageWindowList = useStore((state) => state.messageWindowList)
-  const [isFocused, setIsFocused] = useState(false)
   const [showInput, setShowInput] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
-  const [vh, setVh] = useState(0)
-  const [tgViewportHeight, setTgViewportHeight] = useState('')
   const containerRef = useRef<HTMLDivElement>(null)
 
   const [initTgViewportHeight, setInitTgViewportHeight] = useState(0)
@@ -87,12 +82,7 @@ const MessagePageIOS = () => {
     handleSendText()
   }
 
-  const isFocusedRef = useRef(isFocused)
   const initTgViewportHeightRef = useRef(0)
-
-  useEffect(() => {
-    isFocusedRef.current = isFocused
-  }, [isFocused])
 
   useEffect(() => {
     initTgViewportHeightRef.current = initTgViewportHeight
@@ -102,47 +92,48 @@ const MessagePageIOS = () => {
     if (!containerRef.current) return
     const tg = window.Telegram?.WebApp
     setInitTgViewportHeight(tg.viewportStableHeight)
+    // 这个函数在视口变化时立即执行 可以提前确定布局
     const handleViewportChange = () => {
       console.log(
         'handleViewportChange------------------',
         tg.viewportStableHeight,
-        initTgViewportHeight
+        initTgViewportHeightRef.current
       )
-      if (tg.viewportStableHeight < initTgViewportHeight) {
+      if (tg.viewportStableHeight < initTgViewportHeightRef.current) {
         console.log('keyboard up')
+        containerRef.current!.style.height = `${tg.viewportStableHeight}px`
       } else {
         console.log('keyboard down')
+        containerRef.current!.style.height = `${tg.viewportStableHeight - 74}px`
       }
-      setTgViewportHeight(tg.viewportStableHeight)
     }
 
+    // 这个函数在视口稳定后执行 可以在这个之后稳定real input位置
     const handleVisualViewportResize = () => {
       if (!window.visualViewport) return
       const currentHeight = window.visualViewport.height
 
-      // if (containerRef.current && isFocusedRef.current) {
-      //   containerRef.current.style.height = `${currentHeight}px`
-      // } else if (containerRef.current) {
-      //   containerRef.current.style.height = `${currentHeight - 84}px`
-      // }
+      console.log(
+        'currentHeight',
+        currentHeight,
+        tg.viewportStableHeight,
+        initTgViewportHeightRef.current
+      )
 
-      console.log('currentHeight', tg.viewportStableHeight, initTgViewportHeightRef.current)
       // 这个有时候会获取不到初始的高度
       if (tg.viewportStableHeight < initTgViewportHeightRef.current) {
         console.log('keyboard up 2')
         containerRef.current!.style.height = `${currentHeight}px`
+        setShowInput(true)
       } else {
         console.log('keyboard down 2')
         containerRef.current!.style.height = `${currentHeight - 84}px`
-        setIsFocused(false)
+        setShowInput(false)
         document.body.scrollIntoView()
       }
-      setVh(currentHeight)
     }
 
-    // IOS
     tg?.onEvent('viewportChanged', handleViewportChange)
-
     handleVisualViewportResize()
     window.visualViewport?.addEventListener('resize', handleVisualViewportResize)
     window.visualViewport?.addEventListener('scroll', handleVisualViewportResize)
@@ -154,15 +145,6 @@ const MessagePageIOS = () => {
     }
   }, [])
 
-  // show real input after height change
-  useEffect(() => {
-    if (isFocused) {
-      setShowInput(true)
-    } else {
-      setShowInput(false)
-    }
-  }, [vh])
-
   console.log('MessagePage render', messageWindow)
   return (
     <div
@@ -170,6 +152,7 @@ const MessagePageIOS = () => {
       className="absolute top-0 left-0 right-0 flex flex-col bg-[#000000] z-[999] pt-[76px] overflow-auto scrollbar-hide"
       style={{
         WebkitOverflowScrolling: 'touch',
+        transition: 'height 0.3s ease-in-out',
       }}
     >
       {/* TEST CODE */}
@@ -201,13 +184,12 @@ const MessagePageIOS = () => {
       {/* FAKE INPUT */}
       <div
         className={`'flex h-[68px] absolute bottom-0 left-0 right-0 bg-[#000000] pr-[14px] pt-[8px] pl-[42px] ${
-          isFocused ? 'hidden' : 'block'
+          showInput ? 'hidden' : 'block'
         }`}
       >
         <div
           onClick={() => {
             inputRef.current?.focus()
-            setIsFocused(true)
           }}
           className="flex items-center flex-1 h-[36px] text-sm bg-black border-[1px]
         border-[#4B4B4D] rounded-full px-3"
@@ -233,18 +215,16 @@ const MessagePageIOS = () => {
           tgid={Number(uid)}
           beforeOpen={() => {
             inputRef.current?.blur()
-            setIsFocused(false)
           }}
         />
       </div>
 
       {/* REAL INPUT */}
-
       <div
         className={cn(
-          'flex h-[68px] absolute left-0 right-0 bg-[#000000] pl-6 pr-8 overflow-hidden',
-          isFocused ? 'opacity-100' : 'opacity-0',
-          showInput ? 'bottom-0' : '-top-32'
+          'flex h-[68px] absolute left-0 right-0 bg-[#000000] overflow-hidden',
+          // isFocused ? 'opacity-100' : 'opacity-0',
+          showInput ? 'bottom-0 opacity-100' : '-top-32 opacity-0'
         )}
       >
         <input
@@ -252,11 +232,10 @@ const MessagePageIOS = () => {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyPress}
-          onBlur={() => {
-            setIsFocused(false)
-          }}
           type="text"
-          className="absolute left-[42px] right-0 top-[8px] h-[36px] text-sm bg-black border-[1px] border-[#4B4B4D] focus:border-[#4B4B4D] rounded-full px-3 outline-none text-white placeholder:text-[#5D5D60] pr-[60px]"
+          className="absolute left-[42px] right-4 top-[8px] h-[36px] text-sm bg-black border-[1px]
+           border-[#4B4B4D] focus:border-[#4B4B4D] rounded-full px-3 outline-none
+            text-white placeholder:text-[#5D5D60] pr-[60px]"
           placeholder="Type a Message..."
         />
         <div

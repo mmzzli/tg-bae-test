@@ -19,7 +19,6 @@ interface MessageListProps {
 
 export const MessageList = ({ messages, className, channelInfo }: MessageListProps) => {
   const scrollRef = useRef<HTMLDivElement>(null)
-  const scrollPositionKey = 'chat-scroll-position'
   const { getCurrentUid } = useTMAUtils()
   const current_uid = getCurrentUid()
   const connection = useStore((state) => state.connection)

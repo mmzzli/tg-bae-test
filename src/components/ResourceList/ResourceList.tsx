@@ -514,7 +514,7 @@ const ResourceFooter = memo<ResourceFooterProps>(
         </div>
         <div className="px-4 flex items-center justify-between">
           <Flex gap="16px">
-            <Flex
+            {(data.media && data.media[0]) && <Flex
               as={'button'}
               alignItems={'center'}
               onClick={() =>
@@ -529,8 +529,8 @@ const ResourceFooter = memo<ResourceFooterProps>(
               <Text fontSize={'sm'} color={'#E0E2F6'} pl={1}>
                 {likes.find((like) => like.id === data.id)?.like}
               </Text>
-            </Flex>
-            <Box
+            </Flex>}
+            {(data.media && data.media[0]) && <Box
               onClick={() =>
                 savedEve(data.id, saveds.find((saved) => saved.id === data.id)?.saveds === false)
               }
@@ -540,7 +540,7 @@ const ResourceFooter = memo<ResourceFooterProps>(
               ) : (
                 <Image src={Fav1Icon} />
               )}
-            </Box>
+            </Box>}
           </Flex>
           <IconButton
             onClick={onShare}

@@ -214,10 +214,13 @@ class BaeimSDK {
           console.log('message content entity parse error', error)
         }
       }
-      this.messageListener({
-        ...message,
-        toUID: message.channel.channelID,
-      } as FormattedMessage)
+      const returnMsg = { ...message } as FormattedMessage
+      if (message.fromUID === this.userUid) {
+        returnMsg.toUID = returnMsg.channel.channelID
+      } else {
+        returnMsg.toUID = this.userUid
+      }
+      this.messageListener(returnMsg)
     }
   }
 

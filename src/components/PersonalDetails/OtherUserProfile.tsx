@@ -1,13 +1,35 @@
-import { FC } from 'react'
-import { Heading, HStack, Box, Text } from '@chakra-ui/react'
+import { FC, useState, useRef } from 'react'
+import { useSafeState } from 'ahooks'
+import {
+  Heading, HStack, Box, Text,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  MenuItemOption,
+  MenuGroup,
+  MenuOptionGroup,
+  MenuDivider,
+} from '@chakra-ui/react'
 import Image from '../Image/Image'
-import { MessageIcon } from '@/assets/icons'
+import { MessageIcon, NavIcon } from '@/assets/icons'
+import { BlockIcon, ReportIcon, ShareIcon } from '@/assets/icons/profile'
 import { useStore } from '../../store'
 import FollowButton from './FollowButton'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useNavigate } from 'react-router-dom'
 import { profileImg } from '@/assets/image'
+import Report from '@/components/SecondaryMenu/Report'
 import More from './More'
+import ShareModal from '@/components/PersonalDetails/ShareModal'
+interface ChildMethods {
+  someMethod: (username:string, uid:number) => void;
+}
+interface NavItem {
+  name: string;
+  url: string;
+  id: string
+}
 
 const OtherUserProfile: FC = () => {
   const { userInfo } = useStore((state) => ({
@@ -17,6 +39,21 @@ const OtherUserProfile: FC = () => {
   const currentUid = launchParams.initData?.user?.id ?? 0
 
   const navigate = useNavigate()
+  const [reportVisible, setReportVisible] = useSafeState(false)
+  const [navList, setNavList] = useState<NavItem[]>([
+    { name: "Share", url: ShareIcon, id: "share" },
+    { name: "Report", url: ReportIcon, id: "report" },
+    // { name: "Block", url: BlockIcon, id: "block" }
+  ]);
+  const navEve = (id:string) => {
+    if(id === 'report'){
+      setReportVisible(true)
+    }
+    if(id === 'share'){
+      childRef.current?.someMethod(userInfo.username, userInfo.uid);
+    }
+  }
+  const childRef = useRef<ChildMethods>(null);
   return (
     <Box p="0px 16px" pt="30px">
       <HStack gap="16px" pl="8px" justifyContent="space-between">
@@ -41,6 +78,28 @@ const OtherUserProfile: FC = () => {
           >
             <Image src={MessageIcon} />
           </div>
+          <Menu>
+            <MenuButton>
+              <div className='p-[6px] bg-[#CFCBFF20] rounded-[30px]'>
+                <Image src={NavIcon} />
+              </div>
+            </MenuButton>
+            <MenuList minW="84px" bg="#19191E" border="none" borderRadius="4px" p="12px">
+              {
+                navList.map((item, key) => (
+                  <Box>
+                    <MenuItem key={key} bg="#19191E" color="#E0E2F6" fontSize="12px" p="0" onClick={()=>navEve(item.id)}>
+                      <HStack gap="4px">
+                        <Image src={item.url} />
+                        <Text>{item.name}</Text>
+                      </HStack>
+                    </MenuItem>
+                    {navList.length - 1 > key && <Text h="1px" bg="rgba(255, 255, 255, 0.10)" m="16px 0"></Text>}
+                  </Box>
+                ))
+              }
+            </MenuList>
+          </Menu>
         </div>
       </HStack>
       <Heading as="h3" color="#E0E2F6" fontWeight="500" className="mt-4" fontSize="20px">
@@ -75,6 +134,8 @@ const OtherUserProfile: FC = () => {
         </Box>
       </HStack>
       <More bio={userInfo.bio} />
+      <Report isOpen={reportVisible} onClose={setReportVisible} />
+      <ShareModal ref={childRef} />
     </Box>
   )
 }

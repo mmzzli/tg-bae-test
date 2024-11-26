@@ -5,6 +5,12 @@ interface TouchInfo {
   startY: number
   startTime: number
 }
+interface ClickInfo {
+  startX: number
+  startY: number
+  startTime: number
+  isMoving: boolean
+}
 
 interface TouchOptions {
   clickThreshold?: number
@@ -33,6 +39,19 @@ export function useTouch(options: TouchOptions = {}) {
     startTime: 0,
   })
 
+  const clickInfo = useRef<ClickInfo>({
+    startX: 0,
+    startY: 0,
+    startTime: 0,
+    isMoving: false,
+  })
+
+  const preventDefaultIfNeeded = (e: React.TouchEvent | React.MouseEvent) => {
+    if (preventDefault) {
+      e.preventDefault()
+    }
+  }
+
   const handleTouchStart = useCallback(
     (e: React.TouchEvent) => {
       onTouchStartProp?.(e)
@@ -44,9 +63,7 @@ export function useTouch(options: TouchOptions = {}) {
         startTime: Date.now(),
       }
 
-      if (preventDefault) {
-        e.preventDefault()
-      }
+      preventDefaultIfNeeded(e)
     },
     [preventDefault, onTouchStartProp]
   )
@@ -55,9 +72,7 @@ export function useTouch(options: TouchOptions = {}) {
     (e: React.TouchEvent) => {
       onTouchMoveProp?.(e)
 
-      if (preventDefault) {
-        e.preventDefault()
-      }
+      preventDefaultIfNeeded(e)
     },
     [preventDefault, onTouchMoveProp]
   )
@@ -88,18 +103,46 @@ export function useTouch(options: TouchOptions = {}) {
         onTap?.()
       }
 
-      if (preventDefault) {
-        e.preventDefault()
-      }
+      preventDefaultIfNeeded(e)
     },
     [clickThreshold, timeThreshold, preventDefault, onTap, onTouchEndProp]
   )
+  const handleMouseDown = (e: React.MouseEvent) => {
+    clickInfo.current.startX = e.clientX
+    clickInfo.current.startY = e.clientY
+    clickInfo.current.startTime = Date.now()
+    clickInfo.current.isMoving = false
+  }
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const currentX = e.clientX
+    const currentY = e.clientY
+    const distance = Math.sqrt(
+      (currentX - clickInfo.current.startX) ** 2 + (currentY - clickInfo.current.startY) ** 2
+    )
+
+    if (distance > clickThreshold) {
+      clickInfo.current.isMoving = true
+    }
+  }
+
+  const handleMouseUp = (e: React.MouseEvent) => {
+    const endTime = Date.now()
+    const duration = endTime - clickInfo.current.startTime
+
+    if (!clickInfo.current.isMoving && duration < timeThreshold) {
+      onTap?.()
+    }
+  }
 
   return {
     touchHandlers: {
       onTouchStart: handleTouchStart,
       onTouchMove: handleTouchMove,
       onTouchEnd: handleTouchEnd,
+      onMouseDown: handleMouseDown,
+      onMouseMove: handleMouseMove,
+      onMouseUp: handleMouseUp,
     },
   }
 }

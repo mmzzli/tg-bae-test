@@ -116,7 +116,8 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
 
         removeConnectionStatusListener = sdk.addConnectionStatusListener(async (status) => {
           log('-----ConnectionStatusListener------', status)
-          if (status === ConnectStatus.Connected && !isChatListLoaded) {
+          const isChatListLoadedStateFormStore = useStore.getState().isChatListLoaded
+          if (status === ConnectStatus.Connected && !isChatListLoadedStateFormStore) {
             try {
               const res = await sdk.getAllConversation()
               setIsChatListLoaded(true)

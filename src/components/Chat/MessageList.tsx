@@ -1,13 +1,13 @@
 import { cn, getWrappedMessage } from '@/utils/utils'
-import { memo, useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import dayjs from 'dayjs'
 import Image from '@/components/Image/Image'
-import { WrappedMessage } from './types'
+import { MessageType, WrappedMessage } from './types'
 import { MessageRender } from './MessageRender'
 import { OthersUserInfo } from '@/types/postTypes'
-import { FormattedMessage, PullMode } from '../SDK/BaeimSDK'
+import { PullMode } from '../SDK/BaeimSDK'
 import { useStore } from '@/store'
 import { useIM } from '@/store/hook/userIM'
 interface MessageListProps {
@@ -19,14 +19,29 @@ interface MessageListProps {
 
 export const MessageList = ({ messages, className, channelInfo }: MessageListProps) => {
   const scrollRef = useRef<HTMLDivElement>(null)
-  const prevHeight = useRef<number>(0)
-  const scrollPositionKey = 'chat-scroll-position'
   const { getCurrentUid } = useTMAUtils()
   const current_uid = getCurrentUid()
   const connection = useStore((state) => state.connection)
   const { updateMessage } = useIM()
   const [hasMore, setHasMore] = useState(true)
-  const [preMessageId, setPreMessageId] = useState<string | null>(null)
+  const prevMessagesLengthRef = useRef(messages.length)
+
+  const maintainScrollPosition = useCallback(() => {
+    if (scrollRef.current && messages.length > prevMessagesLengthRef.current) {
+      const newMessages = messages.length - prevMessagesLengthRef.current
+      const oldScrollHeight = scrollRef.current.scrollHeight
+
+      requestAnimationFrame(() => {
+        if (scrollRef.current) {
+          const newScrollHeight = scrollRef.current.scrollHeight
+          const heightDiff = newScrollHeight - oldScrollHeight
+          scrollRef.current.scrollTop += heightDiff
+        }
+      })
+    }
+    prevMessagesLengthRef.current = messages.length
+  }, [messages.length])
+
   const messageGroups = useMemo(() => {
     const groups: { timestamp: number; messages: WrappedMessage[] }[] = []
     let currentGroup: WrappedMessage[] = []
@@ -61,7 +76,7 @@ export const MessageList = ({ messages, className, channelInfo }: MessageListPro
       })
     }
 
-    return groups
+    return groups.reverse()
   }, [messages])
 
   const MessageItem = memo(
@@ -75,7 +90,7 @@ export const MessageList = ({ messages, className, channelInfo }: MessageListPro
       channelInfo: OthersUserInfo | null
     }) => (
       <div
-        id={message.messageSeq.toString()}
+        id={message.id}
         className={`flex items-end gap-2 mx-4 my-2 text-white ${
           isCurrentUser ? 'flex-row-reverse' : 'flex-row'
         }`}
@@ -93,13 +108,12 @@ export const MessageList = ({ messages, className, channelInfo }: MessageListPro
           </div>
         )}
         <div
-          className={`p-3 rounded-lg ${
-            isCurrentUser ? 'bg-[#4A3AFF] max-w-[255px]' : 'bg-[#303030] max-w-[255px]'
-          }`}
+          className={`overflow-hidden rounded-lg max-w-[255px]
+            ${isCurrentUser && message.type === MessageType.TEXT ? 'bg-[#4A3AFF]' : 'bg-[#303030]'}
+            ${message.type === MessageType.TEXT ? 'p-3' : 'inline-block'}
+          `}
         >
-          <div className="text-sm">
-            <MessageRender message={message} />
-          </div>
+          <MessageRender message={message} />
         </div>
       </div>
     )
@@ -113,35 +127,31 @@ export const MessageList = ({ messages, className, channelInfo }: MessageListPro
     </div>
   ))
 
-  // restore scroll position
-  useEffect(() => {
-    const savedScrollPos = localStorage.getItem(scrollPositionKey)
-    if (savedScrollPos && scrollRef.current) {
-      scrollRef.current.scrollTop = Number(savedScrollPos)
-    }
-  }, [])
-
-  // save scroll position
-  const handleScroll = () => {
-    if (scrollRef.current) {
-      localStorage.setItem(scrollPositionKey, scrollRef.current.scrollTop.toString())
-    }
-  }
-
   const handleLoadMore = async () => {
+    console.log('load more')
     if (messages[0].messageSeq === 1) {
       return setHasMore(false)
     }
-    const msgs = await connection?.getMessages(channelInfo?.uid.toString() || '', {
-      limit: 5,
-      startMessageSeq: messages[0].messageSeq - 1,
-      endMessageSeq: 0,
-      pullMode: PullMode.Down,
-    })
 
-    if (msgs && msgs.length > 0) {
-      const result: WrappedMessage[] = msgs.map((message) => getWrappedMessage(message))
-      updateMessage(result, Number(channelInfo?.uid), true)
+    if (!hasMore) return
+    setHasMore(false)
+
+    try {
+      const msgs = await connection?.getMessages(channelInfo?.uid.toString() || '', {
+        limit: 5,
+        startMessageSeq: messages[0].messageSeq - 1,
+        endMessageSeq: 0,
+        pullMode: PullMode.Down,
+      })
+
+      if (msgs && msgs.length > 0) {
+        const result: WrappedMessage[] = msgs.map((message) => getWrappedMessage(message))
+        updateMessage(result, Number(channelInfo?.uid), true)
+      }
+    } finally {
+      setTimeout(() => {
+        setHasMore(true)
+      }, 300)
     }
   }
 
@@ -154,18 +164,13 @@ export const MessageList = ({ messages, className, channelInfo }: MessageListPro
   }
 
   useEffect(() => {
-    setHasMore(false)
-    // setTimeout(() => {
-    //   setHasMore(true)
-    // }, 5000)
-    console.log('preMessageId', preMessageId)
-  }, [messages])
+    maintainScrollPosition()
+  }, [messages, maintainScrollPosition])
 
   return (
     <div
       id="scrollableDiv"
       ref={scrollRef}
-      onScroll={handleScroll}
       className={cn('overflow-auto flex flex-col-reverse', className)}
     >
       <InfiniteScroll
@@ -175,14 +180,14 @@ export const MessageList = ({ messages, className, channelInfo }: MessageListPro
         inverse={true}
         loader={<div className="text-center"></div>}
         scrollableTarget="scrollableDiv"
-        style={{ display: 'flex', flexDirection: 'column' }} // start from bottom
+        style={{ display: 'flex', flexDirection: 'column-reverse', overflow: 'visible' }} // start from bottom
       >
         {messageGroups.map((group) => (
           <div key={`group-${group.timestamp}`}>
             <TimeDevider timestamp={group.timestamp} />
-            {group.messages.map((message) => (
+            {group.messages.map((message, index) => (
               <MessageItem
-                key={message.messageSeq.toString()}
+                key={message.id + index}
                 message={message}
                 isCurrentUser={message.sender === current_uid}
                 channelInfo={channelInfo}

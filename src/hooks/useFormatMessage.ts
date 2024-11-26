@@ -1,6 +1,22 @@
 import { MessageType, WrappedMessage } from '@/components/Chat/types'
 import { retrieveLaunchParams } from '@tma.js/sdk'
-
+function generateUUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0
+    const v = c === 'x' ? r : (r & 0x3) | 0x8
+    return v.toString(16)
+  })
+}
+type FileMetadata = {
+  name: string
+  size: number
+  type: string
+  file: File
+  url: string
+  width: number
+  height: number
+  duration: number
+}
 export const useFormatMessage = () => {
   const launchParams = retrieveLaunchParams()
   const currentUid = launchParams.initData?.user?.id ?? 0
@@ -10,14 +26,16 @@ export const useFormatMessage = () => {
     text,
     url,
     to,
+    metadata,
   }: {
     type: MessageType
     text?: string
     url?: string
     to: number
+    metadata?: FileMetadata
   }): WrappedMessage => {
     return {
-      id: Date.now().toString() + currentUid,
+      id: generateUUID(),
       url,
       text,
       type,
@@ -26,6 +44,7 @@ export const useFormatMessage = () => {
       timestamp: Date.now() / 1000,
       messageSeq: -1,
       channelID: to.toString(),
+      metadata,
     }
   }
 

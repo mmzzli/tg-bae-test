@@ -1,9 +1,12 @@
 import { Conversation, Channel } from '../SDK/BaeimSDK'
 
 export enum MessageStatus {
+  UNSENT = -1,
   SENT = 0,
   RECEIVED = 1,
   FAILED = 2,
+  UPLOADING = 3,
+  UPLOADED = 4,
 }
 export enum MessageType {
   TEXT = 'TEXT',
@@ -19,6 +22,18 @@ export type Message = {
   url?: string
   text?: string
   type: MessageType
+  metadata?: FileMetadata
+}
+
+export type FileMetadata = {
+  name: string
+  size: number
+  type: string
+  file?: File
+  url: string
+  width: number
+  height: number
+  duration: number
 }
 
 export type WrappedMessage = Message & {
@@ -28,6 +43,7 @@ export type WrappedMessage = Message & {
   receiver: number
   messageSeq: number
   channelID: string
+  status?: MessageStatus
 }
 export interface ChatListProps {
   chats: Conversation[]

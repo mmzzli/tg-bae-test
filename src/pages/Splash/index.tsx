@@ -82,9 +82,15 @@ const Splash: FC = () => {
 
   useEffect(() => {
     if (userInfo.user_id && token && isCached) {
-      console.log(isCached)
+      const ageGateBoll = localStorage.getItem("ageGate")
       if (!animationEnding) return
-      if (!isInTMA || !startParam || history.length > 2) return navigate('/home')
+      if (!isInTMA || !startParam || history.length > 2){
+        if(ageGateBoll){
+          return navigate('/home')
+        }else{
+          return navigate('/ageGate')
+        }
+      }
       const params = startParam.split('_')
       console.log('startParam', params)
 
@@ -101,7 +107,11 @@ const Splash: FC = () => {
         setBackToHome(true)
         handleNavigate(sharedRef)
       } else {
-        navigate('/home')
+        if(ageGateBoll){
+          navigate('/home')
+        }else{
+          navigate('/ageGate')
+        }
       }
     }
   }, [userInfo, animationEnding, isCached])

@@ -1,11 +1,14 @@
 import { FC, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useToast } from '@chakra-ui/react'
 
 import BaseButton from '@/components/BaseButton/BaseButton'
 import Image from '@/components/Image/Image'
 import { GateImg } from '@/assets/image'
+import { CustomToast, typeOptions } from '@/components/comm/Toast'
 
 const AgeGate = () => {
+  const toast = useToast()
   const navigate = useNavigate()
   const [isChecked, setIsChecked] = useState<boolean>(false);
 
@@ -36,8 +39,10 @@ const AgeGate = () => {
         </p>
       </div>
       <div className="mt-[88px] text-center">
-        <div className='flex justify-center gap-[4px]'>
-          <input type="checkbox" checked={isChecked} onChange={handleChange} />
+        <div className='flex justify-center gap-[8px]'>
+          <input type="checkbox" checked={isChecked} onChange={handleChange}
+            className='w-[20px] h-[20px] bg-gray-100 border-gray-300 rounded checked:bg-[#E0E2F6] checked:border-[#E0E2F6] focus:ring-[#E0E2F6]'
+           />
           <p className="text-[#E0E2F6] text-[12px]">
             I have read and accept the
             <a className="underline ml-[4px]">Terms of Service</a>
@@ -52,6 +57,13 @@ const AgeGate = () => {
             if(isChecked){
               localStorage.setItem("ageGate", "1")
               navigate('/home')
+            }else{
+              toast({
+                render: () => {
+                  return <CustomToast title={`Please check terms.`} type={typeOptions.error} />
+                },
+                position: 'top',
+              })
             }
           }}
         />

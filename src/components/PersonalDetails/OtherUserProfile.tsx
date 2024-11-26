@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC, useState, useRef } from 'react'
 import { useSafeState } from 'ahooks'
 import {
   Heading, HStack, Box, Text,
@@ -21,7 +21,10 @@ import { useNavigate } from 'react-router-dom'
 import { profileImg } from '@/assets/image'
 import Report from '@/components/SecondaryMenu/Report'
 import More from './More'
-
+import ShareModal from '@/components/PersonalDetails/ShareModal'
+interface ChildMethods {
+  someMethod: (username:string, uid:number) => void;
+}
 interface NavItem {
   name: string;
   url: string;
@@ -46,7 +49,11 @@ const OtherUserProfile: FC = () => {
     if(id === 'report'){
       setReportVisible(true)
     }
+    if(id === 'share'){
+      childRef.current?.someMethod(userInfo.username, userInfo.uid);
+    }
   }
+  const childRef = useRef<ChildMethods>(null);
   return (
     <Box p="0px 16px" pt="30px">
       <HStack gap="16px" pl="8px" justifyContent="space-between">
@@ -128,6 +135,7 @@ const OtherUserProfile: FC = () => {
       </HStack>
       <More bio={userInfo.bio} />
       <Report isOpen={reportVisible} onClose={setReportVisible} />
+      <ShareModal ref={childRef} />
     </Box>
   )
 }

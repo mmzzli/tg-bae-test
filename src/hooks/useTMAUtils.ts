@@ -16,22 +16,10 @@ export const useTMAUtils = () => {
     getTMAEnv()
   }, [])
 
-
-  function convertToTgProtocol(url: string): string {
-    if (!url.startsWith('https://t.me/')) {
-      throw new Error('Invalid t.me URL. Must start with "https://t.me/".');
-    }
-    const domain = url.replace('https://t.me/', '').trim();
-    if (!domain) {
-      throw new Error('Invalid t.me URL. Domain is missing.');
-    }
-    return `tg://resolve?domain=${domain}`;
-  }
-
   const openLink = async (url: string) => {
     try {
       if (isInTMA) {
-        utils.openTelegramLink(convertToTgProtocol(url))
+        utils.openLink(url)
       } else {
         window.open(url)
       }

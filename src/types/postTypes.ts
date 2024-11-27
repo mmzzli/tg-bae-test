@@ -87,3 +87,7 @@ export type LinkMetadata = {
   image: string
   url: string
 }
+export type totalAvailable = {
+  available: number
+  exchange_rate: number
+}

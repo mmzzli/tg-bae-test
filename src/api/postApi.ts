@@ -9,6 +9,7 @@ import {
   ListRes,
   ViewListReq,
   LinkMetadata,
+  totalAvailable
 } from '@/types'
 
 export const postResources = (params: PostResourceReq) => {
@@ -82,4 +83,8 @@ export const setUnread = (params: {
   return post<Message[]>(`${import.meta.env.VITE_APP_IM_URL}conversations/setUnread`, params, {
     headers: { token: import.meta.env.VITE_APP_IM_TOKEN },
   })
+}
+
+export const totalAvailableInvoice = () => {
+  return get<totalAvailable>(`/api/v1/order/total_available_invoice`)
 }

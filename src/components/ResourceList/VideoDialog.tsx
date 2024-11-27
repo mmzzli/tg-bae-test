@@ -74,6 +74,7 @@ const UserInfo = memo(
       onTap: () => {
         jumpToProfilePage({ uid } as UserItem)
       },
+      stopPropagation: false,
     })
     const jumpToProfilePage = useProfileNavigation()
     return (
@@ -212,7 +213,6 @@ export function VideoDialog({
       const deltaX = e.touches[0].clientX - touchStartXRef.current
       const screenWidth = window.innerWidth
       const newOffset = Math.max(-screenWidth, Math.min(0, deltaX))
-      console.log(newOffset)
       dispatch({ type: 'SET_SLIDE_OFFSET', payload: newOffset })
     },
     { wait: 16 }

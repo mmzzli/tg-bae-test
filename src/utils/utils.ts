@@ -145,3 +145,11 @@ export const formatImage = (url: string, grid = true) => {
     return url.replace(reg, 'https://$1/cdn-cgi/image/width=800,fit=contain,quality=75/$2')
   }
 }
+
+export const generateUUID = () => {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0
+    const v = c === 'x' ? r : (r & 0x3) | 0x8
+    return v.toString(16)
+  })
+}

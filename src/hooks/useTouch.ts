@@ -16,6 +16,7 @@ interface TouchOptions {
   clickThreshold?: number
   timeThreshold?: number
   preventDefault?: boolean
+  stopPropagation?: boolean
   onTap?: () => void
   onTouchStartProp?: (e: React.TouchEvent) => void
   onTouchMoveProp?: (e: React.TouchEvent) => void
@@ -27,6 +28,7 @@ export function useTouch(options: TouchOptions = {}) {
     clickThreshold = 10,
     timeThreshold = 150,
     preventDefault = false,
+    stopPropagation = true,
     onTap,
     onTouchStartProp,
     onTouchMoveProp,
@@ -93,7 +95,7 @@ export function useTouch(options: TouchOptions = {}) {
       const deltaTime = endTime - startTime
 
       e.preventDefault()
-      e.stopPropagation()
+      stopPropagation && e.stopPropagation()
 
       if (
         deltaTime < timeThreshold &&

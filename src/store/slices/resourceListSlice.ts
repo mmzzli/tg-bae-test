@@ -4,6 +4,7 @@ import { ListItem, UserItem } from '../../types'
 import { getRecommendMedia } from '../../api/list'
 import { viewList, getUsersPosts, favList, ordersList } from '@/api'
 import { useStore } from '../store'
+import { string } from '@tma.js/sdk'
 
 export interface BaseListState {
   list: FormatterListItem[]
@@ -31,7 +32,13 @@ export interface ListState {
   isLoading: boolean
   error: string | null
 }
+
+export interface CacheVideo {
+  id: string
+  status: boolean // true is cached   false is not cached or processing
+}
 const recordsNum = 5
+const CACHE_VIDEOS_LIMIT = 5
 
 export interface ResourceListSlice {
   // recommend
@@ -43,6 +50,10 @@ export interface ResourceListSlice {
   setRecommendHasMore: (hasMore: boolean) => void
   resetRecommendList: () => void
   loadRecommendList: (page: number) => Promise<void>
+
+  // cache
+  cacheVideo: CacheVideo[]
+  setCacheVideo: (video: CacheVideo, flag?: boolean) => void // true is scroll down  false is scroll up
 
   // view
   viewList: BaseListState
@@ -166,6 +177,32 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     } finally {
       get().setRecommendLoading(false)
     }
+  },
+
+  // CACHE VIDEO
+  cacheVideo: [],
+  setCacheVideo: (cacheVideo, flag = true) => {
+    set((state) => {
+      if (state.cacheVideo.length > CACHE_VIDEOS_LIMIT) {
+        // delete video hls and cache
+        if (flag) {
+          // scroll down
+          const list = state.cacheVideo.slice(0, -1)
+          return {
+            cacheVideo: [...list, cacheVideo],
+          }
+        } else {
+          // scroll up
+          const list = state.cacheVideo.slice(1)
+          return {
+            cacheVideo: [cacheVideo, ...list],
+          }
+        }
+      }
+      return {
+        cacheVideo: [...state.cacheVideo, cacheVideo],
+      }
+    })
   },
 
   viewList: { ...initialListState },

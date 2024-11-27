@@ -131,7 +131,7 @@ export const MainLayout: React.FC = () => {
 
   useEffect(() => {
     console.log('pathname-------------------------------_>', location.pathname)
-    const BASE_PATHS = ['/home', '/chat', '/profile']
+    const BASE_PATHS = ['/home', '/chat', '/profile', '/ageGate']
     if (BASE_PATHS.includes(location.pathname)) {
       setBackToHome(false)
     }
@@ -145,7 +145,7 @@ export const MainLayout: React.FC = () => {
     }
     if (window.Telegram?.WebApp) {
       const tgApp = window.Telegram.WebApp
-      const HIDE_BACK_BUTTON_PATHS = ['/home', '/chat', '/profile', '/']
+      const HIDE_BACK_BUTTON_PATHS = ['/home', '/chat', '/profile', '/', '/ageGate']
       if (HIDE_BACK_BUTTON_PATHS.includes(location.pathname)) {
         tgApp.BackButton.hide()
       } else {

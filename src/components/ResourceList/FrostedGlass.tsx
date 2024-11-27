@@ -22,10 +22,11 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
   const userInfo = useStore((state) => state.userInfo)
   const { launchParams, openLink } = useTMAUtils()
   const { initData } = launchParams
+  const [loading, setLoading] = useState<boolean>(false)
 
 
   const invoiceEve = async () => {
-
+    setLoading(true)
     try{
       const viewUrl = await viewPid(post_id)
       resourcesEve(post_id,viewUrl)
@@ -37,21 +38,20 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
         post_id: String(post_id),
         user_id: String(initData?.user?.id)
       })
-      if(url){
+      if(window.Telegram?.WebApp){
+        const tgApp = window.Telegram.WebApp
+        tgApp.openInvoice(url, (status:string) => {
+          console.log(status,123)
+          if (status === "paid") {
+            invoiceEve()
+          }else{
+            setLoading(false)
+          }
+        });
+      }else{
         openLink(url)
       }
     }
-
-    const items = setInterval(async()=>{
-      try{
-        // const viewUrl = "https://baedev.anyconn.org/2022-01-27_17-32-20_UTC_2.jpg,https://baedev.anyconn.org/2022-01-27_17-32-20_UTC_3.jpg,https://baedev.anyconn.org/2022-01-27_17-32-20_UTC_4.jpg,https://baedev.anyconn.org/2022-01-27_17-32-20_UTC_5.jpg"
-        const viewUrl = await viewPid(post_id)
-        resourcesEve(post_id,viewUrl)
-        clearInterval(items)
-      } catch (error) {
-        console.log(error,'payment')
-      }
-    },3000)
 
   }
   return (
@@ -71,12 +71,19 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
         borderRadius="4px"
       >
         <Box position="absolute" top="50%" left="50%" transform=" translate(-50%, -50%)" w="220px">
-          <BaseButton
-            text={`Unlock Post for ${price}`}
-            icon={<Image src={LockIcon} />}
-            iconRight={<Image src={StarsIcon} />}
-            handler={() => invoiceEve()}
-          />
+          {loading ?
+            <BaseButton
+              text={`loading ...`}
+              handler={() => console.log(1)}
+            />
+            :
+            <BaseButton
+              text={`Unlock Post for ${price}`}
+              icon={<Image src={LockIcon} />}
+              iconRight={<Image src={StarsIcon} />}
+              handler={() => invoiceEve()}
+            />
+          }
         </Box>
       </Box>
     </>

@@ -1,35 +1,45 @@
 import { StateCreator } from 'zustand'
+
+export enum TaskStatus {
+  PENDING = 0,
+  RUNNING = 1,
+  COMPLETED = 2,
+  FAILED = 3,
+}
 export interface UploadThread {
   id: string
   name: string
-  status: 'pending' | 'running' | 'completed' | 'error'
+  status: TaskStatus
   depends: string[]
   progress: number
-  completed: boolean
   result: any
   thread: any
   error?: string
 }
+
+export type UploadTask = {
+  uploadThreads: UploadThread[]
+  onAllThreadsComplete: any
+  onError: (error: string) => void
+}
 export interface TaskSlice {
-  uploadTask: {
-    uploadThreads: UploadThread[]
-    onAllThreadsComplete: () => void
-    onError: (error: string) => void
-  }
+  uploadTask: UploadTask
   addUploadThread: (thread: UploadThread[]) => void
   updateUploadThread: ({
     id,
     progress,
-    completed,
+    status,
     error,
     result,
   }: {
     id: string
     progress?: number
-    completed?: boolean
+    status?: TaskStatus
     error?: string
     result?: any
   }) => void
+  addUploadTask: (task: UploadTask) => void
+  resetUploadTask: () => void
 }
 
 export const createTaskSlice: StateCreator<TaskSlice> = (set) => ({
@@ -46,7 +56,7 @@ export const createTaskSlice: StateCreator<TaskSlice> = (set) => ({
       },
     }))
   },
-  updateUploadThread: ({ id, progress, completed, error, result }) => {
+  updateUploadThread: ({ id, progress, status, error, result }) => {
     set((state) => ({
       uploadTask: {
         ...state.uploadTask,
@@ -55,7 +65,7 @@ export const createTaskSlice: StateCreator<TaskSlice> = (set) => ({
             return {
               ...thread,
               progress: progress !== undefined ? progress : thread.progress,
-              completed: completed !== undefined ? completed : thread.completed,
+              status: status !== undefined ? status : thread.status,
               error: error !== undefined ? error : thread.error,
               result: result !== undefined ? result : thread.result,
             }
@@ -63,6 +73,11 @@ export const createTaskSlice: StateCreator<TaskSlice> = (set) => ({
           return thread
         }),
       },
+    }))
+  },
+  addUploadTask: (task: UploadTask) => {
+    set(() => ({
+      uploadTask: task,
     }))
   },
   resetUploadTask: () => {

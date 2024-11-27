@@ -23,6 +23,9 @@ import { useStore } from '@/store'
 import VideoFrameSelector from '@/components/NewPost/VideoFrameSelector'
 import VideoPlayer from '@/components/comm/VideoPlayer'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
+import { TaskStatus } from '@/store/slices/taskSlice'
+import { state } from '@telegram-apps/sdk/dist/dts/scopes/components/biometry/signals'
+import { generateUUID } from '@/utils/utils'
 
 export const NewPost: FC = () => {
   const navigate = useNavigate()
@@ -45,6 +48,16 @@ export const NewPost: FC = () => {
   // cover
   const [cover, setCover] = useState<string | null>(null)
 
+  // upload states
+  const { addUploadThread, updateUploadThread, addUploadTask, resetUploadTask } = useStore(
+    (state) => ({
+      addUploadThread: state.addUploadThread,
+      updateUploadThread: state.updateUploadThread,
+      addUploadTask: state.addUploadTask,
+      resetUploadTask: state.resetUploadTask,
+    })
+  )
+
   async function checkVideoURL(url: string): Promise<AxiosResponse<any> | undefined> {
     let isNotFound = true
 
@@ -58,51 +71,105 @@ export const NewPost: FC = () => {
       }
     }
   }
-  async function imgUpload(files: File[]): Promise<void> {
-    const imgList = []
-    for (const file of files) {
-      const url = `${import.meta.env.VITE_APP_UPLOAD_URL}upload/${file.name}`
-      console.log(file)
-      const formData = new FormData()
-      formData.append('file', file)
-      try {
-        const response = await axios.put(url, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        imgList.push(response.data)
-      } catch (error) {
-        console.error(`Error uploading ${file.name}:`, error)
-      }
+  async function imgUpload(files: File[], title: string): Promise<void> {
+    const threads = []
+    // TODO 是否有内存泄漏危险？
+    const errorHandler = (error: any) => {
+      toast({
+        render: () => {
+          return <CustomToast title="Your post failed to send." type={typeOptions.error} />
+        },
+        position: 'top',
+      })
+      resetUploadTask()
     }
-    await postResources({
-      media: imgList.join(','),
-      ...(title ? { title } : {}),
-      type: 1,
-      currency: 0,
-      price: price || 0,
-    })
-    navigate('/profile')
-  }
-  const handleUpload = async () => {
-
-    // if (!title) {
-    //   return
-    // }
-    if (firstFileType === 'image') {
-      try{
-        setIsLoading(true)
-        await imgUpload(files)
+    const allSuccessHandler = async (result: string[]) => {
+      try {
+        await postResources({
+          media: result.join(','),
+          ...(title ? { title } : {}),
+          type: 1,
+          currency: 0,
+          price: price || 0,
+        })
         toast({
           render: () => {
             return <CustomToast title="Your post was sent." type={typeOptions.success} />
           },
           position: 'top',
-
         })
-      }catch(e){
+        resetUploadTask()
+      } catch (error) {
+        errorHandler(error)
+      }
+    }
+    for (const file of files) {
+      const id = generateUUID()
+      const thread = {
+        id,
+        name: 'upload_img',
+        progress: 0,
+        status: TaskStatus.PENDING,
+        depends: [],
+        result: null,
+        thread: async () => {
+          threads.push(thread)
+          const url = `${import.meta.env.VITE_APP_UPLOAD_URL}upload/${file.name}`
+          console.log(file)
+          const formData = new FormData()
+          formData.append('file', file)
+          try {
+            const response = await axios.put(url, formData, {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${token}`,
+              },
+              onUploadProgress: (progressEvent: any) => {
+                const total = progressEvent.total
+                const current = progressEvent.loaded
+                const percentCompleted = Math.round((current * 100) / total)
+                // updateProgress()
+                updateUploadThread({
+                  id,
+                  progress: percentCompleted === 100 ? 99 : percentCompleted,
+                })
+                console.log(`上传进度: ${percentCompleted}%`)
+              },
+            })
+            updateUploadThread({
+              id,
+              progress: 100,
+              result: response.data,
+              status: TaskStatus.COMPLETED,
+            })
+          } catch (error) {
+            console.error(`Error uploading ${file.name}:`, error)
+            errorHandler(error)
+          }
+        },
+      }
+      threads.push(thread)
+    }
+    addUploadThread(threads)
+    addUploadTask({
+      uploadThreads: threads,
+      onAllThreadsComplete: allSuccessHandler,
+      onError: (error) => {
+        errorHandler(error)
+      },
+    })
+
+    navigate(-1)
+  }
+  const handleUpload = async () => {
+    // if (!title) {
+    //   return
+    // }
+    if (firstFileType === 'image') {
+      try {
+        setIsLoading(true)
+        imgUpload(files, title)
+      } catch (e) {
         toast({
           render: () => {
             return <CustomToast title="Your post failed to send." type={typeOptions.error} />
@@ -115,7 +182,7 @@ export const NewPost: FC = () => {
     if (!videoFile) {
       return
     }
-    try{
+    try {
       setIsLoading(true)
       const postreqUrl: any = await postReq()
       const id = postreqUrl.split('/').pop()
@@ -154,11 +221,10 @@ export const NewPost: FC = () => {
             return <CustomToast title="Your post was sent." type={typeOptions.success} />
           },
           position: 'top',
-
         })
         navigate('/profile')
       }
-    }catch(e){
+    } catch (e) {
       toast({
         render: () => {
           return <CustomToast title="Your post failed to send." type={typeOptions.error} />
@@ -166,7 +232,6 @@ export const NewPost: FC = () => {
         position: 'top',
       })
     }
-
   }
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -182,7 +247,12 @@ export const NewPost: FC = () => {
     if (!allSameType) {
       toast({
         render: () => {
-          return <CustomToast title="Please select only images or only videos" type={typeOptions.warning} />
+          return (
+            <CustomToast
+              title="Please select only images or only videos"
+              type={typeOptions.warning}
+            />
+          )
         },
         position: 'top',
       })
@@ -233,7 +303,6 @@ export const NewPost: FC = () => {
   }
 
   const handleChooseFile = () => {
-
     console.log(inputRef.current)
     inputRef.current?.click()
   }

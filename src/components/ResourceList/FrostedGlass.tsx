@@ -39,7 +39,7 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
       })
       if(window.Telegram?.WebApp){
         const tgApp = window.Telegram.WebApp
-        tgApp.openInvoice('invoiceLink', (status:string) => {
+        tgApp.openInvoice(url, (status:string) => {
           console.log(status,123)
           if (status === "paid") {
             invoiceEve()

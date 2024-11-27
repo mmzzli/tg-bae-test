@@ -19,7 +19,7 @@ export const useTMAUtils = () => {
   const openLink = async (url: string) => {
     try {
       if (isInTMA) {
-        utils.openLink(url)
+        utils.openTelegramLink(url)
       } else {
         window.open(url)
       }

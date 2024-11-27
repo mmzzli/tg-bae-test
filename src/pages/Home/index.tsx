@@ -12,6 +12,7 @@ import { useStore } from '@/store'
 import { getRecommendMedia } from '@/api/list'
 import Hls from 'hls.js'
 import { CardRecommendProvider } from '@/utils/constants'
+import NewPostButton from '@/components/NewPost/NewPostButton'
 
 const HomePage: FC = () => {
   const navigate = useNavigate()
@@ -19,7 +20,7 @@ const HomePage: FC = () => {
   const selectedPostsRef = useRef<HTMLDivElement>(null)
   const [title, setTitle] = useState('Following')
   const [fadeClass, setFadeClass] = useState('fade-in')
-  const userInfo = useStore((state) => state.userInfo);
+  const userInfo = useStore((state) => state.userInfo)
 
   const styles = {
     fadeIn: {
@@ -35,14 +36,14 @@ const HomePage: FC = () => {
     token: state.token,
   }))
 
-  const animation = useMemo(()=>{
-    if(userInfo.user_id !== -1 && userInfo.fans === 0){
+  const animation = useMemo(() => {
+    if (userInfo.user_id !== -1 && userInfo.fans === 0) {
       return {
-        animation:`slide 600ms forwards 300ms`
+        animation: `slide 600ms forwards 300ms`,
       }
     }
     return {}
-  },[userInfo.user_id,userInfo.fans])
+  }, [userInfo.user_id, userInfo.fans])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -167,15 +168,16 @@ const HomePage: FC = () => {
           >
             {title}
           </Heading>
-          <BaseButton
+          {/* <BaseButton
             text="Create"
             icon={<Image src={AddIcon1} />}
             width="87px"
             handler={() => navigate('/post')}
-          />
+          /> */}
+          <NewPostButton />
         </HStack>
-        <div className="overflow-hidden" style={{ height:'0px',opacity:0,...animation}}>
-            <FollowingList/>
+        <div className="overflow-hidden" style={{ height: '0px', opacity: 0, ...animation }}>
+          <FollowingList />
         </div>
 
         {/* <button
@@ -189,7 +191,7 @@ const HomePage: FC = () => {
             Selected Posts
           </h3>
         </div> */}
-        <CardRecommendProvider.Provider value={{recommend:true}}>
+        <CardRecommendProvider.Provider value={{ recommend: true }}>
           <div className={`mt-10`}>
             <RecommendList />
           </div>

@@ -74,6 +74,7 @@ const UserInfo = memo(
       onTap: () => {
         jumpToProfilePage({ uid } as UserItem)
       },
+      stopPropagation: false,
     })
     const jumpToProfilePage = useProfileNavigation()
     return (
@@ -211,7 +212,6 @@ export function VideoDialog({
 
       const deltaX = e.touches[0].clientX - touchStartXRef.current
       const screenWidth = window.innerWidth
-
       const newOffset = Math.max(-screenWidth, Math.min(0, deltaX))
       dispatch({ type: 'SET_SLIDE_OFFSET', payload: newOffset })
     },
@@ -222,7 +222,7 @@ export function VideoDialog({
     dispatch({ type: 'SET_SLIDING', payload: false })
     const screenWidth = window.innerWidth
 
-    if (Math.abs(state.slideOffset) > screenWidth * 0.33) {
+    if (Math.abs(state.slideOffset) > 60) {
       dispatch({ type: 'SET_SLIDE_OFFSET', payload: -screenWidth })
     } else {
       dispatch({ type: 'SET_SLIDE_OFFSET', payload: 0 })

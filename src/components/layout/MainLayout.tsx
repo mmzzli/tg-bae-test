@@ -11,6 +11,7 @@ import { log } from 'console'
 import { Spinner } from '@chakra-ui/react'
 import { Menu } from '../Menu'
 import { postEvent } from '@telegram-apps/sdk'
+import { PostProgressBar } from '../NewPost/PostProgressBar'
 
 const ChatListPageLoader = {
   preload: () =>
@@ -34,8 +35,8 @@ export const MainLayout: React.FC = () => {
   const setBackToHome = useStore((state) => state.setBackToHome)
   const [shouldLoadChat, setShouldLoadChat] = useState(false)
   const [hiddenChatPage, setHiddenChatPage] = useState(false)
-  const setExpanded = useStore(state=>state.setExpand);
-  const isExpanded = useStore(state=>state.expand)
+  const setExpanded = useStore((state) => state.setExpand)
+  const isExpanded = useStore((state) => state.expand)
   const navigate = useNavigate()
   const { run: runLogin } = useRequest(logIn, {
     manual: true,
@@ -123,14 +124,14 @@ export const MainLayout: React.FC = () => {
         }
       })
       setExpanded(window.Telegram.WebApp.isExpanded)
-      console.log(window.Telegram.WebApp.isExpanded,'window.Telegram.WebApp.isExpanded')
+      console.log(window.Telegram.WebApp.isExpanded, 'window.Telegram.WebApp.isExpanded')
     }
     onLogin()
   }, [])
 
   useEffect(() => {
     console.log('pathname-------------------------------_>', location.pathname)
-    const BASE_PATHS = ['/home', '/chat', '/profile']
+    const BASE_PATHS = ['/home', '/chat', '/profile', '/ageGate']
     if (BASE_PATHS.includes(location.pathname)) {
       setBackToHome(false)
     }
@@ -144,7 +145,7 @@ export const MainLayout: React.FC = () => {
     }
     if (window.Telegram?.WebApp) {
       const tgApp = window.Telegram.WebApp
-      const HIDE_BACK_BUTTON_PATHS = ['/home', '/chat', '/profile', '/']
+      const HIDE_BACK_BUTTON_PATHS = ['/home', '/chat', '/profile', '/', '/ageGate']
       if (HIDE_BACK_BUTTON_PATHS.includes(location.pathname)) {
         tgApp.BackButton.hide()
       } else {
@@ -173,7 +174,7 @@ export const MainLayout: React.FC = () => {
       <div className={`absolute inset-0 top-0 bottom-[84px] z-1`}>
         <Outlet />
       </div>
-
+      <PostProgressBar />
       <Menu />
     </div>
   )

@@ -1,14 +1,36 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Box, Flex, Image, Text, IconButton, useBoolean, useToast } from '@chakra-ui/react'
+
+import {
+  totalAvailable
+} from '@/types'
 
 import { BaseModal } from '@/components/Modal/BaseModal'
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { StarsIcon, MoneyIcon, RightIcon } from '@/assets/icons'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
+import { totalAvailableInvoice } from '@/api'
+import { useStore } from '@/store/store'
 
 const Earnings = () => {
   const [isBaseModalOpen, { toggle, on, off }] = useBoolean(false)
+  const [data, setData] = useState<totalAvailable>({
+    available:0,
+    exchange_rate: 0
+  })
   const toast = useToast()
+  const { token } = useStore((state) => ({
+    token: state.token,
+  }))
+
+  useEffect(() => {
+    if (!token) return
+    const load = async () => {
+      const res = await totalAvailableInvoice()
+      setData(res)
+    }
+    load()
+  }, [token])
 
   return (
     <>
@@ -48,7 +70,7 @@ const Earnings = () => {
           <div className="mt-[56px] flex gap-[30px] items-center justify-between">
             <div>
               <div className="flex gap-[11px]">
-                <h3 className="text-[30px]">65,432</h3>
+                <h3 className="text-[30px]">{data.available}</h3>
                 <img src={StarsIcon} />
               </div>
               <p className="text-[rgba(98,99,111,1)] text-[14px]">Total earnings</p>
@@ -57,7 +79,7 @@ const Earnings = () => {
             <p className="h-[31px] w-[1px] bg-[rgba(255,255,255,0.10)]"></p>
             <div>
               <div className="flex gap-[11px]">
-                <h3 className="text-[30px]">5,678</h3>
+                <h3 className="text-[30px]">{data.exchange_rate}</h3>
                 <img src={StarsIcon} />
               </div>
               <p className="text-[rgba(98,99,111,1)] text-[14px]">Available earnings</p>

@@ -156,10 +156,7 @@ const Splash: FC = () => {
           <Lottie
             animationData={logoData}
             loop={false}
-            autoplay={true}
-            onComplete={() => {
-              setAnimationEnding(true)
-            }}
+            autoplay={false}
           ></Lottie>
         </div>
         <div className="text-[var(--Dark-T1)]  text-[24px] font-bold leading-[1.5] capitalize text-center">

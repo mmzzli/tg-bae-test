@@ -74,20 +74,19 @@ const Splash: FC = () => {
     if (list && list.length > 0) {
       const resources = list.filter((item) => item.type === 0)
       cacheVideos(resources)
-      setTimeout(()=>{
+      setTimeout(() => {
         setIsCached(true)
-      },2000)
+      }, 2000)
     }
   }, [list])
 
   useEffect(() => {
     if (userInfo.user_id && token && isCached) {
-      const ageGateBoll = localStorage.getItem("ageGate")
-      if (!animationEnding) return
-      if (!isInTMA || !startParam || history.length > 2){
-        if(ageGateBoll){
+      const ageGateBoll = localStorage.getItem('ageGate')
+      if (!isInTMA || !startParam || history.length > 2) {
+        if (ageGateBoll) {
           return navigate('/home')
-        }else{
+        } else {
           return navigate('/ageGate')
         }
       }
@@ -107,9 +106,9 @@ const Splash: FC = () => {
         setBackToHome(true)
         handleNavigate(sharedRef)
       } else {
-        if(ageGateBoll){
+        if (ageGateBoll) {
           navigate('/home')
-        }else{
+        } else {
           navigate('/ageGate')
         }
       }
@@ -153,11 +152,7 @@ const Splash: FC = () => {
       </div>
       <div className="flex justify-center items-center flex-col">
         <div className="w-[210px] h-[210px]">
-          <Lottie
-            animationData={logoData}
-            loop={false}
-            autoplay={false}
-          ></Lottie>
+          <Lottie animationData={logoData} loop={false} autoplay={false}></Lottie>
         </div>
         <div className="text-[var(--Dark-T1)]  text-[24px] font-bold leading-[1.5] capitalize text-center">
           welcome to Bae

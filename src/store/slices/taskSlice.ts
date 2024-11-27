@@ -13,11 +13,10 @@ export interface UploadThread {
 export interface TaskSlice {
   uploadTask: {
     uploadThreads: UploadThread[]
-    uploadThreadsCount: number
     onAllThreadsComplete: () => void
     onError: (error: string) => void
   }
-  addUploadThread: (thread: UploadThread) => void
+  addUploadThread: (thread: UploadThread[]) => void
   updateUploadThread: ({
     id,
     progress,
@@ -36,7 +35,6 @@ export interface TaskSlice {
 export const createTaskSlice: StateCreator<TaskSlice> = (set) => ({
   uploadTask: {
     uploadThreads: [],
-    uploadThreadsCount: 0,
     onAllThreadsComplete: () => {},
     onError: (error: string) => {},
   },
@@ -44,32 +42,33 @@ export const createTaskSlice: StateCreator<TaskSlice> = (set) => ({
     set((state) => ({
       uploadTask: {
         ...state.uploadTask,
-        uploadThreads: [...state.uploadTask.uploadThreads, thread],
-        uploadThreadsCount: state.uploadTask.uploadThreadsCount + 1,
+        uploadThreads: [...state.uploadTask.uploadThreads, ...thread],
       },
     }))
   },
   updateUploadThread: ({ id, progress, completed, error, result }) => {
     set((state) => ({
-      uploadThreads: state.uploadThreads.map((thread) => {
-        if (thread.id === id) {
-          return {
-            ...thread,
-            progress: progress !== undefined ? progress : thread.progress,
-            completed: completed !== undefined ? completed : thread.completed,
-            error: error !== undefined ? error : thread.error,
-            result: result !== undefined ? result : thread.result,
+      uploadTask: {
+        ...state.uploadTask,
+        uploadThreads: state.uploadTask.uploadThreads.map((thread) => {
+          if (thread.id === id) {
+            return {
+              ...thread,
+              progress: progress !== undefined ? progress : thread.progress,
+              completed: completed !== undefined ? completed : thread.completed,
+              error: error !== undefined ? error : thread.error,
+              result: result !== undefined ? result : thread.result,
+            }
           }
-        }
-        return thread
-      }),
+          return thread
+        }),
+      },
     }))
   },
   resetUploadTask: () => {
     set({
       uploadTask: {
         uploadThreads: [],
-        uploadThreadsCount: 0,
         onAllThreadsComplete: () => {},
         onError: (error: string) => {},
       },

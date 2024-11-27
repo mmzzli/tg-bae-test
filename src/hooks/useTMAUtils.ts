@@ -18,13 +18,8 @@ export const useTMAUtils = () => {
 
   const openLink = async (url: string) => {
     try {
-      if (window.Telegram?.WebApp) {
-        const tgApp = window.Telegram.WebApp
-        var callback = function(response:any) {
-          console.log('支付完成', response);
-        };
-        tgApp.openInvoice(url, callback);
-        // utils.openLink(url)
+      if (isInTMA) {
+        utils.openLink(url)
       } else {
         window.open(url)
       }

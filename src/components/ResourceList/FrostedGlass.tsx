@@ -37,21 +37,29 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
         post_id: String(post_id),
         user_id: String(initData?.user?.id)
       })
-      if(url){
+      if(window.Telegram?.WebApp){
+        const tgApp = window.Telegram.WebApp
+        tgApp.openInvoice('invoiceLink', (status:string) => {
+          console.log(status,123)
+          if (status === "paid") {
+            invoiceEve()
+          }
+        });
+      }else{
         openLink(url)
       }
     }
 
-    const items = setInterval(async()=>{
-      try{
-        // const viewUrl = "https://baedev.anyconn.org/2022-01-27_17-32-20_UTC_2.jpg,https://baedev.anyconn.org/2022-01-27_17-32-20_UTC_3.jpg,https://baedev.anyconn.org/2022-01-27_17-32-20_UTC_4.jpg,https://baedev.anyconn.org/2022-01-27_17-32-20_UTC_5.jpg"
-        const viewUrl = await viewPid(post_id)
-        resourcesEve(post_id,viewUrl)
-        clearInterval(items)
-      } catch (error) {
-        console.log(error,'payment')
-      }
-    },3000)
+    // const items = setInterval(async()=>{
+    //   try{
+    //     // const viewUrl = "https://baedev.anyconn.org/2022-01-27_17-32-20_UTC_2.jpg,https://baedev.anyconn.org/2022-01-27_17-32-20_UTC_3.jpg,https://baedev.anyconn.org/2022-01-27_17-32-20_UTC_4.jpg,https://baedev.anyconn.org/2022-01-27_17-32-20_UTC_5.jpg"
+    //     const viewUrl = await viewPid(post_id)
+    //     resourcesEve(post_id,viewUrl)
+    //     clearInterval(items)
+    //   } catch (error) {
+    //     console.log(error,'payment')
+    //   }
+    // },3000)
 
   }
   return (

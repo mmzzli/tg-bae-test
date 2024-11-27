@@ -9,8 +9,6 @@ export const PostProgressBar = () => {
     updateUploadThread: state.updateUploadThread,
   }))
 
-  console.log('🚀 ~ file: PostProgressBar.tsx:20 ~ uploadThreads:', uploadThreads)
-
   const progress =
     uploadThreads.reduce((acc, task) => acc + (task.progress || 0), 0) /
     (uploadThreads.length * 100)

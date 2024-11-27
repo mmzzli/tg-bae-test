@@ -18,6 +18,8 @@ const SHARE_PROFILE = 2
 const Splash: FC = () => {
   const navigate = useNavigate()
   const userInfo = useStore((state) => state.userInfo)
+  const setCacheVideo = useStore((state) => state.setCacheVideo)
+
   const setBackToHome = useStore((state) => state.setBackToHome)
   const { token, setSharedPostList, setOthersUserInfo } = useStore((state) => ({
     setSharedPostList: state.setSharedPostList,
@@ -152,7 +154,7 @@ const Splash: FC = () => {
       </div>
       <div className="flex justify-center items-center flex-col">
         <div className="w-[210px] h-[210px]">
-          <Lottie animationData={logoData} loop={false} autoplay={false}></Lottie>
+          <Icon name={'icon-logo'} style={{ width: '210px', height: '210px' }}></Icon>
         </div>
         <div className="text-[var(--Dark-T1)]  text-[24px] font-bold leading-[1.5] capitalize text-center">
           welcome to Bae

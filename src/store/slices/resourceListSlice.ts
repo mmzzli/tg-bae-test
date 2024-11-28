@@ -279,6 +279,11 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
 
   // 加载视频
   loadVideo: (video) => {
+    const medias = video?.media[0]
+    if (!medias) return
+    // 把视频分割出来
+    const media = medias.split(',').find((item) => item.endsWith('.m3u8'))
+    if (!media) return
     const hls = new Hls({
       startPosition: 0, // 从视频开始播放
       maxBufferLength: 2, // 缓存最多 2 秒内容
@@ -287,7 +292,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
 
     const tempVideo = document.createElement('video')
 
-    hls.loadSource(video?.media[0]) // 加载视频源
+    hls.loadSource(media) // 加载视频源
     hls.attachMedia(tempVideo)
 
     // 监听事件，确保只加载前 2 秒的分片

@@ -84,76 +84,6 @@ const HomePage: FC = () => {
     }, 300)
   }
 
-  // useEffect(() => {
-  //   if (!token) return
-  //   const load = async () => {
-  //     const { posts: initialResources } = await getRecommendMedia({
-  //       page_num: 1,
-  //       records: 30,
-  //     })
-  //     const cacheVideos = async (resources: any) => {
-  //       const maxVideosToCache = resources.length
-  //       const maxFragmentsPerVideo = 1
-  //       let currentVideoIndex = 0
-  //
-  //       const cacheNextVideo = async () => {
-  //         if (currentVideoIndex >= Math.min(resources.length, maxVideosToCache)) {
-  //           console.log('缓存完成')
-  //           return
-  //         }
-  //
-  //         const item = resources[currentVideoIndex]
-  //         if (!Hls.isSupported()) {
-  //           console.error('HLS.js 不支持当前浏览器环境')
-  //           return
-  //         }
-  //
-  //         const hls = new Hls()
-  //         let bufferedFragments = 0
-  //
-  //         const virtualVideoElement = document.createElement('video')
-  //         hls.loadSource(item.media)
-  //         hls.attachMedia(virtualVideoElement)
-  //
-  //         hls.on(Hls.Events.FRAG_BUFFERED, () => {
-  //           bufferedFragments++
-  //           console.log(`视频 ${currentVideoIndex + 1} 缓存分片数量: ${bufferedFragments}`)
-  //           if (bufferedFragments >= maxFragmentsPerVideo) {
-  //             console.log(`视频 ${currentVideoIndex + 1} 缓存完成，分片数量: ${bufferedFragments}`)
-  //             hls.destroy()
-  //             currentVideoIndex++
-  //             cacheNextVideo() // 缓存下一个视频
-  //           }
-  //         })
-  //
-  //         hls.on(Hls.Events.MANIFEST_PARSED, () => {
-  //           console.log(`视频 ${currentVideoIndex + 1} 流解析完成，开始缓存`)
-  //         })
-  //
-  //         hls.on(Hls.Events.ERROR, (event, data) => {
-  //           console.error(`视频 ${currentVideoIndex + 1} 缓存出错:`, data)
-  //           hls.destroy()
-  //           currentVideoIndex++
-  //           cacheNextVideo() // 跳过错误视频，缓存下一个
-  //         })
-  //       }
-  //
-  //       // 开始缓存第一个视频
-  //       cacheNextVideo()
-  //     }
-  //     if (initialResources && initialResources.length > 0) {
-  //       const resources = initialResources
-  //         .filter((item) => item.post.type === 0)
-  //         .map((item) => item.post)
-  //       console.log(resources)
-  //       if (resources.length > 0) {
-  //         cacheVideos(resources)
-  //       }
-  //     }
-  //   }
-  //   load()
-  // }, [token])
-
   return (
     <div className="relative w-full h-full overflow-auto" id="recommendScrollableDiv">
       <>
@@ -184,18 +114,6 @@ const HomePage: FC = () => {
         <div className="overflow-hidden" style={{ height: '0px', opacity: 0, ...animation }}>
           <FollowingList />
         </div>
-
-        {/* <button
-        onClick={() => shareLink(COMMUNITY_LINK)}
-        className="text-[14px] py-[14px] px-6 w-[126px] h-[40px] bg-[#4A3AFF] rounded-[32px] flex items-center justify-center font-medium text-[#fff] mx-auto mt-[28px] mb-12"
-      >
-        Community
-      </button> */}
-        {/* <div className="px-4">
-          <h3 className="text-[#E0E2F6] font-bold text-xl" ref={selectedPostsRef}>
-            Selected Posts
-          </h3>
-        </div> */}
         <CardRecommendProvider.Provider value={{ recommend: true }}>
           <div className={`mt-10`}>
             <RecommendList />

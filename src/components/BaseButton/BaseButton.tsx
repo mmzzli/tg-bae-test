@@ -27,7 +27,7 @@ const BaseButton = ({
     <div>
       <div
         className={`no-tap flex items-center justify-center gap-2 bg-[#4A3AFF] rounded-[42px]
-          text-[#E0E2F6] text-sm font-medium cursor-pointer
+          text-[#ffffff] dark:text-[#E0E2F6] text-sm font-medium cursor-pointer
           ${className} ${loading || disabled ? 'bg-[#6a5cfc] cursor-not-allowed' : ''}`}
         onClick={() => !loading && !disabled && handler()}
         style={{ width, height }}

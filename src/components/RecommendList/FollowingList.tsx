@@ -5,7 +5,7 @@ import { cn } from '@/utils/utils'
 import { useRecommendList } from '@/store/hook/useResourceList'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { COMMUNITY_LINK } from '@/utils/constants'
-import { useStore } from '@/store';
+import { useStore } from '@/store'
 
 interface PostListProps {
   className?: string
@@ -15,20 +15,19 @@ const FollowingList = ({ className }: PostListProps) => {
   // const { list, hasMore, fetchMoreData } = useRecommendList()
   const { shareLink } = useTMAUtils()
 
-  return(
-
-    <div>
-      <div className="mx-auto w-full text-center pt-[92px]">
-        <p className="text-[#62636F]">Join our community to meet creators</p>
-        <p className="text-[#62636F]">and start to follow them</p>
+  return (
+    <div className="mt-[72px] border border-[#dbdbdb] border-dashed rounded-[16px] mx-4">
+      <div className="mx-auto w-full text-center pt-[24px] text-base">
+        <p className="text-[#666666]">Join our community to meet creators</p>
+        <p className="text-[#666666]">and start to follow them</p>
       </div>
-      <div className="mt-[28px] mb-[48px] text-center">
+      <div className="mt-[16px] mb-[24px] text-center">
         <Button
-          variant="primary-dark-border"
           m="auto"
-          w="126px"
-          h="40px"
+          w="122px"
+          h="41px"
           onClick={() => shareLink(COMMUNITY_LINK)}
+          className="text-sm bg-white dark:bg-black border border-[#625dff] rounded-full text-[#625dff] dark:text-white"
         >
           Community
         </Button>

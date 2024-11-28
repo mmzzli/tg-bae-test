@@ -10,6 +10,7 @@ import {
   ChatActiveIcon,
 } from '@/assets/icons'
 import Image from '../Image/Image'
+import { cn } from '@/utils/utils'
 
 interface NavItem {
   icon: string
@@ -24,26 +25,32 @@ export const Menu: FC = () => {
 
   const navList: NavItem[] = [
     {
-      icon: HomeIcon,
-      iconActive: HomeActiveIcon,
-      name: 'Home',
+      // icon: HomeIcon,
+      icon: 'icon-Tab_home_normal',
+      // iconActive: HomeActiveIcon,
+      iconActive: 'icon-Tab_home',
+      name: 'HOME',
       url: '/home',
     },
     {
-      icon: ChatIcon,
-      iconActive: ChatActiveIcon,
-      name: 'Chat',
+      // icon: ChatIcon,
+      // iconActive: ChatActiveIcon,
+      icon: 'icon-chat-smile-2-line',
+      iconActive: 'icon-chat-smile-2-fill',
+      name: 'CHATS',
       url: '/chat',
     },
     {
-      icon: ProfileIcon,
-      iconActive: ProfileActiveIcon,
-      name: 'Profile',
+      // icon: ProfileIcon,
+      // iconActive: ProfileActiveIcon,
+      icon: 'icon-Tab_profile_normal',
+      iconActive: 'icon-tab_profile_choose',
+      name: 'PROFILE',
       url: '/profile',
     },
   ]
   return (
-    <div className="fixed bottom-0 left-0 w-full p-0 h-[84px] pt-2 border-t border-[#212121] bg-[#0D0D0D]">
+    <div className="fixed bottom-0 left-0 w-full p-0 h-[84px] pt-2 border-t bg-white dark:bg-[#0D0D0D] border-[#DEDEDE] dar:border-[#212121]">
       <div className="flex justify-around items-center">
         {navList.map((item, index) => (
           <div
@@ -56,21 +63,21 @@ export const Menu: FC = () => {
             <div className="text-center pt-[6px] cursor-pointer">
               <div className="relative h-[24px] w-[24px] m-auto overflow-hidden">
                 <div
-                  className="absolute top-0 left-0 w-full h-full transition-opacity duration-200"
+                  className="flex items-center absolute top-0 left-0 w-full h-full transition-opacity duration-200 text-[#0F1233] dark:text-[#E0E2F6]"
                   style={{ opacity: pathname === item.url ? 1 : 0 }}
                 >
-                  <Image className="m-auto" src={item.iconActive} alt={item.name} />
+                  <i className={cn('iconfont text-[24px]', item.iconActive)}></i>
                 </div>
                 <div
-                  className="absolute top-0 left-0 w-full h-full transition-opacity duration-200"
+                  className="flex items-center absolute top-0 left-0 w-full h-full transition-opacity duration-200 text-[#424048] dark:text-[#E0E2F6]"
                   style={{ opacity: pathname === item.url ? 0 : 1 }}
                 >
-                  <Image className="m-auto" src={item.icon} alt={item.name} />
+                  <i className={cn('iconfont text-[24px]', item.icon)}></i>
                 </div>
               </div>
               <div
                 className="text-[10px] leading-[12px] mt-[4px] uppercase"
-                style={{ color: pathname === item.url ? '#E0E2F6' : '#424048' }}
+                style={{ color: pathname === item.url ? '#0F1233' : '#888888' }}
               >
                 {item.name}
               </div>

@@ -18,8 +18,8 @@ const RecommendList = ({ className }: PostListProps) => {
         next={fetchMoreData}
         hasMore={hasMore}
         loader={
-          <Box textAlign="center" m="20px 0" className='p-4'>
-              <PostSkeleton/>
+          <Box textAlign="center" m="20px 0" className="p-4">
+            <PostSkeleton />
           </Box>
         }
         scrollableTarget="recommendScrollableDiv"

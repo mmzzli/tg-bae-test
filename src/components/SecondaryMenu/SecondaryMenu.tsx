@@ -21,16 +21,16 @@ const SecondaryMenu = ({ mediaData, currentUid, className }: Props) => {
   const [visible, setVisible] = useSafeState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const [reportVisible, setReportVisible] = useSafeState(false)
-  const toast = useToast();
+  const toast = useToast()
 
   const deleteDialogWrap = useModal(DeleteDialogWarp)
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setTimeout(()=>{
+        setTimeout(() => {
           setVisible(false)
-        },0)
+        }, 0)
       }
     }
 
@@ -70,22 +70,22 @@ const SecondaryMenu = ({ mediaData, currentUid, className }: Props) => {
   return (
     <div className={cn(className, 'relative')} ref={menuRef}>
       <button className="p-2 rounded-full" onClick={() => setVisible(!visible)}>
-        <MoreHorizontal className="w-5 h-5 text-[#E0E2F6]" />
+        <MoreHorizontal className="w-5 h-5 text-[#373738] dark:text-[#E0E2F6]" />
       </button>
 
       {visible && (
         <div className="absolute right-0 mt-1 bg-[#19191E] text-[#E0E2F6] font-medium text-xs rounded-[4px] z-50">
           {currentUid === uid && (
-              <button
-              onClick={()=>{
-                deleteDialogWrap.show({data:mediaData});
+            <button
+              onClick={() => {
+                deleteDialogWrap.show({ data: mediaData })
                 setVisible(false)
               }}
-                className="w-[83px] h-[40px] hover:bg-gray-500 rounded-[4px] flex items-center justify-center gap-1 text-[#FF5330]"
-              >
-                <img src={DeleteIcon} alt="delete" />
-                Delete
-              </button>
+              className="w-[83px] h-[40px] hover:bg-gray-500 rounded-[4px] flex items-center justify-center gap-1 text-[#FF5330]"
+            >
+              <img src={DeleteIcon} alt="delete" />
+              Delete
+            </button>
           )}
           {currentUid !== uid && (
             <button

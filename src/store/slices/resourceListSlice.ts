@@ -41,7 +41,7 @@ export interface CacheVideo {
 }
 const recordsNum = 30
 const CACHE_VIDEOS_LIMIT = 29
-const MAX_FRAGMENTS = 1
+const MAX_FRAGMENTS = 2
 
 export interface ResourceListSlice {
   // recommend

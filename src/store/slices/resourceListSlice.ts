@@ -39,8 +39,8 @@ export interface CacheVideo {
   id: string | number
   media: string
 }
-const recordsNum = 20
-const CACHE_VIDEOS_LIMIT = 19
+const recordsNum = 10
+const CACHE_VIDEOS_LIMIT = 15
 
 export interface ResourceListSlice {
   // recommend

@@ -278,14 +278,20 @@ const useCacheVideo = (
   // 滚动事件处理逻辑
   const handleScroll = debounce(() => {
     const videos = list.filter((item) => item.type === 0) // 过滤出视频类型
-    const container = document.getElementById(`#${domId}`)
+    const container = document.getElementById(`${domId}`)
+    console.log(container, 'jacob========1===container')
     if (container) {
+      console.log(container.querySelectorAll('.video-card'), 'jacob========1===elements')
       const elements = container.querySelectorAll(`.${cardClass}`) // 获取需要监听的元素
+      console.log(elements, 'jacob========1===element============')
       const visibleItems: number[] = []
 
       elements.forEach((element) => {
         const rect = element.getBoundingClientRect()
         const containerRect = container.getBoundingClientRect() // 滚动容器的边界
+
+        console.log(containerRect, 'containerRect======bound')
+        console.log(rect, 'rect======bound')
         const isVisible =
           rect.bottom >= containerRect.top && // 元素底部在容器顶部以下
           rect.top <= containerRect.bottom // 元素顶部在容器底部以上
@@ -296,7 +302,7 @@ const useCacheVideo = (
         }
       })
 
-      console.log('jacob======== Visible Items:', visibleItems) // 打印当前视口中的元素
+      console.log('jacob========1===Visible Items:', visibleItems) // 打印当前视口中的元素
       if (visibleItems.length > 0) {
         setCacheVideoIndex(visibleItems[Math.floor(visibleItems.length / 2)]) // 更新缓存视频索引
         updateCache(videos) // 更新缓存
@@ -320,7 +326,9 @@ const useCacheVideo = (
   }, [list, getCacheVideoindex])
 
   useEffect(() => {
-    const scrollableDiv = document.getElementById(`#${domId}`)
+    console.log(domId)
+    const scrollableDiv = document.getElementById(`${domId}`)
+    console.log(scrollableDiv, 'scrollableDiv')
     if (scrollableDiv) {
       scrollableDiv.addEventListener('scroll', handleScroll) // 监听滚动事件
     }

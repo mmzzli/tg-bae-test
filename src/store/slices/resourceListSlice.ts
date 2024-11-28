@@ -313,8 +313,8 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
 
       const hls = new Hls({
         startPosition: 0, // 从视频开始播放
-        maxBufferLength: 3, // 缓存最多 3 秒内容
-        maxBufferSize: 10 * 1024 * 1024, // 最大缓冲区大小，限制为 10MB
+        maxBufferLength: 2, // 缓存最多 2 秒内容
+        maxBufferSize: 1 * 1024 * 1024, // 最大缓冲区大小，限制为 1MB
       })
 
       const tempVideo = document.createElement('video')

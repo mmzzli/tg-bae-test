@@ -162,9 +162,9 @@ export const MainLayout: React.FC = () => {
   }, [location.pathname])
 
   return (
-    <div className="absolute inset-0 top-0 right-0 bottom-0 left-0 bg-black overflow-hidden flex pb-[84px] transition-all duration-300">
+    <div className="absolute inset-0 top-0 right-0 bottom-0 left-0overflow-hidden flex pb-[84px] transition-all duration-300 bg-white dark:bg-black">
       <div
-        className="absolute left-0 right-0 top-0 bottom-[84px] flex-col bg-[#0D0D0D] overflow-hidden"
+        className="absolute left-0 right-0 top-0 bottom-[84px] flex-col bg-white dark:bg-[#0D0D0D] overflow-hidden"
         style={{ display: hiddenChatPage ? 'none' : 'flex', zIndex: hiddenChatPage ? -1 : 200 }}
       >
         <Suspense

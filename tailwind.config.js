@@ -3,6 +3,8 @@ export default {
   corePlugins: {
     preflight: false,
   },
+  // add data-mode="dark" in body tag to enable dark mode
+  darkMode: ['selector', '[data-mode="dark"]'],
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   important: true,
   theme: {

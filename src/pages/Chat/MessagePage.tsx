@@ -167,13 +167,14 @@ const MessagePage = () => {
   return (
     <div
       ref={containerRef}
-      className="absolute top-0 left-0 right-0 flex flex-col bg-[#000000] z-10 pt-[76px] overflow-auto scrollbar-hide"
+      className="absolute top-0 left-0 right-0 flex flex-col bg-[#000000] z-10 overflow-auto scrollbar-hide"
       style={{
         bottom: 0,
         WebkitOverflowScrolling: 'touch',
+        paddingTop: `calc(${window.getComputedStyle(document.documentElement).getPropertyValue('--tg-safe-area-inset-top') ? 'var(--tg-safe-area-inset-top) + 130px' : '76px'})`,
       }}
     >
-      <div className="fixed flex items-center left-0 right-0 top-[10px] px-[16px] pt-[24px] h-[56px]">
+      <div className="absolute flex items-center left-0 right-0 top-[10px] px-[16px] pt-[24px] h-[56px]">
         <Image
           type="avatar"
           rect

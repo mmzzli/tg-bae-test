@@ -70,6 +70,13 @@ export const MainLayout: React.FC = () => {
       document.getElementById('root')?.classList.add('root-wrap')
       const tgApp = window.Telegram.WebApp
       tgApp.ready()
+      try {
+        window.TelegramWebviewProxy &&
+          window.TelegramWebviewProxy.postEvent('web_app_request_fullscreen')
+      } catch (err) {
+        console.warn('######    web_app_request_fullscreen error    ######', err)
+      }
+
       postEvent('web_app_setup_swipe_behavior', {
         allow_vertical_swipe: false,
       })
@@ -171,7 +178,13 @@ export const MainLayout: React.FC = () => {
         </Suspense>
       </div>
 
-      <div className={`absolute inset-0 top-0 bottom-[84px] z-1`}>
+      <div
+        className={`absolute inset-0 top-0 bottom-[84px] z-1`}
+        style={{
+          paddingTop: `calc(${window.getComputedStyle(document.documentElement).getPropertyValue('--tg-safe-area-inset-top') ? 'var(--tg-safe-area-inset-top) + 54px' : '0'})`,
+          // paddingTop: 'var(--tg-safe-area-inset-top)',
+        }}
+      >
         <Outlet />
       </div>
       <PostProgressBar />

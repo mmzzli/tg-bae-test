@@ -149,10 +149,11 @@ const MessagePageIOS = () => {
   return (
     <div
       ref={containerRef}
-      className="absolute top-0 left-0 right-0 flex flex-col bg-[#000000] z-[999] pt-[76px] overflow-auto scrollbar-hide"
+      className="absolute top-0 left-0 right-0 flex flex-col bg-[#000000] z-[999] overflow-auto scrollbar-hide"
       style={{
         WebkitOverflowScrolling: 'touch',
         transition: 'height 0.3s ease-in-out',
+        paddingTop: `calc(${window.getComputedStyle(document.documentElement).getPropertyValue('--tg-safe-area-inset-top') ? 'var(--tg-safe-area-inset-top) + 100px' : '76px'})`,
       }}
     >
       {/* TEST CODE */}
@@ -164,7 +165,12 @@ const MessagePageIOS = () => {
         {'ios true'}
       </div> */}
 
-      <div className="fixed flex items-center left-0 right-0 top-[10px] px-[16px] pt-[24px] h-[56px]">
+      <div
+        className="fixed flex items-center left-0 right-0 top-[10px] px-[16px]"
+        style={{
+          paddingTop: `calc(${window.getComputedStyle(document.documentElement).getPropertyValue('--tg-safe-area-inset-top') ? 'var(--tg-safe-area-inset-top) + 54px' : '24px'})`,
+        }}
+      >
         <Image
           type="avatar"
           rect

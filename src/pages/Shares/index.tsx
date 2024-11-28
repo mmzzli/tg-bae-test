@@ -11,7 +11,12 @@ const Shares: FC = () => {
       id="recommendScrollableDiv"
       className="relative w-full h-full overflow-auto scrollbar-hide"
     >
-      <div className="flex items-center justify-between mt-4 mx-4">
+      <div
+        className="flex items-center justify-between mx-4"
+        style={{
+          marginTop: `calc(${window.getComputedStyle(document.documentElement).getPropertyValue('--tg-safe-area-inset-top') ? '0' : '16px'})`,
+        }}
+      >
         <div className="font-bold text-xl text-[#E0E2F6]">Shared</div>
         {/* <Button
           size="xl"

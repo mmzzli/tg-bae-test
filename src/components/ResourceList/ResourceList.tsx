@@ -45,7 +45,7 @@ const POST_TYPE_VIDEO = 0
 const ResourceList = ({
   resources: initialResources,
   type,
-  hasMore
+  hasMore,
 }: {
   resources: FormatterListItem[]
   type?: string
@@ -121,7 +121,7 @@ const ResourceList = ({
 
   const [linksBoll, setLinksBoll] = useState(false)
   const linkEve = async (post_id: number, boll: boolean) => {
-    if(linksBoll) return
+    if (linksBoll) return
     setLikes((prevLikes) =>
       prevLikes.map((item: any) =>
         item.id === post_id
@@ -129,29 +129,29 @@ const ResourceList = ({
           : item
       )
     )
-    setLinksBoll((prev) => !prev);
+    setLinksBoll((prev) => !prev)
     await postLike({
       act_type: boll ? 1 : 2,
       post_id,
     })
-    setLinksBoll((prev) => !prev);
+    setLinksBoll((prev) => !prev)
   }
   const [favBoll, setFavBoll] = useState(false)
   const savedEve = async (pid: number, boll: boolean) => {
-    if(favBoll) return
+    if (favBoll) return
     setSaveds((prevLikes) =>
       prevLikes.map((item: any) => (item.id === pid ? { ...item, saveds: boll } : item))
     )
     if (type === 'fav') {
       setResources((favResources) => favResources.filter((item) => item.id !== pid))
     }
-    setFavBoll((prev) => !prev);
+    setFavBoll((prev) => !prev)
     if (boll) {
       await favPost(pid)
     } else {
       await favDel(pid)
     }
-    setFavBoll((prev) => !prev);
+    setFavBoll((prev) => !prev)
   }
 
   const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
@@ -159,7 +159,7 @@ const ResourceList = ({
     const { host, ref } = await getLinkHandlerAsync({ pid, uid })
     console.log(host, ref, 'getLinkResult')
 
-    const copyLink = encodeURIComponent(`${import.meta.env.VITE_API_URL}link/${ref}?startapp`)
+    const copyLink = encodeURIComponent(`${import.meta.env.VITE_API_URL}link/${ref}`)
     console.log('copyLink', decodeURIComponent(copyLink))
 
     const shareLink = `https://t.me/share/url?url=${copyLink}&text=${shareText}`
@@ -226,7 +226,7 @@ const ResourceList = ({
       </div>
     </BaseModal>
   )
-  if(type === 'fav' && !hasMore && !resources.length){
+  if (type === 'fav' && !hasMore && !resources.length) {
     return (
       <Empty
         title="No post yet."
@@ -236,26 +236,79 @@ const ResourceList = ({
   }
   return (
     <>
-    <div className="pt-4">
-      {resources.map((data, index: number) => {
-        if (data.type === POST_TYPE_IMAGE && data.media.length > 1) {
-          if (data.media.length === 4) {
-            return (
-              <Box key={data.id}>
-                <ResourceHeader
-                  data={data}
-                  currentUid={launchParams.initData?.user?.id ?? 0}
-                  onProfileClick={jumpToProfilePage}
-                />
-                <div
-                  className="relative px-4"
-                  style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}
-                >
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="grid grid-cols-2 gap-2 col-span-2">
+      <div className="pt-4">
+        {resources.map((data, index: number) => {
+          if (data.type === POST_TYPE_IMAGE && data.media.length > 1) {
+            if (data.media.length === 4) {
+              return (
+                <Box key={data.id}>
+                  <ResourceHeader
+                    data={data}
+                    currentUid={launchParams.initData?.user?.id ?? 0}
+                    onProfileClick={jumpToProfilePage}
+                  />
+                  <div
+                    className="relative px-4"
+                    style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}
+                  >
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="grid grid-cols-2 gap-2 col-span-2">
+                        {data.media.map((i, ind) => (
+                          <Image
+                            src={formatImage(i, false)}
+                            alt={data.title}
+                            width="100%"
+                            height="100%"
+                            key={i}
+                            onClick={() => handleImageClick(data.media, ind)}
+                            rect
+                          />
+                        ))}
+                      </div>
+                      <div className=""></div>
+                    </div>
+                    {data.media?.[0] == '' && (
+                      <FrostedGlass
+                        price={data.price}
+                        post_id={data.id}
+                        resourcesEve={resourcesEve}
+                      />
+                    )}
+                  </div>
+
+                  <ResourceFooter
+                    data={data}
+                    likes={likes}
+                    saveds={saveds}
+                    linkEve={linkEve}
+                    savedEve={savedEve}
+                    type={type}
+                    onShare={() => {
+                      getShareLink(data.title, data.id, data.uid)
+                      toggle()
+                    }}
+                  />
+                  <div className="pt-8 pb-8 pl-4 pr-4">
+                    <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
+                  </div>
+                </Box>
+              )
+            } else {
+              return (
+                <Box key={data.id}>
+                  <ResourceHeader
+                    data={data}
+                    currentUid={launchParams.initData?.user?.id ?? 0}
+                    onProfileClick={jumpToProfilePage}
+                  />
+                  <div
+                    className="relative px-4"
+                    style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}
+                  >
+                    <div className="grid grid-cols-3 gap-2">
                       {data.media.map((i, ind) => (
                         <Image
-                          src={formatImage(i,false)}
+                          src={formatImage(i, false)}
                           alt={data.title}
                           width="100%"
                           height="100%"
@@ -265,65 +318,97 @@ const ResourceList = ({
                         />
                       ))}
                     </div>
-                    <div className=""></div>
+                    {data.media?.[0] == '' && (
+                      <FrostedGlass
+                        price={data.price}
+                        post_id={data.id}
+                        resourcesEve={resourcesEve}
+                      />
+                    )}
                   </div>
-                  {data.media?.[0] == '' && (
-                    <FrostedGlass
-                      price={data.price}
-                      post_id={data.id}
-                      resourcesEve={resourcesEve}
-                    />
-                  )}
-                </div>
 
-                <ResourceFooter
-                  data={data}
-                  likes={likes}
-                  saveds={saveds}
-                  linkEve={linkEve}
-                  savedEve={savedEve}
-                  type={type}
-                  onShare={() => {
-                    getShareLink(data.title, data.id, data.uid)
-                    toggle()
-                  }}
-                />
-                <div className="pt-8 pb-8 pl-4 pr-4">
-                  <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
-                </div>
-              </Box>
-            )
+                  <ResourceFooter
+                    data={data}
+                    likes={likes}
+                    saveds={saveds}
+                    linkEve={linkEve}
+                    savedEve={savedEve}
+                    type={type}
+                    onShare={() => {
+                      getShareLink(data.title, data.id, data.uid)
+                      toggle()
+                    }}
+                  />
+                  <div className="pt-8 pb-8 pl-4 pr-4">
+                    <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
+                  </div>
+                </Box>
+              )
+            }
           } else {
             return (
-              <Box key={data.id}>
+              <Box key={index}>
                 <ResourceHeader
                   data={data}
                   currentUid={launchParams.initData?.user?.id ?? 0}
                   onProfileClick={jumpToProfilePage}
                 />
-                <div
-                  className="relative px-4"
-                  style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}
-                >
-                  <div className="grid grid-cols-3 gap-2">
-                    {data.media.map((i, ind) => (
+                <div className="relative px-4">
+                  {data.type === POST_TYPE_IMAGE ? (
+                    <Box position="relative" minH={data.media?.[0] === '' ? '200px' : 'auto'}>
                       <Image
-                        src={formatImage(i,false)}
+                        src={formatImage(data.media?.[0] ?? data?.media ?? '', false)}
                         alt={data.title}
-                        width="100%"
-                        height="100%"
-                        key={i}
-                        onClick={() => handleImageClick(data.media, ind)}
-                        rect
+                        errorClassName="rounded-[4px] h-[150px]"
+                        // wrapperClassName="rounded-[4px] overflow-hidden"
+                        // className="object-left w-[100%] m-[auto]"
+                        className="w-[230px] rounded-[4px]"
+                        onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
                       />
-                    ))}
-                  </div>
-                  {data.media?.[0] == '' && (
-                    <FrostedGlass
-                      price={data.price}
-                      post_id={data.id}
-                      resourcesEve={resourcesEve}
-                    />
+                      {data.media?.[0] === '' && (
+                        <FrostedGlass
+                          price={data.price}
+                          post_id={data.id}
+                          resourcesEve={resourcesEve}
+                        />
+                      )}
+                    </Box>
+                  ) : (
+                    <Box position="relative">
+                      <Box minH={data.media?.[0] === '' ? '200px' : '130px'}>
+                        <Image
+                          src={data.mediaCover}
+                          alt={data.title}
+                          wrapperClassName="rounded-[4px] overflow-hidden"
+                          errorClassName="rounded-[4px] h-[150px]"
+                          className="object-left w-[100%] rounded-[4px] m-[auto]"
+                          onClick={() => handleVideoClick(data)}
+                        />
+                        <PlayButton onClick={() => handleVideoClick(data)} />
+                      </Box>
+                      <HStack
+                        borderRadius="4px"
+                        bg="rgba(0, 0, 0, 0.20)"
+                        position="absolute"
+                        top="18px"
+                        left="18px"
+                        p="4px 8px"
+                        gap="4px"
+                      >
+                        <Image src={VideoIcon} />
+                        <Text color="#E0E2F6" fontSize="12px">
+                          {formatTime(Number(data.duration))}
+                        </Text>
+                      </HStack>
+
+                      {data.media?.[0] === '' && (
+                        <FrostedGlass
+                          price={data.price}
+                          post_id={data.id}
+                          resourcesEve={resourcesEve}
+                        />
+                      )}
+                    </Box>
                   )}
                 </div>
 
@@ -345,108 +430,23 @@ const ResourceList = ({
               </Box>
             )
           }
-        } else {
-          return (
-            <Box key={index}>
-              <ResourceHeader
-                data={data}
-                currentUid={launchParams.initData?.user?.id ?? 0}
-                onProfileClick={jumpToProfilePage}
-              />
-              <div className="relative px-4">
-                {data.type === POST_TYPE_IMAGE ? (
-                  <Box position="relative" minH={data.media?.[0] === '' ? '200px' : 'auto'}>
-                    <Image
-                      src={formatImage(data.media?.[0] ?? data?.media ?? '', false)}
-                      alt={data.title}
-                      errorClassName="rounded-[4px] h-[150px]"
-                      // wrapperClassName="rounded-[4px] overflow-hidden"
-                      // className="object-left w-[100%] m-[auto]"
-                      className="w-[230px] rounded-[4px]"
-                      onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
-                    />
-                    {data.media?.[0] === '' && (
-                      <FrostedGlass
-                        price={data.price}
-                        post_id={data.id}
-                        resourcesEve={resourcesEve}
-                      />
-                    )}
-                  </Box>
-                ) : (
-                  <Box position="relative">
-                    <Box minH={data.media?.[0] === '' ? '200px' : '130px'}>
-                      <Image
-                        src={data.mediaCover}
-                        alt={data.title}
-                        wrapperClassName="rounded-[4px] overflow-hidden"
-                        errorClassName="rounded-[4px] h-[150px]"
-                        className="object-left w-[100%] rounded-[4px] m-[auto]"
-                        onClick={() => handleVideoClick(data)}
-                      />
-                      <PlayButton onClick={() => handleVideoClick(data)} />
-                    </Box>
-                    <HStack
-                      borderRadius="4px"
-                      bg="rgba(0, 0, 0, 0.20)"
-                      position="absolute"
-                      top="18px"
-                      left="18px"
-                      p="4px 8px"
-                      gap="4px"
-                    >
-                      <Image src={VideoIcon} />
-                      <Text color="#E0E2F6" fontSize="12px">
-                        {formatTime(Number(data.duration))}
-                      </Text>
-                    </HStack>
+        })}
 
-                    {data.media?.[0] === '' && (
-                      <FrostedGlass
-                        price={data.price}
-                        post_id={data.id}
-                        resourcesEve={resourcesEve}
-                      />
-                    )}
-                  </Box>
-                )}
-              </div>
+        {isVideoPreviewOpen && (
+          <VideoDialog info={previewVideo} onClose={() => setIsVideoPreviewOpen(false)} />
+        )}
 
-            <ResourceFooter
-              data={data}
-              likes={likes}
-              saveds={saveds}
-              linkEve={linkEve}
-              savedEve={savedEve}
-              type={type}
-              onShare={() => {
-                getShareLink(data.title, data.id, data.uid)
-                toggle()
-              }}
-            />
-            <div className="pt-8 pb-8 pl-4 pr-4">
-              <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
-            </div>
-          </Box>
-        )
-      }
-    })}
-
-      {isVideoPreviewOpen && (
-        <VideoDialog info={previewVideo} onClose={() => setIsVideoPreviewOpen(false)} />
-      )}
-
-      {isPreviewOpen && (
-        <ImagePreviewWrapper
-          isOpen={isPreviewOpen}
-          onClose={() => setIsPreviewOpen(false)}
-          images={previewImages}
-          currentIndex={currentIndex}
-          onIndexChange={setCurrentIndex}
-        />
-      )}
-      {/* Components */}
-      {renderBaseModal()}
+        {isPreviewOpen && (
+          <ImagePreviewWrapper
+            isOpen={isPreviewOpen}
+            onClose={() => setIsPreviewOpen(false)}
+            images={previewImages}
+            currentIndex={currentIndex}
+            onIndexChange={setCurrentIndex}
+          />
+        )}
+        {/* Components */}
+        {renderBaseModal()}
       </div>
     </>
   )
@@ -484,9 +484,14 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
           />
         </div>
         <div className="flex flex-col">
-          <div className="text-[#E0E2F6] font-bold text-base">{data.username}{data.is_follow}</div>
+          <div className="text-[#E0E2F6] font-bold text-base">
+            {data.username}
+            {data.is_follow}
+          </div>
 
-          {(cardValue?.recommend && !data.is_follow) && <div className="text-[#62636F] text-[12px]">Bae selected</div>}
+          {cardValue?.recommend && !data.is_follow && (
+            <div className="text-[#62636F] text-[12px]">Bae selected</div>
+          )}
         </div>
       </div>
       <SecondaryMenu className="ml-auto" key={data.id} mediaData={data} currentUid={currentUid} />
@@ -514,33 +519,37 @@ const ResourceFooter = memo<ResourceFooterProps>(
         </div>
         <div className="px-4 flex items-center justify-between">
           <Flex gap="16px">
-            {(data.media && data.media[0]) && <Flex
-              as={'button'}
-              alignItems={'center'}
-              onClick={() =>
-                linkEve(data.id, likes.find((like) => like.id === data.id)?.liked === false)
-              }
-            >
-              {likes.find((like) => like.id === data.id)?.liked === true ? (
-                <IconLiked />
-              ) : (
-                <IconLike />
-              )}
-              <Text fontSize={'sm'} color={'#E0E2F6'} pl={1}>
-                {likes.find((like) => like.id === data.id)?.like}
-              </Text>
-            </Flex>}
-            {(data.media && data.media[0]) && <Box
-              onClick={() =>
-                savedEve(data.id, saveds.find((saved) => saved.id === data.id)?.saveds === false)
-              }
-            >
-              {saveds.find((saved) => saved.id === data.id)?.saveds === true ? (
-                <Image src={FavIcon} />
-              ) : (
-                <Image src={Fav1Icon} />
-              )}
-            </Box>}
+            {data.media && data.media[0] && (
+              <Flex
+                as={'button'}
+                alignItems={'center'}
+                onClick={() =>
+                  linkEve(data.id, likes.find((like) => like.id === data.id)?.liked === false)
+                }
+              >
+                {likes.find((like) => like.id === data.id)?.liked === true ? (
+                  <IconLiked />
+                ) : (
+                  <IconLike />
+                )}
+                <Text fontSize={'sm'} color={'#E0E2F6'} pl={1}>
+                  {likes.find((like) => like.id === data.id)?.like}
+                </Text>
+              </Flex>
+            )}
+            {data.media && data.media[0] && (
+              <Box
+                onClick={() =>
+                  savedEve(data.id, saveds.find((saved) => saved.id === data.id)?.saveds === false)
+                }
+              >
+                {saveds.find((saved) => saved.id === data.id)?.saveds === true ? (
+                  <Image src={FavIcon} />
+                ) : (
+                  <Image src={Fav1Icon} />
+                )}
+              </Box>
+            )}
           </Flex>
           <IconButton
             onClick={onShare}

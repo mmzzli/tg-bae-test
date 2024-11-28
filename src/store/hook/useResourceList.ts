@@ -296,7 +296,7 @@ const useCacheVideo = (
         }
       })
 
-      console.log('JACOB Visible Items:', visibleItems) // 打印当前视口中的元素
+      console.log('jacob======== Visible Items:', visibleItems) // 打印当前视口中的元素
       if (visibleItems.length > 0) {
         setCacheVideoIndex(visibleItems[Math.floor(visibleItems.length / 2)]) // 更新缓存视频索引
         updateCache(videos) // 更新缓存

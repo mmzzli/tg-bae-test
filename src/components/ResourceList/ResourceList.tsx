@@ -159,7 +159,7 @@ const ResourceList = ({
     const { host, ref } = await getLinkHandlerAsync({ pid, uid })
     console.log(host, ref, 'getLinkResult')
 
-    const copyLink = encodeURIComponent(`${import.meta.env.VITE_API_URL}link/${ref}?startapp`)
+    const copyLink = encodeURIComponent(`${import.meta.env.VITE_API_URL}link/${ref}`)
     console.log('copyLink', decodeURIComponent(copyLink))
 
     const shareLink = `https://t.me/share/url?url=${copyLink}&text=${shareText}`
@@ -347,7 +347,7 @@ const ResourceList = ({
             }
           } else {
             return (
-              <Box key={index} className="video-card" data-id={data.id}>
+              <Box key={index}>
                 <ResourceHeader
                   data={data}
                   currentUid={launchParams.initData?.user?.id ?? 0}

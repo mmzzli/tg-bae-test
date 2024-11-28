@@ -227,6 +227,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       // 销毁移除的视频的 HLS 实例
       destroyedItems.forEach((item) => {
         item?.hls?.destroy?.()
+        Reflect.deleteProperty(item, 'hls')
         console.log(`销毁视频 ID: ${item?.id}`)
       })
 
@@ -381,6 +382,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
   // 卸载视频
   unloadVideo: (video) => {
     video.hls?.destroy?.()
+    Reflect.deleteProperty(video, 'hls')
     console.log(`jacob======卸载视频 ${video.id}`)
   },
   viewList: { ...initialListState },

@@ -31,7 +31,7 @@ const EarningsHistory = () => {
     load()
   }, [token])
   return (
-    <div className="px-[16px] py-[10px]">
+    <div className="fixed w-screen h-screen bg-black z-10 overflow-auto scrollbar-hide px-[16px] py-[10px]">
       <div className="flex justify-between">
         <h3 className="text-[20px] text-[rgba(224,226,246,1)] font-[700]">History</h3>
         {/* <a className="text-[rgba(128,128,128,1)] text-[15px]">Filter</a> */}

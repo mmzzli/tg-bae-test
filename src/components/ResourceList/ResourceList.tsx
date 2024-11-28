@@ -384,7 +384,7 @@ const ResourceList = ({
                           className="object-left w-[100%] rounded-[4px] m-[auto]"
                           onClick={() => handleVideoClick(data)}
                         />
-                        <PlayButton onClick={() => handleVideoClick(data)} />
+                        {data.media?.[0] && <PlayButton onClick={() => handleVideoClick(data)} />}
                       </Box>
                       <HStack
                         borderRadius="4px"

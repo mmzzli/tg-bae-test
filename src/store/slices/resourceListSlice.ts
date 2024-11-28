@@ -41,6 +41,7 @@ export interface CacheVideo {
 }
 const recordsNum = 10
 const CACHE_VIDEOS_LIMIT = 9
+const MAX_FRAGMENTS = 1
 
 export interface ResourceListSlice {
   // recommend
@@ -284,6 +285,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
   loadVideo: (() => {
     const videoLoadQueue: FormatterListItem[] = [] // 视频加载队列
     let isLoading = false
+    let loadedFragments = 0
 
     const processQueue = () => {
       if (isLoading || videoLoadQueue.length === 0) return
@@ -313,7 +315,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
 
       const hls = new Hls({
         startPosition: 0, // 从视频开始播放
-        maxBufferLength: 2, // 缓存最多 2 秒内容
+        maxBufferLength: 1, // 缓存最多 2 秒内容
         maxBufferSize: 1 * 1024 * 1024, // 最大缓冲区大小，限制为 1MB
       })
 
@@ -321,15 +323,18 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       hls.loadSource(media)
       hls.attachMedia(tempVideo)
 
+      // 监听分片加载完成事件
+      hls.on(Hls.Events.FRAG_LOADED, () => {
+        loadedFragments++
+        console.log(`Loaded fragment ${loadedFragments}/${MAX_FRAGMENTS}`)
+      })
       // 分片加载事件监听
       hls.on(Hls.Events.FRAG_LOADING, (event, data) => {
-        const fragStart = data.frag.start
-        const fragEnd = data.frag.start + data.frag.duration
-
-        // 如果分片超出了 2 秒范围，允许其完成但不请求新分片
-        if (fragStart >= 2) {
-          console.log(`Skipping fragment loading: Start time: ${fragStart}`)
-          hls.stopLoad() // 停止后续加载，但允许当前分片完成
+        if (loadedFragments >= MAX_FRAGMENTS) {
+          console.log(`Reached fragment limit (${MAX_FRAGMENTS}), stopping further loading.`)
+          hls.stopLoad() // 停止后续分片加载
+          isLoading = false
+          processQueue()
         }
       })
 

@@ -322,6 +322,8 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         console.log(`jacob======加载视频 ${video.id}`)
         video.hls = hls // 将 HLS 实例绑定到 video 对象
+        isloading = false
+        processQueue()
       })
 
       // 错误处理

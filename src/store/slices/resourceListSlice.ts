@@ -39,8 +39,8 @@ export interface CacheVideo {
   id: string | number
   media: string
 }
-const recordsNum = 5
-const CACHE_VIDEOS_LIMIT = 5
+const recordsNum = 30
+const CACHE_VIDEOS_LIMIT = 29
 
 export interface ResourceListSlice {
   // recommend
@@ -242,9 +242,12 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     console.log(currentIndex, 'jacob====== currentIndex=======')
 
     if (currentIndex === -1) return
-
-    const start = Math.max(0, Number(currentIndex) - 2)
-    const end = start === 0 ? 5 : Math.min(videoList.length, Number(cacheVideoIndex) + 3)
+    const mid = Math.floor(CACHE_VIDEOS_LIMIT / 2)
+    const start = Math.max(0, Number(currentIndex) - mid)
+    const end =
+      start === 0
+        ? CACHE_VIDEOS_LIMIT
+        : Math.min(videoList.length, Number(cacheVideoIndex) + mid + 1)
 
     console.log(videoList, end, 'jacob===== videoList')
     const newCache = videoList.slice(start, end)
@@ -276,11 +279,30 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
 
   // 加载视频
   loadVideo: (video) => {
-    const hls = new Hls()
+    const hls = new Hls({
+      startPosition: 0, // 从视频开始播放
+      maxBufferLength: 2, // 缓存最多 2 秒内容
+      maxBufferSize: 10 * 1024 * 1024, // 最大缓冲区大小，限制为 10MB
+    })
+
     const tempVideo = document.createElement('video')
-    hls.loadSource(video?.media[0])
+
+    hls.loadSource(video?.media[0]) // 加载视频源
     hls.attachMedia(tempVideo)
-    video.hls = hls
+
+    // 监听事件，确保只加载前 2 秒的分片
+    hls.on(Hls.Events.FRAG_LOADING, (event, data) => {
+      const fragStart = data.frag.start
+      const fragEnd = data.frag.start + data.frag.duration
+
+      // 如果分片超出了 2 秒，取消后续加载
+      if (fragStart >= 2) {
+        console.log(`jacob======取消加载分片，起始时间: ${fragStart}`)
+        hls.stopLoad() // 停止后续加载
+      }
+    })
+
+    video.hls = hls // 将 HLS 实例绑定到 video 对象
     console.log(`jacob======加载视频 ${video.id}`)
   },
 

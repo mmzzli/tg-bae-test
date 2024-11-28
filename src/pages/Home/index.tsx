@@ -18,9 +18,14 @@ const HomePage: FC = () => {
   const navigate = useNavigate()
   const { shareLink } = useTMAUtils()
   const selectedPostsRef = useRef<HTMLDivElement>(null)
+  const getCacheVideo = useStore((state) => state.cacheVideo)
   const [title, setTitle] = useState('Following')
   const [fadeClass, setFadeClass] = useState('fade-in')
   const userInfo = useStore((state) => state.userInfo)
+
+  useEffect(() => {
+    console.log(getCacheVideo, '====333333========')
+  }, [getCacheVideo])
 
   const styles = {
     fadeIn: {
@@ -79,75 +84,75 @@ const HomePage: FC = () => {
     }, 300)
   }
 
-  useEffect(() => {
-    if (!token) return
-    const load = async () => {
-      const { posts: initialResources } = await getRecommendMedia({
-        page_num: 1,
-        records: 30,
-      })
-      const cacheVideos = async (resources: any) => {
-        const maxVideosToCache = resources.length
-        const maxFragmentsPerVideo = 1
-        let currentVideoIndex = 0
-
-        const cacheNextVideo = async () => {
-          if (currentVideoIndex >= Math.min(resources.length, maxVideosToCache)) {
-            console.log('缓存完成')
-            return
-          }
-
-          const item = resources[currentVideoIndex]
-          if (!Hls.isSupported()) {
-            console.error('HLS.js 不支持当前浏览器环境')
-            return
-          }
-
-          const hls = new Hls()
-          let bufferedFragments = 0
-
-          const virtualVideoElement = document.createElement('video')
-          hls.loadSource(item.media)
-          hls.attachMedia(virtualVideoElement)
-
-          hls.on(Hls.Events.FRAG_BUFFERED, () => {
-            bufferedFragments++
-            console.log(`视频 ${currentVideoIndex + 1} 缓存分片数量: ${bufferedFragments}`)
-            if (bufferedFragments >= maxFragmentsPerVideo) {
-              console.log(`视频 ${currentVideoIndex + 1} 缓存完成，分片数量: ${bufferedFragments}`)
-              hls.destroy()
-              currentVideoIndex++
-              cacheNextVideo() // 缓存下一个视频
-            }
-          })
-
-          hls.on(Hls.Events.MANIFEST_PARSED, () => {
-            console.log(`视频 ${currentVideoIndex + 1} 流解析完成，开始缓存`)
-          })
-
-          hls.on(Hls.Events.ERROR, (event, data) => {
-            console.error(`视频 ${currentVideoIndex + 1} 缓存出错:`, data)
-            hls.destroy()
-            currentVideoIndex++
-            cacheNextVideo() // 跳过错误视频，缓存下一个
-          })
-        }
-
-        // 开始缓存第一个视频
-        cacheNextVideo()
-      }
-      if (initialResources && initialResources.length > 0) {
-        const resources = initialResources
-          .filter((item) => item.post.type === 0)
-          .map((item) => item.post)
-        console.log(resources)
-        if (resources.length > 0) {
-          cacheVideos(resources)
-        }
-      }
-    }
-    load()
-  }, [token])
+  // useEffect(() => {
+  //   if (!token) return
+  //   const load = async () => {
+  //     const { posts: initialResources } = await getRecommendMedia({
+  //       page_num: 1,
+  //       records: 30,
+  //     })
+  //     const cacheVideos = async (resources: any) => {
+  //       const maxVideosToCache = resources.length
+  //       const maxFragmentsPerVideo = 1
+  //       let currentVideoIndex = 0
+  //
+  //       const cacheNextVideo = async () => {
+  //         if (currentVideoIndex >= Math.min(resources.length, maxVideosToCache)) {
+  //           console.log('缓存完成')
+  //           return
+  //         }
+  //
+  //         const item = resources[currentVideoIndex]
+  //         if (!Hls.isSupported()) {
+  //           console.error('HLS.js 不支持当前浏览器环境')
+  //           return
+  //         }
+  //
+  //         const hls = new Hls()
+  //         let bufferedFragments = 0
+  //
+  //         const virtualVideoElement = document.createElement('video')
+  //         hls.loadSource(item.media)
+  //         hls.attachMedia(virtualVideoElement)
+  //
+  //         hls.on(Hls.Events.FRAG_BUFFERED, () => {
+  //           bufferedFragments++
+  //           console.log(`视频 ${currentVideoIndex + 1} 缓存分片数量: ${bufferedFragments}`)
+  //           if (bufferedFragments >= maxFragmentsPerVideo) {
+  //             console.log(`视频 ${currentVideoIndex + 1} 缓存完成，分片数量: ${bufferedFragments}`)
+  //             hls.destroy()
+  //             currentVideoIndex++
+  //             cacheNextVideo() // 缓存下一个视频
+  //           }
+  //         })
+  //
+  //         hls.on(Hls.Events.MANIFEST_PARSED, () => {
+  //           console.log(`视频 ${currentVideoIndex + 1} 流解析完成，开始缓存`)
+  //         })
+  //
+  //         hls.on(Hls.Events.ERROR, (event, data) => {
+  //           console.error(`视频 ${currentVideoIndex + 1} 缓存出错:`, data)
+  //           hls.destroy()
+  //           currentVideoIndex++
+  //           cacheNextVideo() // 跳过错误视频，缓存下一个
+  //         })
+  //       }
+  //
+  //       // 开始缓存第一个视频
+  //       cacheNextVideo()
+  //     }
+  //     if (initialResources && initialResources.length > 0) {
+  //       const resources = initialResources
+  //         .filter((item) => item.post.type === 0)
+  //         .map((item) => item.post)
+  //       console.log(resources)
+  //       if (resources.length > 0) {
+  //         cacheVideos(resources)
+  //       }
+  //     }
+  //   }
+  //   load()
+  // }, [token])
 
   return (
     <div className="relative w-full h-full overflow-auto" id="recommendScrollableDiv">

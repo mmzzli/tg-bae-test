@@ -347,7 +347,7 @@ const ResourceList = ({
             }
           } else {
             return (
-              <Box key={index}>
+              <Box key={index} className="video-card" data-id={data.id}>
                 <ResourceHeader
                   data={data}
                   currentUid={launchParams.initData?.user?.id ?? 0}

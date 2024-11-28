@@ -167,7 +167,11 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
   console.log('chatListPage render')
   return (
     <div
-      className={cn('bg-black min-h-screen overflow-auto', 'scrollbar-hide', className)}
+      className={cn(
+        'dark:bg-black bg-white min-h-screen overflow-auto',
+        'scrollbar-hide',
+        className
+      )}
       onClick={handleContainerClick}
       style={{
         paddingTop: `calc(${window.getComputedStyle(document.documentElement).getPropertyValue('--tg-safe-area-inset-top') ? 'var(--tg-safe-area-inset-top) + 54px' : '32px'})`,

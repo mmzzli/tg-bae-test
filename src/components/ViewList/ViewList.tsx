@@ -1,21 +1,19 @@
-import { useEffect, useState } from 'react'
-import { Box, Spinner } from '@chakra-ui/react'
+import { useState } from 'react'
+import { Box } from '@chakra-ui/react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import ResourceList from '../ResourceList/ResourceList'
 import { cn } from '@/utils/utils'
-import { useViewList, useFavList, useOrdersList } from '@/store/hook/useResourceList'
+import useCacheVideo, { useFavList, useOrdersList, useViewList } from '@/store/hook/useResourceList'
 import Empty from '../comm/Empty'
 import Icon from '../comm/Icon'
-import { rotate } from '@chakra-ui/react/dist/types/progress/progress.utils'
-import { useSafeState } from 'ahooks'
-import ProfileSkeleton from '../Skeketon/ProfileSkeleton'
 import PostSkeleton from '../Skeketon/PostSkeleton'
+import { useStore } from '@/store'
+
 interface PostListProps {
   className?: string
 }
 
 const ViewList = ({ className }: PostListProps) => {
-  const { list, hasMore, fetchMoreData } = useViewList()
   const { initialize } = useFavList()
   const [ids, setIsd] = useState<string>('posts')
   const menuList = [
@@ -32,7 +30,7 @@ const ViewList = ({ className }: PostListProps) => {
       id: 'saved',
     },
   ]
-  const tabEve = (id:string)=>{
+  const tabEve = (id: string) => {
     initialize()
     setIsd(id)
   }
@@ -43,7 +41,7 @@ const ViewList = ({ className }: PostListProps) => {
         {menuList.map((item) => (
           <div
             className={`text-[16px] text-[${item.id === ids ? '#E0E2F6' : '#62636F'}]`}
-            onClick={() => tabEve(item.id) }
+            onClick={() => tabEve(item.id)}
           >
             {item.name}
             {item.id === ids && <p className="w-[32px] bg-[#4A3AFF] h-[2px] m-[auto] mt-[8px]"></p>}
@@ -51,38 +49,70 @@ const ViewList = ({ className }: PostListProps) => {
         ))}
       </Box>
       <div className={cn(className, 'pb-24')}>
-        {ids === 'posts' && !hasMore && !list.length ? (
-          <Empty
-            title="No post yet."
-            icon={<Icon name="icon-none_post" style={{ width: '164px', height: '164px' }}></Icon>}
-          ></Empty>
-        ) : (
-          ids === 'posts' && (
-            <InfiniteScroll
-              dataLength={list.length}
-              next={fetchMoreData}
-              hasMore={hasMore}
-              loader={
-                <Box textAlign="center" m="20px">
-                  <PostSkeleton />
-                </Box>
-              }
-              scrollableTarget="profileScrollableDiv"
-              scrollThreshold={0.8}
-              style={{ overflow: 'visible' }}
-            >
-              <ResourceList resources={list} />
-            </InfiniteScroll>
-          )
-        )}
-        {ids === 'purchased' && <OrderList />}
-        {ids === 'saved' && <FavList />}
+        {ids === 'posts' && <MyPosts key={'posts'} />}
+        {ids === 'purchased' && <OrderList key={'purchased'} />}
+        {ids === 'saved' && <FavList key={'saved'} />}
       </div>
     </>
   )
 }
+const MyPosts = () => {
+  const { list, hasMore, fetchMoreData, page } = useViewList()
+  const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
+  const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
+  const updateCache = useStore((state) => state.updateCache)
+
+  useCacheVideo(
+    list,
+    page,
+    setCacheVideoIndex,
+    getCacheVideoindex,
+    updateCache,
+    'recommendScrollableDiv',
+    'video-card'
+  )
+  if (!hasMore && !list.length) {
+    return (
+      <Empty
+        title="No post yet."
+        icon={<Icon name="icon-none_post" style={{ width: '164px', height: '164px' }}></Icon>}
+      ></Empty>
+    )
+  }
+
+  return (
+    <InfiniteScroll
+      dataLength={list.length}
+      next={fetchMoreData}
+      hasMore={hasMore}
+      loader={
+        <Box textAlign="center" m="20px">
+          <PostSkeleton />
+        </Box>
+      }
+      scrollableTarget="profileScrollableDiv"
+      scrollThreshold={0.8}
+      style={{ overflow: 'visible' }}
+    >
+      <ResourceList resources={list} />
+    </InfiniteScroll>
+  )
+}
 const FavList = () => {
-  const { list, hasMore, fetchMoreData } = useFavList()
+  const { list, hasMore, fetchMoreData, page } = useFavList()
+  const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
+  const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
+  const updateCache = useStore((state) => state.updateCache)
+
+  useCacheVideo(
+    list,
+    page,
+    setCacheVideoIndex,
+    getCacheVideoindex,
+    updateCache,
+    'recommendScrollableDiv',
+    'video-card'
+  )
   if (!hasMore && !list.length) {
     return (
       <Empty
@@ -110,7 +140,20 @@ const FavList = () => {
   )
 }
 const OrderList = () => {
-  const { list, hasMore, fetchMoreData } = useOrdersList()
+  const { list, hasMore, fetchMoreData, page } = useOrdersList()
+  const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
+  const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
+  const updateCache = useStore((state) => state.updateCache)
+
+  useCacheVideo(
+    list,
+    page,
+    setCacheVideoIndex,
+    getCacheVideoindex,
+    updateCache,
+    'recommendScrollableDiv',
+    'video-card'
+  )
   if (!hasMore && !list.length) {
     return (
       <Empty

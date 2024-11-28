@@ -4,7 +4,6 @@ import {
   Heading,
   Image,
   Button,
-  Text,
   Box,
   Textarea,
   Input,
@@ -12,7 +11,6 @@ import {
   useToast,
   Grid,
   GridItem,
-  Toast,
 } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import axios, { AxiosResponse } from 'axios'
@@ -23,9 +21,9 @@ import { useStore } from '@/store'
 import VideoFrameSelector from '@/components/NewPost/VideoFrameSelector'
 import VideoPlayer from '@/components/comm/VideoPlayer'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
-import { TaskStatus } from '@/store/slices/taskSlice'
-import { state } from '@telegram-apps/sdk/dist/dts/scopes/components/biometry/signals'
+import { TaskStatus, UploadThread } from '@/store/slices/taskSlice'
 import { generateUUID } from '@/utils/utils'
+import { error } from 'console'
 
 export const NewPost: FC = () => {
   const navigate = useNavigate()
@@ -49,14 +47,11 @@ export const NewPost: FC = () => {
   const [cover, setCover] = useState<string | null>(null)
 
   // upload states
-  const { addUploadThread, updateUploadThread, addUploadTask, resetUploadTask } = useStore(
-    (state) => ({
-      addUploadThread: state.addUploadThread,
-      updateUploadThread: state.updateUploadThread,
-      addUploadTask: state.addUploadTask,
-      resetUploadTask: state.resetUploadTask,
-    })
-  )
+  const { updateUploadThread, addUploadTask, resetUploadTask } = useStore((state) => ({
+    updateUploadThread: state.updateUploadThread,
+    addUploadTask: state.addUploadTask,
+    resetUploadTask: state.resetUploadTask,
+  }))
 
   async function checkVideoURL(url: string): Promise<AxiosResponse<any> | undefined> {
     let isNotFound = true
@@ -83,7 +78,8 @@ export const NewPost: FC = () => {
       })
       resetUploadTask()
     }
-    const allSuccessHandler = async (result: string[]) => {
+    const allSuccessHandler = async (uploadThreads: UploadThread[]) => {
+      const result: string[] = uploadThreads.map((task) => task.result)
       try {
         await postResources({
           media: result.join(','),
@@ -113,7 +109,6 @@ export const NewPost: FC = () => {
         depends: [],
         result: null,
         thread: async () => {
-          threads.push(thread)
           const url = `${import.meta.env.VITE_APP_UPLOAD_URL}upload/${file.name}`
           console.log(file)
           const formData = new FormData()
@@ -150,7 +145,6 @@ export const NewPost: FC = () => {
       }
       threads.push(thread)
     }
-    addUploadThread(threads)
     addUploadTask({
       uploadThreads: threads,
       onAllThreadsComplete: allSuccessHandler,
@@ -184,46 +178,208 @@ export const NewPost: FC = () => {
     }
     try {
       setIsLoading(true)
-      const postreqUrl: any = await postReq()
-      const id = postreqUrl.split('/').pop()
-      const formData = new FormData()
-      formData.append('file', videoFile)
-      formData.append('name', videoFile.name)
-      formData.append('type', 'bae')
-
-      formData.append(
-        'meta',
-        JSON.stringify({
-          name: videoFile.name,
-          type: 'bae',
-        })
-      )
-      const response = await axios.post(postreqUrl, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-      if (response.status === 200) {
-        const url = `https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${id}/manifest/video.m3u8`
-        await checkVideoURL(url)
-        const medias = [url]
-        cover && medias.unshift(cover)
-        await postResources({
-          duration: Math.floor(videoRef?.current?.duration || 0),
-          media: medias.join(','),
-          ...(title ? { title } : {}),
-          type: 0,
-          currency: 0,
-          price: price || 0,
-        })
+      const errorHandler = (error: any) => {
         toast({
           render: () => {
-            return <CustomToast title="Your post was sent." type={typeOptions.success} />
+            return <CustomToast title="Your post failed to send." type={typeOptions.error} />
           },
           position: 'top',
         })
-        navigate('/profile')
+        resetUploadTask()
       }
+      const allSuccessHandler = async (uploadThreads: UploadThread[]) => {
+        const url = uploadThreads.filter((task) => task.name === 'check_video_sync')[0].result
+        try {
+          const medias = [url]
+          cover && medias.unshift([cover])
+          await postResources({
+            duration: Math.floor(videoRef?.current?.duration || 0),
+            media: medias.join(','),
+            ...(title ? { title } : {}),
+            type: 0,
+            currency: 0,
+            price: price || 0,
+          })
+          toast({
+            render: () => {
+              return <CustomToast title="Your post was sent." type={typeOptions.success} />
+            },
+            position: 'top',
+          })
+          resetUploadTask()
+        } catch (error) {
+          errorHandler(error)
+        }
+      }
+      const stepOne = generateUUID()
+      const stepTwo = generateUUID()
+      const stepThree = generateUUID()
+
+      const getUploadUrlThread = {
+        id: stepOne,
+        name: 'upload_url',
+        progress: 0,
+        status: TaskStatus.PENDING,
+        depends: [],
+        result: null,
+        thread: async () => {
+          try {
+            let percent = 0
+            const timer = setInterval(() => {
+              updateUploadThread({
+                id: stepOne,
+                progress: ++percent >= 100 ? 99 : percent,
+              })
+            }, 100)
+            const response = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${token}`,
+              },
+            })
+            clearInterval(timer)
+            updateUploadThread({
+              id: stepOne,
+              progress: 100,
+              result: response.data,
+              status: TaskStatus.COMPLETED,
+            })
+          } catch (error) {
+            errorHandler(error)
+          }
+        },
+      }
+
+      const uploadVideoThread = {
+        id: stepTwo,
+        name: 'upload_video',
+        progress: 0,
+        status: TaskStatus.PENDING,
+        depends: ['upload_url'],
+        result: null,
+        thread: async ({ upload_url }: { upload_url: string }) => {
+          try {
+            const formData = new FormData()
+            formData.append('file', videoFile)
+            formData.append('name', videoFile.name)
+            formData.append('type', 'bae')
+
+            formData.append(
+              'meta',
+              JSON.stringify({
+                name: videoFile.name,
+                type: 'bae',
+              })
+            )
+            const response = await axios.post(upload_url, formData, {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+              onUploadProgress: (progressEvent: any) => {
+                const total = progressEvent.total
+                const current = progressEvent.loaded
+                const percentCompleted = Math.round((current * 100) / total)
+                updateUploadThread({
+                  id: stepTwo,
+                  progress: percentCompleted === 100 ? 99 : percentCompleted,
+                })
+                console.log(`上传进度(upload_video): ${percentCompleted}%`)
+              },
+            })
+            updateUploadThread({
+              id: stepTwo,
+              progress: 100,
+              result: response,
+              status: TaskStatus.COMPLETED,
+            })
+          } catch (error) {
+            errorHandler(error)
+          }
+        },
+      }
+
+      const checkVideoSyncThread = {
+        id: stepThree,
+        name: 'check_video_sync',
+        progress: 0,
+        status: TaskStatus.PENDING,
+        depends: ['upload_url', 'upload_video'],
+        result: null,
+        thread: async ({ upload_url, upload_video }: any) => {
+          if (upload_video.status === 200) {
+            const id = upload_url.split('/').pop()
+            const url = `https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${id}/manifest/video.m3u8`
+            let percent = 0
+            const timer = setInterval(() => {
+              const add = 1 / Math.log(percent + Math.E)
+              percent += add
+              updateUploadThread({
+                id: stepThree,
+                progress: percent >= 100 ? 99 : percent,
+              })
+            }, 100)
+            await checkVideoURL(url)
+            clearInterval(timer)
+            updateUploadThread({
+              id: stepThree,
+              progress: 100,
+              result: url,
+              status: TaskStatus.COMPLETED,
+            })
+          } else {
+            errorHandler('upload_video error')
+          }
+        },
+      }
+
+      addUploadTask({
+        uploadThreads: [getUploadUrlThread, uploadVideoThread, checkVideoSyncThread],
+        onAllThreadsComplete: allSuccessHandler,
+        onError: (error) => {
+          errorHandler(error)
+        },
+      })
+
+      // const postreqUrl: any = await postReq()
+      // const id = postreqUrl.split('/').pop()
+      // const formData = new FormData()
+      // formData.append('file', videoFile)
+      // formData.append('name', videoFile.name)
+      // formData.append('type', 'bae')
+
+      // formData.append(
+      //   'meta',
+      //   JSON.stringify({
+      //     name: videoFile.name,
+      //     type: 'bae',
+      //   })
+      // )
+      // const response = await axios.post(postreqUrl, formData, {
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data',
+      //   },
+      // })
+      // if (response.status === 200) {
+      //   const url = `https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${id}/manifest/video.m3u8`
+      //   await checkVideoURL(url)
+      //   const medias = [url]
+      //   cover && medias.unshift(cover)
+      //   await postResources({
+      //     duration: Math.floor(videoRef?.current?.duration || 0),
+      //     media: medias.join(','),
+      //     ...(title ? { title } : {}),
+      //     type: 0,
+      //     currency: 0,
+      //     price: price || 0,
+      //   })
+      //   toast({
+      //     render: () => {
+      //       return <CustomToast title="Your post was sent." type={typeOptions.success} />
+      //     },
+      //     position: 'top',
+      //   })
+      // }
+      navigate(-1)
     } catch (e) {
       toast({
         render: () => {

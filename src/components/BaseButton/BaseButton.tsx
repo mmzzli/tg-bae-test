@@ -9,6 +9,7 @@ type Props = {
   height?: string // Optional width prop
   className?: string
   loading?: boolean
+  disabled?: boolean
 }
 
 const BaseButton = ({
@@ -20,12 +21,15 @@ const BaseButton = ({
   height = '36px',
   className,
   loading = false,
+  disabled = false,
 }: Props) => {
   return (
     <div>
       <div
-        className={`no-tap flex items-center justify-center gap-2 bg-[#4A3AFF] rounded-[42px] text-[#E0E2F6] text-sm font-medium cursor-pointer ${className} ${loading ? 'bg-[#6a5cfc] cursor-not-allowed' : ''}`}
-        onClick={() => !loading && handler()}
+        className={`no-tap flex items-center justify-center gap-2 bg-[#4A3AFF] rounded-[42px]
+          text-[#E0E2F6] text-sm font-medium cursor-pointer
+          ${className} ${loading || disabled ? 'bg-[#6a5cfc] cursor-not-allowed' : ''}`}
+        onClick={() => !loading && !disabled && handler()}
         style={{ width, height }}
       >
         {loading && (

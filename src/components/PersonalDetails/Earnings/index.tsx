@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Box, Flex, Image, Text, IconButton, useBoolean, useToast } from '@chakra-ui/react'
+import { useNavigate } from 'react-router-dom'
 
 import {
   totalAvailable
@@ -13,6 +14,7 @@ import { totalAvailableInvoice } from '@/api'
 import { useStore } from '@/store/store'
 
 const Earnings = () => {
+  const navigate = useNavigate()
   const [isBaseModalOpen, { toggle, on, off }] = useBoolean(false)
   const [data, setData] = useState<totalAvailable>({
     available:0,
@@ -64,7 +66,7 @@ const Earnings = () => {
         <div className="mt-[24px] ml-2 w-[100%]">
           <h3 className="font-bold text-[24px] text-[#E0E2F6]">Earnings</h3>
           <div className="flex gap-[8px] mt-[3px]">
-            <p className="text-[15px] text-[#808080]">Earning History</p>
+            <p className="text-[15px] text-[#808080]" onClick={()=>navigate('/profile/earningsHistory')}>Earning History</p>
             <img className="mt-[2px]" src={RightIcon} />
           </div>
           <div className="mt-[56px] flex gap-[30px] items-center justify-between">

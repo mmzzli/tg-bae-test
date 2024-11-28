@@ -41,7 +41,7 @@ export interface CacheVideo {
 }
 const recordsNum = 30
 const CACHE_VIDEOS_LIMIT = 29
-const MAX_FRAGMENTS = 2
+const MAX_FRAGMENTS = 1
 
 export interface ResourceListSlice {
   // recommend
@@ -315,8 +315,8 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
 
       const hls = new Hls({
         startPosition: 0, // 从视频开始播放
-        maxBufferLength: 1, // 缓存最多 2 秒内容
-        maxBufferSize: 1 * 1024 * 1024, // 最大缓冲区大小，限制为 1MB
+        maxBufferLength: 2, // 缓存最多 2 秒内容
+        maxBufferSize: 5 * 1024 * 1024, // 最大缓冲区大小，限制为 5MB
       })
 
       const tempVideo = document.createElement('video')

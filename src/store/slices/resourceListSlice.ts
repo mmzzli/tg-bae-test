@@ -255,12 +255,19 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     console.log(newCache, 'jacob======newcache====')
 
     // 加载新的视频
-    newCache.forEach((video) => {
-      if (!cacheVideo.some((v) => v.id === video.id)) {
-        console.log(video.id, 'jacob========= video-load--------')
-        get().loadVideo(video)
-      }
-    })
+
+    newCache
+      .map((video, index) => ({
+        video,
+        priority: Math.abs(index - Math.floor(newCache.length / 2)),
+      }))
+      .sort((a, b) => a.priority - b.priority) // 按优先级从低到高排序
+      .forEach(({ video }) => {
+        if (!cacheVideo.some((v) => v.id === video.id)) {
+          console.log(video.id, 'jacob========= video-load--------')
+          get().loadVideo(video) // 按优先级加载
+        }
+      })
 
     // 卸载不再需要的视频
 

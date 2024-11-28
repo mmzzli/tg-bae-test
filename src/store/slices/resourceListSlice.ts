@@ -313,6 +313,8 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         if (fragStart >= 2) {
           console.log(`jacob======取消加载分片，起始时间: ${fragStart}`)
           hls.stopLoad() // 停止后续加载
+          isloading = false
+          processQueue()
         }
       })
 
@@ -320,9 +322,6 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         console.log(`jacob======加载视频 ${video.id}`)
         video.hls = hls // 将 HLS 实例绑定到 video 对象
-        // 标记加载完成并处理下一个
-        isloading = false
-        processQueue()
       })
 
       // 错误处理

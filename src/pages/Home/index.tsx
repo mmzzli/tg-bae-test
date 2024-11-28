@@ -12,6 +12,7 @@ import { useStore } from '@/store'
 import { getRecommendMedia } from '@/api/list'
 import Hls from 'hls.js'
 import { CardRecommendProvider } from '@/utils/constants'
+import NewPostButton from '@/components/NewPost/NewPostButton'
 
 const HomePage: FC = () => {
   const navigate = useNavigate()
@@ -172,12 +173,13 @@ const HomePage: FC = () => {
           >
             {title}
           </Heading>
-          <BaseButton
+          {/* <BaseButton
             text="Create"
             icon={<Image src={AddIcon1} />}
             width="87px"
             handler={() => navigate('/post')}
-          />
+          /> */}
+          <NewPostButton />
         </HStack>
         <div className="overflow-hidden" style={{ height: '0px', opacity: 0, ...animation }}>
           <FollowingList />

@@ -9,7 +9,8 @@ import {
   ListRes,
   ViewListReq,
   LinkMetadata,
-  totalAvailable
+  totalAvailable,
+  AccountdetailRes
 } from '@/types'
 
 export const postResources = (params: PostResourceReq) => {
@@ -87,4 +88,7 @@ export const setUnread = (params: {
 
 export const totalAvailableInvoice = () => {
   return get<totalAvailable>(`/api/v1/order/total_available_invoice`)
+}
+export const accountdetailList = (params:any) => {
+  return post<AccountdetailRes>(`/api/v1/order/accountdetail`,params)
 }

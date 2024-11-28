@@ -1,13 +1,10 @@
 import { FC } from 'react'
-import { Button, Image } from '@chakra-ui/react'
 import ResourceList from '@/components/ResourceList/ResourceList'
-import { useNavigate } from 'react-router-dom'
-import { AddIcon1 } from '@/assets/icons'
 import RecommendList from '@/components/RecommendList/RecommendList'
 import { useSharedList } from '@/store/hook/useResourceList'
+import NewPostButton from '@/components/NewPost/NewPostButton'
 
 const Shares: FC = () => {
-  const navigate = useNavigate()
   const { sharedPostList } = useSharedList()
   return (
     <div
@@ -16,7 +13,7 @@ const Shares: FC = () => {
     >
       <div className="flex items-center justify-between mt-4 mx-4">
         <div className="font-bold text-xl text-[#E0E2F6]">Shared</div>
-        <Button
+        {/* <Button
           size="xl"
           fontSize="14px"
           variant="primary-dark"
@@ -26,7 +23,8 @@ const Shares: FC = () => {
           }}
         >
           <Image src={AddIcon1} mr="5px" /> Create
-        </Button>
+        </Button> */}
+        <NewPostButton />
       </div>
       <div className="mb-12">
         <ResourceList

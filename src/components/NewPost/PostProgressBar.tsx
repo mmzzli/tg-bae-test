@@ -9,8 +9,6 @@ export const PostProgressBar = () => {
     updateUploadThread: state.updateUploadThread,
   }))
 
-  console.log('🚀 ~ file: PostProgressBar.tsx:20 ~ uploadThreads:', uploadThreads)
-
   const progress =
     uploadThreads.reduce((acc, task) => acc + (task.progress || 0), 0) /
     (uploadThreads.length * 100)
@@ -31,19 +29,30 @@ export const PostProgressBar = () => {
       })
       if (pendingTask) {
         console.log('run thread', pendingTask)
+        let dependParams: Record<string, any> = {}
+        if (pendingTask.depends.length > 0) {
+          const depends = pendingTask.depends.map((name) =>
+            uploadThreads.find((task) => task.name === name)
+          )
+          dependParams = {}
+          depends.forEach((task) => {
+            if (task) {
+              dependParams[task.name] = task.result
+            }
+          })
+        }
         updateUploadThread({
           id: pendingTask.id,
           status: TaskStatus.RUNNING,
         })
-        pendingTask.thread()
+        pendingTask.thread(dependParams)
       }
 
       // check if all threads are completed
       const allEnd = uploadThreads.every((task) => task.status === TaskStatus.COMPLETED)
       if (allEnd) {
-        const result: string[] = uploadThreads.map((task) => task.result)
-        console.log('all threads are completed', uploadThreads, result)
-        uploadTask.onAllThreadsComplete(result)
+        console.log('all threads are completed', uploadThreads)
+        uploadTask.onAllThreadsComplete(uploadThreads)
       }
     }
   }, [uploadThreads])

@@ -90,4 +90,12 @@ export type LinkMetadata = {
 export type totalAvailable = {
   available: number
   exchange_rate: number
+  total: number
 }
+
+export type AccountdetailItem = {
+  created_at: string
+  amount: number
+}
+
+export type AccountdetailRes = { accounts: Array<AccountdetailItem> }

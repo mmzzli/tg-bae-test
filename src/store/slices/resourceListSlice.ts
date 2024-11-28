@@ -256,6 +256,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     // 加载新的视频
     newCache.forEach((video) => {
       if (!cacheVideo.some((v) => v.id === video.id)) {
+        console.log(video.id, 'jacob========= video-load--------')
         get().loadVideo(video)
       }
     })
@@ -274,70 +275,96 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       id: item.id,
       meta: item.media[0],
     }))
+    console.log(newCacheVideo, 'Jacob====newCacheVideo========')
+    console.log(get().cacheVideo, 'Jacob====newCacheVideo========list')
     set({ cacheVideo: newCacheVideo })
   },
 
   // 加载视频
-  loadVideo: (video) => {
-    const videoLoadQueue: FormatterListItem[] = []
-    let isloading = false
-    videoLoadQueue.push(video)
+  loadVideo: (() => {
+    const videoLoadQueue: FormatterListItem[] = [] // 视频加载队列
+    let isLoading = false
 
     const processQueue = () => {
-      if (isloading || videoLoadQueue.length === 0) return
-      isloading = true
+      if (isLoading || videoLoadQueue.length === 0) return
+      isLoading = true
 
       const video = videoLoadQueue.shift()
+      if (!video) {
+        isLoading = false
+        return
+      }
+
       const medias = video?.media[0]
-      if (!medias) return
-      // 把视频分割出来
+      if (!medias) {
+        console.error('Media not found for video:', video)
+        isLoading = false
+        processQueue()
+        return
+      }
+
       const media = medias.split(',').find((item) => item.endsWith('.m3u8'))
-      if (!media) return
+      if (!media) {
+        console.error('No valid m3u8 media found for video:', video)
+        isLoading = false
+        processQueue()
+        return
+      }
+
       const hls = new Hls({
         startPosition: 0, // 从视频开始播放
-        maxBufferLength: 3, // 缓存最多 2 秒内容
+        maxBufferLength: 3, // 缓存最多 3 秒内容
         maxBufferSize: 10 * 1024 * 1024, // 最大缓冲区大小，限制为 10MB
       })
 
       const tempVideo = document.createElement('video')
-
-      hls.loadSource(media) // 加载视频源
+      hls.loadSource(media)
       hls.attachMedia(tempVideo)
 
-      // 监听事件，确保只加载前 2 秒的分片
+      // 分片加载事件监听
       hls.on(Hls.Events.FRAG_LOADING, (event, data) => {
         const fragStart = data.frag.start
         const fragEnd = data.frag.start + data.frag.duration
 
-        // 如果分片超出了 2 秒，取消后续加载
+        // 如果分片超出了 2 秒范围，允许其完成但不请求新分片
         if (fragStart >= 2) {
-          console.log(`jacob======取消加载分片，起始时间: ${fragStart}`)
-          hls.stopLoad() // 停止后续加载
-          isloading = false
-          processQueue()
+          console.log(`Skipping fragment loading: Start time: ${fragStart}`)
+          hls.stopLoad() // 停止后续加载，但允许当前分片完成
         }
       })
 
-      // 视频加载完成后处理下一个
+      // 视频加载完成处理
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        console.log(`jacob======加载视频 ${video.id}`)
+        console.log(`Video ${video.id} loaded successfully.`)
         video.hls = hls // 将 HLS 实例绑定到 video 对象
-        isloading = false
+        isLoading = false
+        processQueue()
+      })
+
+      // 销毁事件
+      hls.on(Hls.Events.DESTROYING, () => {
+        console.log(`Destroying video ${video.id}`)
+        hls.stopLoad()
+        isLoading = false
         processQueue()
       })
 
       // 错误处理
       hls.on(Hls.Events.ERROR, (event, data) => {
-        console.error(`jacob======视频加载错误 ${video.id}:`, data)
-        isloading = false
+        console.error(`Error loading video ${video.id}:`, data)
+        isLoading = false
         processQueue()
       })
 
-      video.hls = hls // 将 HLS 实例绑定到 video 对象
-      console.log(`jacob======加载视频 ${video.id}`)
+      console.log(`Starting to load video ${video.id}`)
     }
-    processQueue()
-  },
+
+    // 外部调用入口
+    return (video: FormatterListItem) => {
+      videoLoadQueue.push(video)
+      processQueue()
+    }
+  })(),
 
   // 卸载视频
   unloadVideo: (video) => {

@@ -1,10 +1,11 @@
 import { StateCreator } from 'zustand'
-export type ListType = 'recommend' | 'view'
 import { ListItem, UserItem } from '../../types'
 import { getRecommendMedia } from '../../api/list'
-import { viewList, getUsersPosts, favList, ordersList } from '@/api'
+import { favList, getUsersPosts, ordersList, viewList } from '@/api'
 import { useStore } from '../store'
-import { string } from '@tma.js/sdk'
+import Hls from 'hls.js'
+
+export type ListType = 'recommend' | 'view'
 
 export interface BaseListState {
   list: FormatterListItem[]
@@ -24,6 +25,7 @@ export type FormatterListItem = Omit<ListItem['post'], 'media'> & {
   mediaCover?: string
   thumbnail?: string
   duration?: number
+  hls?: Hls
 } & UserItem
 export interface ListState {
   list: FormatterListItem[]
@@ -34,8 +36,8 @@ export interface ListState {
 }
 
 export interface CacheVideo {
-  id: string
-  status: boolean // true is cached   false is not cached or processing
+  id: string | number
+  media: string
 }
 const recordsNum = 5
 const CACHE_VIDEOS_LIMIT = 5
@@ -52,8 +54,13 @@ export interface ResourceListSlice {
   loadRecommendList: (page: number) => Promise<void>
 
   // cache
+  cacheVideoIndex: number | string
+  setCacheVideoIndex: (index: number | string) => void
   cacheVideo: CacheVideo[]
-  setCacheVideo: (video: CacheVideo, flag?: boolean) => void // true is scroll down  false is scroll up
+  setCacheVideo: (video: CacheVideo | CacheVideo[], flag?: boolean) => void // true is scroll down  false is scroll up
+  updateCache: (cacheVideo: FormatterListItem[]) => void
+  loadVideo: (video: FormatterListItem) => void
+  unloadVideo: (video: FormatterListItem) => void
 
   // view
   viewList: BaseListState
@@ -180,31 +187,108 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
   },
 
   // CACHE VIDEO
-  cacheVideo: [],
-  setCacheVideo: (cacheVideo, flag = true) => {
-    set((state) => {
-      if (state.cacheVideo.length > CACHE_VIDEOS_LIMIT) {
-        // delete video hls and cache
-        if (flag) {
-          // scroll down
-          const list = state.cacheVideo.slice(0, -1)
-          return {
-            cacheVideo: [...list, cacheVideo],
-          }
-        } else {
-          // scroll up
-          const list = state.cacheVideo.slice(1)
-          return {
-            cacheVideo: [cacheVideo, ...list],
-          }
-        }
-      }
+  cacheVideoIndex: -1,
+  setCacheVideoIndex: (index) => {
+    set((_) => {
       return {
-        cacheVideo: [...state.cacheVideo, cacheVideo],
+        cacheVideoIndex: index,
       }
     })
   },
+  cacheVideo: [],
+  setCacheVideo: (cacheVideo, flag = true) => {
+    set((state) => {
+      // 确保处理的是数组
+      const videosToAdd = Array.isArray(cacheVideo) ? cacheVideo : [cacheVideo]
+      let updatedCacheVideo = [...state.cacheVideo]
+      let destroyedItems: any[] = []
 
+      videosToAdd.forEach((video) => {
+        const hasVideo = updatedCacheVideo.some((item) => item.id === video.id)
+        if (!hasVideo) {
+          updatedCacheVideo.push(video)
+
+          // 检查是否超出缓存限制
+          if (updatedCacheVideo.length > CACHE_VIDEOS_LIMIT) {
+            if (flag) {
+              // Scroll down: 移除最后的视频
+              destroyedItems = updatedCacheVideo.slice(-1)
+              updatedCacheVideo = updatedCacheVideo.slice(0, -1)
+            } else {
+              // Scroll up: 移除最前面的视频
+              destroyedItems = updatedCacheVideo.slice(0, 1)
+              updatedCacheVideo = updatedCacheVideo.slice(1)
+            }
+          }
+        }
+      })
+
+      // 销毁移除的视频的 HLS 实例
+      destroyedItems.forEach((item) => {
+        item?.hls?.destroy?.()
+        console.log(`销毁视频 ID: ${item?.id}`)
+      })
+
+      return { cacheVideo: updatedCacheVideo }
+    })
+  },
+  // 根据当前索引更新缓存池
+  updateCache: (videoList) => {
+    const { cacheVideoIndex, cacheVideo } = get()
+    console.log(cacheVideoIndex, 'jacob=======cacheVideoIndex========')
+    if (cacheVideoIndex === -1 || videoList.length === 0) return
+    const currentIndex = videoList.findIndex((video) => video.id === cacheVideoIndex)
+
+    console.log(currentIndex, 'jacob====== currentIndex=======')
+
+    if (currentIndex === -1) return
+
+    const start = Math.max(0, Number(currentIndex) - 2)
+    const end = start === 0 ? 5 : Math.min(videoList.length, Number(cacheVideoIndex) + 3)
+
+    console.log(videoList, end, 'jacob===== videoList')
+    const newCache = videoList.slice(start, end)
+    console.log(newCache, 'jacob======newcache====')
+
+    // 加载新的视频
+    newCache.forEach((video) => {
+      if (!cacheVideo.some((v) => v.id === video.id)) {
+        get().loadVideo(video)
+      }
+    })
+
+    // 卸载不再需要的视频
+
+    cacheVideo.forEach((video) => {
+      if (!newCache.some((v) => v.id === video.id)) {
+        const unloadVideo = videoList.find((item) => item.id === video.id)
+        unloadVideo && get().unloadVideo(unloadVideo)
+      }
+    })
+
+    // 更新缓存池
+    const newCacheVideo: any[] = newCache.map((item) => ({
+      id: item.id,
+      meta: item.media[0],
+    }))
+    set({ cacheVideo: newCacheVideo })
+  },
+
+  // 加载视频
+  loadVideo: (video) => {
+    const hls = new Hls()
+    const tempVideo = document.createElement('video')
+    hls.loadSource(video?.media[0])
+    hls.attachMedia(tempVideo)
+    video.hls = hls
+    console.log(`jacob======加载视频 ${video.id}`)
+  },
+
+  // 卸载视频
+  unloadVideo: (video) => {
+    video.hls?.destroy?.()
+    console.log(`jacob======卸载视频 ${video.id}`)
+  },
   viewList: { ...initialListState },
   setViewPage: (page) =>
     set((state) => ({

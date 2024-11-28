@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import dayjs from 'dayjs'
 
 import { accountdetailList } from '@/api'
 import { useStore } from '@/store/store'
@@ -42,14 +43,14 @@ const EarningsHistory = () => {
           <div className="flex justify-between" key={key}>
             <div>
               <h4 className="text-[16px] text-[rgba(224,226,246,1)]">Income</h4>
-              <p className="text-[12px] text-[rgba(128,128,128,1)]">{item.created_at}</p>
+              <p className="text-[12px] text-[rgba(128,128,128,1)]">{dayjs(item.created_at).format('YYYY-MM-DD HH:mm')}</p>
             </div>
             <div>
               <div className="flex gap-[4px]">
-                <h4 className="text-[20px] text-[rgba(224,226,246,1)]">+{item.amount}</h4>
+                <h4 className="text-[20px] text-[rgba(224,226,246,1)]">+{item.coin_amount}</h4>
                 <img src={StarsIcon} />
               </div>
-              <p className="text-[12px] text-[rgba(128,128,128,1)] text-right">$20</p>
+              <p className="text-[12px] text-[rgba(128,128,128,1)] text-right">${item.coin_amount*1}</p>
             </div>
           </div>
         ))}

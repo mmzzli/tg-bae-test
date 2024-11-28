@@ -96,6 +96,7 @@ export type totalAvailable = {
 export type AccountdetailItem = {
   created_at: string
   amount: number
+  coin_amount: number
 }
 
 export type AccountdetailRes = { accounts: Array<AccountdetailItem> }

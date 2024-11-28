@@ -279,36 +279,62 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
 
   // 加载视频
   loadVideo: (video) => {
-    const medias = video?.media[0]
-    if (!medias) return
-    // 把视频分割出来
-    const media = medias.split(',').find((item) => item.endsWith('.m3u8'))
-    if (!media) return
-    const hls = new Hls({
-      startPosition: 0, // 从视频开始播放
-      maxBufferLength: 2, // 缓存最多 2 秒内容
-      maxBufferSize: 10 * 1024 * 1024, // 最大缓冲区大小，限制为 10MB
-    })
+    const videoLoadQueue: FormatterListItem[] = []
+    let isloading = false
+    videoLoadQueue.push(video)
 
-    const tempVideo = document.createElement('video')
+    const processQueue = () => {
+      if (isloading || videoLoadQueue.length === 0) return
+      isloading = true
 
-    hls.loadSource(media) // 加载视频源
-    hls.attachMedia(tempVideo)
+      const video = videoLoadQueue.shift()
+      const medias = video?.media[0]
+      if (!medias) return
+      // 把视频分割出来
+      const media = medias.split(',').find((item) => item.endsWith('.m3u8'))
+      if (!media) return
+      const hls = new Hls({
+        startPosition: 0, // 从视频开始播放
+        maxBufferLength: 3, // 缓存最多 2 秒内容
+        maxBufferSize: 10 * 1024 * 1024, // 最大缓冲区大小，限制为 10MB
+      })
 
-    // 监听事件，确保只加载前 2 秒的分片
-    hls.on(Hls.Events.FRAG_LOADING, (event, data) => {
-      const fragStart = data.frag.start
-      const fragEnd = data.frag.start + data.frag.duration
+      const tempVideo = document.createElement('video')
 
-      // 如果分片超出了 2 秒，取消后续加载
-      if (fragStart >= 2) {
-        console.log(`jacob======取消加载分片，起始时间: ${fragStart}`)
-        hls.stopLoad() // 停止后续加载
-      }
-    })
+      hls.loadSource(media) // 加载视频源
+      hls.attachMedia(tempVideo)
 
-    video.hls = hls // 将 HLS 实例绑定到 video 对象
-    console.log(`jacob======加载视频 ${video.id}`)
+      // 监听事件，确保只加载前 2 秒的分片
+      hls.on(Hls.Events.FRAG_LOADING, (event, data) => {
+        const fragStart = data.frag.start
+        const fragEnd = data.frag.start + data.frag.duration
+
+        // 如果分片超出了 2 秒，取消后续加载
+        if (fragStart >= 2) {
+          console.log(`jacob======取消加载分片，起始时间: ${fragStart}`)
+          hls.stopLoad() // 停止后续加载
+        }
+      })
+
+      // 视频加载完成后处理下一个
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        console.log(`jacob======加载视频 ${video.id}`)
+        video.hls = hls // 将 HLS 实例绑定到 video 对象
+        // 标记加载完成并处理下一个
+        isloading = false
+        processQueue()
+      })
+
+      // 错误处理
+      hls.on(Hls.Events.ERROR, (event, data) => {
+        console.error(`jacob======视频加载错误 ${video.id}:`, data)
+        isloading = false
+        processQueue()
+      })
+
+      video.hls = hls // 将 HLS 实例绑定到 video 对象
+      console.log(`jacob======加载视频 ${video.id}`)
+    }
   },
 
   // 卸载视频

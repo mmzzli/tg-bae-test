@@ -274,7 +274,8 @@ const useCacheVideo = (
   cardClass: string = 'video-card'
 ) => {
   // 滚动事件防抖处理
-
+  let lastScrollTop = 0
+  let lastTimestamp = 0
   // 滚动事件处理逻辑
   const handleScroll = debounce(() => {
     const videos = list.filter((item) => item.type === 0) // 过滤出视频类型
@@ -285,6 +286,20 @@ const useCacheVideo = (
       const elements = container.querySelectorAll(`.${cardClass}`) // 获取需要监听的元素
       console.log(elements, 'jacob========1===element============')
       const visibleItems: number[] = []
+
+      // 检测滚动速度
+      const currentScrollTop = container.scrollTop
+      const currentTimestamp = Date.now()
+
+      const deltaScroll = Math.abs(currentScrollTop - lastScrollTop)
+      const deltaTime = currentTimestamp - lastTimestamp
+      const speed = deltaScroll / deltaTime // 滚动速度
+
+      if (speed > 2) {
+        list.forEach((item) => {
+          item?.hls.destroy()
+        })
+      }
 
       elements.forEach((element) => {
         const rect = element.getBoundingClientRect()
@@ -301,7 +316,7 @@ const useCacheVideo = (
           if (videoId) visibleItems.push(parseInt(videoId))
         }
       })
-
+      //
       console.log('jacob========1===Visible Items:', visibleItems) // 打印当前视口中的元素
       if (visibleItems.length > 0) {
         setCacheVideoIndex(visibleItems[Math.floor(visibleItems.length / 2)]) // 更新缓存视频索引

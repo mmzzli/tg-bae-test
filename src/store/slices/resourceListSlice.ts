@@ -40,7 +40,7 @@ export interface CacheVideo {
   media: string
 }
 const recordsNum = 30
-const CACHE_VIDEOS_LIMIT = 29
+const CACHE_VIDEOS_LIMIT = 10
 const MAX_FRAGMENTS = 1
 
 export interface ResourceListSlice {
@@ -62,6 +62,7 @@ export interface ResourceListSlice {
   updateCache: (cacheVideo: FormatterListItem[]) => void
   loadVideo: (video: FormatterListItem) => void
   unloadVideo: (video: FormatterListItem) => void
+  loadFullVideo: (video: FormatterListItem) => void
 
   // view
   viewList: BaseListState
@@ -237,11 +238,8 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
   // 根据当前索引更新缓存池
   updateCache: (videoList) => {
     const { cacheVideoIndex, cacheVideo } = get()
-    console.log(cacheVideoIndex, 'jacob=======cacheVideoIndex========')
     if (cacheVideoIndex === -1 || videoList.length === 0) return
     const currentIndex = videoList.findIndex((video) => video.id === cacheVideoIndex)
-
-    console.log(currentIndex, 'jacob====== currentIndex=======')
 
     if (currentIndex === -1) return
     const mid = Math.floor(CACHE_VIDEOS_LIMIT / 2)
@@ -251,22 +249,38 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         ? CACHE_VIDEOS_LIMIT
         : Math.min(videoList.length, Number(cacheVideoIndex) + mid + 1)
 
-    console.log(videoList, end, 'jacob===== videoList')
     const newCache = videoList.slice(start, end)
-    console.log(newCache, 'jacob======newcache====')
 
     // 加载新的视频
 
     newCache
-      .map((video, index) => ({
-        video,
-        priority: Math.abs(index - Math.floor(newCache.length / 2)),
-      }))
+      .map((video, index) => {
+        if (cacheVideoIndex <= 0) {
+          return {
+            video,
+            priority: index,
+          }
+        }
+        if (cacheVideoIndex === videoList[videoList.length - 1].id) {
+          return {
+            video,
+            priority: videoList.length - index,
+          }
+        }
+        return {
+          video,
+          priority: Math.abs(index - Math.floor(newCache.length / 2)),
+        }
+      })
       .sort((a, b) => a.priority - b.priority) // 按优先级从低到高排序
       .forEach(({ video }) => {
         if (!cacheVideo.some((v) => v.id === video.id)) {
           console.log(video.id, 'jacob========= video-load--------')
-          get().loadVideo(video) // 按优先级加载
+          if (video.id === cacheVideoIndex) {
+            get().loadFullVideo(video)
+          } else {
+            get().loadVideo(video) // 按优先级加载
+          }
         }
       })
 
@@ -276,6 +290,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       if (!newCache.some((v) => v.id === video.id)) {
         const unloadVideo = videoList.find((item) => item.id === video.id)
         unloadVideo && get().unloadVideo(unloadVideo)
+        Reflect.deleteProperty(video, 'hls')
       }
     })
 
@@ -284,9 +299,34 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       id: item.id,
       meta: item.media[0],
     }))
-    console.log(newCacheVideo, 'Jacob====newCacheVideo========')
-    console.log(get().cacheVideo, 'Jacob====newCacheVideo========list')
     set({ cacheVideo: newCacheVideo })
+  },
+
+  loadFullVideo: (video) => {
+    const medias = video?.media[0]
+    if (!medias) {
+      console.error('Media not found for video:', video)
+      return
+    }
+
+    const media = medias.split(',').find((item) => item.endsWith('.m3u8'))
+    if (!media) {
+      console.error('No valid m3u8 media found for video:', video)
+      return
+    }
+    const hls = new Hls({
+      startPosition: 0, // 从视频开始播放
+      maxBufferLength: 2, // 缓存最多 2 秒内容
+      enableWorker: true,
+      maxMaxBufferLength: 5,
+      autoStartLoad: true,
+      maxBufferHole: 0.5,
+      lowLatencyMode: true,
+      maxBufferSize: 10 * 1024 * 1024, // 最大缓冲区大小，限制为 5MB
+    })
+    const tempVideo = document.createElement('video')
+    hls.loadSource(media)
+    hls.attachMedia(tempVideo)
   },
 
   // 加载视频
@@ -324,6 +364,11 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       const hls = new Hls({
         startPosition: 0, // 从视频开始播放
         maxBufferLength: 2, // 缓存最多 2 秒内容
+        enableWorker: true,
+        maxMaxBufferLength: 5,
+        autoStartLoad: true,
+        maxBufferHole: 0.5,
+        lowLatencyMode: true,
         maxBufferSize: 10 * 1024 * 1024, // 最大缓冲区大小，限制为 5MB
       })
 
@@ -358,6 +403,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       hls.on(Hls.Events.DESTROYING, () => {
         console.log(`Destroying video ${video.id}`)
         hls.stopLoad()
+        Reflect.deleteProperty(video, 'hls')
         isLoading = false
         processQueue()
       })
@@ -366,14 +412,17 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       hls.on(Hls.Events.ERROR, (event, data) => {
         console.error(`Error loading video ${video.id}:`, data)
         isLoading = false
+        Reflect.deleteProperty(video, 'hls')
         processQueue()
       })
 
+      video.hls = hls
       console.log(`Starting to load video ${video.id}`)
     }
 
     // 外部调用入口
     return (video: FormatterListItem) => {
+      console.log(video)
       videoLoadQueue.push(video)
       processQueue()
     }

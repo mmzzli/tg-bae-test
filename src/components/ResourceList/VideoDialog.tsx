@@ -149,40 +149,34 @@ export function VideoDialog({
     if (!video) return
 
     if (Hls.isSupported() && info) {
-      if (info.hls) {
-        const hls = info.hls
-        if (hls.config && hls.media) {
-          hls.detachMedia() // 先解除旧的绑定
-          hls.attachMedia(video) // 绑定新的 <video> 标签
-        }
-      } else {
-        const hls = new Hls({
-          enableWorker: true,
-          maxBufferLength: 30,
-          maxMaxBufferLength: 60,
-          autoStartLoad: true,
-          maxBufferHole: 0.5,
-          lowLatencyMode: true,
-        })
+      const hls = new Hls({
+        startPosition: 0, // 从视频开始播放
+        maxBufferLength: 2, // 缓存最多 2 秒内容
+        enableWorker: true,
+        maxMaxBufferLength: 5,
+        autoStartLoad: true,
+        maxBufferHole: 0.5,
+        lowLatencyMode: true,
+        maxBufferSize: 10 * 1024 * 1024, // 最大缓冲区大小，限制为 5MB
+      })
 
-        hls.loadSource(info.media[0])
-        hls.attachMedia(video)
-        hlsRef.current = hls
+      hls.loadSource(info.media[0])
+      hls.attachMedia(video)
+      hlsRef.current = hls
 
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          video.play().catch(() => {
-            dispatch({ type: 'SET_LOADING', payload: false })
-            console.log('auto play failed')
-          })
-        })
-
-        hls.on(Hls.Events.ERROR, () => {
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        video.play().catch(() => {
           dispatch({ type: 'SET_LOADING', payload: false })
+          console.log('auto play failed')
         })
+      })
 
-        return () => {
-          hls.destroy()
-        }
+      hls.on(Hls.Events.ERROR, () => {
+        dispatch({ type: 'SET_LOADING', payload: false })
+      })
+
+      return () => {
+        hls.destroy()
       }
     } else if (video.canPlayType('application/vnd.apple.mpegurl') && info) {
       video.src = info.media[0]

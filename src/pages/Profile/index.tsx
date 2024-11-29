@@ -23,7 +23,7 @@ const Profile: FC = () => {
 
   return (
     <div
-      className="relative w-full h-full overflow-auto min-h-screen bg-white dark:bg-black"
+      className="relative w-full h-full overflow-auto bg-white dark:bg-black scrollbar-hide"
       id="profileScrollableDiv"
     >
       <UserProfile />

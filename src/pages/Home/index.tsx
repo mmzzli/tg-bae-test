@@ -85,7 +85,10 @@ const HomePage: FC = () => {
   }
 
   return (
-    <div className="relative w-full h-full overflow-auto" id="recommendScrollableDiv">
+    <div
+      className="relative w-full h-full overflow-auto scrollbar-hide"
+      id="recommendScrollableDiv"
+    >
       <>
         <HStack
           justifyContent="space-between"

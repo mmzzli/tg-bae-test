@@ -38,7 +38,7 @@ export default defineConfig(({ mode }) => {
       cacheBusterPlugin(),
       vConsole({
         entry: './src/main.js',
-        enabled: mode === 'development', // 仅在开发环境启用
+        enabled: mode !== 'production', // 仅在开发环境启用
         config: {
           maxLogNumber: 1000,
           theme: 'dark',

@@ -447,21 +447,7 @@ const ResourceList = ({
         {isVideoPreviewOpen && (
           <VideoDialog info={previewVideo} onClose={() => setIsVideoPreviewOpen(false)} />
         )}
-        {isVideoPreviewOpen && (
-          <VideoDialog info={previewVideo} onClose={() => setIsVideoPreviewOpen(false)} />
-        )}
 
-        {isPreviewOpen && (
-          <ImagePreviewWrapper
-            isOpen={isPreviewOpen}
-            onClose={() => setIsPreviewOpen(false)}
-            images={previewImages}
-            currentIndex={currentIndex}
-            onIndexChange={setCurrentIndex}
-          />
-        )}
-        {/* Components */}
-        {renderBaseModal()}
         {isPreviewOpen && (
           <ImagePreviewWrapper
             isOpen={isPreviewOpen}

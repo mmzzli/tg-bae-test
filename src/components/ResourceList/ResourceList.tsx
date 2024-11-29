@@ -27,6 +27,7 @@ import Icon from '../comm/Icon'
 
 import { VideoDialog } from './VideoDialog'
 import { CardRecommendProvider } from '@/utils/constants'
+import { useStore } from '@/store'
 interface Like {
   id: number
   liked: boolean
@@ -49,6 +50,8 @@ const ResourceList = ({
   type?: string
   hasMore?: boolean
 }) => {
+  const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
+  const loadFullVideo = useStore((state) => state.loadFullVideo)
   const isMobile = useMobile()
   const [resources, setResources] = useState<FormatterListItem[]>([])
   const [likes, setLikes] = useSafeState<Like[]>([])
@@ -81,6 +84,8 @@ const ResourceList = ({
 
   const handleVideoClick = useCallback((video: FormatterListItem) => {
     setPreviewVideo(video)
+    setCacheVideoIndex(video.id)
+    loadFullVideo(video)
     setIsVideoPreviewOpen(true)
   }, [])
 

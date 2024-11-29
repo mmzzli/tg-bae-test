@@ -181,7 +181,7 @@ const ResourceList = ({
     <BaseModal
       isOpen={isBaseModalOpen}
       onClose={off}
-      height={isMobile ? '342px' : '300px'}
+      height={isMobile ? '351px' : '300px'}
       animation={{
         duration: 400,
         timingFunction: 'ease-in-out',
@@ -195,8 +195,12 @@ const ResourceList = ({
       showHandle={false}
     >
       <div className="mt-4 w-full">
-        <h3 className="font-bold text-2xl mb-[10px] text-[24px]">Share from Bae</h3>
-        <div className="text-[15px] text-[#808080]">Earn $Bae every time you share from Bae</div>
+        <h3 className="font-bold text-2xl mb-[10px] text-[24px] text-[#333] dark:text-white">
+          Share from Bae
+        </h3>
+        <div className="text-[15px] dark:text-[#808080] text-[#999999]">
+          Earn $Bae every time you share from Bae
+        </div>
 
         {isMobile && (
           <div className="mt-12 mb-[18px] mx-4">

@@ -5,7 +5,6 @@ import path from 'path'
 import mkcert from 'vite-plugin-mkcert'
 import { createFilter } from '@rollup/pluginutils'
 import * as fs from 'node:fs'
-import vConsole from 'vite-plugin-vconsole'
 
 const cacheBusterPlugin = () => {
   const filter = createFilter(['**/*.tsx', '**/*.ts', '**/*.js', '**/*.jsx'])
@@ -31,20 +30,7 @@ const cacheBusterPlugin = () => {
 
 export default defineConfig(({ mode }) => {
   return {
-    plugins: [
-      react(),
-      nodePolyfills(),
-      mkcert(),
-      cacheBusterPlugin(),
-      vConsole({
-        entry: './src/main.js',
-        enabled: mode !== 'production', // 仅在开发环境启用
-        config: {
-          maxLogNumber: 1000,
-          theme: 'dark',
-        },
-      }),
-    ],
+    plugins: [react(), nodePolyfills(), mkcert(), cacheBusterPlugin()],
     build: {
       chunkSizeWarningLimit: 1000,
       rollupOptions: {

@@ -55,7 +55,7 @@ const Splash: FC = () => {
     }
   }, [list])
 
-  /*useEffect(() => {
+  useEffect(() => {
     if (userInfo.user_id && token && isCached) {
       const ageGateBoll = localStorage.getItem('ageGate')
       if (!isInTMA || !startParam || history.length > 2) {
@@ -88,7 +88,7 @@ const Splash: FC = () => {
         }
       }
     }
-  }, [userInfo, animationEnding, isCached])*/
+  }, [userInfo, animationEnding, isCached])
 
   const handleNavigate = async (ref: string) => {
     console.log('token ready, navigating...')

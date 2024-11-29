@@ -138,7 +138,12 @@ const FollowPage: FC = () => {
         ) : (
           <Empty
             title="No followers yet."
-            icon={<Icon name="icon-none_follow" style={{ width: '164px', height: '164px' }}></Icon>}
+            icon={
+              <Icon
+                name="icon-Empty_white_follow"
+                style={{ width: '164px', height: '164px' }}
+              ></Icon>
+            }
           ></Empty>
         ))}
       {type !== 'follower' &&
@@ -160,7 +165,12 @@ const FollowPage: FC = () => {
         ) : (
           <Empty
             title="You haven't followed anyone."
-            icon={<Icon name="icon-none_follow" style={{ width: '164px', height: '164px' }}></Icon>}
+            icon={
+              <Icon
+                name="icon-Empty_white_follow"
+                style={{ width: '164px', height: '164px' }}
+              ></Icon>
+            }
           ></Empty>
         ))}
     </div>

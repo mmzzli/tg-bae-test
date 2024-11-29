@@ -32,7 +32,7 @@ const ViewList = ({ className }: PostListProps) => {
       id: 'saved',
     },
   ]
-  const tabEve = (id:string)=>{
+  const tabEve = (id: string) => {
     initialize()
     setIsd(id)
   }
@@ -43,7 +43,7 @@ const ViewList = ({ className }: PostListProps) => {
         {menuList.map((item) => (
           <div
             className={`text-[16px] text-[${item.id === ids ? '#0F1233' : '#666'}] font-medium`}
-            onClick={() => tabEve(item.id) }
+            onClick={() => tabEve(item.id)}
           >
             {item.name}
             {item.id === ids && <p className="w-[32px] bg-[#4A3AFF] h-[2px] m-[auto] mt-[8px]"></p>}
@@ -54,7 +54,9 @@ const ViewList = ({ className }: PostListProps) => {
         {ids === 'posts' && !hasMore && !list.length ? (
           <Empty
             title="No post yet."
-            icon={<Icon name="icon-none_post" style={{ width: '164px', height: '164px' }}></Icon>}
+            icon={
+              <Icon name="icon-Empty_white_post" style={{ width: '164px', height: '164px' }}></Icon>
+            }
           ></Empty>
         ) : (
           ids === 'posts' && (
@@ -87,7 +89,9 @@ const FavList = () => {
     return (
       <Empty
         title="No post yet."
-        icon={<Icon name="icon-none_post" style={{ width: '164px', height: '164px' }}></Icon>}
+        icon={
+          <Icon name="icon-Empty_white_post" style={{ width: '164px', height: '164px' }}></Icon>
+        }
       ></Empty>
     )
   }

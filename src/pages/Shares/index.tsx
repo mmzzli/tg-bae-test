@@ -17,7 +17,7 @@ const Shares: FC = () => {
           marginTop: `calc(${window.getComputedStyle(document.documentElement).getPropertyValue('--tg-safe-area-inset-top') ? '10px' : '16px'})`,
         }}
       >
-        <div className="font-bold text-xl text-[#E0E2F6]">Shared</div>
+        <div className="font-bold text-xl dark:text-[#E0E2F6] text-black">Shared</div>
         {/* <Button
           size="xl"
           fontSize="14px"
@@ -36,7 +36,9 @@ const Shares: FC = () => {
           resources={sharedPostList && sharedPostList.length > 0 ? sharedPostList : []}
         />
       </div>
-      <div className="font-bold text-xl text-[#E0E2F6] mt-4 mx-4">Selected Posts</div>
+      <div className="font-bold text-xl dark:text-[#E0E2F6] text-black mt-4 mx-4">
+        Selected Posts
+      </div>
       <RecommendList className="mb-12" />
     </div>
   )

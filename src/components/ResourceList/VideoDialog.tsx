@@ -110,7 +110,22 @@ const CloseButton = memo(({ onClose }: { onClose: () => void }) => {
 
   return (
     <div
-      className="absolute right-2 top-2 z-[999] w-8 h-8 bg-black/30 rounded-full overflow-hidden flex items-center justify-center"
+      className="absolute right-2 z-[999] w-8 h-8 bg-black/30 rounded-full overflow-hidden flex items-center justify-center"
+      style={{
+        top: `calc(${
+          window
+            .getComputedStyle(document.documentElement)
+            .getPropertyValue('--tg-safe-area-inset-top') &&
+          parseInt(
+            window
+              .getComputedStyle(document.documentElement)
+              .getPropertyValue('--tg-safe-area-inset-top'),
+            10
+          ) !== 0
+            ? 'var(--tg-safe-area-inset-top) + 54px'
+            : '8px'
+        })`,
+      }}
       {...touchHandlers}
       // onClick={onClose}
     >

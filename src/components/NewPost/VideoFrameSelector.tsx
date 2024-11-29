@@ -128,7 +128,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover }) 
         showHandle={false}
       >
         <div className="w-[100%]">
-          <h2 className="text-[24px] text-[#E0E2F6] mt-[24px]">Select cover</h2>
+          <h2 className="text-[24px] text-[#333] mt-[24px]">Select cover</h2>
           {selectedFrame && selectedFrame.width > selectedFrame.height && (
             <div className="rounded-[5px] mt-[16px] max-h-[300px] overflow-hidden">
               <img
@@ -152,9 +152,9 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover }) 
               />
             </div>
           )}
-          <div className="bg-[#1C1C1C] rounded-tl-[16px] rounded-tr-[16px]">
+          <div className="bg-[#fff] rounded-tl-[16px] rounded-tr-[16px]">
             <div>
-              <p className="text-center text-[#808080] pt-[62px] pb-[15px]">
+              <p className="text-center text-[#999] pt-[62px] pb-[15px]">
                 Swipe left and right to choose the best cover
               </p>
               <div className="flex overflow-auto rounded-[8px]">

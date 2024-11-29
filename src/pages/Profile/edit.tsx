@@ -187,12 +187,12 @@ const ProfileEdit: FC = () => {
 
 
   return (
-    <div className="pt-[10px] px-[16px] fixed w-screen h-screen bg-black z-10 overflow-auto scrollbar-hide" id="scrollable">
-      <h2 className="text-[20px] text-[#E0E2F6]">Profile</h2>
+    <div className="pt-[10px] px-[16px] fixed w-screen h-screen bg-[#fff] z-10 overflow-auto scrollbar-hide" id="scrollable">
+      <h2 className="text-[20px] text-[#0F1233]">Profile</h2>
       {profileData.avatar ? (
         <>
           <div className="mt-[44px]">
-            <p className="w-[88px] h-[88px] bg-[#333] m-[auto] rounded-[50px] relative">
+            <p className="w-[88px] h-[88px] m-[auto] rounded-[50px] relative">
               <img
                 src={profileData?.avatar}
                 className="w-[100%] h-[100%] rounded-[50px] object-cover overflow-hidden"
@@ -214,21 +214,21 @@ const ProfileEdit: FC = () => {
           />
           <div className="px-[8px] mt-[48px]">
             <div className="flex justify-between items-center mb-[16px]">
-              <h3 className="text-[16px] text-[#E0E2F6]">* Name</h3>
-              <p className="text-[#424048] text-[12px]">{profileData?.username.length}/20</p>
+              <h3 className="text-[16px] text-[#0F1233]">* Name</h3>
+              <p className="text-[#888] text-[12px]">{profileData?.username.length}/20</p>
             </div>
             <input
-              className="w-[100%] rounded-[10px] text-[#E0E2F6] text-[14px] bg-[#19191E] px-[16px] py-[15px]"
+              className="w-[100%] rounded-[10px] text-[#333] text-[14px] bg-[#F5F5FA] px-[16px] py-[15px]"
               value={profileData?.username}
               onChange={(e) => changeEve(e, 'username')}
             />
             <div className="mt-[24px]">
               <div className="flex justify-between items-center mb-[16px]">
-                <h3 className="text-[16px] text-[#E0E2F6]">Bio</h3>
-                <p className="text-[#424048] text-[12px]">{profileData?.bio.length}/500</p>
+                <h3 className="text-[16px] text-[#0F1233]">Bio</h3>
+                <p className="text-[#888] text-[12px]">{profileData?.bio.length}/500</p>
               </div>
               <textarea
-                className="w-[100%] h-[218px] rounded-[10px] text-[#E0E2F6] text-[14px] bg-[#19191E] px-[16px] py-[15px]"
+                className="w-[100%] h-[218px] rounded-[10px] text-[#333] text-[14px] bg-[#F5F5FA] px-[16px] py-[15px]"
                 value={profileData?.bio}
                 onChange={(e) => changeEve(e, 'bio')}
                 onFocus={() => { isMobileDevice() && setIsFocused(true) }}

@@ -68,7 +68,7 @@ const MyPosts = () => {
     setCacheVideoIndex,
     getCacheVideoindex,
     updateCache,
-    'recommendScrollableDiv',
+    'profileScrollableDiv',
     'video-card'
   )
   if (!hasMore && !list.length) {
@@ -110,7 +110,7 @@ const FavList = () => {
     setCacheVideoIndex,
     getCacheVideoindex,
     updateCache,
-    'recommendScrollableDiv',
+    'profileScrollableDiv',
     'video-card'
   )
   if (!hasMore && !list.length) {
@@ -151,7 +151,7 @@ const OrderList = () => {
     setCacheVideoIndex,
     getCacheVideoindex,
     updateCache,
-    'recommendScrollableDiv',
+    'profileScrollableDiv',
     'video-card'
   )
   if (!hasMore && !list.length) {

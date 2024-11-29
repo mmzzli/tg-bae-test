@@ -110,7 +110,32 @@ const Earnings = () => {
               handler={() => {
                 toast({
                   render: () => {
-                    return <CustomToast title="coming soon" type={typeOptions.warning} />
+                    return (
+                      <CustomToast
+                        title="coming soon"
+                        type={typeOptions.warning}
+                        top={
+                          window
+                            .getComputedStyle(document.documentElement)
+                            .getPropertyValue('--tg-safe-area-inset-top') &&
+                          parseInt(
+                            window
+                              .getComputedStyle(document.documentElement)
+                              .getPropertyValue('--tg-safe-area-inset-top'),
+                            10
+                          ) !== 0
+                            ? parseInt(
+                                window
+                                  .getComputedStyle(document.documentElement)
+                                  .getPropertyValue('--tg-safe-area-inset-top'),
+                                10
+                              ) +
+                              44 +
+                              'px'
+                            : ''
+                        }
+                      />
+                    )
                   },
                   position: 'top',
                 })

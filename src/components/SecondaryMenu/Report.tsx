@@ -79,7 +79,32 @@ const Report: React.FC<ReportProps> = ({ isOpen, onClose }) => {
               onClose(false)
               toast({
                 render: () => {
-                  return <CustomToast title={`Report submitted.`} type={typeOptions.success} />
+                  return (
+                    <CustomToast
+                      title={`Report submitted.`}
+                      type={typeOptions.success}
+                      top={
+                        window
+                          .getComputedStyle(document.documentElement)
+                          .getPropertyValue('--tg-safe-area-inset-top') &&
+                        parseInt(
+                          window
+                            .getComputedStyle(document.documentElement)
+                            .getPropertyValue('--tg-safe-area-inset-top'),
+                          10
+                        ) !== 0
+                          ? parseInt(
+                              window
+                                .getComputedStyle(document.documentElement)
+                                .getPropertyValue('--tg-safe-area-inset-top'),
+                              10
+                            ) +
+                            44 +
+                            'px'
+                          : ''
+                      }
+                    />
+                  )
                 },
                 position: 'top',
               })

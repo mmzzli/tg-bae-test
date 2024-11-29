@@ -91,7 +91,32 @@ export const NewPost: FC = () => {
     const errorHandler = (error: any) => {
       toast({
         render: () => {
-          return <CustomToast title="Your post failed to send." type={typeOptions.error} />
+          return (
+            <CustomToast
+              title="Your post failed to send."
+              type={typeOptions.error}
+              top={
+                window
+                  .getComputedStyle(document.documentElement)
+                  .getPropertyValue('--tg-safe-area-inset-top') &&
+                parseInt(
+                  window
+                    .getComputedStyle(document.documentElement)
+                    .getPropertyValue('--tg-safe-area-inset-top'),
+                  10
+                ) !== 0
+                  ? parseInt(
+                      window
+                        .getComputedStyle(document.documentElement)
+                        .getPropertyValue('--tg-safe-area-inset-top'),
+                      10
+                    ) +
+                    44 +
+                    'px'
+                  : ''
+              }
+            />
+          )
         },
         position: 'top',
       })
@@ -111,7 +136,32 @@ export const NewPost: FC = () => {
         })
         toast({
           render: () => {
-            return <CustomToast title="Your post was sent." type={typeOptions.success} />
+            return (
+              <CustomToast
+                title="Your post was sent."
+                type={typeOptions.success}
+                top={
+                  window
+                    .getComputedStyle(document.documentElement)
+                    .getPropertyValue('--tg-safe-area-inset-top') &&
+                  parseInt(
+                    window
+                      .getComputedStyle(document.documentElement)
+                      .getPropertyValue('--tg-safe-area-inset-top'),
+                    10
+                  ) !== 0
+                    ? parseInt(
+                        window
+                          .getComputedStyle(document.documentElement)
+                          .getPropertyValue('--tg-safe-area-inset-top'),
+                        10
+                      ) +
+                      44 +
+                      'px'
+                    : ''
+                }
+              />
+            )
           },
           position: 'top',
         })
@@ -186,7 +236,32 @@ export const NewPost: FC = () => {
       } catch (e) {
         toast({
           render: () => {
-            return <CustomToast title="Your post failed to send." type={typeOptions.error} />
+            return (
+              <CustomToast
+                title="Your post failed to send."
+                type={typeOptions.error}
+                top={
+                  window
+                    .getComputedStyle(document.documentElement)
+                    .getPropertyValue('--tg-safe-area-inset-top') &&
+                  parseInt(
+                    window
+                      .getComputedStyle(document.documentElement)
+                      .getPropertyValue('--tg-safe-area-inset-top'),
+                    10
+                  ) !== 0
+                    ? parseInt(
+                        window
+                          .getComputedStyle(document.documentElement)
+                          .getPropertyValue('--tg-safe-area-inset-top'),
+                        10
+                      ) +
+                      44 +
+                      'px'
+                    : ''
+                }
+              />
+            )
           },
           position: 'top',
         })
@@ -201,7 +276,32 @@ export const NewPost: FC = () => {
       const errorHandler = (error: any) => {
         toast({
           render: () => {
-            return <CustomToast title="Your post failed to send." type={typeOptions.error} />
+            return (
+              <CustomToast
+                title="Your post failed to send."
+                type={typeOptions.error}
+                top={
+                  window
+                    .getComputedStyle(document.documentElement)
+                    .getPropertyValue('--tg-safe-area-inset-top') &&
+                  parseInt(
+                    window
+                      .getComputedStyle(document.documentElement)
+                      .getPropertyValue('--tg-safe-area-inset-top'),
+                    10
+                  ) !== 0
+                    ? parseInt(
+                        window
+                          .getComputedStyle(document.documentElement)
+                          .getPropertyValue('--tg-safe-area-inset-top'),
+                        10
+                      ) +
+                      44 +
+                      'px'
+                    : ''
+                }
+              />
+            )
           },
           position: 'top',
         })
@@ -222,7 +322,32 @@ export const NewPost: FC = () => {
           })
           toast({
             render: () => {
-              return <CustomToast title="Your post was sent." type={typeOptions.success} />
+              return (
+                <CustomToast
+                  title="Your post was sent."
+                  type={typeOptions.success}
+                  top={
+                    window
+                      .getComputedStyle(document.documentElement)
+                      .getPropertyValue('--tg-safe-area-inset-top') &&
+                    parseInt(
+                      window
+                        .getComputedStyle(document.documentElement)
+                        .getPropertyValue('--tg-safe-area-inset-top'),
+                      10
+                    ) !== 0
+                      ? parseInt(
+                          window
+                            .getComputedStyle(document.documentElement)
+                            .getPropertyValue('--tg-safe-area-inset-top'),
+                          10
+                        ) +
+                        44 +
+                        'px'
+                      : ''
+                  }
+                />
+              )
             },
             position: 'top',
           })
@@ -364,7 +489,32 @@ export const NewPost: FC = () => {
     } catch (e) {
       toast({
         render: () => {
-          return <CustomToast title="Your post failed to send." type={typeOptions.error} />
+          return (
+            <CustomToast
+              title="Your post failed to send."
+              type={typeOptions.error}
+              top={
+                window
+                  .getComputedStyle(document.documentElement)
+                  .getPropertyValue('--tg-safe-area-inset-top') &&
+                parseInt(
+                  window
+                    .getComputedStyle(document.documentElement)
+                    .getPropertyValue('--tg-safe-area-inset-top'),
+                  10
+                ) !== 0
+                  ? parseInt(
+                      window
+                        .getComputedStyle(document.documentElement)
+                        .getPropertyValue('--tg-safe-area-inset-top'),
+                      10
+                    ) +
+                    44 +
+                    'px'
+                  : ''
+              }
+            />
+          )
         },
         position: 'top',
       })
@@ -400,7 +550,32 @@ export const NewPost: FC = () => {
       if (fileArray.length > 1) {
         toast({
           render: () => {
-            return <CustomToast title="Please select only one video." type={typeOptions.warning} />
+            return (
+              <CustomToast
+                title="Please select only one video."
+                type={typeOptions.warning}
+                top={
+                  window
+                    .getComputedStyle(document.documentElement)
+                    .getPropertyValue('--tg-safe-area-inset-top') &&
+                  parseInt(
+                    window
+                      .getComputedStyle(document.documentElement)
+                      .getPropertyValue('--tg-safe-area-inset-top'),
+                    10
+                  ) !== 0
+                    ? parseInt(
+                        window
+                          .getComputedStyle(document.documentElement)
+                          .getPropertyValue('--tg-safe-area-inset-top'),
+                        10
+                      ) +
+                      44 +
+                      'px'
+                    : ''
+                }
+              />
+            )
           },
           position: 'top',
         })
@@ -414,7 +589,32 @@ export const NewPost: FC = () => {
       if (totalImages > 9) {
         toast({
           render: () => {
-            return <CustomToast title="Maximum 9 images allowed" type={typeOptions.warning} />
+            return (
+              <CustomToast
+                title="Maximum 9 images allowed"
+                type={typeOptions.warning}
+                top={
+                  window
+                    .getComputedStyle(document.documentElement)
+                    .getPropertyValue('--tg-safe-area-inset-top') &&
+                  parseInt(
+                    window
+                      .getComputedStyle(document.documentElement)
+                      .getPropertyValue('--tg-safe-area-inset-top'),
+                    10
+                  ) !== 0
+                    ? parseInt(
+                        window
+                          .getComputedStyle(document.documentElement)
+                          .getPropertyValue('--tg-safe-area-inset-top'),
+                        10
+                      ) +
+                      44 +
+                      'px'
+                    : ''
+                }
+              />
+            )
           },
           position: 'top',
         })

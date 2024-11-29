@@ -21,6 +21,26 @@ const CreateButton = React.memo(
             <CustomToast
               title="Your post is being published, please wait."
               type={typeOptions.warning}
+              top={
+                window
+                  .getComputedStyle(document.documentElement)
+                  .getPropertyValue('--tg-safe-area-inset-top') &&
+                parseInt(
+                  window
+                    .getComputedStyle(document.documentElement)
+                    .getPropertyValue('--tg-safe-area-inset-top'),
+                  10
+                ) !== 0
+                  ? parseInt(
+                      window
+                        .getComputedStyle(document.documentElement)
+                        .getPropertyValue('--tg-safe-area-inset-top'),
+                      10
+                    ) +
+                    44 +
+                    'px'
+                  : ''
+              }
             />
           )
         },

@@ -10,39 +10,41 @@ import { CustomToast, typeOptions } from '@/components/comm/Toast'
 const AgeGate = () => {
   const toast = useToast()
   const navigate = useNavigate()
-  const [isChecked, setIsChecked] = useState<boolean>(false);
+  const [isChecked, setIsChecked] = useState<boolean>(false)
 
   const handleChange = () => {
-    setIsChecked(!isChecked);
-  };
+    setIsChecked(!isChecked)
+  }
 
   useEffect(() => {
-    if (localStorage.getItem("ageGate")) {
+    if (localStorage.getItem('ageGate')) {
       navigate('/home')
     }
   }, [])
   return (
     <div className="px-[20px] fixed w-screen h-screen bg-[#fff] z-10 overflow-auto scrollbar-hide">
+      <Image className="mx-[auto] mt-[94px] mb-[50px]" src={GateImg} />
 
-      <Image className='mx-[auto] mt-[94px] mb-[50px]' src={GateImg} />
-
-      <h3 className="text-[#333] text-[24px] text-center">
-        Are you 18 years of age or older?
-      </h3>
+      <h3 className="text-[#333] text-[24px] text-center">Are you 18 years of age or older?</h3>
 
       <div className="text-[14px] mt-[10px] leading-[22px]">
         <p className="text-[#62636F]">
-          You must be 18 years or older and agree to our Terms of Service to access and use this app. By tapping the button below, you certify that you are 18 years or older and that you accept our.
+          You must be 18 years or older and agree to our Terms of Service to access and use this
+          app. By tapping the button below, you certify that you are 18 years or older and that you
+          accept our.
         </p>
         <p className="text-center">
           <a className="text-[#6254FF] text-[14px] underline">Terms of Service</a>
         </p>
       </div>
       <div className="mt-[88px] text-center">
-        <div className='flex justify-center gap-[8px]'>
-          <input type="checkbox" checked={isChecked} onChange={handleChange}
-            className='w-[20px] h-[20px] bg-gray-100 border-gray-300 rounded checked:bg-[#E0E2F6] checked:border-[#E0E2F6] focus:ring-[#E0E2F6]'
-           />
+        <div className="flex justify-center gap-[8px]">
+          <input
+            type="checkbox"
+            checked={isChecked}
+            onChange={handleChange}
+            className="w-[20px] h-[20px] bg-gray-100 border-gray-300 rounded checked:bg-[#E0E2F6] checked:border-[#E0E2F6] focus:ring-[#E0E2F6]"
+          />
           <p className="text-[#999] text-[12px]">
             I have read and accept the
             <a className="underline ml-[4px]">Terms of Service</a>
@@ -52,15 +54,40 @@ const AgeGate = () => {
           text="I’m 18 or older"
           height="48px"
           width="290px"
-          className='m-[auto] mt-[16px]'
+          className="m-[auto] mt-[16px]"
           handler={() => {
-            if(isChecked){
-              localStorage.setItem("ageGate", "1")
+            if (isChecked) {
+              localStorage.setItem('ageGate', '1')
               navigate('/home')
-            }else{
+            } else {
               toast({
                 render: () => {
-                  return <CustomToast title={`Please check terms.`} type={typeOptions.error} />
+                  return (
+                    <CustomToast
+                      title={`Please check terms.`}
+                      type={typeOptions.error}
+                      top={
+                        window
+                          .getComputedStyle(document.documentElement)
+                          .getPropertyValue('--tg-safe-area-inset-top') &&
+                        parseInt(
+                          window
+                            .getComputedStyle(document.documentElement)
+                            .getPropertyValue('--tg-safe-area-inset-top'),
+                          10
+                        ) !== 0
+                          ? parseInt(
+                              window
+                                .getComputedStyle(document.documentElement)
+                                .getPropertyValue('--tg-safe-area-inset-top'),
+                              10
+                            ) +
+                            44 +
+                            'px'
+                          : ''
+                      }
+                    />
+                  )
                 },
                 position: 'top',
               })
@@ -68,7 +95,6 @@ const AgeGate = () => {
           }}
         />
       </div>
-
     </div>
   )
 }

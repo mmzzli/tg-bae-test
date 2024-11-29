@@ -34,13 +34,13 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
     }
   }, [currentIndex, swiper])
 
-  useEffect(()=>{
+  useEffect(() => {
     loadImage(currentIndex)
-  },[currentIndex])
+  }, [currentIndex])
 
   // load the current image
   const loadImage = (index: number) => {
-    try{
+    try {
       console.log(images)
       const img = new Image()
       img.src = images[index]
@@ -55,12 +55,10 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
         console.log('444')
         setLoading(false)
       }
-    }catch(e){
+    } catch (e) {
       console.log(e)
     }
-
   }
-
 
   // prevent scroll
   useEffect(() => {
@@ -95,7 +93,23 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
     >
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 p-2 text-white opacity-60 hover:opacity-100 transition-opacity z-10"
+        className="absolute right-4 p-2 text-white opacity-60 hover:opacity-100 transition-opacity z-10"
+        style={{
+          top: `calc(${
+            window
+              .getComputedStyle(document.documentElement)
+              .getPropertyValue('--tg-safe-area-inset-top') &&
+            parseInt(
+              window
+                .getComputedStyle(document.documentElement)
+                .getPropertyValue('--tg-safe-area-inset-top'),
+              10
+            ) !== 0
+              ? 'var(--tg-safe-area-inset-top) + 54px'
+              : '16px'
+          })`,
+          // paddingTop: 'var(--tg-safe-area-inset-top)',
+        }}
       >
         <X className="w-6 h-6" />
       </button>
@@ -133,7 +147,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
         {images.map((src, index) => (
           <SwiperSlide key={index} className="flex items-center justify-center">
             <img
-              src={loading ? formatImage(src,false): src}
+              src={loading ? formatImage(src, false) : src}
               alt={`Image ${index + 1}`}
               className={cn(
                 'max-h-[100vh] max-w-[100vw]',

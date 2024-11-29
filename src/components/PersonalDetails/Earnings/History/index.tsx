@@ -1,20 +1,29 @@
 import { useEffect, useState } from 'react'
 import dayjs from 'dayjs'
+import { useSearchParams } from 'react-router-dom'
 
 import { accountdetailList } from '@/api'
 import { useStore } from '@/store/store'
 import { StarsIcon } from '@/assets/icons'
 import Icon from '@/components/comm/Icon'
 
-import {AccountdetailRes} from '@/types'
+import { AccountdetailRes } from '@/types'
 
 const EarningsHistory = () => {
+  const [searchParams] = useSearchParams();
+  const rate = searchParams.get("exchange_rate")
+  const [exchangeRate, setExchangeRate] = useState<number>(0)
   const { token } = useStore((state) => ({
     token: state.token,
   }))
   const [data, setData] = useState<AccountdetailRes>({ accounts: [] })
   const [loading, setLoading] = useState(false)
 
+  useEffect(()=>{
+    if(rate){
+      setExchangeRate(Number(rate))
+    }
+  },[rate])
   useEffect(() => {
     if (!token) return
     const load = async () => {
@@ -50,7 +59,7 @@ const EarningsHistory = () => {
                 <h4 className="text-[20px] text-[rgba(224,226,246,1)]">+{item.coin_amount}</h4>
                 <img src={StarsIcon} />
               </div>
-              <p className="text-[12px] text-[rgba(128,128,128,1)] text-right">${item.coin_amount*1}</p>
+              <p className="text-[12px] text-[rgba(128,128,128,1)] text-right">${item.coin_amount * exchangeRate}</p>
             </div>
           </div>
         ))}

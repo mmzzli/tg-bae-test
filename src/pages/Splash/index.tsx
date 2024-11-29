@@ -7,7 +7,6 @@ import { getSingleMedia } from '@/api/list'
 import Icon from '@/components/comm/Icon'
 import { useSafeState } from 'ahooks'
 import { useRecommendList } from '@/store/hook/useResourceList'
-import Hls from 'hls.js'
 import { CacheVideo } from '@/store/slices/resourceListSlice'
 
 const SHARE_POST = 1

@@ -101,17 +101,17 @@ export const DeleteDialogWarp = NiceModal.create(
     return (
       <Dialog open={visible}>
         <DialogContent>
-          <div className="w-[312px] h-[172px] bg-[#1C1C1C] text-white text-center rounded-[16px]">
-            <div className="mt-[40px] text-default ">{title}</div>
+          <div className="w-[312px] h-[172px] bg-[#fff] text-white text-center rounded-[16px]">
+            <div className="mt-[40px] text-[#333] ">{title}</div>
             <div className="flex justify-center gap-4 mt-[44px]">
               <div
-                className="cursor-pointer flex items-center justify-center w-[120px] h-[40px] border-white border rounded-[20px] text-sm"
+                className="cursor-pointer flex items-center justify-center w-[120px] h-[40px] border-[#CCC] border rounded-[20px] text-[#333] text-sm"
                 onClick={hide}
               >
                 Cancel
               </div>
               <div
-                className={`cursor-pointer flex items-center justify-center w-[120px] h-[40px] bg-[#FF5330] rounded-[20px] text-sm ${loading ? 'opacity-50' : ''}`}
+                className={`cursor-pointer flex items-center justify-center w-[120px] h-[40px] bg-[#EB4B6D] rounded-[20px] text-sm ${loading ? 'opacity-50' : ''}`}
                 onClick={handleDelete}
               >
                 Delete

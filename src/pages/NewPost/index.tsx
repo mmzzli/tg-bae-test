@@ -538,7 +538,7 @@ export const NewPost: FC = () => {
                   <GridItem aspectRatio={1}>
                     <div
                       onClick={handleChooseFile}
-                      className="w-full h-full flex items-center justify-center"
+                      className="w-full h-full flex items-center justify-center border-dashed border border-[#CDCDD4] rounded-lg cursor-pointer"
                     >
                       <Icon name={'icon-addpost1'} style={{ width: '100%', height: '100%' }}></Icon>
                     </div>

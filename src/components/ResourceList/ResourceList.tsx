@@ -23,7 +23,6 @@ import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import useMobile from '@/hooks/useMobile'
 import playIcon from '@/assets/icons/videoSwitch.svg'
 import { formatImage, formatTime } from '@/utils/utils'
-import Hls from 'hls.js'
 import Empty from '../comm/Empty'
 import Icon from '../comm/Icon'
 
@@ -534,13 +533,11 @@ const ResourceFooter = memo<ResourceFooterProps>(
                 }
               >
                 {likes.find((like) => like.id === data.id)?.liked === true ? (
-                  // <IconLiked />
                   <i
                     className="iconfont icon-Frame text-[#FF5596]"
                     style={{ fontSize: '24px' }}
                   ></i>
                 ) : (
-                  // <IconLike />
                   <i className="iconfont icon-like text-[#0D0D0D]" style={{ fontSize: '24px' }}></i>
                 )}
                 <span className="pl-1 text-sm text-[##0D0D0D]">
@@ -555,9 +552,15 @@ const ResourceFooter = memo<ResourceFooterProps>(
                 }
               >
                 {saveds.find((saved) => saved.id === data.id)?.saveds === true ? (
-                  <Image src={FavIcon} />
+                  <i
+                    className="iconfont icon-saved text-[#FFCC5D]"
+                    style={{ fontSize: '24px' }}
+                  ></i>
                 ) : (
-                  <Image src={Fav1Icon} />
+                  <i
+                    className="iconfont icon-bookmark-line text-[#0D0D0D]"
+                    style={{ fontSize: '24px' }}
+                  ></i>
                 )}
               </Box>
             )}

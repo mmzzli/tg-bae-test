@@ -31,159 +31,164 @@ const ViewList = ({ className }: PostListProps) => {
     },
   ]
   const tabEve = (id: string) => {
-  const tabEve = (id: string) => {
-    initialize()
-    setIsd(id)
-  }
+    const tabEve = (id: string) => {
+      initialize()
+      setIsd(id)
+    }
 
-  return (
-    <>
-      <Box className="flex justify-around" borderBottom="1px solid rgba(255, 255, 255, 0.10)">
-        {menuList.map((item) => (
-          <div
-            className={`text-[16px] text-[${item.id === ids ? '#0F1233' : '#666'}] font-medium`}
-            onClick={() => tabEve(item.id)}
-          >
-            {item.name}
-            {item.id === ids && <p className="w-[32px] bg-[#4A3AFF] h-[2px] m-[auto] mt-[8px]"></p>}
-          </div>
-        ))}
-      </Box>
-      <div className={cn(className, 'pb-24')}>
-        {ids === 'posts' && <MyPosts key={'posts'} />}
-        {ids === 'purchased' && <OrderList key={'purchased'} />}
-        {ids === 'saved' && <FavList key={'saved'} />}
-      </div>
-    </>
-  )
-}
-const MyPosts = () => {
-  const { list, hasMore, fetchMoreData, page } = useViewList()
-  const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
-  const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
-  const updateCache = useStore((state) => state.updateCache)
-
-  useCacheVideo(
-    list,
-    page,
-    setCacheVideoIndex,
-    getCacheVideoindex,
-    updateCache,
-    'recommendScrollableDiv',
-    'video-card'
-  )
-  if (!hasMore && !list.length) {
     return (
-      <Empty
-        title="No post yet."
-        icon={
-              <Icon name="icon-Empty_white_post" style={{ width: '164px', height: '164px' }}></Icon>
-            }
-      ></Empty>
+      <>
+        <Box className="flex justify-around" borderBottom="1px solid rgba(255, 255, 255, 0.10)">
+          {menuList.map((item) => (
+            <div
+              className={`text-[16px] text-[${item.id === ids ? '#0F1233' : '#666'}] font-medium`}
+              onClick={() => tabEve(item.id)}
+            >
+              {item.name}
+              {item.id === ids && (
+                <p className="w-[32px] bg-[#4A3AFF] h-[2px] m-[auto] mt-[8px]"></p>
+              )}
+            </div>
+          ))}
+        </Box>
+        <div className={cn(className, 'pb-24')}>
+          {ids === 'posts' && <MyPosts key={'posts'} />}
+          {ids === 'purchased' && <OrderList key={'purchased'} />}
+          {ids === 'saved' && <FavList key={'saved'} />}
+        </div>
+      </>
     )
   }
+  const MyPosts = () => {
+    const { list, hasMore, fetchMoreData, page } = useViewList()
+    const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
+    const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
+    const updateCache = useStore((state) => state.updateCache)
 
-  return (
-    <InfiniteScroll
-      dataLength={list.length}
-      next={fetchMoreData}
-      hasMore={hasMore}
-      loader={
-        <Box textAlign="center" m="20px">
-          <PostSkeleton />
-        </Box>
-      }
-      scrollableTarget="profileScrollableDiv"
-      scrollThreshold={0.8}
-      style={{ overflow: 'visible' }}
-    >
-      <ResourceList resources={list} />
-    </InfiniteScroll>
-  )
-}
-const FavList = () => {
-  const { list, hasMore, fetchMoreData, page } = useFavList()
-  const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
-  const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
-  const updateCache = useStore((state) => state.updateCache)
+    useCacheVideo(
+      list,
+      page,
+      setCacheVideoIndex,
+      getCacheVideoindex,
+      updateCache,
+      'recommendScrollableDiv',
+      'video-card'
+    )
+    if (!hasMore && !list.length) {
+      return (
+        <Empty
+          title="No post yet."
+          icon={
+            <Icon name="icon-Empty_white_post" style={{ width: '164px', height: '164px' }}></Icon>
+          }
+        ></Empty>
+      )
+    }
 
-  useCacheVideo(
-    list,
-    page,
-    setCacheVideoIndex,
-    getCacheVideoindex,
-    updateCache,
-    'recommendScrollableDiv',
-    'video-card'
-  )
-  if (!hasMore && !list.length) {
     return (
-      <Empty
-        title="No post yet."
-        icon={
-          <Icon name="icon-Empty_white_post" style={{ width: '164px', height: '164px' }}></Icon>
+      <InfiniteScroll
+        dataLength={list.length}
+        next={fetchMoreData}
+        hasMore={hasMore}
+        loader={
+          <Box textAlign="center" m="20px">
+            <PostSkeleton />
+          </Box>
         }
-      ></Empty>
+        scrollableTarget="profileScrollableDiv"
+        scrollThreshold={0.8}
+        style={{ overflow: 'visible' }}
+      >
+        <ResourceList resources={list} />
+      </InfiniteScroll>
     )
   }
-  return (
-    <InfiniteScroll
-      dataLength={list.length}
-      next={fetchMoreData}
-      hasMore={hasMore}
-      loader={
-        <Box textAlign="center" m="20px ">
-          <PostSkeleton />
-        </Box>
-      }
-      scrollableTarget="profileScrollableDiv"
-      scrollThreshold={0.8}
-      style={{ overflow: 'visible' }}
-    >
-      <ResourceList resources={list} type="fav" hasMore={hasMore} />
-    </InfiniteScroll>
-  )
-}
-const OrderList = () => {
-  const { list, hasMore, fetchMoreData, page } = useOrdersList()
-  const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
-  const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
-  const updateCache = useStore((state) => state.updateCache)
+  const FavList = () => {
+    const { list, hasMore, fetchMoreData, page } = useFavList()
+    const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
+    const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
+    const updateCache = useStore((state) => state.updateCache)
 
-  useCacheVideo(
-    list,
-    page,
-    setCacheVideoIndex,
-    getCacheVideoindex,
-    updateCache,
-    'recommendScrollableDiv',
-    'video-card'
-  )
-  if (!hasMore && !list.length) {
+    useCacheVideo(
+      list,
+      page,
+      setCacheVideoIndex,
+      getCacheVideoindex,
+      updateCache,
+      'recommendScrollableDiv',
+      'video-card'
+    )
+    if (!hasMore && !list.length) {
+      return (
+        <Empty
+          title="No post yet."
+          icon={
+            <Icon name="icon-Empty_white_post" style={{ width: '164px', height: '164px' }}></Icon>
+          }
+        ></Empty>
+      )
+    }
     return (
-      <Empty
-        title="You haven't purchased any post yet."
-        icon={<Icon name="icon-none_purchased" style={{ width: '164px', height: '164px' }}></Icon>}
-      ></Empty>
+      <InfiniteScroll
+        dataLength={list.length}
+        next={fetchMoreData}
+        hasMore={hasMore}
+        loader={
+          <Box textAlign="center" m="20px ">
+            <PostSkeleton />
+          </Box>
+        }
+        scrollableTarget="profileScrollableDiv"
+        scrollThreshold={0.8}
+        style={{ overflow: 'visible' }}
+      >
+        <ResourceList resources={list} type="fav" hasMore={hasMore} />
+      </InfiniteScroll>
     )
   }
-  return (
-    <InfiniteScroll
-      dataLength={list.length}
-      next={fetchMoreData}
-      hasMore={hasMore}
-      loader={
-        <Box textAlign="center" m="20px">
-          <PostSkeleton />
-        </Box>
-      }
-      scrollableTarget="profileScrollableDiv"
-      scrollThreshold={0.8}
-      style={{ overflow: 'visible' }}
-    >
-      <ResourceList resources={list} type="payment" />
-    </InfiniteScroll>
-  )
+  const OrderList = () => {
+    const { list, hasMore, fetchMoreData, page } = useOrdersList()
+    const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
+    const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
+    const updateCache = useStore((state) => state.updateCache)
+
+    useCacheVideo(
+      list,
+      page,
+      setCacheVideoIndex,
+      getCacheVideoindex,
+      updateCache,
+      'recommendScrollableDiv',
+      'video-card'
+    )
+    if (!hasMore && !list.length) {
+      return (
+        <Empty
+          title="You haven't purchased any post yet."
+          icon={
+            <Icon name="icon-none_purchased" style={{ width: '164px', height: '164px' }}></Icon>
+          }
+        ></Empty>
+      )
+    }
+    return (
+      <InfiniteScroll
+        dataLength={list.length}
+        next={fetchMoreData}
+        hasMore={hasMore}
+        loader={
+          <Box textAlign="center" m="20px">
+            <PostSkeleton />
+          </Box>
+        }
+        scrollableTarget="profileScrollableDiv"
+        scrollThreshold={0.8}
+        style={{ overflow: 'visible' }}
+      >
+        <ResourceList resources={list} type="payment" />
+      </InfiniteScroll>
+    )
+  }
 }
 
 export default ViewList

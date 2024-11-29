@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { shallow } from 'zustand/shallow'
 import { useStore } from '../store'
-import { string } from '@tma.js/sdk'
 import { debounce } from '@/utils/utils'
 
 export const useRecommendList = () => {

@@ -349,6 +349,10 @@ const ResourceList = ({
               )
             }
           } else {
+            {
+              console.log(data, 'jacob========image data')
+            }
+
             return (
               <Box key={index} className="video-card" data-id={data.id}>
                 <ResourceHeader
@@ -363,6 +367,8 @@ const ResourceList = ({
                         src={formatImage(data.media?.[0] ?? data?.media ?? '', false)}
                         alt={data.title}
                         errorClassName="rounded-[4px] h-[150px]"
+                        width={data.width}
+                        height={data.height}
                         // wrapperClassName="rounded-[4px] overflow-hidden"
                         // className="object-left w-[100%] m-[auto]"
                         className="w-[230px] rounded-[4px]"

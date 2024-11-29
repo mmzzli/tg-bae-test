@@ -121,7 +121,7 @@ const Splash: FC = () => {
   }, [startParam, isInTMA])
 
   return (
-    <div className="fixed w-screen h-screen dark:bg-[#0D0D0D] bg-white flex justify-center items-center z-10 flex-col">
+    <div className="fixed top-0 bottom-0 left-0 right-0 dark:bg-[#0D0D0D] bg-white flex justify-center items-center z-10 flex-col">
       <div className="absolute top-[-1px] right-[-1px]">
         <Icon name={'icon-chatu_youshang'} style={{ width: '165px', height: '166px' }}></Icon>
       </div>

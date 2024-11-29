@@ -366,57 +366,57 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       }
 
       const hls = new Hls({
-        startPosition: 0, // 从视频开始播放
-        maxBufferLength: 2, // 缓存最多 2 秒内容
+        startPosition: 0,
+        maxBufferLength: 2,
         enableWorker: true,
         maxMaxBufferLength: 5,
         autoStartLoad: true,
         maxBufferHole: 0.5,
-        lowLatencyMode: true,
-        maxBufferSize: 10 * 1024 * 1024, // 最大缓冲区大小，限制为 5MB
+        lowLatencyMode: false,
+        maxBufferSize: 10 * 1024 * 1024,
       })
 
       const tempVideo = document.createElement('video')
       hls.loadSource(media)
       hls.attachMedia(tempVideo)
 
-      // 监听分片加载完成事件
-      hls.on(Hls.Events.FRAG_LOADED, () => {
-        loadedFragments++
-        console.log(`Loaded fragment ${loadedFragments}/${MAX_FRAGMENTS}`)
-      })
-      // 分片加载事件监听
+      // 检查是否超出加载限制
       hls.on(Hls.Events.FRAG_LOADING, (event, data) => {
-        if (loadedFragments >= MAX_FRAGMENTS) {
+        if (loadedFragments > MAX_FRAGMENTS) {
           console.log(`Reached fragment limit (${MAX_FRAGMENTS}), stopping further loading.`)
-          hls.stopLoad() // 停止后续分片加载
-          isLoading = false
-          processQueue()
+
+          // 解绑事件避免回调被触发
+          hls.off(Hls.Events.FRAG_LOADING)
+          hls.off(Hls.Events.FRAG_LOADED)
+
+          hls.stopLoad()
+          return
         }
       })
 
+      hls.on(Hls.Events.FRAG_LOADED, () => {
+        if (!hls) return // 确保 HLS 实例存在
+        loadedFragments++
+      })
       // 视频加载完成处理
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         console.log(`Video ${video.id} loaded successfully.`)
-        video.hls = hls // 将 HLS 实例绑定到 video 对象
+        video.hls = hls // 绑定 HLS 实例
         isLoading = false
         processQueue()
       })
-      //
-      // 销毁事件
+
+      // 销毁事件处理
       hls.on(Hls.Events.DESTROYING, () => {
         console.log(`Destroying video ${video.id}`)
-        hls.stopLoad()
-        Reflect.deleteProperty(video, 'hls')
         isLoading = false
         processQueue()
       })
-      //
+
       // 错误处理
       hls.on(Hls.Events.ERROR, (event, data) => {
         console.error(`Error loading video ${video.id}:`, data)
         isLoading = false
-        Reflect.deleteProperty(video, 'hls')
         processQueue()
       })
 
@@ -424,9 +424,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       console.log(`Starting to load video ${video.id}`)
     }
 
-    // 外部调用入口
     return (video: FormatterListItem) => {
-      console.log(video)
       videoLoadQueue.push(video)
       processQueue()
     }

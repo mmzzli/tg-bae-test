@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { Heading, HStack, Box, Text, Link } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '@/store'
@@ -16,6 +16,10 @@ const UserProfile: FC = () => {
   const userId = launchParams.initData?.user?.id ?? 0
   const userInfo = useStore((state) => state.userInfo)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    console.log(userInfo, 'userInfo========')
+  }, [userInfo])
   return !userInfo.avatar ? (
     <ProfileSkeleton />
   ) : (

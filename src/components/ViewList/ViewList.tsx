@@ -30,11 +30,10 @@ const ViewList = ({ className }: PostListProps) => {
       id: 'saved',
     },
   ]
+
   const tabEve = (id: string) => {
-    const tabEve = (id: string) => {
-      initialize()
-      setIsd(id)
-    }
+    initialize()
+    setIsd(id)
 
     return (
       <>
@@ -59,21 +58,22 @@ const ViewList = ({ className }: PostListProps) => {
       </>
     )
   }
+
   const MyPosts = () => {
     const { list, hasMore, fetchMoreData, page } = useViewList()
-    const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
-    const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
-    const updateCache = useStore((state) => state.updateCache)
+    // const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
+    // const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
+    // const updateCache = useStore((state) => state.updateCache)
 
-    useCacheVideo(
-      list,
-      page,
-      setCacheVideoIndex,
-      getCacheVideoindex,
-      updateCache,
-      'recommendScrollableDiv',
-      'video-card'
-    )
+    // useCacheVideo(
+    //   list,
+    //   page,
+    //   setCacheVideoIndex,
+    //   getCacheVideoindex,
+    //   updateCache,
+    //   'recommendScrollableDiv',
+    //   'video-card'
+    // )
     if (!hasMore && !list.length) {
       return (
         <Empty
@@ -105,19 +105,19 @@ const ViewList = ({ className }: PostListProps) => {
   }
   const FavList = () => {
     const { list, hasMore, fetchMoreData, page } = useFavList()
-    const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
-    const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
-    const updateCache = useStore((state) => state.updateCache)
-
-    useCacheVideo(
-      list,
-      page,
-      setCacheVideoIndex,
-      getCacheVideoindex,
-      updateCache,
-      'recommendScrollableDiv',
-      'video-card'
-    )
+    // const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
+    // const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
+    // const updateCache = useStore((state) => state.updateCache)
+    //
+    // useCacheVideo(
+    //   list,
+    //   page,
+    //   setCacheVideoIndex,
+    //   getCacheVideoindex,
+    //   updateCache,
+    //   'recommendScrollableDiv',
+    //   'video-card'
+    // )
     if (!hasMore && !list.length) {
       return (
         <Empty
@@ -148,25 +148,25 @@ const ViewList = ({ className }: PostListProps) => {
   }
   const OrderList = () => {
     const { list, hasMore, fetchMoreData, page } = useOrdersList()
-    const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
-    const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
-    const updateCache = useStore((state) => state.updateCache)
-
-    useCacheVideo(
-      list,
-      page,
-      setCacheVideoIndex,
-      getCacheVideoindex,
-      updateCache,
-      'recommendScrollableDiv',
-      'video-card'
-    )
+    // const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
+    // const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
+    // const updateCache = useStore((state) => state.updateCache)
+    //
+    // useCacheVideo(
+    //   list,
+    //   page,
+    //   setCacheVideoIndex,
+    //   getCacheVideoindex,
+    //   updateCache,
+    //   'recommendScrollableDiv',
+    //   'video-card'
+    // )
     if (!hasMore && !list.length) {
       return (
         <Empty
-          title="You haven't purchased any post yet."
+          title="No post yet."
           icon={
-            <Icon name="icon-none_purchased" style={{ width: '164px', height: '164px' }}></Icon>
+            <Icon name="icon-Empty_white_post" style={{ width: '164px', height: '164px' }}></Icon>
           }
         ></Empty>
       )

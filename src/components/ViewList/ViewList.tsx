@@ -3,16 +3,17 @@ import { Box } from '@chakra-ui/react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import ResourceList from '../ResourceList/ResourceList'
 import { cn } from '@/utils/utils'
-import { useViewList, useFavList, useOrdersList } from '@/store/hook/useResourceList'
+import useCacheVideo, { useFavList, useOrdersList, useViewList } from '@/store/hook/useResourceList'
 import Empty from '../comm/Empty'
 import Icon from '../comm/Icon'
 import PostSkeleton from '../Skeketon/PostSkeleton'
+import { useStore } from '@/store'
+
 interface PostListProps {
   className?: string
 }
 
 const ViewList = ({ className }: PostListProps) => {
-  const { list, hasMore, fetchMoreData } = useViewList()
   const { initialize } = useFavList()
   const [ids, setIsd] = useState<string>('posts')
   const menuList = [
@@ -48,40 +49,72 @@ const ViewList = ({ className }: PostListProps) => {
         ))}
       </Box>
       <div className={cn(className, 'pb-24')}>
-        {ids === 'posts' && !hasMore && !list.length ? (
-          <Empty
-            title="No post yet."
-            icon={
-              <Icon name="icon-Empty_white_post" style={{ width: '164px', height: '164px' }}></Icon>
-            }
-          ></Empty>
-        ) : (
-          ids === 'posts' && (
-            <InfiniteScroll
-              dataLength={list.length}
-              next={fetchMoreData}
-              hasMore={hasMore}
-              loader={
-                <Box textAlign="center" m="20px">
-                  <PostSkeleton />
-                </Box>
-              }
-              scrollableTarget="profileScrollableDiv"
-              scrollThreshold={0.8}
-              style={{ overflow: 'visible' }}
-            >
-              <ResourceList resources={list} />
-            </InfiniteScroll>
-          )
-        )}
-        {ids === 'purchased' && <OrderList />}
-        {ids === 'saved' && <FavList />}
+        {ids === 'posts' && <MyPosts key={'posts'} />}
+        {ids === 'purchased' && <OrderList key={'purchased'} />}
+        {ids === 'saved' && <FavList key={'saved'} />}
       </div>
     </>
   )
 }
+const MyPosts = () => {
+  const { list, hasMore, fetchMoreData, page } = useViewList()
+  // const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
+  // const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
+  // const updateCache = useStore((state) => state.updateCache)
+  //
+  // useCacheVideo(
+  //   list,
+  //   page,
+  //   setCacheVideoIndex,
+  //   getCacheVideoindex,
+  //   updateCache,
+  //   'recommendScrollableDiv',
+  //   'video-card'
+  // )
+  if (!hasMore && !list.length) {
+    return (
+      <Empty
+        title="No post yet."
+        icon={
+          <Icon name="icon-Empty_white_post" style={{ width: '164px', height: '164px' }}></Icon>
+        }
+      ></Empty>
+    )
+  }
+
+  return (
+    <InfiniteScroll
+      dataLength={list.length}
+      next={fetchMoreData}
+      hasMore={hasMore}
+      loader={
+        <Box textAlign="center" m="20px">
+          <PostSkeleton />
+        </Box>
+      }
+      scrollableTarget="profileScrollableDiv"
+      scrollThreshold={0.8}
+      style={{ overflow: 'visible' }}
+    >
+      <ResourceList resources={list} />
+    </InfiniteScroll>
+  )
+}
 const FavList = () => {
-  const { list, hasMore, fetchMoreData } = useFavList()
+  const { list, hasMore, fetchMoreData, page } = useFavList()
+  // const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
+  // const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
+  // const updateCache = useStore((state) => state.updateCache)
+  //
+  // useCacheVideo(
+  //   list,
+  //   page,
+  //   setCacheVideoIndex,
+  //   getCacheVideoindex,
+  //   updateCache,
+  //   'recommendScrollableDiv',
+  //   'video-card'
+  // )
   if (!hasMore && !list.length) {
     return (
       <Empty
@@ -111,7 +144,20 @@ const FavList = () => {
   )
 }
 const OrderList = () => {
-  const { list, hasMore, fetchMoreData } = useOrdersList()
+  const { list, hasMore, fetchMoreData, page } = useOrdersList()
+  // const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
+  // const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
+  // const updateCache = useStore((state) => state.updateCache)
+  //
+  // useCacheVideo(
+  //   list,
+  //   page,
+  //   setCacheVideoIndex,
+  //   getCacheVideoindex,
+  //   updateCache,
+  //   'recommendScrollableDiv',
+  //   'video-card'
+  // )
   if (!hasMore && !list.length) {
     return (
       <Empty

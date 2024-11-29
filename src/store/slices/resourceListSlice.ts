@@ -28,6 +28,8 @@ export type FormatterListItem = Omit<ListItem['post'], 'media'> & {
   hls?: Hls
   width?: number | string
   height?: number | string
+  pic_width?: string
+  pic_height?: string
 } & UserItem
 export interface ListState {
   list: FormatterListItem[]

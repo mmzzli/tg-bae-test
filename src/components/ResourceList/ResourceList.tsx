@@ -367,13 +367,15 @@ const ResourceList = ({
                         src={formatImage(data.media?.[0] ?? data?.media ?? '', false)}
                         alt={data.title}
                         errorClassName="rounded-[4px] h-[150px]"
-                        width={data.width}
-                        height={data.height}
+                        width={data.pic_width}
+                        height={data.pic_height}
                         // wrapperClassName="rounded-[4px] overflow-hidden"
                         // className="object-left w-[100%] m-[auto]"
-                        className="w-[230px] rounded-[4px]"
+                        className={`w-[230px] rounded-[4px]`}
+                        style={{ height: (230 * Number(data.pic_height)) / Number(data.pic_width) }}
                         onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
                       />
+                      {console.log(data, 'jacob========image data-----')}
                       {data.media?.[0] === '' && (
                         <FrostedGlass
                           price={data.price}

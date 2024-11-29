@@ -68,7 +68,8 @@ export const BaseModal: FC<BottomSheetProps> = ({
   const getTelegramTheme = (): { isDark: boolean; backgroundColor: string } => {
     try {
       const webApp = window.Telegram?.WebApp
-      const isDark = webApp?.colorScheme === 'dark'
+      let isDark = webApp?.colorScheme === 'dark'
+      isDark = false
       const bgColor = isDark ? theme.darkBackgroundColor : theme.lightBackgroundColor
 
       return {
@@ -105,14 +106,14 @@ export const BaseModal: FC<BottomSheetProps> = ({
     transform: 'translateZ(50px)',
     ...style,
   }
-  useEffect(()=>{
-    if(isOpen){
-      document.body.style.overflow = 'hidden';
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
       return () => {
-        document.body.style.overflow = '';
-      };
+        document.body.style.overflow = ''
+      }
     }
-  },[isOpen])
+  }, [isOpen])
 
   return (
     <div
@@ -123,10 +124,10 @@ export const BaseModal: FC<BottomSheetProps> = ({
       role="dialog"
       aria-modal="true"
       aria-hidden={!isOpen}
-      style={{transform: 'translateZ(50px)'}}
+      style={{ transform: 'translateZ(50px)' }}
     >
       <div
-        className={`fixed z-50 bottom-0 left-0 right-0 rounded-t-2xl bg-[#1C1C1C] dark:bg-gray-800 transition-transform ${
+        className={`fixed z-50 bottom-0 left-0 right-0 rounded-t-2xl bg-[#fff] dark:bg-[#1C1C1C] transition-transform ${
           isOpen ? 'translate-y-0' : 'translate-y-full'
         } ${className}`}
         style={sheetStyle}
@@ -140,10 +141,19 @@ export const BaseModal: FC<BottomSheetProps> = ({
         )}
 
         <div
-          className="p-[16px] overflow-y-auto  bg-[#1C1C1C] text-[#E0E2F6] rounded-t-2xl rounded-b-none border-[#1c1c1c]"
+          className="p-[16px] overflow-y-auto bg-[#fff] dark:bg-[#1C1C1C] text-[#E0E2F6] rounded-t-2xl rounded-b-none border-[#1c1c1c]"
           style={{ height: 'calc(100%)' }}
         >
-          <Image src={CloseIcon} className="cursor-pointer" onClick={handleBackdropClick} />
+          {/* <Image src={CloseIcon} className="cursor-pointer" onClick={handleBackdropClick} /> */}
+          <div
+            className="flex items-center justify-center bg-[#F5F5FA] rounded-full ml-auto no-tap"
+            style={{ height: '36px', width: '36px' }}
+          >
+            <i
+              onClick={handleBackdropClick}
+              className="iconfont icon-icon_close text-[#12122A] dark:text-[#E0E2F6] text-[20px]"
+            ></i>
+          </div>
           <div className="flex justify-center px-[8px]">{children}</div>
         </div>
       </div>

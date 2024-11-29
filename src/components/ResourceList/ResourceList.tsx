@@ -297,7 +297,7 @@ const ResourceList = ({
                       toggle()
                     }}
                   />
-                  <div className="pt-8 pb-8 pl-4 pr-4">
+                  <div className="pt-[14px] pb-[14px] pl-4 pr-4">
                     <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
                   </div>
                 </Box>
@@ -348,7 +348,7 @@ const ResourceList = ({
                       toggle()
                     }}
                   />
-                  <div className="pt-8 pb-8 pl-4 pr-4">
+                  <div className="pt-[14px] pb-[14px] pl-4 pr-4">
                     <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
                   </div>
                 </Box>
@@ -436,7 +436,7 @@ const ResourceList = ({
                     toggle()
                   }}
                 />
-                <div className="pt-8 pb-8 pl-4 pr-4">
+                <div className="pt-[14px] pb-[14px] pl-4 pr-4">
                   <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
                 </div>
               </Box>

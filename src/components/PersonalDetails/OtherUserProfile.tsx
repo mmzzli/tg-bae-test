@@ -1,22 +1,8 @@
 import { FC, useState, useRef } from 'react'
 import { useSafeState } from 'ahooks'
-import {
-  Heading,
-  HStack,
-  Box,
-  Text,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  MenuItemOption,
-  MenuGroup,
-  MenuOptionGroup,
-  MenuDivider,
-} from '@chakra-ui/react'
+import { Heading, HStack, Box, Text, Menu, MenuButton, MenuList, MenuItem } from '@chakra-ui/react'
 import Image from '../Image/Image'
-import { MessageIcon, NavIcon } from '@/assets/icons'
-import { BlockIcon, ReportIcon, ShareIcon } from '@/assets/icons/profile'
+import { ReportIcon, ShareIcon } from '@/assets/icons/profile'
 import { useStore } from '../../store'
 import FollowButton from './FollowButton'
 import { useTMAUtils } from '@/hooks/useTMAUtils'

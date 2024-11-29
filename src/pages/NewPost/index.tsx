@@ -24,6 +24,7 @@ import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import { TaskStatus, UploadThread } from '@/store/slices/taskSlice'
 import { generateUUID } from '@/utils/utils'
 import { error } from 'console'
+import Icon from '@/components/comm/Icon'
 
 export const NewPost: FC = () => {
   const navigate = useNavigate()
@@ -64,11 +65,14 @@ export const NewPost: FC = () => {
   }, [imgAttr])
 
   // upload states
-  const { updateUploadThread, addUploadTask, resetUploadTask } = useStore((state) => ({
-    updateUploadThread: state.updateUploadThread,
-    addUploadTask: state.addUploadTask,
-    resetUploadTask: state.resetUploadTask,
-  }))
+  const { addUploadThread, updateUploadThread, addUploadTask, resetUploadTask } = useStore(
+    (state) => ({
+      addUploadThread: state.addUploadThread,
+      updateUploadThread: state.updateUploadThread,
+      addUploadTask: state.addUploadTask,
+      resetUploadTask: state.resetUploadTask,
+    })
+  )
 
   async function checkVideoURL(url: string): Promise<AxiosResponse<any> | undefined> {
     let isNotFound = true
@@ -84,9 +88,6 @@ export const NewPost: FC = () => {
     }
   }
   async function imgUpload(files: File[], title: string): Promise<void> {
-    debugger
-    const threads = []
-    // TODO 是否有内存泄漏危险？
     const errorHandler = (error: any) => {
       toast({
         render: () => {
@@ -96,15 +97,17 @@ export const NewPost: FC = () => {
       })
       resetUploadTask()
     }
-    const allSuccessHandler = async (uploadThreads: UploadThread[]) => {
-      const result: string[] = uploadThreads.map((task) => task.result)
+    const allSuccessHandler = async (result: UploadThread[]) => {
+      const fileLinks = result[0].result.urls.join(',')
       try {
         await postResources({
-          media: result.join(','),
+          media: fileLinks,
           ...(title ? { title } : {}),
           type: 1,
           currency: 0,
           price: price || 0,
+          width: imageArrStyle.width.join(':'),
+          height: imageArrStyle.height.join(':'),
         })
         toast({
           render: () => {
@@ -114,78 +117,62 @@ export const NewPost: FC = () => {
         })
         resetUploadTask()
       } catch (error) {
+        console.log(error, 'jacob======error')
         errorHandler(error)
       }
     }
-    const formData = new FormData()
-    const url = `${import.meta.env.VITE_APP_UPLOAD_URL}uploadall`
-
-    /*try {
-      const response = await axios.put(url, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`,
-        },
-        onUploadProgress: (progressEvent: any) => {
-          const total = progressEvent.total
-          const current = progressEvent.loaded
-          const percentCompleted = Math.round((current * 100) / total)
-          // updateProgress()
+    const id = generateUUID()
+    const threads = []
+    const thread = {
+      id,
+      name: 'upload_img',
+      progress: 0,
+      status: TaskStatus.PENDING,
+      depends: [],
+      result: null,
+      thread: async () => {
+        try {
+          const formData = new FormData()
+          const url = `${import.meta.env.VITE_APP_UPLOAD_URL}uploadall`
+          for (const file of files) {
+            formData.append('file', file)
+          }
+          const response = await axios.put(url, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              Authorization: `Bearer ${token}`,
+            },
+            onUploadProgress: (progressEvent: any) => {
+              const total = progressEvent.total
+              const current = progressEvent.loaded
+              const percentCompleted = Math.round((current * 100) / total)
+              updateUploadThread({
+                id,
+                progress: percentCompleted === 100 ? 99 : percentCompleted,
+              })
+              console.log(`上传进度: ${percentCompleted}%`)
+            },
+          })
           updateUploadThread({
             id,
-            progress: percentCompleted === 100 ? 99 : percentCompleted,
+            progress: 100,
+            result: response.data,
+            status: TaskStatus.COMPLETED,
           })
-          console.log(`上传进度: ${percentCompleted}%`)
-        },
-      })
-      updateUploadThread({
-        id,
-        progress: 100,
-        result: response.data,
-        status: TaskStatus.COMPLETED,
-      })
-    } catch (error) {
-      console.error(`Error uploading ${file.name}:`, error)
-      errorHandler(error)
-    }*/
-    for (const file of files) {
-      // const id = generateUUID()
-      // const thread = {
-      //   id,
-      //   name: 'upload_img',
-      //   width: imageArrStyle.width.join(':'),
-      //   height: imageArrStyle.height.join(':'),
-      // }
-      // threads.push(thread)
-      formData.append('file', file)
-    }
-
-    const response = await axios.put(url, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${token}`,
+        } catch (e) {
+          errorHandler(error)
+        }
       },
-      onUploadProgress: (progressEvent: any) => {
-        const total = progressEvent.total
-        const current = progressEvent.loaded
-        const percentCompleted = Math.round((current * 100) / total)
-        // updateProgress()
-        // updateUploadThread({
-        //   id,
-        //   progress: percentCompleted === 100 ? 99 : percentCompleted,
-        // })
-        console.log(`上传进度: ${percentCompleted}%`)
+    }
+    threads.push(thread)
+    addUploadThread(threads)
+    addUploadTask({
+      uploadThreads: threads,
+      onAllThreadsComplete: allSuccessHandler,
+      onError: (error) => {
+        errorHandler(error)
       },
     })
-
-    // addUploadTask({
-    //   uploadThreads: threads,
-    //   onAllThreadsComplete: allSuccessHandler,
-    //   onError: (error) => {
-    //     errorHandler(error)
-    //   },
-    // })
-
     navigate(-1)
   }
   const handleUpload = async () => {
@@ -373,45 +360,6 @@ export const NewPost: FC = () => {
         },
       })
 
-      // const postreqUrl: any = await postReq()
-      // const id = postreqUrl.split('/').pop()
-      // const formData = new FormData()
-      // formData.append('file', videoFile)
-      // formData.append('name', videoFile.name)
-      // formData.append('type', 'bae')
-
-      // formData.append(
-      //   'meta',
-      //   JSON.stringify({
-      //     name: videoFile.name,
-      //     type: 'bae',
-      //   })
-      // )
-      // const response = await axios.post(postreqUrl, formData, {
-      //   headers: {
-      //     'Content-Type': 'multipart/form-data',
-      //   },
-      // })
-      // if (response.status === 200) {
-      //   const url = `https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${id}/manifest/video.m3u8`
-      //   await checkVideoURL(url)
-      //   const medias = [url]
-      //   cover && medias.unshift(cover)
-      //   await postResources({
-      //     duration: Math.floor(videoRef?.current?.duration || 0),
-      //     media: medias.join(','),
-      //     ...(title ? { title } : {}),
-      //     type: 0,
-      //     currency: 0,
-      //     price: price || 0,
-      //   })
-      //   toast({
-      //     render: () => {
-      //       return <CustomToast title="Your post was sent." type={typeOptions.success} />
-      //     },
-      //     position: 'top',
-      //   })
-      // }
       navigate(-1)
     } catch (e) {
       toast({
@@ -470,15 +418,6 @@ export const NewPost: FC = () => {
           },
           position: 'top',
         })
-        // toast({
-        //   title: 'Maximum 9 images allowed',
-        //   status: 'warning',
-        //   position: 'top',
-        //   containerStyle: {
-        //     marginTop: '50vh',
-        //     transform: 'translateY(-50%)',
-        //   },
-        // })
         return
       }
       const updatedFiles = [...files, ...fileArray]
@@ -587,27 +526,22 @@ export const NewPost: FC = () => {
                       src={url}
                       alt="img"
                     />
-                    <Image
+                    <span
+                      className="w-6 h-6 flex justify-center items-center bg-black bg-opacity-50 absolute top-2 right-2 rounded-full text-white-close cursor-pointer hover:bg-opacity-100"
                       onClick={() => removeImg(key)}
-                      w="24px"
-                      h="24px"
-                      position="absolute"
-                      top="8px"
-                      right="8px"
-                      src={RemoveIcon}
-                      alt="img"
-                    />
+                    >
+                      <i className="iconfont icon-icon_close"></i>
+                    </span>
                   </GridItem>
                 ))}
                 {imgAttr.length < 9 && (
                   <GridItem aspectRatio={1}>
-                    <Image
-                      w="100%"
-                      h="100%"
-                      cursor="pointer"
-                      src={PostAddIcon}
+                    <div
                       onClick={handleChooseFile}
-                    />
+                      className="w-full h-full flex items-center justify-center"
+                    >
+                      <Icon name={'icon-addpost1'} style={{ width: '100%', height: '100%' }}></Icon>
+                    </div>
                   </GridItem>
                 )}
               </Grid>

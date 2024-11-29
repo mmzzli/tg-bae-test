@@ -127,7 +127,7 @@ const Splash: FC = () => {
         <Icon name={'icon-chatu_youshang'} style={{ width: '165px', height: '166px' }}></Icon>
       </div>
       <div className="flex justify-center items-center flex-col">
-        <div className="w-[210px] h-[210px] relative top-[-4px]">
+        <div className="w-[210px] h-[210px] relative top-[0px]">
           <Icon name={'icon-logo'} style={{ width: '210px', height: '210px' }}></Icon>
         </div>
         <div className="text-[var(--Dark-T1)]  text-[24px] font-bold leading-[1.5] capitalize text-center">

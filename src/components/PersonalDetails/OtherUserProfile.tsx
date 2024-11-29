@@ -81,24 +81,24 @@ const OtherUserProfile: FC = () => {
             username={userInfo.username}
           />
           <div
-            className="flex items-center justify-center cursor-pointer rounded-full w-9 h-9 bg-[#CFCBFF20]"
+            className="flex items-center justify-center cursor-pointer rounded-full w-9 h-9 bg-[#F8F8F8]"
             onClick={() => navigate(`/chat/${userInfo.uid}`)}
           >
             <Image src={MessageIcon} />
           </div>
           <Menu>
             <MenuButton>
-              <div className="p-[6px] bg-[#CFCBFF20] rounded-[30px]">
+              <div className="p-[6px] bg-[#F8F8F8] rounded-[30px]">
                 <Image src={NavIcon} />
               </div>
             </MenuButton>
-            <MenuList minW="84px" bg="#19191E" border="none" borderRadius="4px" p="12px">
+            <MenuList minW="84px" bg="#fff" border="1px solid #EBEBF4" borderRadius="4px" p="12px">
               {navList.map((item, key) => (
                 <Box>
                   <MenuItem
                     key={key}
-                    bg="#19191E"
-                    color="#E0E2F6"
+                    bg="#fff"
+                    color="#333"
                     fontSize="12px"
                     p="0"
                     onClick={() => navEve(item.id)}
@@ -109,7 +109,7 @@ const OtherUserProfile: FC = () => {
                     </HStack>
                   </MenuItem>
                   {navList.length - 1 > key && (
-                    <Text h="1px" bg="rgba(255, 255, 255, 0.10)" m="16px 0"></Text>
+                    <Text h="1px" bg="#EBEBF4" m="16px 0"></Text>
                   )}
                 </Box>
               ))}
@@ -117,14 +117,15 @@ const OtherUserProfile: FC = () => {
           </Menu>
         </div>
       </HStack>
-      <Heading as="h3" color="#E0E2F6" fontWeight="500" className="mt-4" fontSize="20px">
+      <Heading as="h3" color="#0F1233" fontWeight="500" className="mt-4" fontSize="20px">
         {userInfo.username}
       </Heading>
-      <HStack pt="24px" gap="56px">
+      <More bio={userInfo.bio} />
+      <HStack p="24px 0" gap="56px">
         <Box>
           <Heading
             fontSize="20px"
-            color="#E0E2F6"
+            color="#0F1233"
             lineHeight="24px"
             onClick={() => navigate(`/follow/${userInfo.uid}?type=follower`)}
           >
@@ -137,7 +138,7 @@ const OtherUserProfile: FC = () => {
         <Box>
           <Heading
             fontSize="20px"
-            color="#E0E2F6"
+            color="#0F1233"
             lineHeight="24px"
             onClick={() => navigate(`/follow/${userInfo.uid}?type=following`)}
           >
@@ -148,7 +149,6 @@ const OtherUserProfile: FC = () => {
           </Text>
         </Box>
       </HStack>
-      <More bio={userInfo.bio} />
       <Report isOpen={reportVisible} onClose={setReportVisible} />
       <ShareModal ref={childRef} />
     </Box>

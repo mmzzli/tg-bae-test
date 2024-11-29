@@ -42,7 +42,7 @@ const ViewList = ({ className }: PostListProps) => {
       <Box className="flex justify-around" borderBottom="1px solid rgba(255, 255, 255, 0.10)">
         {menuList.map((item) => (
           <div
-            className={`text-[16px] text-[${item.id === ids ? '#E0E2F6' : '#62636F'}]`}
+            className={`text-[16px] text-[${item.id === ids ? '#0F1233' : '#666'}] font-medium`}
             onClick={() => tabEve(item.id) }
           >
             {item.name}

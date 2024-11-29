@@ -478,11 +478,11 @@ export const NewPost: FC = () => {
     <Box
       h="100vh"
       overflow="hidden"
-      className="fixed w-screen h-screen bg-black z-10 overflow-auto scrollbar-hide"
+      className="fixed w-screen h-screen bg-[#fff] z-10 overflow-auto scrollbar-hide"
     >
       <Box p="0 16px">
         <HStack justifyContent="space-between" pt="16px">
-          <Heading as="h3" fontSize="20px" color="#E0E2F6">
+          <Heading as="h3" fontSize="20px" color="#000">
             New Post
           </Heading>
           <Button
@@ -585,7 +585,7 @@ export const NewPost: FC = () => {
             value={title}
             onChange={(event) => setTitle(event.target.value)}
             mt="10px"
-            color="#E0E2F6"
+            color="#333"
             fontWeight="400"
             p="0"
             fontSize="14px"

@@ -9,11 +9,11 @@ const More: FC<{
   const toggleBioExpand = () => setIsBioExpanded((prev) => !prev);
 
   return (
-    <Box paddingTop="16px" paddingBottom="29px">
-      <Text color="#62636F" fontSize="14px" lineHeight="16px" marginBottom="4px">
+    <Box paddingTop="6px">
+      <Text color="#666" fontSize="14px" lineHeight="16px" marginBottom="4px">
         {(isBioExpanded || bio.length < 100) ? bio : `${bio.slice(0, 100)}...`}
       </Text>
-      {bio.length >= 100 && <Link color="#4452FF" fontSize="14px" onClick={toggleBioExpand}>
+      {bio.length >= 100 && <Link color="#5D6BFF" fontSize="14px" onClick={toggleBioExpand}>
         {isBioExpanded ? 'Less' : 'More'}
       </Link>}
     </Box>

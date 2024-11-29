@@ -75,19 +75,19 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
     <>
       <Box position="fixed" bottom="56px" w="100%" left="0" p="0px 16px">
         <HStack
-          border="1px solid #FFFFFF1A"
+          border="1px solid #CDCDD4"
           h="52px"
           lineHeight="52px"
           p="0 16px"
           justifyContent="space-between"
-          borderRadius="4px"
+          borderRadius="40px"
           onClick={onOpen}
         >
           <HStack gap="12px" w="100%" justifyContent="space-between">
-            <Text color="#E0E2F6" w="100%" fontSize="14px">Stars to unlock this post</Text>
+            <Text color="#333" w="100%" fontSize="14px">Stars to unlock this post</Text>
             <HStack justifyContent="flex-end">
               <Image src={StarsIcon} />
-              <Text color="#E0E2F6" fontSize="14px">{price}</Text>
+              <Text color="#333" fontSize="14px">{price}</Text>
             </HStack>
           </HStack>
           <Image src={Right1Icon} />
@@ -97,9 +97,9 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
       <Drawer placement="bottom" onClose={onClose} isOpen={isOpen}>
         <DrawerOverlay />
         <DrawerContent bg="no-repeat">
-          <DrawerBody bg="rgba(28, 28, 28, 1)" border="none" borderTopRadius="16px">
+          <DrawerBody bg="#FFF" border="none" borderTopRadius="16px">
             <Image onClick={onClose} mt="16px" mb="24px" src={Remove1Icon} alt="Remove Icon" />
-            <Heading as="h3" fontSize="24px" color="#E0E2F6">
+            <Heading as="h3" fontSize="24px" color="#333">
               Choose the stars to unlock this post
             </Heading>
             <Grid pt="28px" templateColumns="repeat(3, 1fr)" gap={3}>
@@ -111,13 +111,13 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
                       h="40px"
                       lineHeight="40px"
                       borderRadius="8px"
-                      border="1px solid rgba(255, 255, 255, 0.1)"
+                      border="1px solid #CDCDD4"
                       justifyContent="center"
                       gap="4px"
                       bg={price === item ? 'rgba(74, 58, 255, 1)' : ''}
                       onClick={() => handleStarSelect(item)}
                     >
-                      <Text color="rgba(224, 226, 246, 1)" fontSize="14px">{item}</Text>
+                      <Text color={price === item ? '#fff' : '#333'} fontSize="14px">{item}</Text>
                       <Image src={StarsIcon} alt="Stars Icon" />
                     </HStack>
                   </Box>
@@ -126,13 +126,13 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
             </Grid>
             <HStack
               h="48px"
-              border="1px solid rgba(255, 255, 255, 0.1)"
+              border="1px solid #CDCDD4"
               mt="17px"
               p="0 20px"
               borderRadius="8px"
             >
               {boll && <Input
-                color="#E0E2F6"
+                color="#999"
                 border="none"
                 p="0"
                 inputMode="numeric"

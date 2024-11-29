@@ -22,11 +22,11 @@ const AgeGate = () => {
     }
   }, [])
   return (
-    <div className="px-[20px] fixed w-screen h-screen bg-black z-10 overflow-auto scrollbar-hide">
+    <div className="px-[20px] fixed w-screen h-screen bg-black z-10 overflow-auto scrollbar-hide bg-[#fff]">
 
       <Image className='mx-[auto] mt-[94px] mb-[50px]' src={GateImg} />
 
-      <h3 className="text-[#FFF] text-[24px] text-center">
+      <h3 className="text-[#333] text-[24px] text-center">
         Are you 18 years of age or older?
       </h3>
 
@@ -35,7 +35,7 @@ const AgeGate = () => {
           You must be 18 years or older and agree to our Terms of Service to access and use this app. By tapping the button below, you certify that you are 18 years or older and that you accept our.
         </p>
         <p className="text-center">
-          <a className="text-[#E0E2F6] text-[14px] underline">Terms of Service</a>
+          <a className="text-[#6254FF] text-[14px] underline">Terms of Service</a>
         </p>
       </div>
       <div className="mt-[88px] text-center">
@@ -43,7 +43,7 @@ const AgeGate = () => {
           <input type="checkbox" checked={isChecked} onChange={handleChange}
             className='w-[20px] h-[20px] bg-gray-100 border-gray-300 rounded checked:bg-[#E0E2F6] checked:border-[#E0E2F6] focus:ring-[#E0E2F6]'
            />
-          <p className="text-[#E0E2F6] text-[12px]">
+          <p className="text-[#999] text-[12px]">
             I have read and accept the
             <a className="underline ml-[4px]">Terms of Service</a>
           </p>

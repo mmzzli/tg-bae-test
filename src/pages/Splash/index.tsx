@@ -148,7 +148,7 @@ const Splash: FC = () => {
   }, [startParam, isInTMA])
 
   return (
-    <div className="fixed w-screen h-screen bg-[#0D0D0D] flex justify-center items-center z-10 flex-col relative">
+    <div className="fixed w-screen h-screen bg-[#ffffff] flex justify-center items-center z-10 flex-col relative">
       <div className="absolute top-[-1px] right-[-1px]">
         <Icon name={'icon-chatu_youshang'} style={{ width: '165px', height: '166px' }}></Icon>
       </div>
@@ -156,10 +156,10 @@ const Splash: FC = () => {
         <div className="w-[210px] h-[210px]">
           <Icon name={'icon-logo'} style={{ width: '210px', height: '210px' }}></Icon>
         </div>
-        <div className="text-[var(--Dark-T1)]  text-[24px] font-bold leading-[1.5] capitalize text-center">
+        <div className="text-[var(--Light-T1)]  text-[24px] font-bold leading-[1.5] capitalize text-center">
           welcome to Bae
         </div>
-        <div className="mt-[12px] text-[var(--Dark-T1)] opacity-50 pl-[36px] pr-[36px] text-center tracking-[1px]">
+        <div className="mt-[12px] text-[var(--Light-T1)] opacity-50 pl-[36px] pr-[36px] text-center tracking-[1px]">
           Connect with people you like on a deeper level.
         </div>
       </div>

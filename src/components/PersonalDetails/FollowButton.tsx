@@ -69,10 +69,10 @@ const FollowButton: FC<{
   return isFollowing ? (
     <BaseButton
       text="Following"
-      loading={followLoading}
+      // loading={followLoading}
       width="104px"
       handler={doFollow}
-      className={`bg-transparent border border-white ${className}`}
+      className={`bg-transparent border text-[#625DFF] border-[#625DFF] ${className}`}
     />
   ) : (
     <BaseButton

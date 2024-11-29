@@ -9,7 +9,6 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0,user-scalable=no"
     />
     <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_4749276_wdytwipfh9.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
     <title>DITTO</title>
   </head>
   <body>
@@ -20,10 +19,10 @@
           fill="#FF5596"
         ></path>
       </symbol>
-      <symbol id="icon-chatu_zuoxia1" viewBox="0 0 1024 1024">
+      <symbol id="icon-chatu_zuoxia" viewBox="0 0 1024 1024">
         <path
           d="M161.89839 1024C126.537143 961.589195 88.582649 902.622753 49.87013 856.223584V1024h112.02826z m191.986701 0h239.589403c48.473766-92.206545 57.829403-211.24987 25.706389-341.617039a1186.589922 1186.589922 0 0 0-33.446234-112.121351c126.603636-53.839792 243.40613-134.25039 382.477299-265.442078l-0.046545-0.019948-122.899948-130.214233C722.558338 290.337247 623.868675 360.195325 511.79387 407.073247 410.131948 226.842597 257.077195 90.577455 54.212156 0H49.87013v197.22639c121.55013 66.187636 216.569351 153.799481 286.301091 264.231896-58.201766 13.119169-122.308156 24.004156-195.490909 34.536727A648.697351 648.697351 0 0 1 49.87013 502.784v179.186701a834.626494 834.626494 0 0 0 116.32374-8.69735c92.997818-13.378494 174.578701-27.741091 249.503585-46.678442a1017.816104 1017.816104 0 0 1 29.563013 98.649766c24.296727 98.835948 15.346701 185.430442-24.436364 237.594598-18.013091 23.571948-40.720623 43.865766-66.939013 61.160727z"
-          fill="#7F7BFF"
+          fill="#CFFF5E"
         ></path>
       </symbol>
     </svg>
@@ -32,7 +31,7 @@
       style="
         position: fixed;
         inset: 0;
-        background: #ffffff;
+        background: #0d0d0d;
         z-index: 10;
         flex-direction: column;
         display: flex;
@@ -46,36 +45,62 @@
           <use xlink:href="#icon-chatu_youshang" />
         </svg>
       </div>
-      <div id="animationContainer" style="width: 210px; height: 210px"></div>
+      <div
+        style="display: flex; flex-direction: column; align-items: center; justify-content: center"
+      >
+        <div
+          id="animationContainer"
+          style="
+            width: 210px;
+            height: 210px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          "
+        ></div>
+        <div
+          style="
+            color: var(--Dark-T1);
+            font-size: 24px;
+            font-weight: bold;
+            line-height: 1.5;
+            text-transform: capitalize;
+          "
+        >
+          welcome to Bae
+        </div>
+        <div
+          style="
+            margin-top: 12px;
+            color: var(--Dark-T1);
+            opacity: 0.5;
+            padding: 0 36px;
+            text-align: center;
+            letter-spacing: 1px;
+          "
+        >
+          Connect with people you like on a deeper level.
+        </div>
+      </div>
+
       <div
         style="
-          color: var(--Light-T1);
-          font-size: 24px;
-          font-weight: bold;
-          letter-spacing: 2px;
-          text-transform: capitalize;
+          position: absolute;
+          left: -7px;
+          bottom: -8px;
+          width: 138.11px;
+          height: 154px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         "
       >
-        welcome to Bae
-      </div>
-      <div
-        style="
-          margin-top: 12px;
-          color: var(--Light-T2);
-          opacity: 0.5;
-          padding: 0 36px;
-          text-align: center;
-          letter-spacing: 1px;
-        "
-      >
-        Connect with people you like on a deeper level.
-      </div>
-      <div style="position: absolute; left: -7px; bottom: -8px">
-        <svg style="width: 165px; height: 166px">
-          <use xlink:href="#icon-chatu_zuoxia1" />
+        <svg style="width: 138.11px; height: 154px">
+          <use xlink:href="#icon-chatu_zuoxia" />
         </svg>
       </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
     <script>
       window.loading = true
       const animationData = {
@@ -469,7 +494,7 @@
       })
     </script>
 
-    <script src="https://at.alicdn.com/t/c/font_4749304_d471eavyfzb.js"></script>
+    <script src="https://at.alicdn.com/t/c/font_4749304_pmx2te26dtf.js"></script>
     <script type="module" src="/src/main.tsx"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
   </body>

@@ -17,8 +17,7 @@ import Image from '../Image/Image'
 import FrostedGlass from '@/components/ResourceList/FrostedGlass'
 import SecondaryMenu from '../SecondaryMenu/SecondaryMenu'
 import { getLink } from '@/api/list'
-// import { ImagePreview } from '../Image/ImagePreview'
-const ImagePreview = lazy(() => import('../Image/ImagePreview'))
+import ImagePreview from '../Image/ImagePreview'
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import useMobile from '@/hooks/useMobile'
 import playIcon from '@/assets/icons/videoSwitch.svg'
@@ -28,6 +27,7 @@ import Icon from '../comm/Icon'
 
 import { VideoDialog } from './VideoDialog'
 import { CardRecommendProvider } from '@/utils/constants'
+import { useStore } from '@/store'
 interface Like {
   id: number
   liked: boolean
@@ -50,6 +50,8 @@ const ResourceList = ({
   type?: string
   hasMore?: boolean
 }) => {
+  const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
+  const loadFullVideo = useStore((state) => state.loadFullVideo)
   const isMobile = useMobile()
   const [resources, setResources] = useState<FormatterListItem[]>([])
   const [likes, setLikes] = useSafeState<Like[]>([])
@@ -82,6 +84,8 @@ const ResourceList = ({
 
   const handleVideoClick = useCallback((video: FormatterListItem) => {
     setPreviewVideo(video)
+    setCacheVideoIndex(video.id)
+    loadFullVideo(video)
     setIsVideoPreviewOpen(true)
   }, [])
 
@@ -158,7 +162,7 @@ const ResourceList = ({
     const { host, ref } = await getLinkHandlerAsync({ pid, uid })
     console.log(host, ref, 'getLinkResult')
 
-    const copyLink = encodeURIComponent(`${import.meta.env.VITE_API_URL}link/${ref}?startapp`)
+    const copyLink = encodeURIComponent(`${import.meta.env.VITE_API_URL}link/${ref}`)
     console.log('copyLink', decodeURIComponent(copyLink))
 
     const shareLink = `https://t.me/share/url?url=${copyLink}&text=${shareText}`
@@ -352,7 +356,7 @@ const ResourceList = ({
             }
           } else {
             return (
-              <Box key={index}>
+              <Box key={index} className="video-card" data-id={data.id}>
                 <ResourceHeader
                   data={data}
                   currentUid={launchParams.initData?.user?.id ?? 0}
@@ -365,9 +369,12 @@ const ResourceList = ({
                         src={formatImage(data.media?.[0] ?? data?.media ?? '', false)}
                         alt={data.title}
                         errorClassName="rounded-[4px] h-[150px]"
-                        // wrapperClassName="rounded-[4px] overflow-hidden"
-                        // className="object-left w-[100%] m-[auto]"
-                        className="w-[230px] rounded-[4px]"
+                        width={data.pic_width}
+                        height={data.pic_height}
+                        className={`w-[230px] rounded-[4px]`}
+                        style={{
+                          height: (230 * Number(data.pic_height)) / Number(data.pic_width) + 'px',
+                        }}
                         onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
                       />
                       {data.media?.[0] === '' && (
@@ -389,7 +396,7 @@ const ResourceList = ({
                           className="object-left w-[100%] rounded-[4px] m-[auto]"
                           onClick={() => handleVideoClick(data)}
                         />
-                        <PlayButton onClick={() => handleVideoClick(data)} />
+                        {data.media?.[0] && <PlayButton onClick={() => handleVideoClick(data)} />}
                       </Box>
                       <HStack
                         borderRadius="4px"
@@ -440,7 +447,21 @@ const ResourceList = ({
         {isVideoPreviewOpen && (
           <VideoDialog info={previewVideo} onClose={() => setIsVideoPreviewOpen(false)} />
         )}
+        {isVideoPreviewOpen && (
+          <VideoDialog info={previewVideo} onClose={() => setIsVideoPreviewOpen(false)} />
+        )}
 
+        {isPreviewOpen && (
+          <ImagePreviewWrapper
+            isOpen={isPreviewOpen}
+            onClose={() => setIsPreviewOpen(false)}
+            images={previewImages}
+            currentIndex={currentIndex}
+            onIndexChange={setCurrentIndex}
+          />
+        )}
+        {/* Components */}
+        {renderBaseModal()}
         {isPreviewOpen && (
           <ImagePreviewWrapper
             isOpen={isPreviewOpen}
@@ -489,7 +510,7 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
           />
         </div>
         <div className="flex flex-col">
-          <div className="text-[#0F1233]dark:text-[#E0E2F6]  font-bold text-base">
+          <div className="text-[#0F1233] dark:text-[#E0E2F6]  font-bold text-base">
             {data.username}
             {data.is_follow}
           </div>

@@ -150,12 +150,14 @@ export function VideoDialog({
 
     if (Hls.isSupported() && info) {
       const hls = new Hls({
+        startPosition: 0, // 从视频开始播放
+        maxBufferLength: 2, // 缓存最多 2 秒内容
         enableWorker: true,
-        maxBufferLength: 30,
-        maxMaxBufferLength: 60,
+        maxMaxBufferLength: 5,
         autoStartLoad: true,
         maxBufferHole: 0.5,
         lowLatencyMode: true,
+        maxBufferSize: 10 * 1024 * 1024, // 最大缓冲区大小，限制为 5MB
       })
 
       hls.loadSource(info.media[0])
@@ -175,6 +177,7 @@ export function VideoDialog({
 
       return () => {
         hls.destroy()
+        video.src = ''
       }
     } else if (video.canPlayType('application/vnd.apple.mpegurl') && info) {
       video.src = info.media[0]

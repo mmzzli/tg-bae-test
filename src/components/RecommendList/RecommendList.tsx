@@ -1,16 +1,32 @@
-import { Box, Spinner } from '@chakra-ui/react'
+import { Box } from '@chakra-ui/react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import ResourceList from '../ResourceList/ResourceList'
 import { cn } from '@/utils/utils'
-import { useRecommendList } from '@/store/hook/useResourceList'
+import useCacheVideo, { useRecommendList } from '@/store/hook/useResourceList'
 import PostSkeleton from '../Skeketon/PostSkeleton'
+import { useEffect } from 'react'
+import { useStore } from '@/store'
 
 interface PostListProps {
   className?: string
 }
 
 const RecommendList = ({ className }: PostListProps) => {
-  const { list, hasMore, fetchMoreData } = useRecommendList()
+  const { list, hasMore, fetchMoreData, page } = useRecommendList()
+  const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
+  const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
+  const updateCache = useStore((state) => state.updateCache)
+
+  useCacheVideo(
+    list,
+    page,
+    setCacheVideoIndex,
+    getCacheVideoindex,
+    updateCache,
+    'recommendScrollableDiv',
+    'video-card'
+  )
+
   return (
     <div className={cn(className, 'pb-24')}>
       <InfiniteScroll
@@ -23,10 +39,12 @@ const RecommendList = ({ className }: PostListProps) => {
           </Box>
         }
         scrollableTarget="recommendScrollableDiv"
-        scrollThreshold={0.8}
+        scrollThreshold={0.1}
         style={{ overflow: 'visible' }}
       >
-        <ResourceList resources={list} />
+        <div id="view-container">
+          <ResourceList resources={list} />
+        </div>
       </InfiniteScroll>
     </div>
   )

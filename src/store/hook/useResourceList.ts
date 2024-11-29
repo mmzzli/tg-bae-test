@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { shallow } from 'zustand/shallow'
 import { useStore } from '../store'
+import { string } from '@tma.js/sdk'
+import { debounce } from '@/utils/utils'
 
 export const useRecommendList = () => {
   const { recommendList, setRecommendPage, loadRecommendList, resetRecommendList, token } =
@@ -24,12 +26,6 @@ export const useRecommendList = () => {
     loadRecommendList(page)
     setIsInitialRender(page)
   }, [page, token])
-
-  // useEffect(() => {
-  //   return () => {
-  //     resetRecommendList()
-  //   }
-  // }, [])
 
   const fetchMoreData = () => {
     if (!isLoading && hasMore) {
@@ -100,18 +96,19 @@ export const useViewList = () => {
 }
 
 export const useFavList = () => {
-  const { favList, setFavPage, loadFavList, resetFavList, token, setFavList, setFavHasMore } = useStore(
-    (state) => ({
-      favList: state.favList,
-      setFavPage: state.setFavPage,
-      loadFavList: state.loadFavList,
-      resetFavList: state.resetFavList,
-      setFavList: state.setFavList,
-      setFavHasMore: state.setFavHasMore,
-      token: state.token,
-    }),
-    shallow
-  )
+  const { favList, setFavPage, loadFavList, resetFavList, token, setFavList, setFavHasMore } =
+    useStore(
+      (state) => ({
+        favList: state.favList,
+        setFavPage: state.setFavPage,
+        loadFavList: state.loadFavList,
+        resetFavList: state.resetFavList,
+        setFavList: state.setFavList,
+        setFavHasMore: state.setFavHasMore,
+        token: state.token,
+      }),
+      shallow
+    )
 
   const { list, page, hasMore, isLoading, error } = favList
 
@@ -137,10 +134,10 @@ export const useFavList = () => {
       resetFavList()
       loadFavList(1)
     },
-    initialize:()=>{
+    initialize: () => {
       setFavList([])
       setFavHasMore(true)
-    }
+    },
   }
 }
 export const useOrdersList = () => {
@@ -260,3 +257,68 @@ export const useSharedList = () => {
     resetSharedPostList,
   }
 }
+
+const useCacheVideo = (
+  list: any[], // 视频列表
+  page: number, // 当前页码
+  setCacheVideoIndex: (index: number) => void, // 更新缓存视频索引的函数
+  getCacheVideoindex: number | string, // 当前缓存视频索引
+  updateCache: (videos: any[]) => void, // 更新缓存的函数
+  domId: string,
+  cardClass: string = 'video-card'
+) => {
+  const handleScroll = debounce(() => {
+    const videos = list.filter((item) => item.type === 0) // 过滤出视频类型
+    const container = document.getElementById(`${domId}`)
+    if (container) {
+      const elements = container.querySelectorAll(`.${cardClass}`) // 获取需要监听的元素
+      const visibleItems: number[] = []
+
+      elements.forEach((element) => {
+        const rect = element.getBoundingClientRect()
+        const containerRect = container.getBoundingClientRect() // 滚动容器的边界
+
+        const isVisible =
+          rect.bottom >= containerRect.top && // 元素底部在容器顶部以下
+          rect.top <= containerRect.bottom // 元素顶部在容器底部以上
+
+        if (isVisible) {
+          const videoId = element.getAttribute('data-id')
+          if (videoId) visibleItems.push(parseInt(videoId))
+        }
+      })
+      //
+      if (visibleItems.length > 0) {
+        setCacheVideoIndex(visibleItems[Math.floor(visibleItems.length / 2)]) // 更新缓存视频索引
+        updateCache(videos) // 更新缓存
+      }
+    }
+  }, 300)
+
+  useEffect(() => {
+    if (page === 1 && list.length) {
+      const videos = list.filter((item) => item.type === 0)
+      setCacheVideoIndex(videos[0].id) // 初始时设置缓存视频索引
+      updateCache(videos) // 初始时更新缓存
+    }
+  }, [page, list])
+
+  useEffect(() => {
+    const videos = list.filter((item) => item.type === 0)
+    if (videos.length && page !== 1) {
+      updateCache(videos) // 当 `list` 或 `getCacheVideoindex` 改变时更新缓存
+    }
+  }, [list, getCacheVideoindex, page])
+
+  useEffect(() => {
+    const scrollableDiv = document.getElementById(`${domId}`)
+    if (scrollableDiv) {
+      scrollableDiv.addEventListener('scroll', handleScroll) // 监听滚动事件
+    }
+    return () => {
+      if (scrollableDiv) scrollableDiv.removeEventListener('scroll', handleScroll) // 移除滚动监听
+    }
+  }, [])
+}
+
+export default useCacheVideo

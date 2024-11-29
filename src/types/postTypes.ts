@@ -27,6 +27,8 @@ export type PostResourceReq = {
   currency: number
   price: number
   duration?: number
+  width?: string
+  height?: string
 }
 
 // like
@@ -96,6 +98,7 @@ export type totalAvailable = {
 export type AccountdetailItem = {
   created_at: string
   amount: number
+  coin_amount: number
 }
 
 export type AccountdetailRes = { accounts: Array<AccountdetailItem> }

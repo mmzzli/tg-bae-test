@@ -153,7 +153,19 @@ const MessagePageIOS = () => {
       style={{
         WebkitOverflowScrolling: 'touch',
         transition: 'height 0.3s ease-in-out',
-        paddingTop: `calc(${window.getComputedStyle(document.documentElement).getPropertyValue('--tg-safe-area-inset-top') ? 'var(--tg-safe-area-inset-top) + 100px' : '76px'})`,
+        paddingTop: `calc(${
+          window
+            .getComputedStyle(document.documentElement)
+            .getPropertyValue('--tg-safe-area-inset-top') &&
+          parseInt(
+            window
+              .getComputedStyle(document.documentElement)
+              .getPropertyValue('--tg-safe-area-inset-top'),
+            10
+          ) !== 0
+            ? 'var(--tg-safe-area-inset-top) + 100px'
+            : '76px'
+        })`,
       }}
     >
       {/* TEST CODE */}
@@ -168,7 +180,19 @@ const MessagePageIOS = () => {
       <div
         className="fixed flex items-center left-0 right-0 top-[10px] px-[16px]"
         style={{
-          paddingTop: `calc(${window.getComputedStyle(document.documentElement).getPropertyValue('--tg-safe-area-inset-top') ? 'var(--tg-safe-area-inset-top) + 54px' : '24px'})`,
+          paddingTop: `calc(${
+            window
+              .getComputedStyle(document.documentElement)
+              .getPropertyValue('--tg-safe-area-inset-top') &&
+            parseInt(
+              window
+                .getComputedStyle(document.documentElement)
+                .getPropertyValue('--tg-safe-area-inset-top'),
+              10
+            ) !== 0
+              ? 'var(--tg-safe-area-inset-top) + 54px'
+              : '24px'
+          })`,
         }}
       >
         <Image

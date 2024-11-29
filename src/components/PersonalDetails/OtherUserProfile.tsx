@@ -48,7 +48,19 @@ const OtherUserProfile: FC = () => {
       p="0px 16px"
       style={{
         position: 'relative',
-        paddingTop: `calc(${window.getComputedStyle(document.documentElement).getPropertyValue('--tg-safe-area-inset-top') ? '8px' : '24px'})`,
+        paddingTop: `calc(${
+          window
+            .getComputedStyle(document.documentElement)
+            .getPropertyValue('--tg-safe-area-inset-top') &&
+          parseInt(
+            window
+              .getComputedStyle(document.documentElement)
+              .getPropertyValue('--tg-safe-area-inset-top'),
+            10
+          ) !== 0
+            ? '8px'
+            : '24px'
+        })`,
       }}
     >
       <HStack gap="16px" pl="8px" justifyContent="space-between">

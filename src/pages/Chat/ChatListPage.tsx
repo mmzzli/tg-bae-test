@@ -174,7 +174,19 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
       )}
       onClick={handleContainerClick}
       style={{
-        paddingTop: `calc(${window.getComputedStyle(document.documentElement).getPropertyValue('--tg-safe-area-inset-top') ? 'var(--tg-safe-area-inset-top) + 54px' : '32px'})`,
+        paddingTop: `calc(${
+          window
+            .getComputedStyle(document.documentElement)
+            .getPropertyValue('--tg-safe-area-inset-top') &&
+          parseInt(
+            window
+              .getComputedStyle(document.documentElement)
+              .getPropertyValue('--tg-safe-area-inset-top'),
+            10
+          ) !== 0
+            ? 'var(--tg-safe-area-inset-top) + 54px'
+            : '32px'
+        })`,
       }}
     >
       {isChatListLoaded && chatList.length > 0 && (

@@ -14,7 +14,19 @@ const Shares: FC = () => {
       <div
         className="flex items-center justify-between mx-4"
         style={{
-          marginTop: `calc(${window.getComputedStyle(document.documentElement).getPropertyValue('--tg-safe-area-inset-top') ? '10px' : '16px'})`,
+          marginTop: `calc(${
+            window
+              .getComputedStyle(document.documentElement)
+              .getPropertyValue('--tg-safe-area-inset-top') &&
+            parseInt(
+              window
+                .getComputedStyle(document.documentElement)
+                .getPropertyValue('--tg-safe-area-inset-top'),
+              10
+            ) !== 0
+              ? '10px'
+              : '16px'
+          })`,
         }}
       >
         <div className="font-bold text-xl dark:text-[#E0E2F6] text-black">Shared</div>

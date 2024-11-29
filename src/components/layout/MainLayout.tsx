@@ -181,7 +181,19 @@ export const MainLayout: React.FC = () => {
       <div
         className={`absolute inset-0 top-0 bottom-[84px] z-1`}
         style={{
-          paddingTop: `calc(${window.getComputedStyle(document.documentElement).getPropertyValue('--tg-safe-area-inset-top') !== '0px' || window.getComputedStyle(document.documentElement).getPropertyValue('--tg-safe-area-inset-top') !== '0' ? 'var(--tg-safe-area-inset-top) + 54px' : '0'})`,
+          paddingTop: `calc(${
+            window
+              .getComputedStyle(document.documentElement)
+              .getPropertyValue('--tg-safe-area-inset-top') &&
+            parseInt(
+              window
+                .getComputedStyle(document.documentElement)
+                .getPropertyValue('--tg-safe-area-inset-top'),
+              10
+            ) !== 0
+              ? 'var(--tg-safe-area-inset-top) + 54px'
+              : '0'
+          })`,
           // paddingTop: 'var(--tg-safe-area-inset-top)',
         }}
       >

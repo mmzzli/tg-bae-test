@@ -115,7 +115,19 @@ const FollowPage: FC = () => {
     <div
       className="fixed w-screen h-screen dark:bg-black bg-white flex flex-col text-white px-4 pb-[30px] z-10 overflow-auto scrollbar-hide"
       style={{
-        paddingTop: `calc(${window.getComputedStyle(document.documentElement).getPropertyValue('--tg-safe-area-inset-top') ? '8px' : '30px'})`,
+        paddingTop: `calc(${
+          window
+            .getComputedStyle(document.documentElement)
+            .getPropertyValue('--tg-safe-area-inset-top') &&
+          parseInt(
+            window
+              .getComputedStyle(document.documentElement)
+              .getPropertyValue('--tg-safe-area-inset-top'),
+            10
+          ) !== 0
+            ? '8px'
+            : '30px'
+        })`,
       }}
     >
       <h1 className="text-[24px] font-bold text-black dark:text-white">{title}</h1>

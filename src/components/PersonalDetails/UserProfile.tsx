@@ -26,7 +26,19 @@ const UserProfile: FC = () => {
     <Box
       padding="0 16px"
       style={{
-        paddingTop: `calc(${window.getComputedStyle(document.documentElement).getPropertyValue('--tg-safe-area-inset-top') ? '8px' : '24px'})`,
+        paddingTop: `calc(${
+          window
+            .getComputedStyle(document.documentElement)
+            .getPropertyValue('--tg-safe-area-inset-top') &&
+          parseInt(
+            window
+              .getComputedStyle(document.documentElement)
+              .getPropertyValue('--tg-safe-area-inset-top'),
+            10
+          ) !== 0
+            ? '8px'
+            : '24px'
+        })`,
       }}
     >
       <HStack gap="16px" paddingLeft="8px" justifyContent="space-between">

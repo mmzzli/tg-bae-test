@@ -22,7 +22,7 @@ const Profile: FC = () => {
   }, [token])
 
   return (
-    <div className="relative w-full h-full overflow-auto" id="profileScrollableDiv">
+    <div className="relative w-full h-full overflow-auto min-h-screen" id="profileScrollableDiv">
       <UserProfile />
       <ViewList />
     </div>

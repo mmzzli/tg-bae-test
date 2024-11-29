@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect, useRef } from 'react'
+import React, { FC, useState, useEffect, useRef, useMemo } from 'react'
 import {
   HStack,
   Heading,
@@ -46,6 +46,23 @@ export const NewPost: FC = () => {
   // cover
   const [cover, setCover] = useState<string | null>(null)
 
+  const imageArrStyle = useMemo(() => {
+    const width: number[] = []
+    const height: number[] = []
+    for (const imgitem of imgAttr) {
+      const image = new window.Image()
+      image.src = imgitem
+      image.onload = () => {
+        width.push(image.width)
+        height.push(image.height)
+      }
+    }
+    return {
+      width,
+      height,
+    }
+  }, [imgAttr])
+
   // upload states
   const { updateUploadThread, addUploadTask, resetUploadTask } = useStore((state) => ({
     updateUploadThread: state.updateUploadThread,
@@ -67,6 +84,7 @@ export const NewPost: FC = () => {
     }
   }
   async function imgUpload(files: File[], title: string): Promise<void> {
+    debugger
     const threads = []
     // TODO 是否有内存泄漏危险？
     const errorHandler = (error: any) => {
@@ -99,59 +117,74 @@ export const NewPost: FC = () => {
         errorHandler(error)
       }
     }
-    for (const file of files) {
-      const id = generateUUID()
-      const thread = {
-        id,
-        name: 'upload_img',
-        progress: 0,
-        status: TaskStatus.PENDING,
-        depends: [],
-        result: null,
-        thread: async () => {
-          const url = `${import.meta.env.VITE_APP_UPLOAD_URL}upload/${file.name}`
-          console.log(file)
-          const formData = new FormData()
-          formData.append('file', file)
-          try {
-            const response = await axios.put(url, formData, {
-              headers: {
-                'Content-Type': 'multipart/form-data',
-                Authorization: `Bearer ${token}`,
-              },
-              onUploadProgress: (progressEvent: any) => {
-                const total = progressEvent.total
-                const current = progressEvent.loaded
-                const percentCompleted = Math.round((current * 100) / total)
-                // updateProgress()
-                updateUploadThread({
-                  id,
-                  progress: percentCompleted === 100 ? 99 : percentCompleted,
-                })
-                console.log(`上传进度: ${percentCompleted}%`)
-              },
-            })
-            updateUploadThread({
-              id,
-              progress: 100,
-              result: response.data,
-              status: TaskStatus.COMPLETED,
-            })
-          } catch (error) {
-            console.error(`Error uploading ${file.name}:`, error)
-            errorHandler(error)
-          }
+    const formData = new FormData()
+    const url = `${import.meta.env.VITE_APP_UPLOAD_URL}uploadall`
+
+    /*try {
+      const response = await axios.put(url, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
         },
-      }
-      threads.push(thread)
+        onUploadProgress: (progressEvent: any) => {
+          const total = progressEvent.total
+          const current = progressEvent.loaded
+          const percentCompleted = Math.round((current * 100) / total)
+          // updateProgress()
+          updateUploadThread({
+            id,
+            progress: percentCompleted === 100 ? 99 : percentCompleted,
+          })
+          console.log(`上传进度: ${percentCompleted}%`)
+        },
+      })
+      updateUploadThread({
+        id,
+        progress: 100,
+        result: response.data,
+        status: TaskStatus.COMPLETED,
+      })
+    } catch (error) {
+      console.error(`Error uploading ${file.name}:`, error)
+      errorHandler(error)
+    }*/
+    for (const file of files) {
+      // const id = generateUUID()
+      // const thread = {
+      //   id,
+      //   name: 'upload_img',
+      //   width: imageArrStyle.width.join(':'),
+      //   height: imageArrStyle.height.join(':'),
+      // }
+      // threads.push(thread)
+      formData.append('file', file)
     }
-    addUploadTask({
-      uploadThreads: threads,
-      onAllThreadsComplete: allSuccessHandler,
-      onError: (error) => {
-        errorHandler(error)
+
+    const response = await axios.put(url, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+      onUploadProgress: (progressEvent: any) => {
+        const total = progressEvent.total
+        const current = progressEvent.loaded
+        const percentCompleted = Math.round((current * 100) / total)
+        // updateProgress()
+        // updateUploadThread({
+        //   id,
+        //   progress: percentCompleted === 100 ? 99 : percentCompleted,
+        // })
+        console.log(`上传进度: ${percentCompleted}%`)
       },
     })
+
+    // addUploadTask({
+    //   uploadThreads: threads,
+    //   onAllThreadsComplete: allSuccessHandler,
+    //   onError: (error) => {
+    //     errorHandler(error)
+    //   },
+    // })
 
     navigate(-1)
   }

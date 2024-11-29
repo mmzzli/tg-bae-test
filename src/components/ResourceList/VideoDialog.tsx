@@ -177,6 +177,7 @@ export function VideoDialog({
 
       return () => {
         hls.destroy()
+        video.src = ''
       }
     } else if (video.canPlayType('application/vnd.apple.mpegurl') && info) {
       video.src = info.media[0]

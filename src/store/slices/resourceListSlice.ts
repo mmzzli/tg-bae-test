@@ -39,8 +39,8 @@ export interface CacheVideo {
   id: string | number
   media: string
 }
-const recordsNum = 30
-const CACHE_VIDEOS_LIMIT = 10
+const recordsNum = 3
+const CACHE_VIDEOS_LIMIT = 3
 const MAX_FRAGMENTS = 1
 
 export interface ResourceListSlice {
@@ -398,7 +398,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         isLoading = false
         processQueue()
       })
-
+      //
       // 销毁事件
       hls.on(Hls.Events.DESTROYING, () => {
         console.log(`Destroying video ${video.id}`)
@@ -407,7 +407,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         isLoading = false
         processQueue()
       })
-
+      //
       // 错误处理
       hls.on(Hls.Events.ERROR, (event, data) => {
         console.error(`Error loading video ${video.id}:`, data)

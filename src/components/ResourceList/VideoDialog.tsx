@@ -122,7 +122,7 @@ const CloseButton = memo(({ onClose }: { onClose: () => void }) => {
 const PlayButton = memo(({ onClick }: { onClick: (e: React.MouseEvent) => void }) => (
   <div
     onClick={onClick}
-    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 no-tap z-20"
+    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 no-tap z-1"
   >
     <Image src={playIcon} alt="play" className="w-[72px] h-[72px] no-tap" />
   </div>

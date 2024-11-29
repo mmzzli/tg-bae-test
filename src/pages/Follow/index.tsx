@@ -95,7 +95,9 @@ const FollowPage: FC = () => {
             className="rounded-full"
           />
         </div>
-        <div className="flex-1 ml-3 truncate overflow-hidden whitespace-nowrap">{item.tgname}</div>
+        <div className="flex-1 ml-3 truncate overflow-hidden whitespace-nowrap text-[#333] dark:text-black text-base">
+          {item.tgname}
+        </div>
         {item.tg_id !== currentUid && (
           <FollowButton
             className="ml-[32px]"
@@ -111,12 +113,12 @@ const FollowPage: FC = () => {
 
   return (
     <div
-      className="fixed w-screen h-screen bg-black flex flex-col text-white px-4 pb-[30px] z-10 overflow-auto scrollbar-hide"
+      className="fixed w-screen h-screen dark:bg-black bg-white flex flex-col text-white px-4 pb-[30px] z-10 overflow-auto scrollbar-hide"
       style={{
         paddingTop: `calc(${window.getComputedStyle(document.documentElement).getPropertyValue('--tg-safe-area-inset-top') ? '8px' : '30px'})`,
       }}
     >
-      <h1 className="text-[24px] font-bold">{title}</h1>
+      <h1 className="text-[24px] font-bold text-black dark:text-white">{title}</h1>
       {type === 'follower' &&
         (follower.list.length ? (
           <InfiniteScroll

@@ -133,9 +133,9 @@ const ChatListItem: FC<{
         animate={controls}
         style={{ x: 0 }}
         onClick={handleClick}
-        className="absolute top-0 left-0 right-0 bottom-0 z-10"
+        className="absolute top-0 left-0 right-0 bottom-0 dark:bg-black bg-white z-20"
       >
-        <div className="flex items-center dark:bg-black bg-white border dark:border-black border-white h-[64px] px-[24px]">
+        <div className="flex items-center  h-[64px] px-[24px]">
           <ChatAvatar user={chatPeople} />
           <ChatContent user={chatPeople} chat={chat} />
         </div>

@@ -149,10 +149,23 @@ const MessagePageIOS = () => {
   return (
     <div
       ref={containerRef}
-      className="absolute top-0 left-0 right-0 flex flex-col bg-[#000000] z-[999] pt-[76px] overflow-auto scrollbar-hide"
+      className="absolute top-0 left-0 right-0 flex flex-col dark:bg-[#000000] bg-white z-[999] overflow-auto scrollbar-hide"
       style={{
         WebkitOverflowScrolling: 'touch',
         transition: 'height 0.3s ease-in-out',
+        paddingTop: `calc(${
+          window
+            .getComputedStyle(document.documentElement)
+            .getPropertyValue('--tg-safe-area-inset-top') &&
+          parseInt(
+            window
+              .getComputedStyle(document.documentElement)
+              .getPropertyValue('--tg-safe-area-inset-top'),
+            10
+          ) !== 0
+            ? 'var(--tg-safe-area-inset-top) + 100px'
+            : '76px'
+        })`,
       }}
     >
       {/* TEST CODE */}
@@ -164,7 +177,24 @@ const MessagePageIOS = () => {
         {'ios true'}
       </div> */}
 
-      <div className="fixed flex items-center left-0 right-0 top-[10px] px-[16px] pt-[24px] h-[56px]">
+      <div
+        className="fixed flex items-center left-0 right-0 top-[10px] px-[16px]"
+        style={{
+          paddingTop: `calc(${
+            window
+              .getComputedStyle(document.documentElement)
+              .getPropertyValue('--tg-safe-area-inset-top') &&
+            parseInt(
+              window
+                .getComputedStyle(document.documentElement)
+                .getPropertyValue('--tg-safe-area-inset-top'),
+              10
+            ) !== 0
+              ? 'var(--tg-safe-area-inset-top) + 54px'
+              : '24px'
+          })`,
+        }}
+      >
         <Image
           type="avatar"
           rect
@@ -172,7 +202,7 @@ const MessagePageIOS = () => {
           alt="avatar"
           className="w-[32px] h-[32px] rounded-full"
         />
-        <span className="text-[#FFFFFF] text-lg ml-2">{chatPeople?.username}</span>
+        <span className="dark:text-white text-[#333] text-lg ml-2">{chatPeople?.username}</span>
       </div>
 
       <MemoizedMessageList
@@ -183,7 +213,7 @@ const MessagePageIOS = () => {
 
       {/* FAKE INPUT */}
       <div
-        className={`'flex h-[68px] absolute bottom-0 left-0 right-0 bg-[#000000] pr-[14px] pt-[8px] pl-[42px] ${
+        className={`'flex h-[68px] absolute border-t border-t-[#EBEBF4] dark:border-t-black bottom-0 left-0 right-0 dark:bg-black bg-white pr-[14px] pt-[8px] pl-[42px] ${
           showInput ? 'hidden' : 'block'
         }`}
       >
@@ -191,10 +221,10 @@ const MessagePageIOS = () => {
           onClick={() => {
             inputRef.current?.focus()
           }}
-          className="flex items-center flex-1 h-[36px] text-sm bg-black border-[1px]
-        border-[#4B4B4D] rounded-full px-3"
+          className="flex items-center flex-1 h-[36px] text-sm dark:bg-black bg-[#F5F3F3] border-[1px]
+        dark:border-[#4B4B4D] border-[#F5F3F3] rounded-full px-3"
           style={{
-            color: message ? '#FFFFFF' : '#5D5D60',
+            color: message ? '#333333' : '#999999',
           }}
         >
           {message ? message : 'Type a Message....'}
@@ -222,7 +252,7 @@ const MessagePageIOS = () => {
       {/* REAL INPUT */}
       <div
         className={cn(
-          'flex h-[68px] absolute left-0 right-0 bg-[#000000] overflow-hidden',
+          'flex h-[68px] absolute left-0 right-0 dark:bg-black bg-[#ffffff] border-t dark:border-none border-t-[#F5F3F3] overflow-hidden',
           // isFocused ? 'opacity-100' : 'opacity-0',
           showInput ? 'bottom-0 opacity-100' : '-top-32 opacity-0'
         )}
@@ -233,9 +263,9 @@ const MessagePageIOS = () => {
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyPress}
           type="text"
-          className="absolute left-[42px] right-4 top-[8px] h-[36px] text-sm bg-black border-[1px]
-           border-[#4B4B4D] focus:border-[#4B4B4D] rounded-full px-3 outline-none
-            text-white placeholder:text-[#5D5D60] pr-[60px]"
+          className="absolute left-[42px] right-4 top-[8px] h-[36px] text-sm border-[1px] dark:bg-black
+           dark:border-[#4B4B4D] dark:focus:border-[#4B4B4D] focus:border-[#F5F3F3] bg-[#F5F3F3] rounded-full px-3 outline-none
+            dark:text-white dark:placeholder:text-[#5D5D60] placeholder:text-[#999999] pr-[60px]"
           placeholder="Type a Message..."
         />
         <div

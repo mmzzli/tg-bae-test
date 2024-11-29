@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useToast } from '@chakra-ui/react'
 import { CustomToast, typeOptions } from '../comm/Toast'
 
-
 interface ReportProps {
   isOpen: boolean
   onClose: (flag: boolean) => void
@@ -35,13 +34,12 @@ const Report: React.FC<ReportProps> = ({ isOpen, onClose }) => {
       onClose={() => {
         onClose(false)
       }}
-      height="460px"
+      height="467px"
       animation={{
         duration: 400,
         timingFunction: 'ease-in-out',
       }}
       theme={{
-        darkBackgroundColor: '#1a1a1a',
         lightBackgroundColor: '#ffffff',
         handleColor: '#d1d5db',
       }}
@@ -49,34 +47,64 @@ const Report: React.FC<ReportProps> = ({ isOpen, onClose }) => {
       showHandle={false}
     >
       <div className="mt-4 w-full">
-        <h3 className="font-bold text-2xl mb-[20px]">Report the post</h3>
+        <h3 className="font-bold text-2xl mb-[20px] text-[#333] dark:text-[#fff]">
+          Report the post
+        </h3>
         <div className="flex flex-col gap-4">
           {options.map((option) => (
-            <label key={option} className="flex items-center gap-2">
+            <label key={option} className="flex items-center gap-2 not-tap">
               <input
                 type="checkbox"
-                className="relative w-[15px] h-[15px] border-2 border-[#62636F] bg-transparent checked:bg-white checked:border-[#fff] appearance-none
+                className="relative w-[15px] h-[15px] border-2 dark:border-[#62636F] border-[#ccc] bg-transparent
+                        dark:checked:bg-white dark:checked:border-[#fff] checked:bg-[#6254FF] checked:border-[#6254FF] appearance-none no-tap
                           after:content-[''] after:hidden checked:after:block after:border-solid
                           after:absolute after:w-[4px] after:h-[7px]
                           after:border-r-[2px] after:border-b-[2px]
                           after:border-l-0 after:border-t-0
-                        after:border-black
+                        dark:after:border-black
+                        after:border-white
                           after:rotate-45 after:top-[0px] after:left-[2.5px]"
                 checked={checked.includes(option)}
                 onChange={() => handleCheck(option)}
               />
-              <span>{option}</span>
+              <span className="dark:text-white text-[#666] no-tap">{option}</span>
             </label>
           ))}
         </div>
-        <div className="mt-10 mx-4">
+        <div className="mt-[34px] mx-[20px]">
           <BaseButton
             text="Report"
+            className="h-12"
             handler={() => {
               onClose(false)
               toast({
                 render: () => {
-                  return <CustomToast title={`Report submitted.`} type={typeOptions.success} />
+                  return (
+                    <CustomToast
+                      title={`Report submitted.`}
+                      type={typeOptions.success}
+                      top={
+                        window
+                          .getComputedStyle(document.documentElement)
+                          .getPropertyValue('--tg-safe-area-inset-top') &&
+                        parseInt(
+                          window
+                            .getComputedStyle(document.documentElement)
+                            .getPropertyValue('--tg-safe-area-inset-top'),
+                          10
+                        ) !== 0
+                          ? parseInt(
+                              window
+                                .getComputedStyle(document.documentElement)
+                                .getPropertyValue('--tg-safe-area-inset-top'),
+                              10
+                            ) +
+                            44 +
+                            'px'
+                          : ''
+                      }
+                    />
+                  )
                 },
                 position: 'top',
               })

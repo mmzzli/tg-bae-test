@@ -29,7 +29,7 @@ const ShareUser = ({ userInfo }: { userInfo: IUserInfo }) => {
   return (
     <>
       <div
-        className="flex items-center justify-center w-[36px] h-[36px] rounded-full ml-[10px] bg-[#CFCBFF20]"
+        className="flex items-center justify-center w-[36px] h-[36px] rounded-full ml-[10px] bg-[#F8F8F8]"
         onClick={() => {
           handleClick()
         }}

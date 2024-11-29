@@ -167,13 +167,26 @@ const MessagePage = () => {
   return (
     <div
       ref={containerRef}
-      className="absolute top-0 left-0 right-0 flex flex-col bg-[#000000] z-10 pt-[76px] overflow-auto scrollbar-hide"
+      className="absolute top-0 left-0 right-0 flex flex-col dark:bg-[#000000] bg-white z-10 overflow-auto scrollbar-hide"
       style={{
         bottom: 0,
         WebkitOverflowScrolling: 'touch',
+        paddingTop: `calc(${
+          window
+            .getComputedStyle(document.documentElement)
+            .getPropertyValue('--tg-safe-area-inset-top') &&
+          parseInt(
+            window
+              .getComputedStyle(document.documentElement)
+              .getPropertyValue('--tg-safe-area-inset-top'),
+            10
+          ) !== 0
+            ? 'var(--tg-safe-area-inset-top) + 130px'
+            : '76px'
+        })`,
       }}
     >
-      <div className="fixed flex items-center left-0 right-0 top-[10px] px-[16px] pt-[24px] h-[56px]">
+      <div className="absolute flex items-center left-0 right-0 top-[10px] px-[16px] pt-[24px] h-[56px]">
         <Image
           type="avatar"
           rect
@@ -181,7 +194,7 @@ const MessagePage = () => {
           alt="avatar"
           className="w-[32px] h-[32px] rounded-full"
         />
-        <span className="text-[#FFFFFF] text-lg ml-2">{chatPeople?.username}</span>
+        <span className="dark:text-white text-[#333] text-lg ml-2">{chatPeople?.username}</span>
       </div>
 
       <MemoizedMessageList
@@ -192,10 +205,10 @@ const MessagePage = () => {
 
       <div
         className={cn(
-          'flex h-[68px] absolute left-0 right-0 bottom-0 bg-[#000000] pt-[8px] overflow-hidden'
+          'flex h-[68px] absolute left-0 right-0 bottom-0 dark:bg-black bg-[#ffffff]  border-t dark:border-none border-t-[#F5F3F3] pt-[8px] overflow-hidden'
         )}
       >
-        <div className="absolute left-[10px] right-[16px] top-[8px] flex items-center h-[34px] bg-[#000000] overflow-hidden">
+        <div className="absolute left-[10px] right-[16px] top-[8px] flex items-center h-[34px] dark:bg-black bg-white overflow-hidden">
           <SendMediaModal tgid={Number(uid)} />
           <input
             ref={inputRef}
@@ -204,8 +217,9 @@ const MessagePage = () => {
             onKeyDown={handleKeyPress}
             onBlur={() => setIsFocused(false)}
             type="text"
-            className="absolute left-[36px] right-0 top-0 h-[34px] text-default bg-black border-[1px] border-[#4B4B4D]
-            focus:border-[#4B4B4D] rounded-full pl-3 pr-[60px] outline-none text-white placeholder:text-[#5D5D60] overflow-hidden"
+            className="absolute left-[36px] right-0 top-0 h-[34px] text-default dark:bg-black border-[1px] bg-[#F5F3F3]
+            dark:border-[#4B4B4D] dark:focus:border-[#4B4B4D] focus:border-[#F5F3F3] rounded-full px-3 outline-none
+            text-white dark:placeholder:text-[#5D5D60] placeholder:text-[#999999] overflow-hidden"
             placeholder="Type a Message..."
           />
         </div>

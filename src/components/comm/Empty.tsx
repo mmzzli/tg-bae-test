@@ -7,7 +7,7 @@ const Empty: React.FC<{
   children?: React.ReactNode | React.ReactNode[]
 }> = ({ title, description, icon, children }) => {
   return (
-    <div className="flex flex-col items-center justify-center space-y-4 mt-[115px]">
+    <div className="flex flex-col items-center justify-center space-y-4 mt-[115px] mb-[115px]">
       {icon && <div className="icon w-[164px] h-[164px]">{icon}</div>}
       {title && (
         <Text color="#62636F" fontSize="14px" lineHeight="16px" marginBottom="4px">

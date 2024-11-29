@@ -29,27 +29,25 @@ export function DeleteDialog({
   return (
     <>
       <div
-        className="cursor-pointer absolute right-0 top-[1px] bottom-[1px] w-[64px] bg-[#FF5330] flex items-center justify-center -z-1"
+        className="cursor-pointer absolute right-0 top-[1px] bottom-[1px] w-[64px] dark:bg-[#FF5330] bg-[#EB4B6D] flex items-center justify-center -z-1"
         onClick={onOpen}
       >
-        <span className="text-white">
-          <img style={{ width: '20px', height: '20px' }} src={deleteIcon} alt="delete" />
-        </span>
+        <i className="iconfont icon-delete-bin-line text-white text-[20px]"></i>
       </div>
 
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent>
-          <div className="w-[312px] h-[172px] bg-[#1C1C1C] text-white text-center rounded-[16px]">
-            <div className="mt-[40px] text-default ">{title}</div>
+          <div className="w-[312px] h-[172px] dark:bg-[#1C1C1C] text-base font-medium bg-white dark:text-white text-[#333] text-center rounded-[16px]">
+            <div className="mt-[40px]">{title}</div>
             <div className="flex justify-center gap-4 mt-[44px]">
               <div
-                className="cursor-pointer flex items-center justify-center w-[120px] h-[40px] border-white border rounded-[20px] text-sm"
+                className="cursor-pointer flex items-center justify-center w-[120px] h-[40px] border dark:border-white border-[#ccc] rounded-[20px] text-sm"
                 onClick={onClose}
               >
                 Cancel
               </div>
               <div
-                className="cursor-pointer flex items-center justify-center w-[120px] h-[40px] bg-[#FF5330] rounded-[20px] text-sm"
+                className="cursor-pointer flex items-center justify-center w-[120px] h-[40px] dark:bg-[#FF5330] bg-[#EB4B6D] text-white dark:text-[] rounded-[20px] text-sm"
                 onClick={handleDelete}
               >
                 Delete
@@ -63,7 +61,7 @@ export function DeleteDialog({
 }
 
 export const DeleteDialogWarp = NiceModal.create(
-  ({ title = 'Delete this chat?', data }: { title?: string; data: FormatterListItem; }) => {
+  ({ title = 'Delete this chat?', data }: { title?: string; data: FormatterListItem }) => {
     const { visible, hide, remove } = useModal()
     const [loading, setLoading] = useSafeState(false)
     const { id } = data
@@ -79,14 +77,64 @@ export const DeleteDialogWarp = NiceModal.create(
         deleteViewList(data)
         toast({
           render: () => {
-            return <CustomToast title="Delete post success" type={typeOptions.success} />
+            return (
+              <CustomToast
+                title="Delete post success"
+                type={typeOptions.success}
+                top={
+                  window
+                    .getComputedStyle(document.documentElement)
+                    .getPropertyValue('--tg-safe-area-inset-top') &&
+                  parseInt(
+                    window
+                      .getComputedStyle(document.documentElement)
+                      .getPropertyValue('--tg-safe-area-inset-top'),
+                    10
+                  ) !== 0
+                    ? parseInt(
+                        window
+                          .getComputedStyle(document.documentElement)
+                          .getPropertyValue('--tg-safe-area-inset-top'),
+                        10
+                      ) +
+                      44 +
+                      'px'
+                    : ''
+                }
+              />
+            )
           },
           position: 'top',
         })
       } catch (e: any) {
         toast({
           render: () => {
-            return <CustomToast title={`Error ${e.message}`} type={typeOptions.error} />
+            return (
+              <CustomToast
+                title={`Error ${e.message}`}
+                type={typeOptions.error}
+                top={
+                  window
+                    .getComputedStyle(document.documentElement)
+                    .getPropertyValue('--tg-safe-area-inset-top') &&
+                  parseInt(
+                    window
+                      .getComputedStyle(document.documentElement)
+                      .getPropertyValue('--tg-safe-area-inset-top'),
+                    10
+                  ) !== 0
+                    ? parseInt(
+                        window
+                          .getComputedStyle(document.documentElement)
+                          .getPropertyValue('--tg-safe-area-inset-top'),
+                        10
+                      ) +
+                      44 +
+                      'px'
+                    : ''
+                }
+              />
+            )
           },
           position: 'top',
         })
@@ -101,17 +149,17 @@ export const DeleteDialogWarp = NiceModal.create(
     return (
       <Dialog open={visible}>
         <DialogContent>
-          <div className="w-[312px] h-[172px] bg-[#1C1C1C] text-white text-center rounded-[16px]">
-            <div className="mt-[40px] text-default ">{title}</div>
+          <div className="w-[312px] h-[172px] bg-[#fff] text-white text-center rounded-[16px]">
+            <div className="mt-[40px] text-[#333] ">{title}</div>
             <div className="flex justify-center gap-4 mt-[44px]">
               <div
-                className="cursor-pointer flex items-center justify-center w-[120px] h-[40px] border-white border rounded-[20px] text-sm"
+                className="cursor-pointer flex items-center justify-center w-[120px] h-[40px] border-[#CCC] border rounded-[20px] text-[#333] text-sm"
                 onClick={hide}
               >
                 Cancel
               </div>
               <div
-                className={`cursor-pointer flex items-center justify-center w-[120px] h-[40px] bg-[#FF5330] rounded-[20px] text-sm ${loading ? 'opacity-50' : ''}`}
+                className={`cursor-pointer flex items-center justify-center w-[120px] h-[40px] bg-[#EB4B6D] rounded-[20px] text-sm ${loading ? 'opacity-50' : ''}`}
                 onClick={handleDelete}
               >
                 Delete

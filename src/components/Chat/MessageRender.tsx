@@ -42,7 +42,7 @@ const UploadProgress = React.memo(
     return (
       <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
         <div className="relative">
-          <svg className="animate-spin h-10 w-10 text-gray-700" viewBox="0 0 24 24">
+          <svg className="animate-spin h-12 w-12 text-gray-700" viewBox="0 0 24 24">
             <circle
               className="opacity-25"
               cx="12"
@@ -59,7 +59,7 @@ const UploadProgress = React.memo(
             />
           </svg>
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-lg">{progress}%</span>
+            <span className="text-sm dark:text-gray-700 text-white">{progress}%</span>
           </div>
         </div>
       </div>

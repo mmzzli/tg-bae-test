@@ -3,10 +3,16 @@ export default {
   corePlugins: {
     preflight: false,
   },
+  // add data-mode="dark" in body tag to enable dark mode
+  darkMode: ['selector', '[data-mode="dark"]'],
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   important: true,
   theme: {
     extend: {
+      colors: {
+        'white-opacity-15': 'rgba(255, 255, 255, 0.15)', // 自定义颜色
+        'white-close': '#E0E2F6',
+      },
       keyframes: {
         ripple: {
           '0%': { transform: 'scale(0)', opacity: 1 },

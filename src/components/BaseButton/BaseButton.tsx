@@ -1,3 +1,4 @@
+import { cn } from '@/utils/utils'
 import { ReactNode } from 'react'
 
 type Props = {
@@ -26,9 +27,11 @@ const BaseButton = ({
   return (
     <div>
       <div
-        className={`no-tap flex items-center justify-center gap-2 bg-[#4A3AFF] rounded-[42px]
-          text-[#E0E2F6] text-sm font-medium cursor-pointer
-          ${className} ${loading || disabled ? 'bg-[#6a5cfc] cursor-not-allowed' : ''}`}
+        className={cn(
+          'no-tap flex items-center justify-center gap-2 bg-[#6254FF] dark:bg-[#4A3AFF] rounded-[42px] text-white dark:text-[#E0E2F6] text-sm font-medium cursor-pointer',
+          loading || disabled ? 'dark:bg-[#6a5cfc] bg-[#D1D0DE] cursor-not-allowed' : '',
+          className
+        )}
         onClick={() => !loading && !disabled && handler()}
         style={{ width, height }}
       >

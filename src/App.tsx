@@ -100,7 +100,7 @@ function App() {
                 {/* Chat */}
                 <Route path="chat" element={<></>} />
                 <Route path="chat/:uid" element={<MessagePageRouteGuard />} />
-                <Route path="ageGate" element={<AgeGate/>} />
+                <Route path="ageGate" element={<AgeGate />} />
               </Route>
             </Routes>
           </BrowserRouter>

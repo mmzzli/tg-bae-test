@@ -2,9 +2,7 @@ import { useEffect, useState } from 'react'
 import { Box, Flex, Image, Text, IconButton, useBoolean, useToast } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 
-import {
-  totalAvailable
-} from '@/types'
+import { totalAvailable } from '@/types'
 
 import { BaseModal } from '@/components/Modal/BaseModal'
 import BaseButton from '@/components/BaseButton/BaseButton'
@@ -19,7 +17,7 @@ const Earnings = () => {
   const [data, setData] = useState<totalAvailable>({
     available: 0,
     exchange_rate: 0,
-    total: 0
+    total: 0,
   })
   const toast = useToast()
   const { token } = useStore((state) => ({
@@ -65,28 +63,43 @@ const Earnings = () => {
         showHandle={false}
       >
         <div className="mt-[24px] ml-2 w-[100%]">
-          <h3 className="font-bold text-[24px] text-[#E0E2F6]">Earnings</h3>
+          <h3 className="font-bold text-[24px] text-[#333]">Earnings</h3>
           <div className="flex gap-[8px] mt-[3px]">
-            <p className="text-[15px] text-[#808080]" onClick={() => navigate('/profile/earningsHistory')}>Earning History</p>
+            <p
+              className="text-[15px] text-[#808080]"
+              onClick={() =>
+                navigate(`/profile/earningsHistory?exchange_rate=${data.exchange_rate}`)
+              }
+            >
+              Earning History
+            </p>
+            <p
+              className="text-[15px] text-[#808080]"
+              onClick={() =>
+                navigate(`/profile/earningsHistory?exchange_rate=${data.exchange_rate}`)
+              }
+            >
+              Earning History
+            </p>
             <img className="mt-[2px]" src={RightIcon} />
           </div>
           <div className="mt-[56px] flex gap-[30px] items-center justify-between">
             <div>
               <div className="flex gap-[11px]">
-                <h3 className="text-[30px]">{data.total}</h3>
+                <h3 className="text-[30px] text-[#333]">{data.total}</h3>
                 <img src={StarsIcon} />
               </div>
-              <p className="text-[rgba(98,99,111,1)] text-[14px]">Total earnings</p>
-              <p className="text-[rgba(224, 226, 246, 1)] text-[14px]">${data.total / data.exchange_rate}</p>
+              <p className="text-[#62636F] text-[14px]">Total earnings</p>
+              <p className="text-[#999] text-[14px]">${data.total * data.exchange_rate}</p>
             </div>
             <p className="h-[31px] w-[1px] bg-[rgba(255,255,255,0.10)]"></p>
             <div>
               <div className="flex gap-[11px]">
-                <h3 className="text-[30px]">{data.available}</h3>
+                <h3 className="text-[30px] text-[#333]">{data.available}</h3>
                 <img src={StarsIcon} />
               </div>
-              <p className="text-[rgba(98,99,111,1)] text-[14px]">Available earnings</p>
-              <p className="text-[rgba(224, 226, 246, 1)] text-[14px]">${data.available / data.exchange_rate}</p>
+              <p className="text-[#62636F] text-[14px]">Available earnings</p>
+              <p className="text-[#999] text-[14px]">${data.available * data.exchange_rate}</p>
             </div>
           </div>
           <div className="mt-[58px] mb-[43px] px-[17px]">
@@ -97,7 +110,32 @@ const Earnings = () => {
               handler={() => {
                 toast({
                   render: () => {
-                    return <CustomToast title="coming soon" type={typeOptions.warning} />
+                    return (
+                      <CustomToast
+                        title="coming soon"
+                        type={typeOptions.warning}
+                        top={
+                          window
+                            .getComputedStyle(document.documentElement)
+                            .getPropertyValue('--tg-safe-area-inset-top') &&
+                          parseInt(
+                            window
+                              .getComputedStyle(document.documentElement)
+                              .getPropertyValue('--tg-safe-area-inset-top'),
+                            10
+                          ) !== 0
+                            ? parseInt(
+                                window
+                                  .getComputedStyle(document.documentElement)
+                                  .getPropertyValue('--tg-safe-area-inset-top'),
+                                10
+                              ) +
+                              44 +
+                              'px'
+                            : ''
+                        }
+                      />
+                    )
                   },
                   position: 'top',
                 })

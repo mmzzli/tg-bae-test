@@ -28,7 +28,7 @@ const cacheBusterPlugin = () => {
   }
 }
 
-export default defineConfig(() => {
+export default defineConfig(({ mode }) => {
   return {
     plugins: [react(), nodePolyfills(), mkcert(), cacheBusterPlugin()],
     build: {
@@ -45,16 +45,17 @@ export default defineConfig(() => {
     },
     server: {
       port: 3000,
-      host: 'localhost',
-      https: (() => {
-        if (process.env.HTTPS_CERT_PEM && process.env.HTTPS_CERT_KEY) {
-          return {
-            cert: fs.readFileSync(process.env.HTTPS_CERT_PEM),
-            key: fs.readFileSync(process.env.HTTPS_CERT_KEY),
-          }
-        }
-        return true
-      })(),
+      host: '127.0.0.1',
+      https: false,
+      // https: (() => {
+      //   if (process.env.HTTPS_CERT_PEM && process.env.HTTPS_CERT_KEY) {
+      //     return {
+      //       cert: fs.readFileSync(process.env.HTTPS_CERT_PEM),
+      //       key: fs.readFileSync(process.env.HTTPS_CERT_KEY),
+      //     }
+      //   }
+      //   return true
+      // })(),
     },
     resolve: {
       alias: {

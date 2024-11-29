@@ -7,7 +7,7 @@ interface EditSkeletonProps {
 
 const Skeleton: React.FC<EditSkeletonProps> = ({ childClassName = '' }) => {
   return (
-    <div className={`bg-[#272727] ${childClassName} relative overflow-hidden`}>
+    <div className={`bg-[#F4F4F4] dark:bg-[#272727] ${childClassName} relative overflow-hidden`}>
       <SkeletonShine></SkeletonShine>
     </div>
   )

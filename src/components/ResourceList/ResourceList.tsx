@@ -17,18 +17,17 @@ import Image from '../Image/Image'
 import FrostedGlass from '@/components/ResourceList/FrostedGlass'
 import SecondaryMenu from '../SecondaryMenu/SecondaryMenu'
 import { getLink } from '@/api/list'
-// import { ImagePreview } from '../Image/ImagePreview'
-const ImagePreview = lazy(() => import('../Image/ImagePreview'))
+import ImagePreview from '../Image/ImagePreview'
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import useMobile from '@/hooks/useMobile'
 import playIcon from '@/assets/icons/videoSwitch.svg'
 import { formatImage, formatTime } from '@/utils/utils'
-import Hls from 'hls.js'
 import Empty from '../comm/Empty'
 import Icon from '../comm/Icon'
 
 import { VideoDialog } from './VideoDialog'
 import { CardRecommendProvider } from '@/utils/constants'
+import { useStore } from '@/store'
 interface Like {
   id: number
   liked: boolean
@@ -51,6 +50,8 @@ const ResourceList = ({
   type?: string
   hasMore?: boolean
 }) => {
+  const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
+  const loadFullVideo = useStore((state) => state.loadFullVideo)
   const isMobile = useMobile()
   const [resources, setResources] = useState<FormatterListItem[]>([])
   const [likes, setLikes] = useSafeState<Like[]>([])
@@ -83,6 +84,8 @@ const ResourceList = ({
 
   const handleVideoClick = useCallback((video: FormatterListItem) => {
     setPreviewVideo(video)
+    setCacheVideoIndex(video.id)
+    loadFullVideo(video)
     setIsVideoPreviewOpen(true)
   }, [])
 
@@ -181,7 +184,7 @@ const ResourceList = ({
     <BaseModal
       isOpen={isBaseModalOpen}
       onClose={off}
-      height={isMobile ? '342px' : '300px'}
+      height={isMobile ? '351px' : '300px'}
       animation={{
         duration: 400,
         timingFunction: 'ease-in-out',
@@ -195,8 +198,12 @@ const ResourceList = ({
       showHandle={false}
     >
       <div className="mt-4 w-full">
-        <h3 className="font-bold text-2xl mb-[10px] text-[24px]">Share from Bae</h3>
-        <div className="text-[15px] text-[#808080]">Earn $Bae every time you share from Bae</div>
+        <h3 className="font-bold text-2xl mb-[10px] text-[24px] text-[#333] dark:text-white">
+          Share from Bae
+        </h3>
+        <div className="text-[15px] dark:text-[#808080] text-[#999999]">
+          Earn $Bae every time you share from Bae
+        </div>
 
         {isMobile && (
           <div className="mt-12 mb-[18px] mx-4">
@@ -230,7 +237,9 @@ const ResourceList = ({
     return (
       <Empty
         title="No post yet."
-        icon={<Icon name="icon-none_post" style={{ width: '164px', height: '164px' }}></Icon>}
+        icon={
+          <Icon name="icon-Empty_white_post" style={{ width: '164px', height: '164px' }}></Icon>
+        }
       ></Empty>
     )
   }
@@ -288,7 +297,7 @@ const ResourceList = ({
                       toggle()
                     }}
                   />
-                  <div className="pt-8 pb-8 pl-4 pr-4">
+                  <div className="pt-[14px] pb-[14px] pl-4 pr-4">
                     <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
                   </div>
                 </Box>
@@ -339,7 +348,7 @@ const ResourceList = ({
                       toggle()
                     }}
                   />
-                  <div className="pt-8 pb-8 pl-4 pr-4">
+                  <div className="pt-[14px] pb-[14px] pl-4 pr-4">
                     <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
                   </div>
                 </Box>
@@ -360,9 +369,12 @@ const ResourceList = ({
                         src={formatImage(data.media?.[0] ?? data?.media ?? '', false)}
                         alt={data.title}
                         errorClassName="rounded-[4px] h-[150px]"
-                        // wrapperClassName="rounded-[4px] overflow-hidden"
-                        // className="object-left w-[100%] m-[auto]"
-                        className="w-[230px] rounded-[4px]"
+                        width={data.pic_width}
+                        height={data.pic_height}
+                        className={`w-[230px] rounded-[4px]`}
+                        style={{
+                          height: (230 * Number(data.pic_height)) / Number(data.pic_width) + 'px',
+                        }}
                         onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
                       />
                       {data.media?.[0] === '' && (
@@ -384,7 +396,7 @@ const ResourceList = ({
                           className="object-left w-[100%] rounded-[4px] m-[auto]"
                           onClick={() => handleVideoClick(data)}
                         />
-                        <PlayButton onClick={() => handleVideoClick(data)} />
+                        {data.media?.[0] && <PlayButton onClick={() => handleVideoClick(data)} />}
                       </Box>
                       <HStack
                         borderRadius="4px"
@@ -424,7 +436,7 @@ const ResourceList = ({
                     toggle()
                   }}
                 />
-                <div className="pt-8 pb-8 pl-4 pr-4">
+                <div className="pt-[14px] pb-[14px] pl-4 pr-4">
                   <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
                 </div>
               </Box>
@@ -484,13 +496,13 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
           />
         </div>
         <div className="flex flex-col">
-          <div className="text-[#E0E2F6] font-bold text-base">
+          <div className="text-[#0F1233] dark:text-[#E0E2F6]  font-bold text-base">
             {data.username}
             {data.is_follow}
           </div>
 
           {cardValue?.recommend && !data.is_follow && (
-            <div className="text-[#62636F] text-[12px]">Bae selected</div>
+            <div className="text-[#333333] text-[12px]">Bae selected</div>
           )}
         </div>
       </div>
@@ -504,14 +516,16 @@ const ResourceFooter = memo<ResourceFooterProps>(
     return (
       <>
         <div className="px-4 py-3">
-          <p className="text-[#ccc] text-sm leading-6">{data.title}</p>
+          <p className="text-[#0F1419] dark:text-[#ccc] text-sm leading-6">{data.title}</p>
           <HStack pt="2" justifyContent="space-between">
-            <p className="text-[#424048] text-xs">
+            <p className="text-[#868686] dark:text-[#424048] text-xs">
               {dayjs(data.created_at).format('YYYY-MM-DD HH:mm')}
             </p>
             {type === 'payment' && (
               <HStack gap="4px">
-                <p className="text-[#424048] text-[12px]">Purchased for {data.price}</p>
+                <p className="text-[#666666] dark:text-[#424048] text-[12px]">
+                  Purchased for {data.price}
+                </p>
                 <Image src={StarsIcon} />
               </HStack>
             )}
@@ -528,13 +542,16 @@ const ResourceFooter = memo<ResourceFooterProps>(
                 }
               >
                 {likes.find((like) => like.id === data.id)?.liked === true ? (
-                  <IconLiked />
+                  <i
+                    className="iconfont icon-Frame text-[#FF5596]"
+                    style={{ fontSize: '24px' }}
+                  ></i>
                 ) : (
-                  <IconLike />
+                  <i className="iconfont icon-like text-[#0D0D0D]" style={{ fontSize: '24px' }}></i>
                 )}
-                <Text fontSize={'sm'} color={'#E0E2F6'} pl={1}>
+                <span className="pl-1 text-sm text-[##0D0D0D]">
                   {likes.find((like) => like.id === data.id)?.like}
-                </Text>
+                </span>
               </Flex>
             )}
             {data.media && data.media[0] && (
@@ -544,9 +561,15 @@ const ResourceFooter = memo<ResourceFooterProps>(
                 }
               >
                 {saveds.find((saved) => saved.id === data.id)?.saveds === true ? (
-                  <Image src={FavIcon} />
+                  <i
+                    className="iconfont icon-saved text-[#FFCC5D]"
+                    style={{ fontSize: '24px' }}
+                  ></i>
                 ) : (
-                  <Image src={Fav1Icon} />
+                  <i
+                    className="iconfont icon-bookmark-line text-[#0D0D0D]"
+                    style={{ fontSize: '24px' }}
+                  ></i>
                 )}
               </Box>
             )}
@@ -558,7 +581,9 @@ const ResourceFooter = memo<ResourceFooterProps>(
             colorScheme={'transparent'}
             h={6}
             w={6}
-            icon={<IconShare />}
+            icon={
+              <i className="iconfont icon-Frame-2 text-[#0D0D0D]" style={{ fontSize: '24px' }}></i>
+            }
           />
         </div>
       </>
@@ -599,7 +624,7 @@ const ImagePreviewWrapper = memo(
 const PlayButton = memo(({ onClick }: { onClick: (e: React.MouseEvent) => void }) => (
   <div
     onClick={onClick}
-    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 no-tap z-20"
+    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 no-tap z-1"
   >
     <Image src={playIcon} alt="play" className="w-[72px] h-[72px] no-tap" />
   </div>

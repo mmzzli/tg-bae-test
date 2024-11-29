@@ -1,8 +1,5 @@
 import { FC, useMemo } from 'react'
-import {
-  createStandaloneToast,
-  useToast
-} from '@chakra-ui/react'
+import { createStandaloneToast, useToast } from '@chakra-ui/react'
 import BaseButton from '../BaseButton/BaseButton'
 import { follow, getSomeoneProfile } from '@/api'
 import { useRequest } from 'ahooks'
@@ -69,10 +66,10 @@ const FollowButton: FC<{
   return isFollowing ? (
     <BaseButton
       text="Following"
-      loading={followLoading}
+      // loading={followLoading}
       width="104px"
       handler={doFollow}
-      className={`bg-transparent border border-white ${className}`}
+      className={`bg-transparent border text-[#333333] border-[#333] ${className}`}
     />
   ) : (
     <BaseButton

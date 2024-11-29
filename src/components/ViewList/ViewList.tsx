@@ -37,10 +37,11 @@ const ViewList = ({ className }: PostListProps) => {
 
   return (
     <>
-      <Box className="flex justify-around" borderBottom="1px solid rgba(255, 255, 255, 0.10)">
+      <Box className="flex justify-around" borderBottom="1px solid #EBEBF4">
         {menuList.map((item) => (
           <div
-            className={`text-[16px] text-[${item.id === ids ? '#E0E2F6' : '#62636F'}]`}
+            key={item.id}
+            className={`text-[16px] text-[${item.id === ids ? '#0F1233' : '#666'}] font-medium`}
             onClick={() => tabEve(item.id)}
           >
             {item.name}
@@ -58,24 +59,26 @@ const ViewList = ({ className }: PostListProps) => {
 }
 const MyPosts = () => {
   const { list, hasMore, fetchMoreData, page } = useViewList()
-  const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
-  const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
-  const updateCache = useStore((state) => state.updateCache)
-
-  useCacheVideo(
-    list,
-    page,
-    setCacheVideoIndex,
-    getCacheVideoindex,
-    updateCache,
-    'recommendScrollableDiv',
-    'video-card'
-  )
+  // const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
+  // const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
+  // const updateCache = useStore((state) => state.updateCache)
+  //
+  // useCacheVideo(
+  //   list,
+  //   page,
+  //   setCacheVideoIndex,
+  //   getCacheVideoindex,
+  //   updateCache,
+  //   'profileScrollableDiv',
+  //   'video-card'
+  // )
   if (!hasMore && !list.length) {
     return (
       <Empty
         title="No post yet."
-        icon={<Icon name="icon-none_post" style={{ width: '164px', height: '164px' }}></Icon>}
+        icon={
+          <Icon name="icon-Empty_white_post" style={{ width: '164px', height: '164px' }}></Icon>
+        }
       ></Empty>
     )
   }
@@ -100,24 +103,26 @@ const MyPosts = () => {
 }
 const FavList = () => {
   const { list, hasMore, fetchMoreData, page } = useFavList()
-  const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
-  const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
-  const updateCache = useStore((state) => state.updateCache)
-
-  useCacheVideo(
-    list,
-    page,
-    setCacheVideoIndex,
-    getCacheVideoindex,
-    updateCache,
-    'recommendScrollableDiv',
-    'video-card'
-  )
+  // const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
+  // const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
+  // const updateCache = useStore((state) => state.updateCache)
+  //
+  // useCacheVideo(
+  //   list,
+  //   page,
+  //   setCacheVideoIndex,
+  //   getCacheVideoindex,
+  //   updateCache,
+  //   'profileScrollableDiv',
+  //   'video-card'
+  // )
   if (!hasMore && !list.length) {
     return (
       <Empty
         title="No post yet."
-        icon={<Icon name="icon-none_post" style={{ width: '164px', height: '164px' }}></Icon>}
+        icon={
+          <Icon name="icon-Empty_white_post" style={{ width: '164px', height: '164px' }}></Icon>
+        }
       ></Empty>
     )
   }
@@ -141,24 +146,26 @@ const FavList = () => {
 }
 const OrderList = () => {
   const { list, hasMore, fetchMoreData, page } = useOrdersList()
-  const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
-  const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
-  const updateCache = useStore((state) => state.updateCache)
-
-  useCacheVideo(
-    list,
-    page,
-    setCacheVideoIndex,
-    getCacheVideoindex,
-    updateCache,
-    'recommendScrollableDiv',
-    'video-card'
-  )
+  // const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
+  // const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
+  // const updateCache = useStore((state) => state.updateCache)
+  //
+  // useCacheVideo(
+  //   list,
+  //   page,
+  //   setCacheVideoIndex,
+  //   getCacheVideoindex,
+  //   updateCache,
+  //   'profileScrollableDiv',
+  //   'video-card'
+  // )
   if (!hasMore && !list.length) {
     return (
       <Empty
         title="You haven't purchased any post yet."
-        icon={<Icon name="icon-none_purchased" style={{ width: '164px', height: '164px' }}></Icon>}
+        icon={
+          <Icon name="icon-Empty_white_purchase" style={{ width: '164px', height: '164px' }}></Icon>
+        }
       ></Empty>
     )
   }

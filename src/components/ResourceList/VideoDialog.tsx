@@ -110,7 +110,22 @@ const CloseButton = memo(({ onClose }: { onClose: () => void }) => {
 
   return (
     <div
-      className="absolute right-2 top-2 z-[999] w-8 h-8 bg-black/30 rounded-full overflow-hidden flex items-center justify-center"
+      className="absolute right-2 z-[999] w-8 h-8 bg-black/30 rounded-full overflow-hidden flex items-center justify-center"
+      style={{
+        top: `calc(${
+          window
+            .getComputedStyle(document.documentElement)
+            .getPropertyValue('--tg-safe-area-inset-top') &&
+          parseInt(
+            window
+              .getComputedStyle(document.documentElement)
+              .getPropertyValue('--tg-safe-area-inset-top'),
+            10
+          ) !== 0
+            ? 'var(--tg-safe-area-inset-top) + 54px'
+            : '8px'
+        })`,
+      }}
       {...touchHandlers}
       // onClick={onClose}
     >
@@ -122,7 +137,7 @@ const CloseButton = memo(({ onClose }: { onClose: () => void }) => {
 const PlayButton = memo(({ onClick }: { onClick: (e: React.MouseEvent) => void }) => (
   <div
     onClick={onClick}
-    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 no-tap z-20"
+    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 no-tap z-1"
   >
     <Image src={playIcon} alt="play" className="w-[72px] h-[72px] no-tap" />
   </div>
@@ -150,12 +165,14 @@ export function VideoDialog({
 
     if (Hls.isSupported() && info) {
       const hls = new Hls({
+        startPosition: 0, // 从视频开始播放
+        maxBufferLength: 2, // 缓存最多 2 秒内容
         enableWorker: true,
-        maxBufferLength: 30,
-        maxMaxBufferLength: 60,
+        maxMaxBufferLength: 5,
         autoStartLoad: true,
         maxBufferHole: 0.5,
         lowLatencyMode: true,
+        maxBufferSize: 10 * 1024 * 1024, // 最大缓冲区大小，限制为 5MB
       })
 
       hls.loadSource(info.media[0])
@@ -175,6 +192,7 @@ export function VideoDialog({
 
       return () => {
         hls.destroy()
+        video.src = ''
       }
     } else if (video.canPlayType('application/vnd.apple.mpegurl') && info) {
       video.src = info.media[0]

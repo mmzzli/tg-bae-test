@@ -1,14 +1,13 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { MoreHorizontal } from 'lucide-react'
 import { useSafeState } from 'ahooks'
-import { DeleteIcon, ReportIcon } from '@/assets/icons'
+import { ReportIconLight } from '@/assets/icons'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import Report from './Report'
 import { cn } from '@/utils/utils'
 import { DeleteDialogWarp } from '../Chat/DeleteDialog'
 import { useModal } from '@ebay/nice-modal-react'
 import { useToast } from '@chakra-ui/react'
-import { CustomToast, typeOptions } from '../comm/Toast'
 
 type Props = {
   mediaData: FormatterListItem
@@ -21,16 +20,16 @@ const SecondaryMenu = ({ mediaData, currentUid, className }: Props) => {
   const [visible, setVisible] = useSafeState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const [reportVisible, setReportVisible] = useSafeState(false)
-  const toast = useToast();
+  const toast = useToast()
 
   const deleteDialogWrap = useModal(DeleteDialogWarp)
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setTimeout(()=>{
+        setTimeout(() => {
           setVisible(false)
-        },0)
+        }, 0)
       }
     }
 
@@ -70,22 +69,22 @@ const SecondaryMenu = ({ mediaData, currentUid, className }: Props) => {
   return (
     <div className={cn(className, 'relative')} ref={menuRef}>
       <button className="p-2 rounded-full" onClick={() => setVisible(!visible)}>
-        <MoreHorizontal className="w-5 h-5 text-[#E0E2F6]" />
+        <MoreHorizontal className="w-5 h-5 text-[#373738] dark:text-[#E0E2F6]" />
       </button>
 
       {visible && (
-        <div className="absolute right-0 mt-1 bg-[#19191E] text-[#E0E2F6] font-medium text-xs rounded-[4px] z-50">
+        <div className="absolute border rounded-lg right-0 mt-1 dark:bg-[#19191E] dark:border-[#19191E] bg-white dark:text-[#E0E2F6] text-[#333] border-[#EBEBF4] font-medium text-xs rounded-[4px] z-50">
           {currentUid === uid && (
-              <button
-              onClick={()=>{
-                deleteDialogWrap.show({data:mediaData});
+            <button
+              onClick={() => {
+                deleteDialogWrap.show({ data: mediaData })
                 setVisible(false)
               }}
-                className="w-[83px] h-[40px] hover:bg-gray-500 rounded-[4px] flex items-center justify-center gap-1 text-[#FF5330]"
-              >
-                <img src={DeleteIcon} alt="delete" />
-                Delete
-              </button>
+              className="w-[83px] h-[40px] hover:bg-gray-500 rounded-[4px] flex items-center justify-center gap-1 text-[#FF684A]"
+            >
+              <i className="iconfont icon-delete-bin-line text-base"></i>
+              Delete
+            </button>
           )}
           {currentUid !== uid && (
             <button
@@ -95,7 +94,7 @@ const SecondaryMenu = ({ mediaData, currentUid, className }: Props) => {
                 setVisible(false)
               }}
             >
-              <img src={ReportIcon} alt="report" />
+              <img src={ReportIconLight} alt="report" className="mb-1" />
               Report
             </button>
           )}

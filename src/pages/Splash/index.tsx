@@ -7,7 +7,6 @@ import { getSingleMedia } from '@/api/list'
 import Icon from '@/components/comm/Icon'
 import { useSafeState } from 'ahooks'
 import { useRecommendList } from '@/store/hook/useResourceList'
-import Hls from 'hls.js'
 import { CacheVideo } from '@/store/slices/resourceListSlice'
 
 const SHARE_POST = 1
@@ -122,23 +121,23 @@ const Splash: FC = () => {
   }, [startParam, isInTMA])
 
   return (
-    <div className="fixed w-screen h-screen bg-[#0D0D0D] flex justify-center items-center z-10 flex-col relative">
+    <div className="fixed top-0 bottom-0 left-0 right-0 dark:bg-[#0D0D0D] bg-white flex justify-center items-center z-10 flex-col">
       <div className="absolute top-[-1px] right-[-1px]">
         <Icon name={'icon-chatu_youshang'} style={{ width: '165px', height: '166px' }}></Icon>
       </div>
       <div className="flex justify-center items-center flex-col">
-        <div className="w-[210px] h-[210px] relative top-[-4px]">
+        <div className="w-[210px] h-[210px] relative top-[0px]">
           <Icon name={'icon-logo'} style={{ width: '210px', height: '210px' }}></Icon>
         </div>
-        <div className="text-[var(--Dark-T1)]  text-[24px] font-bold leading-[1.5] capitalize text-center">
+        <div className="text-[var(--Light-T1)]  text-[24px] font-bold leading-[1.5] capitalize text-center">
           welcome to Bae
         </div>
-        <div className="mt-[12px] text-[var(--Dark-T1)] opacity-50 pl-[36px] pr-[36px] text-center tracking-[1px]">
+        <div className="mt-[12px] text-[var(--Light-T1)] opacity-50 pl-[36px] pr-[36px] text-center tracking-[1px]">
           Connect with people you like on a deeper level.
         </div>
       </div>
       <div className="absolute left-[-7px] bottom-[-8px]">
-        <Icon name={'icon-chatu_zuoxia'} style={{ width: '138.11px', height: '154px' }}></Icon>
+        <Icon name={'icon-chatu_zuoxia1'} style={{ width: '138.11px', height: '154px' }}></Icon>
       </div>
     </div>
   )

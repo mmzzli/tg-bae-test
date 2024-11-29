@@ -11,8 +11,25 @@ const Shares: FC = () => {
       id="recommendScrollableDiv"
       className="relative w-full h-full overflow-auto scrollbar-hide"
     >
-      <div className="flex items-center justify-between mt-4 mx-4">
-        <div className="font-bold text-xl text-[#E0E2F6]">Shared</div>
+      <div
+        className="flex items-center justify-between mx-4"
+        style={{
+          marginTop: `calc(${
+            window
+              .getComputedStyle(document.documentElement)
+              .getPropertyValue('--tg-safe-area-inset-top') &&
+            parseInt(
+              window
+                .getComputedStyle(document.documentElement)
+                .getPropertyValue('--tg-safe-area-inset-top'),
+              10
+            ) !== 0
+              ? '10px'
+              : '16px'
+          })`,
+        }}
+      >
+        <div className="font-bold text-xl dark:text-[#E0E2F6] text-black">Shared</div>
         {/* <Button
           size="xl"
           fontSize="14px"
@@ -31,7 +48,9 @@ const Shares: FC = () => {
           resources={sharedPostList && sharedPostList.length > 0 ? sharedPostList : []}
         />
       </div>
-      <div className="font-bold text-xl text-[#E0E2F6] mt-4 mx-4">Selected Posts</div>
+      <div className="font-bold text-xl dark:text-[#E0E2F6] text-black mt-4 mx-4">
+        Selected Posts
+      </div>
       <RecommendList className="mb-12" />
     </div>
   )

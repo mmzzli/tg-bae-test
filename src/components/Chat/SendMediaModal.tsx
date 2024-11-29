@@ -181,7 +181,7 @@ const SendMediaModal = ({
 
       <div
         className={`fixed inset-0 z-50 ${
-          isBaseModalOpen ? 'visible bg-black/80' : 'invisible'
+          isBaseModalOpen ? 'visible dark:bg-black/80 bg-black/70' : 'invisible'
         } transition-all duration-300`}
         role="dialog"
         aria-modal="true"
@@ -189,30 +189,20 @@ const SendMediaModal = ({
         style={{ transform: 'translateZ(50px)' }}
       >
         <div
-          className={`fixed z-50 bottom-0 left-0 right-0 rounded-t-2xl bg-[#1C1C1C] dark:bg-gray-800 transition-transform ${
+          className={`fixed z-50 bottom-0 left-0 right-0 rounded-t-2xl bg-white dark:bg-gray-800 transition-transform ${
             isBaseModalOpen ? 'translate-y-0' : 'translate-y-full'
           }`}
           style={sheetStyle}
         >
-          <div className="relative px-[14px] pb-[14px] overflow-y-auto bg-[#1C1C1C] text-[#E0E2F6] rounded-t-2xl rounded-b-none border-[#1c1c1c] max-h-[70vh]">
-            <div className="sticky top-0 flex items-center h-11 bg-[#1C1C1C] z-10">
-              <button onClick={() => off()} className="text-white">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
+          <div className="relative px-[14px] pb-[14px] overflow-y-auto dark:bg-[#1C1C1C] bg-white text-[#E0E2F6] rounded-t-2xl rounded-b-none border-[#1c1c1c] max-h-[70vh]">
+            <div className="sticky top-0 flex items-center h-11 dark:bg-[#1C1C1C] bg-white z-10">
+              <button
+                onClick={() => off()}
+                className="dark:text-white text-black w-9 h-9 flex items-center justify-center bg-[#F5F5FA] rounded-full"
+              >
+                <i className="iconfont icon-icon_close text-[#12122A] dark:text-[#E0E2F6] text-[20px]"></i>
               </button>
-              <span className="text-white flex-1 text-center text-ellipsis overflow-hidden whitespace-nowrap">
+              <span className="dark:text-white text-black flex-1 text-center text-ellipsis overflow-hidden whitespace-nowrap pr-4">
                 {validFileList.length} media selected
               </span>
             </div>
@@ -248,7 +238,11 @@ const SendMediaModal = ({
                 </div>
               </div>
             </div>
-            <BaseButton text="Send" className="w-full mt-4 h-[48px] mb-7" handler={handleSubmit} />
+            <BaseButton
+              text="Send"
+              className="w-full mt-4 h-[48px] mb-7 text-[15px]"
+              handler={handleSubmit}
+            />
           </div>
         </div>
       </div>

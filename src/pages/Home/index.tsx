@@ -85,21 +85,24 @@ const HomePage: FC = () => {
   }
 
   return (
-    <div className="relative w-full h-full overflow-auto" id="recommendScrollableDiv">
+    <div
+      className="relative w-full h-full overflow-auto scrollbar-hide"
+      id="recommendScrollableDiv"
+    >
       <>
         <HStack
           justifyContent="space-between"
           p="10px 16px"
           position="fixed"
           w="100%"
-          bg="#000"
           zIndex="111"
+          className="bg-white dark:bg-black"
         >
           <Heading
             as="h3"
             fontSize="20px"
-            color="#E0E2F6"
             style={fadeClass === 'fade-in' ? styles.fadeIn : styles.fadeOut}
+            className="text-black dark:text-[#E0E2F6]"
           >
             {title}
           </Heading>
@@ -115,7 +118,7 @@ const HomePage: FC = () => {
           <FollowingList />
         </div>
         <CardRecommendProvider.Provider value={{ recommend: true }}>
-          <div className={`mt-10`}>
+          <div className={`${userInfo.user_id !== -1 && userInfo.fans === 0 ? '' : 'mt-10'}`}>
             <RecommendList />
           </div>
         </CardRecommendProvider.Provider>

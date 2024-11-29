@@ -70,6 +70,13 @@ export const MainLayout: React.FC = () => {
       document.getElementById('root')?.classList.add('root-wrap')
       const tgApp = window.Telegram.WebApp
       tgApp.ready()
+      try {
+        window.TelegramWebviewProxy &&
+          window.TelegramWebviewProxy.postEvent('web_app_request_fullscreen')
+      } catch (err) {
+        console.warn('######    web_app_request_fullscreen error    ######', err)
+      }
+
       postEvent('web_app_setup_swipe_behavior', {
         allow_vertical_swipe: false,
       })
@@ -155,9 +162,9 @@ export const MainLayout: React.FC = () => {
   }, [location.pathname])
 
   return (
-    <div className="absolute inset-0 top-0 right-0 bottom-0 left-0 bg-black overflow-hidden flex pb-[84px] transition-all duration-300">
+    <div className="absolute inset-0 top-0 right-0 bottom-0 left-0overflow-hidden flex pb-[84px] transition-all duration-300 bg-white dark:bg-black">
       <div
-        className="absolute left-0 right-0 top-0 bottom-[84px] flex-col bg-[#0D0D0D] overflow-hidden"
+        className="absolute left-0 right-0 top-0 bottom-[84px] flex-col bg-white dark:bg-[#0D0D0D] overflow-hidden"
         style={{ display: hiddenChatPage ? 'none' : 'flex', zIndex: hiddenChatPage ? -1 : 200 }}
       >
         <Suspense
@@ -171,7 +178,25 @@ export const MainLayout: React.FC = () => {
         </Suspense>
       </div>
 
-      <div className={`absolute inset-0 top-0 bottom-[84px] z-1`}>
+      <div
+        className={`absolute inset-0 top-0 bottom-[84px] z-1`}
+        style={{
+          paddingTop: `calc(${
+            window
+              .getComputedStyle(document.documentElement)
+              .getPropertyValue('--tg-safe-area-inset-top') &&
+            parseInt(
+              window
+                .getComputedStyle(document.documentElement)
+                .getPropertyValue('--tg-safe-area-inset-top'),
+              10
+            ) !== 0
+              ? 'var(--tg-safe-area-inset-top) + 54px'
+              : '0'
+          })`,
+          // paddingTop: 'var(--tg-safe-area-inset-top)',
+        }}
+      >
         <Outlet />
       </div>
       <PostProgressBar />

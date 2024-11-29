@@ -109,7 +109,7 @@ export const MessageList = ({ messages, className, channelInfo }: MessageListPro
         )}
         <div
           className={`overflow-hidden rounded-lg max-w-[255px]
-            ${isCurrentUser && message.type === MessageType.TEXT ? 'bg-[#4A3AFF]' : 'bg-[#303030]'}
+            ${isCurrentUser && message.type === MessageType.TEXT ? 'bg-[#4A3AFF] text-white' : 'dark:bg-[#303030] bg-[#F1F1F1] text-[#333333] dark:text-white'}
             ${message.type === MessageType.TEXT ? 'p-3' : 'inline-block'}
           `}
         >
@@ -121,7 +121,7 @@ export const MessageList = ({ messages, className, channelInfo }: MessageListPro
 
   const TimeDevider = memo(({ timestamp }: { timestamp: number }) => (
     <div className="flex items-center justify-center mt-[20px] mb-4">
-      <div className="text-xs text-[#ffffff99] px-2 py-1 rounded">
+      <div className="text-xs dark:text-[#ffffff99] text-[#FFFFFF66] px-2 py-1 rounded">
         {dayjs(timestamp).format('MM-DD HH:mm')}
       </div>
     </div>

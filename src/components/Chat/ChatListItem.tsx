@@ -10,7 +10,7 @@ import { DeleteDialog } from './DeleteDialog'
 import { useStore } from '@/store'
 
 const ChatAvatar: FC<{ user: OthersUserInfo | null }> = ({ user }) => (
-  <div className="relative w-12 h-12 mr-3">
+  <div className="relative w-12 h-12 mr-4">
     <Image
       rect
       type="avatar"
@@ -25,9 +25,11 @@ const ChatAvatar: FC<{ user: OthersUserInfo | null }> = ({ user }) => (
 
 const ChatContent: FC<{ user: OthersUserInfo | null; chat: Conversation }> = ({ user, chat }) => (
   <div className="flex-1 min-w-0">
-    <div className="flex justify-between items-start">
-      <h3 className="flex-1 text-white font-medium truncate">{user?.username}</h3>
-      <span className="text-gray-500 text-sm">
+    <div className="flex justify-between items-center">
+      <h3 className="flex-1 dark:text-white text-[#0F1233] font-medium truncate">
+        {user?.username}
+      </h3>
+      <span className="dark:text-gray-500 text-[#888888] text-xs">
         {chat.lastMessage?.timestamp
           ? getTimeStringAutoShort(chat.lastMessage?.timestamp * 1000, true)
           : ''}
@@ -35,11 +37,11 @@ const ChatContent: FC<{ user: OthersUserInfo | null; chat: Conversation }> = ({ 
     </div>
 
     <div className="flex justify-between items-start min-h-[24px]">
-      <p className="flex-1 text-gray-400 text-sm truncate mt-1">
+      <p className="flex-1 text-[#666] text-sm truncate mt-1">
         {chat?.lastMessage?.content?.entity?.text}
       </p>
       {chat.unread ? (
-        <div className="mt-1 ml-3 bg-[#4A3AFF] rounded-full w-[22px] h-[20px] flex items-center justify-center">
+        <div className="mt-1 ml-3 bg-[#6254FF] rounded-full w-[22px] h-[20px] flex items-center justify-center">
           <span className="text-white text-xs">{chat.unread}</span>
         </div>
       ) : null}
@@ -131,9 +133,9 @@ const ChatListItem: FC<{
         animate={controls}
         style={{ x: 0 }}
         onClick={handleClick}
-        className="absolute top-0 left-0 right-0 bottom-0 z-10"
+        className="absolute top-0 left-0 right-0 bottom-0 dark:bg-black bg-white z-20"
       >
-        <div className="flex items-center bg-black border border-black h-[64px] px-[24px]">
+        <div className="flex items-center  h-[64px] px-[24px]">
           <ChatAvatar user={chatPeople} />
           <ChatContent user={chatPeople} chat={chat} />
         </div>

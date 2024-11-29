@@ -58,19 +58,19 @@ const ViewList = ({ className }: PostListProps) => {
 }
 const MyPosts = () => {
   const { list, hasMore, fetchMoreData, page } = useViewList()
-  const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
-  const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
-  const updateCache = useStore((state) => state.updateCache)
-
-  useCacheVideo(
-    list,
-    page,
-    setCacheVideoIndex,
-    getCacheVideoindex,
-    updateCache,
-    'profileScrollableDiv',
-    'video-card'
-  )
+  // const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
+  // const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
+  // const updateCache = useStore((state) => state.updateCache)
+  //
+  // useCacheVideo(
+  //   list,
+  //   page,
+  //   setCacheVideoIndex,
+  //   getCacheVideoindex,
+  //   updateCache,
+  //   'profileScrollableDiv',
+  //   'video-card'
+  // )
   if (!hasMore && !list.length) {
     return (
       <Empty
@@ -100,19 +100,19 @@ const MyPosts = () => {
 }
 const FavList = () => {
   const { list, hasMore, fetchMoreData, page } = useFavList()
-  const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
-  const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
-  const updateCache = useStore((state) => state.updateCache)
-
-  useCacheVideo(
-    list,
-    page,
-    setCacheVideoIndex,
-    getCacheVideoindex,
-    updateCache,
-    'profileScrollableDiv',
-    'video-card'
-  )
+  // const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
+  // const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
+  // const updateCache = useStore((state) => state.updateCache)
+  //
+  // useCacheVideo(
+  //   list,
+  //   page,
+  //   setCacheVideoIndex,
+  //   getCacheVideoindex,
+  //   updateCache,
+  //   'profileScrollableDiv',
+  //   'video-card'
+  // )
   if (!hasMore && !list.length) {
     return (
       <Empty
@@ -141,19 +141,19 @@ const FavList = () => {
 }
 const OrderList = () => {
   const { list, hasMore, fetchMoreData, page } = useOrdersList()
-  const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
-  const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
-  const updateCache = useStore((state) => state.updateCache)
-
-  useCacheVideo(
-    list,
-    page,
-    setCacheVideoIndex,
-    getCacheVideoindex,
-    updateCache,
-    'profileScrollableDiv',
-    'video-card'
-  )
+  // const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
+  // const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
+  // const updateCache = useStore((state) => state.updateCache)
+  //
+  // useCacheVideo(
+  //   list,
+  //   page,
+  //   setCacheVideoIndex,
+  //   getCacheVideoindex,
+  //   updateCache,
+  //   'profileScrollableDiv',
+  //   'video-card'
+  // )
   if (!hasMore && !list.length) {
     return (
       <Empty

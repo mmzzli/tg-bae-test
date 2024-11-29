@@ -22,7 +22,7 @@ const AgeGate = () => {
     }
   }, [])
   return (
-    <div className="px-[20px] fixed w-screen h-screen bg-black z-10 overflow-auto scrollbar-hide bg-[#fff]">
+    <div className="px-[20px] fixed w-screen h-screen bg-[#fff] z-10 overflow-auto scrollbar-hide">
 
       <Image className='mx-[auto] mt-[94px] mb-[50px]' src={GateImg} />
 

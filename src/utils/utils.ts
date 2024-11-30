@@ -142,7 +142,7 @@ export const formatImage = (url: string, grid = true) => {
       'https://$1/cdn-cgi/image/width=500,height=500,fit=crop,gravity=center,quality=75/$2'
     )
   } else {
-    return url.replace(reg, 'https://$1/cdn-cgi/image/width=800,fit=contain,quality=75/$2')
+    return url.replace(reg, 'https://$1/cdn-cgi/image/width=600,fit=contain,quality=75/$2')
   }
 }
 

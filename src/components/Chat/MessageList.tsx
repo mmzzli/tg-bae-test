@@ -121,7 +121,7 @@ export const MessageList = ({ messages, className, channelInfo }: MessageListPro
 
   const TimeDevider = memo(({ timestamp }: { timestamp: number }) => (
     <div className="flex items-center justify-center mt-[20px] mb-4">
-      <div className="text-xs dark:text-[#ffffff99] text-[#FFFFFF66] px-2 py-1 rounded">
+      <div className="text-xs dark:text-[#ffffff99] text-[#999999] px-2 py-1 rounded">
         {dayjs(timestamp).format('MM-DD HH:mm')}
       </div>
     </div>

@@ -71,11 +71,21 @@ export const MainLayout: React.FC = () => {
       const tgApp = window.Telegram.WebApp
       tgApp.ready()
       try {
-        window.TelegramWebviewProxy &&
-          window.TelegramWebviewProxy.postEvent('web_app_request_fullscreen')
+        // window.TelegramWebviewProxy &&
+        //   window.TelegramWebviewProxy.postEvent('web_app_request_fullscreen')
+
+        window.TelegramWebviewProxy.postEvent('web_app_invoke_custom_method', {
+          req_id: 1,
+          method: 'get_user_info',
+          params: {},
+        }).then((res: any) => {
+          console.log('web_app_invoke_custom_method', res)
+        })
       } catch (err) {
         console.warn('######    web_app_request_fullscreen error    ######', err)
       }
+
+      tgApp.requestFullscreen()
 
       postEvent('web_app_setup_swipe_behavior', {
         allow_vertical_swipe: false,

@@ -37,9 +37,10 @@ const ViewList = ({ className }: PostListProps) => {
 
   return (
     <>
-      <Box className="flex justify-around" borderBottom="1px solid rgba(255, 255, 255, 0.10)">
+      <Box className="flex justify-around" borderBottom="1px solid #EBEBF4">
         {menuList.map((item) => (
           <div
+            key={item.id}
             className={`text-[16px] text-[${item.id === ids ? '#0F1233' : '#666'}] font-medium`}
             onClick={() => tabEve(item.id)}
           >
@@ -162,7 +163,9 @@ const OrderList = () => {
     return (
       <Empty
         title="You haven't purchased any post yet."
-        icon={<Icon name="icon-none_purchased" style={{ width: '164px', height: '164px' }}></Icon>}
+        icon={
+          <Icon name="icon-Empty_white_purchase" style={{ width: '164px', height: '164px' }}></Icon>
+        }
       ></Empty>
     )
   }

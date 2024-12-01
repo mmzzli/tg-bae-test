@@ -12,7 +12,9 @@ import Image from '@/components/Image/Image'
 import { cn } from '@/utils/utils'
 import SendMediaModal from '@/components/Chat/SendMediaModal'
 // const PAGE_SIZE = 20
-
+const isIOS = () => {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
+}
 const defaultMessages: WrappedMessage[] = []
 
 const MemoizedMessageList = memo(MessageList)
@@ -152,7 +154,7 @@ const MessagePageIOS = () => {
       className="absolute top-0 left-0 right-0 flex flex-col dark:bg-[#000000] bg-white z-[999] overflow-auto scrollbar-hide"
       style={{
         WebkitOverflowScrolling: 'touch',
-        transition: 'height 0.3s ease-in-out',
+        transition: isIOS() ? 'height 0.3s ease-in-out' : '',
         paddingTop: `calc(${
           window
             .getComputedStyle(document.documentElement)
@@ -168,15 +170,6 @@ const MessagePageIOS = () => {
         })`,
       }}
     >
-      {/* TEST CODE */}
-      {/* <div className="absolute bottom-1/2  left-0 bg-[#f39292] z-[9999] translate-y-20">
-        <div>{showInput ? 'showInput true' : 'showInput false'}</div>
-        <div>{showInput ? 'bottom-0 bg-slate-100' : '-top-32 bg-slate-200'}</div>
-        {vh}/{tgViewportHeight}
-        <div>initTgViewportHeight: {initTgViewportHeight}</div>
-        {'ios true'}
-      </div> */}
-
       <div
         className="fixed flex items-center left-0 right-0 top-[10px] px-[16px]"
         style={{

@@ -380,24 +380,6 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       hls.loadSource(media)
       hls.attachMedia(tempVideo)
 
-      // 检查是否超出加载限制
-      hls.on(Hls.Events.FRAG_LOADING, (event, data) => {
-        if (loadedFragments > MAX_FRAGMENTS) {
-          console.log(`Reached fragment limit (${MAX_FRAGMENTS}), stopping further loading.`)
-
-          // 解绑事件避免回调被触发
-          hls.off(Hls.Events.FRAG_LOADING)
-          hls.off(Hls.Events.FRAG_LOADED)
-
-          hls.stopLoad()
-          return
-        }
-      })
-
-      hls.on(Hls.Events.FRAG_LOADED, () => {
-        if (!hls) return // 确保 HLS 实例存在
-        loadedFragments++
-      })
       // 视频加载完成处理
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         console.log(`Video ${video.id} loaded successfully.`)

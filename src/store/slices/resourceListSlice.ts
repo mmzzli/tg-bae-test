@@ -272,14 +272,84 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     }))
     set({ cacheVideo: newCacheVideo })
   },
-  loadVideo: (video) => {
-    const hls = new Hls()
-    const tempVideo = document.createElement('video')
-    hls.loadSource(video?.media[0])
-    hls.attachMedia(tempVideo)
-    video.hls = hls
-    console.log(`jacob======加载视频 ${video.id}`)
-  },
+  // 加载视频
+  loadVideo: (() => {
+    const videoLoadQueue: FormatterListItem[] = [] // 视频加载队列
+    let isLoading = false
+    let loadedFragments = 0
+
+    const processQueue = () => {
+      if (isLoading || videoLoadQueue.length === 0) return
+      isLoading = true
+
+      const video = videoLoadQueue.shift()
+      if (!video) {
+        isLoading = false
+        return
+      }
+
+      const medias = video?.media[0]
+      if (!medias) {
+        console.error('Media not found for video:', video)
+        isLoading = false
+        processQueue()
+        return
+      }
+
+      const media = medias.split(',').find((item) => item.endsWith('.m3u8'))
+      if (!media) {
+        console.error('No valid m3u8 media found for video:', video)
+        isLoading = false
+        processQueue()
+        return
+      }
+
+      const hls = new Hls({
+        startPosition: 0,
+        maxBufferLength: 2,
+        enableWorker: true,
+        maxMaxBufferLength: 5,
+        autoStartLoad: true,
+        maxBufferHole: 0.5,
+        lowLatencyMode: false,
+        maxBufferSize: 10 * 1024 * 1024,
+      })
+
+      const tempVideo = document.createElement('video')
+      hls.loadSource(media)
+      hls.attachMedia(tempVideo)
+
+      // 视频加载完成处理
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        console.log(`Video ${video.id} loaded successfully.`)
+        video.hls = hls // 绑定 HLS 实例
+        isLoading = false
+        processQueue()
+      })
+
+      // 销毁事件处理
+      hls.on(Hls.Events.DESTROYING, () => {
+        console.log(`Destroying video ${video.id}`)
+        isLoading = false
+        processQueue()
+      })
+
+      // 错误处理
+      hls.on(Hls.Events.ERROR, (event, data) => {
+        console.error(`Error loading video ${video.id}:`, data)
+        isLoading = false
+        processQueue()
+      })
+
+      video.hls = hls
+      console.log(`Starting to load video ${video.id}`)
+    }
+
+    return (video: FormatterListItem) => {
+      videoLoadQueue.push(video)
+      processQueue()
+    }
+  })(),
 
   viewList: { ...initialListState },
   setViewPage: (page) =>

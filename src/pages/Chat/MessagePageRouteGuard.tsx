@@ -6,10 +6,6 @@ import { useParams } from 'react-router-dom'
 import MessagePage from './MessagePage'
 import MessagePageIOS from './MessagePageIOS'
 
-const isIOS = () => {
-  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
-}
-
 const MessagePageRouteGuard: FC = () => {
   const [ready, setReady] = useState(false)
   const { uid } = useParams()
@@ -55,7 +51,7 @@ const MessagePageRouteGuard: FC = () => {
     )
   }
 
-  return <>{isIOS() ? <MessagePageIOS /> : <MessagePage />}</>
+  return <MessagePageIOS />
 }
 
 export default MessagePageRouteGuard

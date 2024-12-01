@@ -63,6 +63,7 @@ export interface ResourceListSlice {
   cacheVideo: CacheVideo[]
   setCacheVideo: (video: CacheVideo | CacheVideo[], flag?: boolean) => void // true is scroll down  false is scroll up
   updateCache: (cacheVideo: FormatterListItem[]) => void
+  loadVideo: (video: FormatterListItem) => void
 
   // view
   viewList: BaseListState
@@ -270,6 +271,14 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       meta: item.media[0],
     }))
     set({ cacheVideo: newCacheVideo })
+  },
+  loadVideo: (video) => {
+    const hls = new Hls()
+    const tempVideo = document.createElement('video')
+    hls.loadSource(video?.media[0])
+    hls.attachMedia(tempVideo)
+    video.hls = hls
+    console.log(`jacob======加载视频 ${video.id}`)
   },
 
   viewList: { ...initialListState },

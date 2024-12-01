@@ -43,7 +43,16 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
         tgApp.openInvoice(url, (status:string) => {
           console.log(status,123)
           if (status === "paid") {
-            invoiceEve()
+            const items = setInterval(async()=>{
+            try{
+              const viewUrl = await viewPid(post_id)
+              resourcesEve(post_id,viewUrl)
+              clearInterval(items)
+            } catch (error) {
+              console.log(error,'payment')
+            }
+          },3000)
+
           }else{
             setLoading(false)
           }

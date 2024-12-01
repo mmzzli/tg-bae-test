@@ -1,60 +1,42 @@
-import { Dialog, DialogContent } from '@/components/BaseDialog/BaseDialog'
-import { FormatterListItem } from '@/store/slices/resourceListSlice'
-import Hls from 'hls.js'
-import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react'
-import { useThrottleFn } from 'ahooks'
-import closeIcon from '@/assets/icons/closeIcon.svg'
+import React, { memo, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import ReactPlayer from 'react-player'
 import Image from '@/components/Image/Image'
 import playIcon from '@/assets/icons/videoSwitch.svg'
-import { useTouch } from '@/hooks/useTouch'
+import closeIcon from '@/assets/icons/closeIcon.svg'
 import { useSafeArea } from '@/hooks/useSafeArea'
-import { useProfileNavigation } from '@/hooks/useProfileNavigation'
-import { UserItem } from '@/types'
+import { useTouch } from '@/hooks/useTouch'
+import { useThrottleFn } from 'ahooks'
+import { CardRecommendProvider } from '@/utils/constants'
 
-type State = {
-  isPlaying: boolean
-  isLoading: boolean
-  progress: number
-  isDragging: boolean
-  slideOffset: number
-  isSliding: boolean
-}
+const PlayButton = memo(({ onClick }: { onClick: () => void }) => (
+  <div
+    onClick={onClick}
+    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 no-tap z-1"
+  >
+    <Image src={playIcon} alt="play" className="w-[72px] h-[72px] no-tap" />
+  </div>
+))
 
-type Action =
-  | { type: 'SET_PLAYING'; payload: boolean }
-  | { type: 'SET_LOADING'; payload: boolean }
-  | { type: 'SET_PROGRESS'; payload: number }
-  | { type: 'SET_DRAGGING'; payload: boolean }
-  | { type: 'SET_SLIDE_OFFSET'; payload: number }
-  | { type: 'SET_SLIDING'; payload: boolean }
+const CloseButton = memo(({ onClose }: { onClose: () => void }) => (
+  <div
+    className="absolute right-2 top-2 z-[999] w-8 h-8 bg-black/30 rounded-full flex items-center justify-center"
+    onClick={onClose}
+  >
+    <img src={closeIcon} alt="close" />
+  </div>
+))
 
-const initialState: State = {
-  isPlaying: true,
-  isLoading: true,
-  progress: 0,
-  isDragging: false,
-  slideOffset: 0,
-  isSliding: false,
-}
-
-function reducer(state: State, action: Action): State {
-  switch (action.type) {
-    case 'SET_PLAYING':
-      return { ...state, isPlaying: action.payload }
-    case 'SET_LOADING':
-      return { ...state, isLoading: action.payload }
-    case 'SET_PROGRESS':
-      return { ...state, progress: action.payload }
-    case 'SET_DRAGGING':
-      return { ...state, isDragging: action.payload }
-    case 'SET_SLIDE_OFFSET':
-      return { ...state, slideOffset: action.payload }
-    case 'SET_SLIDING':
-      return { ...state, isSliding: action.payload }
-    default:
-      return state
-  }
-}
+const ProgressDisplay = memo(
+  ({ progress, isDragging }: { progress: number; isDragging: boolean }) => (
+    <div className="h-full bg-white rounded-full relative" style={{ width: `${progress}%` }}>
+      <div
+        className={`absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full ${
+          isDragging ? 'scale-100' : 'scale-0'
+        } transition-transform duration-200`}
+      />
+    </div>
+  )
+)
 
 const UserInfo = memo(
   ({
@@ -69,350 +51,206 @@ const UserInfo = memo(
     content: string | undefined
     uid: number | undefined
     bottom: number
-  }) => {
-    const { touchHandlers } = useTouch({
-      onTap: () => {
-        jumpToProfilePage({ uid } as UserItem)
-      },
-      stopPropagation: false,
-    })
-    const jumpToProfilePage = useProfileNavigation()
-    return (
-      <div
-        className="absolute left-4 right-4 z-10 flex flex-col cursor-pointer no-tap"
-        // onClick={() => jumpToProfilePage({ uid } as UserItem)}
-        // onTouchEnd={(e) => {
-        //   e.preventDefault()
-        //   e.stopPropagation()
-        //   jumpToProfilePage({ uid } as UserItem)
-        // }}
-        {...touchHandlers}
-        style={{
-          bottom: `${bottom + 68}px`,
-        }}
-      >
-        <div className="flex items-center">
-          <Image rect src={avatar} alt="avatar" className="w-10 h-10 rounded-full" />
-          <span className="text-white text-sm ml-2 shadow-sm">{username}</span>
-        </div>
-        <p className="text-white text-xs mt-2 line-clamp-2 overflow-hidden">{content}</p>
-      </div>
-    )
-  }
-)
-
-const CloseButton = memo(({ onClose }: { onClose: () => void }) => {
-  const { touchHandlers } = useTouch({
-    onTap: () => {
-      onClose()
-    },
-  })
-
-  return (
+  }) => (
     <div
-      className="absolute right-2 z-[999] w-8 h-8 bg-black/30 rounded-full overflow-hidden flex items-center justify-center"
+      className="absolute left-4 right-4 z-10 flex flex-col cursor-pointer no-tap"
       style={{
-        top: `calc(${
-          window
-            .getComputedStyle(document.documentElement)
-            .getPropertyValue('--tg-safe-area-inset-top') &&
-          parseInt(
-            window
-              .getComputedStyle(document.documentElement)
-              .getPropertyValue('--tg-safe-area-inset-top'),
-            10
-          ) !== 0
-            ? 'var(--tg-safe-area-inset-top) + 54px'
-            : '8px'
-        })`,
+        bottom: `${bottom + 68}px`,
       }}
-      {...touchHandlers}
-      // onClick={onClose}
     >
-      <img src={closeIcon} alt="close" />
+      <div className="flex items-center">
+        <Image rect src={avatar} alt="avatar" className="w-10 h-10 rounded-full" />
+        <span className="text-white text-sm ml-2 shadow-sm">{username}</span>
+      </div>
+      <p className="text-white text-xs mt-2 line-clamp-2 overflow-hidden">{content}</p>
     </div>
   )
-})
+)
 
-const PlayButton = memo(({ onClick }: { onClick: (e: React.MouseEvent) => void }) => (
-  <div
-    onClick={onClick}
-    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 no-tap z-1"
-  >
-    <Image src={playIcon} alt="play" className="w-[72px] h-[72px] no-tap" />
-  </div>
-))
-
-export function VideoDialog({
+const VideoDialog = ({
   info,
   onClose,
+  open,
 }: {
-  info: FormatterListItem | null
+  info: {
+    media?: string[]
+    avatar?: string
+    username?: string
+    title?: string
+    uid?: number
+  } | null
   onClose: () => void
-}) {
-  const [state, dispatch] = useReducer(reducer, initialState)
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const hlsRef = useRef<Hls | null>(null)
+  open: boolean
+}) => {
   const progressBarRef = useRef<HTMLDivElement>(null)
-  const progressRef = useRef(0)
+  const videoRef = useRef<ReactPlayer | null>(null)
   const touchStartXRef = useRef(0)
-  const containerRef = useRef<HTMLDivElement>(null)
   const { bottom } = useSafeArea()
-  // video init
+
+  const [url, setUrl] = useState<string | null>(null)
+  const [playing, setPlaying] = useState(false)
+  const [isLoading, setIsLoading] = useState(true) // 控制 Loading
+  const [showLoader, setShowLoader] = useState(false) // 延迟显示 Loader
+  const [currentTime, setCurrentTime] = useState(0)
+  const [duration, setDuration] = useState(0)
+  const [progress, setProgress] = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
+  const [slideOffset, setSlideOffset] = useState(0)
+  const [isSliding, setIsSliding] = useState(false)
+  const cardValue = useContext(CardRecommendProvider)
+
   useEffect(() => {
-    const video = videoRef.current
-    if (!video) return
-
-    if (Hls.isSupported() && info) {
-      const hls = new Hls({
-        startPosition: 0, // 从视频开始播放
-        maxBufferLength: 2, // 缓存最多 2 秒内容
-        enableWorker: true,
-        maxMaxBufferLength: 5,
-        autoStartLoad: true,
-        maxBufferHole: 0.5,
-        lowLatencyMode: true,
-        maxBufferSize: 10 * 1024 * 1024, // 最大缓冲区大小，限制为 5MB
-      })
-
-      hls.loadSource(info.media[0])
-      hls.attachMedia(video)
-      hlsRef.current = hls
-
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        video.play().catch(() => {
-          dispatch({ type: 'SET_LOADING', payload: false })
-          console.log('auto play failed')
-        })
-      })
-
-      hls.on(Hls.Events.ERROR, () => {
-        dispatch({ type: 'SET_LOADING', payload: false })
-      })
-
-      return () => {
-        hls.destroy()
-        video.src = ''
-      }
-    } else if (video.canPlayType('application/vnd.apple.mpegurl') && info) {
-      video.src = info.media[0]
-      video.addEventListener('loadedmetadata', () => {
-        video.play().catch(() => {
-          console.log('auto play failed')
-        })
-      })
+    if (info?.media && info.media[0]) {
+      setUrl(info.media[0])
     }
   }, [info])
 
-  const { run: updateProgress } = useThrottleFn(
-    () => {
-      const video = videoRef.current
-      if (!video || !video.duration || state.isDragging) return
+  useEffect(() => {
+    setPlaying(open)
+  }, [open])
 
-      const currentProgress = (video.currentTime / video.duration) * 100
-      progressRef.current = currentProgress
-      dispatch({ type: 'SET_PROGRESS', payload: currentProgress })
-      if (currentProgress > 0) {
-        dispatch({ type: 'SET_LOADING', payload: false })
-      }
-    },
-    { wait: 16 }
-  )
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    touchStartXRef.current = e.touches[0].clientX
-    dispatch({ type: 'SET_SLIDING', payload: true })
+  // 延迟显示 Loading（例如超过 500ms 后再显示）
+  useEffect(() => {
+    if (isLoading) {
+      const timer = setTimeout(() => setShowLoader(true), 500)
+      return () => clearTimeout(timer)
+    }
+    setShowLoader(false)
+  }, [isLoading])
+
+  const togglePlay = useCallback(() => {
+    setPlaying((prev) => !prev)
   }, [])
 
-  const { run: handleTouchMove } = useThrottleFn(
-    (e: React.TouchEvent) => {
-      if (state.isDragging) return
-      if (!state.isSliding) return
-
-      const deltaX = e.touches[0].clientX - touchStartXRef.current
-      const screenWidth = window.innerWidth
-      const newOffset = Math.max(-screenWidth, Math.min(0, deltaX))
-      dispatch({ type: 'SET_SLIDE_OFFSET', payload: newOffset })
+  const handleProgress = useCallback(
+    ({ playedSeconds }: { playedSeconds: number }) => {
+      if (!isDragging) {
+        setCurrentTime(playedSeconds)
+        setProgress((playedSeconds / duration) * 100)
+      }
     },
-    { wait: 16 }
+    [isDragging, duration]
   )
 
-  const handleTouchEnd = useCallback(() => {
-    dispatch({ type: 'SET_SLIDING', payload: false })
-    const screenWidth = window.innerWidth
-
-    if (Math.abs(state.slideOffset) > 60) {
-      dispatch({ type: 'SET_SLIDE_OFFSET', payload: -screenWidth })
-    } else {
-      dispatch({ type: 'SET_SLIDE_OFFSET', payload: 0 })
-    }
-  }, [state.slideOffset])
-
-  const { touchHandlers } = useTouch({
-    onTap: () => {
-      togglePlay()
-    },
-    onTouchStartProp: handleTouchStart,
-    onTouchMoveProp: handleTouchMove,
-    onTouchEndProp: handleTouchEnd,
-  })
-
-  const handleProgressChange = useCallback((e: React.MouseEvent | React.TouchEvent) => {
-    const video = videoRef.current
+  const handleSeek = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     const progressBar = progressBarRef.current
-    if (!video || !progressBar) return
+    if (!progressBar || !videoRef.current) return
 
     const rect = progressBar.getBoundingClientRect()
     const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
     const x = Math.max(0, Math.min(clientX - rect.left, rect.width))
     const newProgress = (x / rect.width) * 100
 
-    video.currentTime = (newProgress / 100) * video.duration
-    dispatch({ type: 'SET_PROGRESS', payload: newProgress })
-    progressRef.current = newProgress
+    setProgress(newProgress)
+    videoRef.current.seekTo(newProgress / 100)
   }, [])
 
-  const handleDragStart = useCallback(
-    (e: React.MouseEvent | React.TouchEvent) => {
-      dispatch({ type: 'SET_DRAGGING', payload: true })
-      handleProgressChange(e)
-    },
-    [handleProgressChange]
-  )
-
-  const handleDragEnd = useCallback(() => {
-    dispatch({ type: 'SET_DRAGGING', payload: false })
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartXRef.current = e.touches[0].clientX
+    setIsSliding(true)
   }, [])
 
-  const togglePlay = useCallback(() => {
-    if (videoRef.current) {
-      if (state.isPlaying) {
-        videoRef.current.pause()
-      } else {
-        videoRef.current.play()
-      }
-      dispatch({ type: 'SET_PLAYING', payload: !state.isPlaying })
-    }
-  }, [state.isPlaying])
-
-  // progress update animation frame
-  useEffect(() => {
-    let rafId: number
-
-    const animate = () => {
-      updateProgress()
-      rafId = requestAnimationFrame(animate)
-    }
-
-    if (state.isPlaying && !state.isDragging) {
-      rafId = requestAnimationFrame(animate)
-    }
-
-    return () => {
-      if (rafId) {
-        cancelAnimationFrame(rafId)
-      }
-    }
-  }, [state.isPlaying, state.isDragging, updateProgress])
-
-  const ProgressDisplay = memo(
-    ({ progress, isDragging }: { progress: number; isDragging: boolean }) => (
-      <div className="h-full bg-white rounded-full relative" style={{ width: `${progress}%` }}>
-        <div
-          className={`absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4
-                        bg-white rounded-full scale-0
-                        ${isDragging ? 'scale-100' : 'group-hover:scale-100'}
-                        transition-transform duration-200`}
-        />
-      </div>
-    )
-  )
-
-  const handlePlayClick = useCallback(
-    (e: React.MouseEvent) => {
-      e.preventDefault()
-      e.stopPropagation()
-      togglePlay()
+  const { run: handleTouchMove } = useThrottleFn(
+    (e: React.TouchEvent) => {
+      if (isDragging || !isSliding) return
+      const deltaX = e.touches[0].clientX - touchStartXRef.current
+      const screenWidth = window.innerWidth
+      setSlideOffset(Math.max(-screenWidth, Math.min(0, deltaX)))
     },
-    [togglePlay]
+    { wait: 16 }
   )
+
+  const handleTouchEnd = useCallback(() => {
+    setIsSliding(false)
+    const screenWidth = window.innerWidth
+    setSlideOffset(Math.abs(slideOffset) > 60 ? -screenWidth : 0)
+  }, [slideOffset])
+
+  const { touchHandlers } = useTouch({
+    onTap: togglePlay,
+    onTouchStartProp: handleTouchStart,
+    onTouchMoveProp: handleTouchMove,
+    onTouchEndProp: handleTouchEnd,
+  })
 
   return (
-    <Dialog open={true}>
-      <DialogContent className="p-0">
-        <div
-          ref={containerRef}
-          className="absolute w-screen h-screen bg-black overflow-hidden"
-          {...touchHandlers}
-        >
-          <CloseButton onClose={onClose} />
-
-          <video
+    <div
+      style={{ display: open ? 'block' : 'none' }}
+      className="absolute w-screen h-screen bg-black overflow-hidden"
+      {...touchHandlers}
+    >
+      <div className="fixed w-full h-full object-contain z-10 bg-black inset-0">
+        {url && (
+          <ReactPlayer
             ref={videoRef}
-            className="absolute w-full h-full object-contain z-10"
-            src={info?.media[0]}
-            onEnded={() => dispatch({ type: 'SET_PLAYING', payload: false })}
-            controls={false}
-            playsInline={true} // prevent iOS full screen
-            webkit-playsinline="true" // for old iOS WebKit
-            x5-playsinline="true" // for X5 kernel
-            x5-video-player-type="h5" // enable H5 player
-            x5-video-player-fullscreen="false" // full screen handle
-            preload="auto" // preload
-            x-webkit-airplay="allow" // 允许 AirPlay
+            url={url}
+            playing={playing}
+            onReady={() => setIsLoading(false)} // 隐藏 Loader
+            onBuffer={() => setIsLoading(true)} // 显示 Loader
+            onBufferEnd={() => setIsLoading(false)} // 隐藏 Loader
+            onProgress={handleProgress}
+            onDuration={setDuration}
+            config={{
+              file: { forceHLS: true, forceVideo: true },
+            }}
+            width="100%"
+            height="100%"
           />
-
-          <div
-            style={{ display: state.isLoading ? 'flex' : 'none' }}
-            className="absolute inset-0 items-center justify-center bg-black/50 z-20"
-          >
+        )}
+        <CloseButton
+          onClose={() => {
+            onClose()
+            cardValue?.setVideoOpen(false)
+            setPlaying(false)
+          }}
+        />
+        {showLoader && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/50">
             <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin" />
           </div>
-
-          <div style={{ display: state.isPlaying || state.isLoading ? 'none' : 'flex' }}>
-            <PlayButton onClick={handlePlayClick} />
-          </div>
-
+        )}
+        {!playing && !isLoading && <PlayButton onClick={togglePlay} />}
+        <div
+          className="absolute left-0 right-0 bottom-0 z-10 flex flex-col transition-transform duration-300 ease-out"
+          style={{
+            transform: `translateX(${slideOffset}px)`,
+          }}
+        >
+          <UserInfo
+            avatar={info?.avatar}
+            username={info?.username}
+            content={info?.title}
+            uid={info?.uid}
+            bottom={bottom}
+          />
           <div
-            className="absolute left-0 right-0 bottom-0 z-10 flex flex-col transition-transform duration-300 ease-out"
+            ref={progressBarRef}
+            className="absolute bottom-6 left-0 right-0 px-4 touch-none"
             style={{
-              transform: `translateX(${state.slideOffset}px)`,
+              paddingBottom: `${bottom + 20}px`,
             }}
+            onMouseDown={() => setIsDragging(true)}
+            onMouseMove={(e) => isDragging && handleSeek(e)}
+            onMouseUp={() => setIsDragging(false)}
+            onTouchStart={() => setIsDragging(true)}
+            onTouchMove={(e) => isDragging && handleSeek(e)}
+            onTouchEnd={() => setIsDragging(false)}
           >
-            <UserInfo
-              avatar={info?.avatar}
-              username={info?.username}
-              content={info?.title}
-              uid={info?.uid}
-              bottom={bottom}
-            />
+            <div className="relative group h-8 -my-2 flex items-center cursor-pointer no-tap">
+              <div className="absolute inset-0" />
 
-            <div
-              ref={progressBarRef}
-              className="absolute bottom-6 left-0 right-0 px-4 touch-none"
-              style={{
-                paddingBottom: `${bottom + 20}px`,
-              }}
-              onMouseDown={handleDragStart}
-              onMouseMove={(e) => state.isDragging && handleProgressChange(e)}
-              onMouseUp={handleDragEnd}
-              onMouseLeave={handleDragEnd}
-              onTouchStart={handleDragStart}
-              onTouchMove={(e) => state.isDragging && handleProgressChange(e)}
-              onTouchEnd={handleDragEnd}
-            >
-              <div className="relative group h-8 -my-2 flex items-center cursor-pointer no-tap">
-                <div className="absolute inset-0" />
-                <div
-                  className={`w-full ${state.isDragging ? 'h-2' : 'h-[1px] group-hover:h-2'}
+              <div
+                className={`w-full ${isDragging ? 'h-2' : 'h-[1px] group-hover:h-2'}
                       bg-gray-500/30 rounded-full transition-[height] duration-200`}
-                >
-                  <ProgressDisplay progress={state.progress} isDragging={state.isDragging} />
-                </div>
+              >
+                <ProgressDisplay progress={progress} isDragging={isDragging} />
               </div>
             </div>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   )
 }
+
+export default VideoDialog

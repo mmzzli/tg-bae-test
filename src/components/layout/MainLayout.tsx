@@ -73,7 +73,7 @@ export const MainLayout: React.FC = () => {
       try {
         // window.TelegramWebviewProxy &&
         //   window.TelegramWebviewProxy.postEvent('web_app_request_fullscreen')
-        tgApp.requestFullscreen()
+
         window.TelegramWebviewProxy.postEvent('web_app_invoke_custom_method', {
           req_id: 1,
           method: 'get_user_info',
@@ -83,6 +83,12 @@ export const MainLayout: React.FC = () => {
         })
       } catch (err) {
         console.warn('######    web_app_request_fullscreen error    ######', err)
+      }
+
+      try {
+        tgApp.requestFullscreen()
+      } catch (e) {
+        console.warn(e)
       }
 
       postEvent('web_app_setup_swipe_behavior', {

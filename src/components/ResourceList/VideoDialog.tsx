@@ -191,7 +191,20 @@ const VideoDialog = ({
             onProgress={handleProgress}
             onDuration={setDuration}
             config={{
-              file: { forceHLS: true, forceVideo: true },
+              file: {
+                forceHLS: true,
+                forceVideo: true,
+                hlsOptions: {
+                  startPosition: 0,
+                  maxBufferLength: 2,
+                  enableWorker: true,
+                  maxMaxBufferLength: 5,
+                  autoStartLoad: true,
+                  maxBufferHole: 0.5,
+                  lowLatencyMode: false,
+                  maxBufferSize: 10 * 1024 * 1024,
+                },
+              },
             }}
             width="100%"
             height="100%"

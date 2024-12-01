@@ -37,11 +37,11 @@ const UserProfile: FC = () => {
             10
           ) !== 0
             ? '8px'
-            : '24px'
+            : '30px'
         })`,
       }}
     >
-      <HStack gap="16px" paddingLeft="8px" justifyContent="space-between">
+      <HStack paddingLeft="0" justifyContent="space-between">
         <div className="w-[64px] h-[64px] overflow-hidden rounded-[50%]">
           <Image
             rect
@@ -58,7 +58,7 @@ const UserProfile: FC = () => {
         </Box>
       </HStack>
 
-      <HStack marginTop="4">
+      <HStack marginTop="10px" gap="4px">
         <Heading as="h3" color="#0F1233" fontWeight="500" fontSize="20px">
           {userInfo.username}
         </Heading>

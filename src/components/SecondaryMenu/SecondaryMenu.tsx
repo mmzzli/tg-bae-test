@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { MoreHorizontal } from 'lucide-react'
 import { useSafeState } from 'ahooks'
 import { ReportIconLight } from '@/assets/icons'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
@@ -25,6 +24,7 @@ const SecondaryMenu = ({ mediaData, currentUid, className, type }: Props) => {
   const [reportVisible, setReportVisible] = useSafeState(false)
   const toast = useToast()
   const [followBoll, setFollowBoll] = useState<boolean>(!mediaData.is_follow)
+  const [isFollowLoading, setIsFollowLoading] = useState<boolean>(false)
 
   const deleteDialogWrap = useModal(DeleteDialogWarp)
 
@@ -72,33 +72,31 @@ const SecondaryMenu = ({ mediaData, currentUid, className, type }: Props) => {
   const doFollow = async () => {
     console.log(type)
     setVisible(false)
+    setIsFollowLoading(true)
     await getSomeoneProfile(mediaData.uid)
     await follow({
       fansid: mediaData.id,
       tgid: mediaData.uid,
     })
+    setIsFollowLoading(false)
     setFollowBoll((rep) => !rep)
   }
 
   return (
     <div className={cn(className, 'relative')} ref={menuRef}>
-      <div className="flex gap-[8px]">
+      <div className="flex items-center gap-[8px]">
         {!mediaData.is_follow && type === 'recommend' && (
           <BaseButton
             text={followBoll ? `Follow` : `Following`}
-            // loading={followLoading}
-            width="80px"
+            loading={isFollowLoading}
+            width={followBoll ? '80px' : '104px'}
             height="34px"
             handler={doFollow}
-            className={`bg-transparent border text-[#333333] border-[#333] ${className}`}
+            className={`bg-transparent border text-[#333333] border-[#CDCDD4] ${className}`}
           />
         )}
-        <button className="p-2 rounded-full" onClick={() => setVisible(!visible)}>
-          {/* <MoreHorizontal className="w-5 h-5 text-[#373738] dark:text-[#E0E2F6]" /> */}
-          <i
-            className="iconfont icon-icon_more w-6 h-6 ml-2 text-[#373738]"
-            style={{ fontSize: '26px' }}
-          ></i>
+        <button className="rounded-full" onClick={() => setVisible(!visible)}>
+          <i className="iconfont icon-icon_more text-[#373738]" style={{ fontSize: '26px' }}></i>
         </button>
       </div>
 

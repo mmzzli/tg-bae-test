@@ -29,8 +29,10 @@ const BaseButton = ({
       <div
         className={cn(
           'no-tap flex items-center justify-center gap-2 bg-[#6254FF] dark:bg-[#4A3AFF] rounded-[42px] text-white dark:text-[#E0E2F6] text-sm font-medium cursor-pointer',
-          loading || disabled ? 'dark:bg-[#6a5cfc] bg-[#D1D0DE] cursor-not-allowed' : '',
-          className
+          className,
+          loading || disabled
+            ? 'dark:bg-[#6a5cfc] bg-[#D1D0DE] cursor-not-allowed text-white border-[#D1D0DE]'
+            : ''
         )}
         onClick={() => !loading && !disabled && handler()}
         style={{ width, height }}

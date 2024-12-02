@@ -104,6 +104,11 @@ const VideoDialog = () => {
     if (info?.media && info.media[0]) {
       setUrl(info.media[0])
     }
+    if (!info && videoRef?.current) {
+      setTimeout(() => {
+        setVideoResource(null)
+      }, 100)
+    }
   }, [info])
 
   useEffect(() => {

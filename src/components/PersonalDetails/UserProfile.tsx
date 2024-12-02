@@ -59,7 +59,7 @@ const UserProfile: FC = () => {
           {userInfo.username}
         </Heading>
         <Link onClick={() => navigate('/profile/edit')}>
-          <Image src={EditIcon} alt="Edit Profile" />
+          <i className="iconfont icon-a-edit-line1 text-[#7a7a7a]" style={{ fontSize: '18px' }}></i>
         </Link>
       </HStack>
 

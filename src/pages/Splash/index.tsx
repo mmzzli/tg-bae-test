@@ -33,19 +33,18 @@ const Splash: FC = () => {
   const { startParam } = retrieveLaunchParams()
 
   useEffect(() => {
-    // if (list && list.length > 0) {
-    //   const resources = list.filter((item) => item.type === 0)
-    //
-    //   if (resources.length) {
-    //     setCacheVideoIndex(resources[0].id)
-    //     updateCacheVideo(resources)
-    //   }
-    //   // setCacheVideo()
-    //   setTimeout(() => {
-    //     setIsCached(true)
-    //   }, 2000)
-    // }
-    setIsCached(true)
+    if (list && list.length > 0) {
+      const resources = list.filter((item) => item.type === 0)
+
+      if (resources.length) {
+        setCacheVideoIndex(resources[0].id)
+        updateCacheVideo(resources)
+      }
+      // setCacheVideo()
+      setTimeout(() => {
+        setIsCached(true)
+      }, 2000)
+    }
   }, [list])
 
   useEffect(() => {

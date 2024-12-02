@@ -79,8 +79,6 @@ export const MainLayout: React.FC = () => {
         console.warn('######    web_app_request_fullscreen error    ######', err)
       }
 
-      setVideoResource(null)
-
       postEvent('web_app_setup_swipe_behavior', {
         allow_vertical_swipe: false,
       })
@@ -99,12 +97,17 @@ export const MainLayout: React.FC = () => {
         console.log('window.location.pathname', window.location.pathname)
         console.log('location previous', location.state?.from)
         console.log('location previous backToHome', useStore.getState().backToHome)
+
+        if (info) {
+          setVideoResource(null)
+          return
+        }
+
         if (useStore.getState().backToHome) {
           setBackToHome(false)
           return navigate('/home')
         }
-        if (info) {
-        }
+
         if (window.location.pathname === '/home') {
           tgApp
             .showConfirm({

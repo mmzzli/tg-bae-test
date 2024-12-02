@@ -99,6 +99,14 @@ const VideoDialog = () => {
   }
 
   useEffect(() => {
+    if (!url) {
+      setIsReady(false)
+      setDuration(0)
+      setCurrentTime(0)
+    }
+  }, [url])
+
+  useEffect(() => {
     if (info?.media && info.media[0]) {
       setUrl(info.media[0])
     }

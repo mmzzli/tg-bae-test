@@ -13,19 +13,19 @@ interface PostListProps {
 
 const RecommendList = ({ className }: PostListProps) => {
   const { list, hasMore, fetchMoreData, page } = useRecommendList()
-  const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
-  const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
-  const updateCacheVideo = useStore((state) => state.updateCacheVideo)
-
-  useCacheVideo(
-    list,
-    page,
-    setCacheVideoIndex,
-    getCacheVideoindex,
-    updateCacheVideo,
-    'recommendScrollableDiv',
-    'video-card'
-  )
+  // const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
+  // const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
+  // const updateCacheVideo = useStore((state) => state.updateCacheVideo)
+  //
+  // useCacheVideo(
+  //   list,
+  //   page,
+  //   setCacheVideoIndex,
+  //   getCacheVideoindex,
+  //   updateCacheVideo,
+  //   'recommendScrollableDiv',
+  //   'video-card'
+  // )
 
   return (
     <div className={cn(className, 'pb-24')}>
@@ -43,7 +43,7 @@ const RecommendList = ({ className }: PostListProps) => {
         style={{ overflow: 'visible' }}
       >
         <div id="view-container">
-          <ResourceList resources={list} type='recommend' />
+          <ResourceList resources={list} type="recommend" />
         </div>
       </InfiniteScroll>
     </div>

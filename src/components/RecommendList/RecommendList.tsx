@@ -15,14 +15,14 @@ const RecommendList = ({ className }: PostListProps) => {
   const { list, hasMore, fetchMoreData, page } = useRecommendList()
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
-  const updateCache = useStore((state) => state.updateCache)
+  const updateCacheVideo = useStore((state) => state.updateCacheVideo)
 
   useCacheVideo(
     list,
     page,
     setCacheVideoIndex,
     getCacheVideoindex,
-    updateCache,
+    updateCacheVideo,
     'recommendScrollableDiv',
     'video-card'
   )

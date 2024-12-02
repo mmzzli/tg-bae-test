@@ -161,3 +161,17 @@ export const debounce = (func: (...args: any[]) => void, wait: number) => {
     timeout = setTimeout(() => func(...args), wait)
   }
 }
+
+export function throttle(func: (...args: any[]) => void, wait: number) {
+  let lastTime = 0
+
+  return (...args: any[]) => {
+    const now = Date.now()
+
+    if (now - lastTime >= wait) {
+      lastTime = now
+      // @ts-ignore
+      func.apply(this, args)
+    }
+  }
+}

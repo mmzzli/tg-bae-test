@@ -7,7 +7,7 @@ import { getSingleMedia } from '@/api/list'
 import Icon from '@/components/comm/Icon'
 import { useSafeState } from 'ahooks'
 import { useRecommendList } from '@/store/hook/useResourceList'
-import { CacheVideo } from '@/store/slices/resourceListSlice'
+import { CacheVideo, FormatterListItem } from '@/store/slices/resourceListSlice'
 
 const SHARE_POST = 1
 const SHARE_PROFILE = 2
@@ -15,9 +15,8 @@ const SHARE_PROFILE = 2
 const Splash: FC = () => {
   const navigate = useNavigate()
   const userInfo = useStore((state) => state.userInfo)
-  const getCacheVideo = useStore((state) => state.cacheVideo)
-  const setCacheVideo = useStore((state) => state.setCacheVideo)
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
+  const updateCacheVideo = useStore((state) => state.updateCacheVideo)
   const loadVideo = useStore((state) => state.loadVideo)
 
   const setBackToHome = useStore((state) => state.setBackToHome)
@@ -38,15 +37,8 @@ const Splash: FC = () => {
       const resources = list.filter((item) => item.type === 0)
 
       if (resources.length) {
-        const cacheData: CacheVideo[] = resources.map((item) => ({
-          id: item.id,
-          media: item.media[0],
-        }))
-        setCacheVideoIndex(cacheData[0].id)
-        setCacheVideo(cacheData as CacheVideo[])
-        resources.forEach((item) => {
-          loadVideo(item)
-        })
+        setCacheVideoIndex(resources[0].id)
+        updateCacheVideo(resources)
       }
       // setCacheVideo()
       setTimeout(() => {

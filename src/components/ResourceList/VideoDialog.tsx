@@ -100,6 +100,7 @@ const VideoDialog = () => {
 
   useEffect(() => {
     if (info?.media && info.media[0]) {
+      console.log(url, '---------jacob====url')
       setUrl(info.media[0])
     }
   }, [info])

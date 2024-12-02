@@ -46,7 +46,7 @@ export interface CacheVideo {
 }
 const recordsNum = 5
 const CACHE_VIDEOS_LIMIT = 20
-const BUFFER_FRAGMENT_LIMIT = 2
+const BUFFER_FRAGMENT_LIMIT = 1
 
 export interface ResourceListSlice {
   // recommend
@@ -310,11 +310,11 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         console.log(`视频 ${video.id} 缓存分片数量: ${loadedFragments} ${max_fragment_count}`)
         if (loadedFragments >= Math.min(max_fragment_count, BUFFER_FRAGMENT_LIMIT)) {
           isLoading = false
-
-          hls.destroy()
+          // hls.destroy()
           setTimeout(() => {
             processQueue()
             video.loaded = true
+            video.hls = hls
           })
         }
       })

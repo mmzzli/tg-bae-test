@@ -16,10 +16,6 @@ const UserProfile: FC = () => {
   const userId = launchParams.initData?.user?.id ?? 0
   const userInfo = useStore((state) => state.userInfo)
   const navigate = useNavigate()
-
-  useEffect(() => {
-    console.log(userInfo, 'userInfo========')
-  }, [userInfo])
   return !userInfo.avatar ? (
     <ProfileSkeleton />
   ) : (

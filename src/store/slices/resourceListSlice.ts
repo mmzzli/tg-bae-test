@@ -247,7 +247,6 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     const newCacheVideo: FormatterListItem[] = newCache
 
     newCacheVideo.forEach((video) => {
-      console.log(video, '=====')
       get().loadVideo(video)
     })
     set({ cacheVideo: newCacheVideo })

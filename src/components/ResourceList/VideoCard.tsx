@@ -82,11 +82,6 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
           </Box>
         </div>
       </Box>
-      {/*<VideoDialog*/}
-      {/*  info={data}*/}
-      {/*  open={isVideoPreviewOpen}*/}
-      {/*  onClose={() => setIsVideoPreviewOpen(false)}*/}
-      {/*/>*/}
     </>
   )
 }

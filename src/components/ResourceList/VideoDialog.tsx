@@ -97,10 +97,13 @@ const VideoDialog = () => {
   useEffect(() => {
     if (videoRef?.current) {
       videoRef.current.currentTime = 0
-      setUrl('')
-      setDuration(0)
-      setCurrentTime(0)
     }
+
+    setUrl('')
+    setDuration(0)
+    setCurrentTime(0)
+    setProgress(0)
+
     if (info?.media && info.media[0]) {
       setUrl(info.media[0])
     }

@@ -311,6 +311,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         if (loadedFragments >= Math.min(max_fragment_count, BUFFER_FRAGMENT_LIMIT)) {
           isLoading = false
           // hls.destroy()
+          hls.stopLoad()
           setTimeout(() => {
             processQueue()
             video.loaded = true

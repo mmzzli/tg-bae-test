@@ -13,6 +13,7 @@ import { Menu } from '../Menu'
 import { postEvent } from '@telegram-apps/sdk'
 import { PostProgressBar } from '../NewPost/PostProgressBar'
 import VideoDialog from '@/components/ResourceList/VideoDialog'
+import ImageDialog from '@/components/ResourceList/ImageDialog'
 const ChatListPageLoader = {
   preload: () =>
     import('@/pages/Chat').then((module) => ({
@@ -40,6 +41,8 @@ export const MainLayout: React.FC = () => {
   const navigate = useNavigate()
   const setVideoResource = useStore((state) => state.setVideoResource)
   const videoResource = useStore((state) => state.videoResource)
+  const imageResource = useStore((state) => state.imageResource)
+  const setImageResource = useStore((state) => state.setImageResource)
 
   const { run: runLogin } = useRequest(logIn, {
     manual: true,
@@ -101,6 +104,11 @@ export const MainLayout: React.FC = () => {
         console.log(useStore.getState().videoResource, '=================')
         if (useStore.getState().videoResource) {
           setVideoResource(null)
+          return navigate('/home')
+        }
+
+        if (useStore.getState().imageResource) {
+          setImageResource(null)
           return navigate('/home')
         }
 
@@ -182,6 +190,17 @@ export const MainLayout: React.FC = () => {
     }
   }, [videoResource])
 
+  useEffect(() => {
+    if (window.Telegram?.WebApp) {
+      const tgApp = window.Telegram.WebApp
+      if (imageResource) {
+        tgApp.BackButton.show()
+      } else {
+        tgApp.BackButton.hide()
+      }
+    }
+  }, [imageResource])
+
   return (
     <div className="absolute inset-0 top-0 right-0 bottom-0 left-0overflow-hidden flex pb-[84px] transition-all duration-300 bg-white dark:bg-black">
       <div
@@ -223,6 +242,7 @@ export const MainLayout: React.FC = () => {
       <PostProgressBar />
       <Menu />
       <VideoDialog></VideoDialog>
+      <ImageDialog></ImageDialog>
     </div>
   )
 }

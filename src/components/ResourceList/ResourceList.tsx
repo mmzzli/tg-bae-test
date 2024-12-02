@@ -51,6 +51,7 @@ const ResourceList = ({
   const [resources, setResources] = useState<FormatterListItem[]>([])
   const [likes, setLikes] = useSafeState<Like[]>([])
   const [saveds, setSaveds] = useState<Saveds[]>([])
+  const setImageResource = useStore((state) => state.setImageResource)
 
   const { shareLink, launchParams } = useTMAUtils()
   const [isBaseModalOpen, { toggle, off }] = useBoolean(false)
@@ -71,9 +72,10 @@ const ResourceList = ({
   const jumpToProfilePage = useProfileNavigation()
 
   const handleImageClick = useCallback((images: string[], index: number) => {
-    setPreviewImages(images)
-    setCurrentIndex(index)
-    setIsPreviewOpen(true)
+    setImageResource({
+      images,
+      currentIndex: index,
+    })
   }, [])
 
   const { runAsync: getLinkHandlerAsync } = useRequest(getLink, {
@@ -271,17 +273,6 @@ const ResourceList = ({
             </Box>
           )
         })}
-
-        {isPreviewOpen && (
-          <ImagePreviewWrapper
-            isOpen={isPreviewOpen}
-            onClose={() => setIsPreviewOpen(false)}
-            images={previewImages}
-            currentIndex={currentIndex}
-            onIndexChange={setCurrentIndex}
-          />
-        )}
-        {/* Components */}
         {renderBaseModal()}
       </div>
     </>
@@ -331,7 +322,13 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
           )}
         </div>
       </div>
-      <SecondaryMenu className="ml-auto" key={data.id} mediaData={data} currentUid={currentUid} type={type} />
+      <SecondaryMenu
+        className="ml-auto"
+        key={data.id}
+        mediaData={data}
+        currentUid={currentUid}
+        type={type}
+      />
     </div>
   )
 })
@@ -412,36 +409,6 @@ const ResourceFooter = memo<ResourceFooterProps>(
           />
         </div>
       </>
-    )
-  }
-)
-
-const ImagePreviewWrapper = memo(
-  ({
-    isOpen,
-    images,
-    currentIndex,
-    onClose,
-    onIndexChange,
-  }: {
-    isOpen: boolean
-    images: string[]
-    currentIndex: number
-    onClose: () => void
-    onIndexChange: (index: number) => void
-  }) => {
-    if (!isOpen) return null
-
-    return (
-      <Suspense fallback={null}>
-        <ImagePreview
-          isOpen={isOpen}
-          onClose={onClose}
-          images={images}
-          currentIndex={currentIndex}
-          onIndexChange={onIndexChange}
-        />
-      </Suspense>
     )
   }
 )

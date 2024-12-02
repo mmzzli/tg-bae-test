@@ -8,6 +8,8 @@ import { handleZoomAndPan } from './resizeAndMove'
 
 import 'swiper/css'
 import { useSafeState } from 'ahooks'
+import { useStore } from '@/store'
+import { expand } from '@telegram-apps/sdk/dist/dts/scopes/components/viewport/methods'
 
 interface ImagePreviewProps {
   isOpen: boolean
@@ -26,6 +28,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
 }) => {
   const [swiper, setSwiper] = useState<SwiperType | null>(null)
   const [loading, setLoading] = useSafeState(true)
+  const isExpanded = useStore((state) => state.expand)
 
   useEffect(() => {
     if (swiper && swiper.activeIndex !== currentIndex) {
@@ -91,28 +94,30 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
         if (e.target === e.currentTarget) onClose()
       }}
     >
-      <button
-        onClick={onClose}
-        className="absolute right-4 p-2 text-white opacity-60 hover:opacity-100 transition-opacity z-10"
-        style={{
-          top: `calc(${
-            window
-              .getComputedStyle(document.documentElement)
-              .getPropertyValue('--tg-safe-area-inset-top') &&
-            parseInt(
+      {!isExpanded && (
+        <button
+          onClick={onClose}
+          className="absolute right-4 p-2 text-white opacity-60 hover:opacity-100 transition-opacity z-10"
+          style={{
+            top: `calc(${
               window
                 .getComputedStyle(document.documentElement)
-                .getPropertyValue('--tg-safe-area-inset-top'),
-              10
-            ) !== 0
-              ? 'var(--tg-safe-area-inset-top) + 54px'
-              : '16px'
-          })`,
-          // paddingTop: 'var(--tg-safe-area-inset-top)',
-        }}
-      >
-        <X className="w-6 h-6" />
-      </button>
+                .getPropertyValue('--tg-safe-area-inset-top') &&
+              parseInt(
+                window
+                  .getComputedStyle(document.documentElement)
+                  .getPropertyValue('--tg-safe-area-inset-top'),
+                10
+              ) !== 0
+                ? 'var(--tg-safe-area-inset-top) + 54px'
+                : '16px'
+            })`,
+            // paddingTop: 'var(--tg-safe-area-inset-top)',
+          }}
+        >
+          <X className="w-6 h-6" />
+        </button>
+      )}
 
       <div className="absolute bottom-[91px] text-white text-sm opacity-60 z-10 w-full text-center">
         {currentIndex + 1} / {images.length}

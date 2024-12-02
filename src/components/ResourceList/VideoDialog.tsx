@@ -82,6 +82,7 @@ const VideoDialog = () => {
 
   const info = useStore((state) => state.videoResource)
   const setVideoResource = useStore((state) => state.setVideoResource)
+  const isExpanded = useStore((state) => state.expand)
 
   const onClose = () => {
     if (videoRef?.current) {
@@ -269,7 +270,7 @@ const VideoDialog = () => {
           bottom={bottom}
         />
 
-        <CloseButton onClose={onClose} />
+        {!isExpanded && <CloseButton onClose={onClose} />}
       </div>
     </div>
   )

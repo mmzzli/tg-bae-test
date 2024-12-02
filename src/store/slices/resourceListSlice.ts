@@ -44,6 +44,11 @@ export interface CacheVideo {
   id: string | number
   media: string
 }
+
+export interface imagePreview {
+  images: string[]
+  currentIndex: number
+}
 const recordsNum = 10
 const CACHE_VIDEOS_LIMIT = 9
 const BUFFER_FRAGMENT_LIMIT = 1
@@ -71,6 +76,10 @@ export interface ResourceListSlice {
   videoResource: FormatterListItem | null
   setVideoResource: (video: FormatterListItem | null) => void
 
+  // image Viewer
+  imageResource: imagePreview | null
+  setImageResource: (resource: imagePreview | null) => void
+  setImageResourceIndex: (index: number) => void
   // view
   viewList: BaseListState
   setViewPage: (page: number) => void
@@ -370,6 +379,27 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     set({ videoResource: video })
   },
 
+  imageResource: null,
+  setImageResource: (resource) => {
+    set({ imageResource: resource })
+  },
+
+  setImageResourceIndex: (currentIndex: number) => {
+    set((state) => {
+      if (state.imageResource) {
+        return {
+          imageResource: {
+            ...state.imageResource,
+            currentIndex,
+          },
+        }
+      } else {
+        return {
+          imageResource: state.imageResource,
+        }
+      }
+    })
+  },
   viewList: { ...initialListState },
   setViewPage: (page) =>
     set((state) => ({

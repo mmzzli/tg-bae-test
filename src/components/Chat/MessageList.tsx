@@ -109,7 +109,7 @@ export const MessageList = ({ messages, className, channelInfo }: MessageListPro
         )}
         <div
           className={`overflow-hidden rounded-lg max-w-[255px]
-            ${isCurrentUser && message.type === MessageType.TEXT ? 'bg-[#4A3AFF] text-white' : 'dark:bg-[#303030] bg-[#F1F1F1] text-[#333333] dark:text-white'}
+            ${isCurrentUser && message.type === MessageType.TEXT ? 'bg-[#6254ff] dark:bg-[#4A3AFF] text-white' : 'dark:bg-[#303030] bg-[#F1F1F1] text-[#333333] dark:text-white'}
             ${message.type === MessageType.TEXT ? 'p-3' : 'inline-block'}
           `}
         >

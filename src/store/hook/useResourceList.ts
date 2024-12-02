@@ -267,7 +267,7 @@ const useCacheVideo = (
   domId: string,
   cardClass: string = 'video-card'
 ) => {
-  const handleScroll = throttle(() => {
+  const handleScroll = debounce(() => {
     const videos = list.filter((item) => item.type === 0) // 过滤出视频类型
 
     const container = document.getElementById(`${domId}`)

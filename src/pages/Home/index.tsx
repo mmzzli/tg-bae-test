@@ -118,7 +118,7 @@ const HomePage: FC = () => {
           <FollowingList />
         </div>
         <CardRecommendProvider.Provider value={{ recommend: true }}>
-          <div className={`${userInfo.user_id !== -1 && userInfo.fans === 0 ? '' : 'mt-10'}`}>
+          <div className={`${userInfo.user_id !== -1 && userInfo.fans === 0 ? '' : 'mt-[68px]'}`}>
             <RecommendList />
           </div>
         </CardRecommendProvider.Provider>

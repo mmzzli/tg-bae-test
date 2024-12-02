@@ -250,11 +250,12 @@ const ResourceList = ({
           if (data.type === POST_TYPE_IMAGE && data.media.length > 1) {
             if (data.media.length === 4) {
               return (
-                <Box key={data.id}>
+                <Box key={data.id} mb="40px">
                   <ResourceHeader
                     data={data}
                     currentUid={launchParams.initData?.user?.id ?? 0}
                     onProfileClick={jumpToProfilePage}
+                    type={type}
                   />
                   <div
                     className="relative px-4"
@@ -297,18 +298,19 @@ const ResourceList = ({
                       toggle()
                     }}
                   />
-                  <div className="pt-8 pb-8 pl-4 pr-4">
+                  {/* <div className="pt-8 pb-8 pl-4 pr-4">
                     <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
-                  </div>
+                  </div> */}
                 </Box>
               )
             } else {
               return (
-                <Box key={data.id}>
+                <Box key={data.id} mb="40px">
                   <ResourceHeader
                     data={data}
                     currentUid={launchParams.initData?.user?.id ?? 0}
                     onProfileClick={jumpToProfilePage}
+                    type={type}
                   />
                   <div
                     className="relative px-4"
@@ -348,19 +350,20 @@ const ResourceList = ({
                       toggle()
                     }}
                   />
-                  <div className="pt-8 pb-8 pl-4 pr-4">
+                  {/* <div className="pt-8 pb-8 pl-4 pr-4">
                     <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
-                  </div>
+                  </div> */}
                 </Box>
               )
             }
           } else {
             return (
-              <Box key={index} className="video-card" data-id={data.id}>
+              <Box key={index} className="video-card" data-id={data.id} mb="40px">
                 <ResourceHeader
                   data={data}
                   currentUid={launchParams.initData?.user?.id ?? 0}
                   onProfileClick={jumpToProfilePage}
+                  type={type}
                 />
                 <div className="relative px-4">
                   {data.type === POST_TYPE_IMAGE ? (
@@ -436,9 +439,9 @@ const ResourceList = ({
                     toggle()
                   }}
                 />
-                <div className="pt-8 pb-8 pl-4 pr-4">
+                {/* <div className="pt-8 pb-8 pl-4 pr-4">
                   <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
-                </div>
+                </div> */}
               </Box>
             )
           }
@@ -468,6 +471,7 @@ interface ResourceHeaderProps {
   data: FormatterListItem
   currentUid: number
   onProfileClick: (data: FormatterListItem) => void
+  type?: string
 }
 
 interface ResourceFooterProps {
@@ -480,7 +484,7 @@ interface ResourceFooterProps {
   type?: string
 }
 
-const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileClick }) => {
+const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileClick, type }) => {
   const cardValue = useContext(CardRecommendProvider)
   return (
     <div className="pl-4 pr-4 pb-4 flex items-center">
@@ -506,7 +510,7 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
           )}
         </div>
       </div>
-      <SecondaryMenu className="ml-auto" key={data.id} mediaData={data} currentUid={currentUid} />
+      <SecondaryMenu className="ml-auto" key={data.id} mediaData={data} currentUid={currentUid} type={type} />
     </div>
   )
 })

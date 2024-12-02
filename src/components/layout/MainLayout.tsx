@@ -38,7 +38,6 @@ export const MainLayout: React.FC = () => {
   const setExpanded = useStore((state) => state.setExpand)
   const isExpanded = useStore((state) => state.expand)
   const navigate = useNavigate()
-  const info = useStore((state) => state.videoResource)
   const setVideoResource = useStore((state) => state.setVideoResource)
 
   const { run: runLogin } = useRequest(logIn, {
@@ -98,7 +97,8 @@ export const MainLayout: React.FC = () => {
         console.log('location previous', location.state?.from)
         console.log('location previous backToHome', useStore.getState().backToHome)
 
-        if (info) {
+        console.log(useStore.getState().videoResource, '=================')
+        if (useStore.getState().videoResource) {
           setVideoResource(null)
           return
         }

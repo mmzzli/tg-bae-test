@@ -99,19 +99,14 @@ const VideoDialog = () => {
   }
 
   useEffect(() => {
-    if (!url) {
-      setIsReady(false)
-      setDuration(0)
-      setCurrentTime(0)
-      setUrl(null)
-    }
-  }, [url])
-
-  useEffect(() => {
+    console.log(info, '======')
     if (info?.media && info.media[0]) {
       setUrl(info.media[0])
     } else {
       setUrl(null)
+      setIsReady(false)
+      setDuration(0)
+      setCurrentTime(0)
     }
   }, [info])
 
@@ -208,16 +203,6 @@ const VideoDialog = () => {
               file: {
                 forceHLS: true,
                 forceVideo: true,
-                hlsOptions: {
-                  startPosition: 0,
-                  maxBufferLength: 2,
-                  enableWorker: true,
-                  maxMaxBufferLength: 5,
-                  autoStartLoad: true,
-                  maxBufferHole: 0.5,
-                  lowLatencyMode: false,
-                  maxBufferSize: 10 * 1024 * 1024,
-                },
               },
             }}
             width="100%"

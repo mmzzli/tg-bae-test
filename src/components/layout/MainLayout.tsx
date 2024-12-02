@@ -101,7 +101,7 @@ export const MainLayout: React.FC = () => {
         console.log(useStore.getState().videoResource, '=================')
         if (useStore.getState().videoResource) {
           setVideoResource(null)
-          return
+          return navigate('/home')
         }
 
         if (useStore.getState().backToHome) {

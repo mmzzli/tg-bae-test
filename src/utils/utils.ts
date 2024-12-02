@@ -115,6 +115,66 @@ export const getTimeStringAutoShort = (timestamp: number, mustIncludeTime: boole
   return ret
 }
 
+export const getMessageTimeDivider = (timestamp: number, mustIncludeTime: boolean) => {
+  let currentDate = new Date()
+  let srcDate = new Date(timestamp)
+
+  var currentYear = currentDate.getFullYear()
+  let currentMonth = currentDate.getMonth() + 1
+  let currentDateD = currentDate.getDate()
+
+  let srcYear = srcDate.getFullYear()
+  let srcMonth = srcDate.getMonth() + 1
+  let srcDateD = srcDate.getDate()
+
+  let ret = ''
+
+  // Additional time minutes to display
+  var timeExtraStr = mustIncludeTime ? ' ' + dateFormat(srcDate, 'hh:mm') : ''
+
+  if (currentYear === srcYear) {
+    // Same day (only if the month and date are the same)
+    if (currentMonth === srcMonth && currentDateD === srcDateD) {
+      ret = dateFormat(srcDate, 'hh:mm')
+    }
+    // Same year and different day (i.e., yesterday and previous days)
+    else {
+      // Yesterday (1 day ago from "now")
+      let yesterdayDate = new Date()
+      yesterdayDate.setDate(yesterdayDate.getDate() - 1)
+
+      // Comparing the "month" and "day" of the target date with the "yesterday" calculated above is the most accurate (if using the time difference, it is inaccurate, e.g., the current time is 2019/02/22 01:00, and srcDate is 2019/02/21 23:00, the difference between the two is only 2 hours, and directly using "deltaTime/(3600 * 1000) > 24 hours" to determine if it is yesterday is completely ridiculous)
+      if (srcMonth === yesterdayDate.getMonth() + 1 && srcDateD === yesterdayDate.getDate())
+        ret = 'yesterday' + timeExtraStr // -1d
+      else {
+        // let deltaHour = deltaTime / (3600 * 1000)
+
+        // if (deltaHour <= 7 * 24) {
+        //   let weekday = new Array(7)
+        //   weekday[0] = 'Sun'
+        //   weekday[1] = 'Mon'
+        //   weekday[2] = 'Tue'
+        //   weekday[3] = 'Wed'
+        //   weekday[4] = 'Thu'
+        //   weekday[5] = 'Fri'
+        //   weekday[6] = 'Sat'
+
+        //   let weedayDesc = weekday[srcDate.getDay()]
+        //   ret = weedayDesc + timeExtraStr
+        // } else ret = dateFormat(srcDate, 'yyyy/M/d') + timeExtraStr
+
+        ret = dateFormat(srcDate, 'M/d') + timeExtraStr
+      }
+    }
+  }
+  // 往年
+  else {
+    ret = dateFormat(srcDate, 'M/d/yyyy') + timeExtraStr
+  }
+
+  return ret
+}
+
 const dateFormat = function (date: Date, fmt: string) {
   let o: any = {
     M: date.getMonth() + 1,

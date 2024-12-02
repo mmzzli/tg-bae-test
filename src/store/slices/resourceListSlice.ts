@@ -44,8 +44,8 @@ export interface CacheVideo {
   id: string | number
   media: string
 }
-const recordsNum = 5
-const CACHE_VIDEOS_LIMIT = 20
+const recordsNum = 30
+const CACHE_VIDEOS_LIMIT = 29
 const BUFFER_FRAGMENT_LIMIT = 1
 
 export interface ResourceListSlice {
@@ -65,6 +65,7 @@ export interface ResourceListSlice {
   cacheVideo: FormatterListItem[]
   updateCacheVideo: (cacheVideo: FormatterListItem[]) => void
   loadVideo: (video: FormatterListItem) => void
+  unloadVideo: (video: FormatterListItem) => void
 
   // video player
   videoResource: FormatterListItem | null
@@ -246,9 +247,22 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     // 更新缓存池
     const newCacheVideo: FormatterListItem[] = newCache
 
-    newCacheVideo.forEach((video) => {
-      get().loadVideo(video)
+    // 加载新的视频
+    newCache.forEach((video) => {
+      if (!cacheVideo.some((v) => v.id === video.id)) {
+        get().loadVideo(video)
+      }
     })
+
+    // 卸载不再需要的视频
+
+    cacheVideo.forEach((video) => {
+      if (!newCache.some((v) => v.id === video.id)) {
+        const unloadVideo = videoList.find((item) => item.id === video.id)
+        unloadVideo && get().unloadVideo(unloadVideo)
+      }
+    })
+
     set({ cacheVideo: newCacheVideo })
   },
   // 加载视频
@@ -304,18 +318,17 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       hls.loadSource(media)
       hls.attachMedia(document.createElement('video'))
 
-      hls.on(Hls.Events.FRAG_BUFFERED, () => {
+      // 监听分片加载完成事件
+      hls.on(Hls.Events.FRAG_LOADED, () => {
         loadedFragments++
-        console.log(`视频 ${video.id} 缓存分片数量: ${loadedFragments} ${max_fragment_count}`)
+        console.log(`视频 ${video.id} Loaded fragment ${loadedFragments} 分片加载完成`)
         if (loadedFragments >= Math.min(max_fragment_count, BUFFER_FRAGMENT_LIMIT)) {
           isLoading = false
           // hls.destroy()
           hls.stopLoad()
-          setTimeout(() => {
-            processQueue()
-            video.loaded = true
-            video.hls = hls
-          })
+          processQueue()
+          video.loaded = true
+          video.hls = hls
         }
       })
 
@@ -336,9 +349,9 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
 
       hls.on(Hls.Events.ERROR, (event, data) => {
         isLoading = false
-        processQueue()
-        video.loaded = false
         hls.destroy()
+        video.loaded = false
+        processQueue()
       })
     }
 
@@ -347,7 +360,11 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       processQueue()
     }
   })(),
-
+  // 卸载视频
+  unloadVideo: (video) => {
+    video.hls?.destroy?.()
+    console.log(`jacob======卸载视频 ${video.id}`)
+  },
   videoResource: null,
   setVideoResource: (video: FormatterListItem | null) => {
     set({ videoResource: video })

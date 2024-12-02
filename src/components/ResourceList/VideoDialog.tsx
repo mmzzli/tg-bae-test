@@ -195,6 +195,7 @@ const VideoDialog = () => {
             ref={videoRef}
             url={url}
             playing={playing}
+            muted={true}
             onReady={() => {
               setIsReady(true)
               setIsLoading(false)

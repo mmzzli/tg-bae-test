@@ -87,8 +87,8 @@ const OtherUserProfile: FC = () => {
           </div>
           <Menu>
             <MenuButton>
-              <div className="w-[36px] h-[36px] bg-[#F8F8F8] rounded-[30px]">
-                <i className="iconfont icon-icon_more text-[24px] text-[#0F1233]"></i>
+              <div className="w-[36px] h-[36px] bg-[#F8F8F8] rounded-[30px] flex items-center justify-center">
+                <i className="iconfont icon-icon_more text-[26px] text-[#0F1233]"></i>
               </div>
             </MenuButton>
             <MenuList minW="84px" bg="#fff" border="1px solid #EBEBF4" borderRadius="4px" p="12px">

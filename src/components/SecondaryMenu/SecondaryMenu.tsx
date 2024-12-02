@@ -15,7 +15,7 @@ type Props = {
   mediaData: FormatterListItem
   currentUid: number
   className?: string
-  type?:string
+  type?: string
 }
 
 const SecondaryMenu = ({ mediaData, currentUid, className, type }: Props) => {
@@ -69,31 +69,36 @@ const SecondaryMenu = ({ mediaData, currentUid, className, type }: Props) => {
     },
     [setVisible]
   )
-  const doFollow = async()=>{
+  const doFollow = async () => {
     console.log(type)
     setVisible(false)
     await getSomeoneProfile(mediaData.uid)
     await follow({
       fansid: mediaData.id,
-      tgid: mediaData.uid
+      tgid: mediaData.uid,
     })
-    setFollowBoll((rep)=>!rep)
-
+    setFollowBoll((rep) => !rep)
   }
 
   return (
     <div className={cn(className, 'relative')} ref={menuRef}>
-      <div className='flex gap-[8px]'>
-        {(!mediaData.is_follow && type === 'recommend') && <BaseButton
-          text={followBoll ? `Follow` : `Following`}
-          // loading={followLoading}
-          width="80px"
-          height="34px"
-          handler={doFollow}
-          className={`bg-transparent border text-[#333333] border-[#333] ${className}`}
-        />}
+      <div className="flex gap-[8px]">
+        {!mediaData.is_follow && type === 'recommend' && (
+          <BaseButton
+            text={followBoll ? `Follow` : `Following`}
+            // loading={followLoading}
+            width="80px"
+            height="34px"
+            handler={doFollow}
+            className={`bg-transparent border text-[#333333] border-[#333] ${className}`}
+          />
+        )}
         <button className="p-2 rounded-full" onClick={() => setVisible(!visible)}>
-          <MoreHorizontal className="w-5 h-5 text-[#373738] dark:text-[#E0E2F6]" />
+          {/* <MoreHorizontal className="w-5 h-5 text-[#373738] dark:text-[#E0E2F6]" /> */}
+          <i
+            className="iconfont icon-icon_more w-6 h-6 ml-2 text-[#373738]"
+            style={{ fontSize: '26px' }}
+          ></i>
         </button>
       </div>
 

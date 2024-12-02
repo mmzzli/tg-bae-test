@@ -8,7 +8,6 @@ import { useTouch } from '@/hooks/useTouch'
 import { useThrottleFn } from 'ahooks'
 import { CardRecommendProvider } from '@/utils/constants'
 import { useStore } from '@/store'
-import Hls from 'hls.js'
 
 const PlayButton = memo(({ onClick }: { onClick: () => void }) => (
   <div
@@ -71,8 +70,7 @@ const UserInfo = memo(
 
 const VideoDialog = () => {
   const progressBarRef = useRef<HTMLDivElement>(null)
-  const videoRef = useRef<HTMLVideoElement | null>(null)
-  const hlsRef = useRef<Hls | null>(null)
+  const videoRef = useRef<ReactPlayer | null>(null)
   const touchStartXRef = useRef(0)
   const { bottom } = useSafeArea()
 
@@ -152,8 +150,9 @@ const VideoDialog = () => {
     const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
     const x = Math.max(0, Math.min(clientX - rect.left, rect.width))
     const newProgress = (x / rect.width) * 100
+
     setProgress(newProgress)
-    videoRef.current.currentTime = newProgress
+    videoRef.current.seekTo(newProgress / 100)
   }, [])
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
@@ -184,50 +183,6 @@ const VideoDialog = () => {
     onTouchEndProp: handleTouchEnd,
   })
 
-  useEffect(() => {
-    const video = videoRef.current
-    if (!video) return
-
-    if (Hls.isSupported() && info) {
-      const hls = new Hls({
-        enableWorker: true,
-        // selected options
-        maxBufferLength: 30,
-        maxMaxBufferLength: 60,
-        autoStartLoad: true,
-        maxBufferHole: 0.5,
-        lowLatencyMode: true,
-      })
-
-      hls.loadSource(info.media[0])
-      hls.attachMedia(video)
-      hlsRef.current = hls
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        setIsLoading(false)
-        video.play().catch(() => {
-          console.log('自动播放失败')
-        })
-      })
-
-      // 添加错误处理
-      hls.on(Hls.Events.ERROR, () => {
-        setIsLoading(false)
-      })
-
-      // 清理函数
-      return () => {
-        hls.destroy()
-      }
-    } else if (video.canPlayType('application/vnd.apple.mpegurl') && info) {
-      video.src = info.media[0]
-      video.addEventListener('loadedmetadata', () => {
-        video.play().catch(() => {
-          console.log('自动播放失败')
-        })
-      })
-    }
-  }, [info])
-
   return (
     <div
       style={{ display: url ? 'block' : 'none' }}
@@ -236,12 +191,36 @@ const VideoDialog = () => {
     >
       <div className="fixed w-full h-full object-contain z-10 bg-black inset-0">
         {url && (
-          <video
+          <ReactPlayer
             ref={videoRef}
-            className="w-full h-full object-contain"
-            src={info?.media[0]}
-            onClick={togglePlay}
-            controls={false}
+            url={url}
+            playing={playing}
+            onReady={() => {
+              setIsReady(true)
+              setIsLoading(false)
+            }} // 隐藏 Loader
+            onBuffer={() => setIsLoading(true)} // 显示 Loader
+            onBufferEnd={() => setIsLoading(false)} // 隐藏 Loader
+            onProgress={handleProgress}
+            onDuration={setDuration}
+            config={{
+              file: {
+                forceHLS: true,
+                forceVideo: true,
+                hlsOptions: {
+                  startPosition: 0,
+                  maxBufferLength: 2,
+                  enableWorker: true,
+                  maxMaxBufferLength: 5,
+                  autoStartLoad: true,
+                  maxBufferHole: 0.5,
+                  lowLatencyMode: false,
+                  maxBufferSize: 10 * 1024 * 1024,
+                },
+              },
+            }}
+            width="100%"
+            height="100%"
           />
         )}
         <CloseButton

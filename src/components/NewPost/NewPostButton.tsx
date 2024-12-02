@@ -60,8 +60,11 @@ const CreateButton = React.memo(
           width="87px"
           handler={() => navigate('/post')}
         /> */}
-        <div onClick={() => navigate('/post')} className='w-[48px] h-[48px] p-[12px] bg-[#625DFF] rounded-[50px]'>
-          <Icon name={'icon-camera-ai-line'} className='fill-[#fff] w-[100%] h-[100%]'></Icon>
+        <div
+          onClick={() => navigate('/post')}
+          className="w-[48px] h-[48px] p-[12px] bg-[#625DFF] rounded-[50px] flex items-center justify-center cursor-pointer"
+        >
+          <i className="iconfont icon-camera-ai-line text-white text-[24px]"></i>
         </div>
         {disabled && (
           <div

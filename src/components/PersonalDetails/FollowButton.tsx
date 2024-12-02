@@ -1,10 +1,9 @@
 import { FC, useMemo } from 'react'
-import { createStandaloneToast, useToast } from '@chakra-ui/react'
+import { useToast } from '@chakra-ui/react'
 import BaseButton from '../BaseButton/BaseButton'
 import { follow, getSomeoneProfile } from '@/api'
 import { useRequest } from 'ahooks'
 import { useStore } from '@/store'
-import { CustomToast, typeOptions } from '../comm/Toast'
 
 // Object is Follow, I Follow Someone, so fansid is current user id
 const FollowButton: FC<{
@@ -66,10 +65,11 @@ const FollowButton: FC<{
   return isFollowing ? (
     <BaseButton
       text="Following"
-      // loading={followLoading}
+      loading={followLoading}
       width="104px"
       handler={doFollow}
       className={`bg-transparent border text-[#333333] border-[#333] ${className}`}
+      // loadingClassName="bg-transparent border text-[#333333] border-[#333]"
     />
   ) : (
     <BaseButton

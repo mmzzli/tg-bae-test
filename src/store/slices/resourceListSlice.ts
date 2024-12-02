@@ -44,9 +44,9 @@ export interface CacheVideo {
   id: string | number
   media: string
 }
-const recordsNum = 4
-const CACHE_VIDEOS_LIMIT = 5
-const BUFFER_FRAGMENT_LIMIT = 5
+const recordsNum = 5
+const CACHE_VIDEOS_LIMIT = 20
+const BUFFER_FRAGMENT_LIMIT = 2
 
 export interface ResourceListSlice {
   // recommend

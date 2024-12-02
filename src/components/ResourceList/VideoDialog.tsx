@@ -7,6 +7,7 @@ import { useSafeArea } from '@/hooks/useSafeArea'
 import { useTouch } from '@/hooks/useTouch'
 import { useThrottleFn } from 'ahooks'
 import { CardRecommendProvider } from '@/utils/constants'
+import { useStore } from '@/store'
 
 const PlayButton = memo(({ onClick }: { onClick: () => void }) => (
   <div
@@ -78,6 +79,7 @@ const VideoDialog = ({
     username?: string
     title?: string
     uid?: number
+    id?: number
   } | null
   onClose: () => void
   open: boolean
@@ -98,9 +100,10 @@ const VideoDialog = ({
   const [slideOffset, setSlideOffset] = useState(0)
   const [isSliding, setIsSliding] = useState(false)
   const cardValue = useContext(CardRecommendProvider)
+  const cacheVideoIndex = useStore((state) => state.cacheVideoIndex)
 
   useEffect(() => {
-    if (info?.media && info.media[0]) {
+    if (info?.media && info.media[0] && cacheVideoIndex === info.id) {
       setUrl(info.media[0])
     }
   }, [info])

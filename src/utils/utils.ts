@@ -62,19 +62,20 @@ export const getTimeStringAutoShort = (timestamp: number, mustIncludeTime: boole
     // Same day (only if the month and date are the same)
     if (currentMonth === srcMonth && currentDateD === srcDateD) {
       // Time difference within 60 seconds
-      if (deltaTime < 60 * 1000) ret = 'just now'
+      // if (deltaTime < 60 * 1000) ret = 'just now'
       // // Otherwise, display the "hh:mm" format
       // else ret = dateFormat(srcDate, 'hh:mm')
       // Within 1 hour, show minutes ago
-      else if (deltaTime < 60 * 60 * 1000) {
-        const minutes = Math.floor(deltaTime / (60 * 1000))
-        ret = `${minutes}m ago`
-      }
+      // else if (deltaTime < 60 * 60 * 1000) {
+      //   const minutes = Math.floor(deltaTime / (60 * 1000))
+      //   ret = `${minutes}m ago`
+      // }
       // Within today, show hours ago
-      else {
-        const hours = Math.floor(deltaTime / (60 * 60 * 1000))
-        ret = `${hours}h ago`
-      }
+      // else {
+      //   const hours = Math.floor(deltaTime / (60 * 60 * 1000))
+      //   ret = `${hours}h ago`
+      // }
+      ret = dateFormat(srcDate, 'hh:mm')
     }
     // Same year and different day (i.e., yesterday and previous days)
     else {
@@ -84,29 +85,31 @@ export const getTimeStringAutoShort = (timestamp: number, mustIncludeTime: boole
 
       // Comparing the "month" and "day" of the target date with the "yesterday" calculated above is the most accurate (if using the time difference, it is inaccurate, e.g., the current time is 2019/02/22 01:00, and srcDate is 2019/02/21 23:00, the difference between the two is only 2 hours, and directly using "deltaTime/(3600 * 1000) > 24 hours" to determine if it is yesterday is completely ridiculous)
       if (srcMonth === yesterdayDate.getMonth() + 1 && srcDateD === yesterdayDate.getDate())
-        ret = 'yesterday' + timeExtraStr // -1d
+        ret = 'yesterday' // + timeExtraStr // -1d
       else {
-        let deltaHour = deltaTime / (3600 * 1000)
+        // let deltaHour = deltaTime / (3600 * 1000)
 
-        if (deltaHour <= 7 * 24) {
-          let weekday = new Array(7)
-          weekday[0] = 'Sun'
-          weekday[1] = 'Mon'
-          weekday[2] = 'Tue'
-          weekday[3] = 'Wed'
-          weekday[4] = 'Thu'
-          weekday[5] = 'Fri'
-          weekday[6] = 'Sat'
+        // if (deltaHour <= 7 * 24) {
+        //   let weekday = new Array(7)
+        //   weekday[0] = 'Sun'
+        //   weekday[1] = 'Mon'
+        //   weekday[2] = 'Tue'
+        //   weekday[3] = 'Wed'
+        //   weekday[4] = 'Thu'
+        //   weekday[5] = 'Fri'
+        //   weekday[6] = 'Sat'
 
-          let weedayDesc = weekday[srcDate.getDay()]
-          ret = weedayDesc + timeExtraStr
-        } else ret = dateFormat(srcDate, 'yyyy/M/d') + timeExtraStr
+        //   let weedayDesc = weekday[srcDate.getDay()]
+        //   ret = weedayDesc + timeExtraStr
+        // } else ret = dateFormat(srcDate, 'yyyy/M/d') + timeExtraStr
+
+        ret = dateFormat(srcDate, 'M/d')
       }
     }
   }
   // 往年
   else {
-    ret = dateFormat(srcDate, 'yyyy/M/d') + timeExtraStr
+    ret = dateFormat(srcDate, 'M/d/yyyy') // + timeExtraStr
   }
 
   return ret

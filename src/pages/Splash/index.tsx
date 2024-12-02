@@ -45,6 +45,7 @@ const Splash: FC = () => {
     //     setIsCached(true)
     //   }, 2000)
     // }
+    setIsCached(true)
   }, [list])
 
   useEffect(() => {

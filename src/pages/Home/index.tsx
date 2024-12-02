@@ -73,7 +73,7 @@ const HomePage: FC = () => {
         </div>
         <CardRecommendProvider.Provider value={{ recommend: true, setVideoOpen }}>
           <div
-            className={`${userInfo.user_id !== -1 && userInfo.fans === 0 ? '' : 'mt-10'}  relative ${videoOpen ? 'z-[112]' : ''}`}
+            className={`${userInfo.user_id !== -1 && userInfo.fans === 0 ? '' : 'mt-[68px]'}  relative ${videoOpen ? 'z-[112]' : ''}`}
           >
             <RecommendList />
           </div>

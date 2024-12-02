@@ -240,6 +240,7 @@ const ResourceList = ({
                 data={data}
                 currentUid={launchParams.initData?.user?.id ?? 0}
                 onProfileClick={jumpToProfilePage}
+                type={type}
               />
 
               {data.type === POST_TYPE_IMAGE ? (
@@ -291,6 +292,7 @@ interface ResourceHeaderProps {
   data: FormatterListItem
   currentUid: number
   onProfileClick: (data: FormatterListItem) => void
+  type?: string
 }
 
 interface ResourceFooterProps {
@@ -303,7 +305,7 @@ interface ResourceFooterProps {
   type?: string
 }
 
-const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileClick }) => {
+const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileClick, type }) => {
   const cardValue = useContext(CardRecommendProvider)
   return (
     <div className="pl-4 pr-4 pb-4 flex items-center">
@@ -329,7 +331,7 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
           )}
         </div>
       </div>
-      <SecondaryMenu className="ml-auto" key={data.id} mediaData={data} currentUid={currentUid} />
+      <SecondaryMenu className="ml-auto" key={data.id} mediaData={data} currentUid={currentUid} type={type} />
     </div>
   )
 })

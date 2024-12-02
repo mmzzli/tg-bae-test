@@ -209,13 +209,13 @@ const ProfileEdit: FC = () => {
 
   return (
     <div
-      className="pt-[10px] px-[16px] fixed w-screen h-screen bg-[#fff] z-10 overflow-auto scrollbar-hide"
+      className="pt-[24px] px-[16px] fixed w-screen h-screen bg-[#fff] z-10 overflow-auto scrollbar-hide"
       id="scrollable"
     >
       <h2 className="text-[20px] text-[#0F1233]">Profile</h2>
       {profileData.avatar ? (
         <>
-          <div className="mt-[44px]">
+          <div className="mt-[38px]">
             <p className="w-[88px] h-[88px] m-[auto] rounded-[50px] relative">
               <img
                 src={profileData?.avatar}
@@ -280,7 +280,7 @@ const ProfileEdit: FC = () => {
           </div>
         </>
       ) : (
-        <div className="mt-[44px]">
+        <div className="mt-[38px]">
           <Skeleton childClassName="w-[88px] h-[88px] m-[auto] rounded-full" />
           <Skeleton childClassName="w-[100%] h-[188px] m-[auto] rounded-[4px] mt-[48px]" />
         </div>

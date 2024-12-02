@@ -17,11 +17,11 @@ interface VideoCardProps {
 }
 const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
-  const [isVideoPreviewOpen, setIsVideoPreviewOpen] = useState<boolean>(false)
+  const setVideoResource = useStore((state) => state.setVideoResource)
+
   const handleVideoClick = useCallback((video: FormatterListItem) => {
     setCacheVideoIndex(video.id)
-    cardValue?.setVideoOpen(true)
-    setIsVideoPreviewOpen(true)
+    setVideoResource(video)
   }, [])
 
   const cardValue = useContext(CardRecommendProvider)
@@ -82,11 +82,11 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
           </Box>
         </div>
       </Box>
-      <VideoDialog
-        info={data}
-        open={isVideoPreviewOpen}
-        onClose={() => setIsVideoPreviewOpen(false)}
-      />
+      {/*<VideoDialog*/}
+      {/*  info={data}*/}
+      {/*  open={isVideoPreviewOpen}*/}
+      {/*  onClose={() => setIsVideoPreviewOpen(false)}*/}
+      {/*/>*/}
     </>
   )
 }

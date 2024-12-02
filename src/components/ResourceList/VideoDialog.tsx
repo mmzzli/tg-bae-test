@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import React, { memo, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import ReactPlayer from 'react-player'
 import Image from '@/components/Image/Image'
 import playIcon from '@/assets/icons/videoSwitch.svg'
@@ -68,22 +68,7 @@ const UserInfo = memo(
   )
 )
 
-const VideoDialog = ({
-  info,
-  onClose,
-  open,
-}: {
-  info: {
-    media?: string[]
-    avatar?: string
-    username?: string
-    title?: string
-    uid?: number
-    id?: number
-  } | null
-  onClose: () => void
-  open: boolean
-}) => {
+const VideoDialog = () => {
   const progressBarRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<ReactPlayer | null>(null)
   const touchStartXRef = useRef(0)
@@ -100,7 +85,18 @@ const VideoDialog = ({
   const [slideOffset, setSlideOffset] = useState(0)
   const [isSliding, setIsSliding] = useState(false)
   const cardValue = useContext(CardRecommendProvider)
-  const cacheVideoIndex = useStore((state) => state.cacheVideoIndex)
+  const [isReady, setIsReady] = useState(false)
+
+  const info = useStore((state) => state.videoResource)
+  const setVideoResource = useStore((state) => state.setVideoResource)
+
+  const onClose = () => {
+    setVideoResource(null)
+    setIsReady(false)
+    setDuration(0)
+    setCurrentTime(0)
+    setUrl(null)
+  }
 
   useEffect(() => {
     if (info?.media && info.media[0] && cacheVideoIndex === info.id) {
@@ -109,8 +105,8 @@ const VideoDialog = ({
   }, [info])
 
   useEffect(() => {
-    setPlaying(open)
-  }, [open])
+    setPlaying(true)
+  }, [isReady])
 
   // 延迟显示 Loading（例如超过 500ms 后再显示）
   useEffect(() => {
@@ -178,8 +174,8 @@ const VideoDialog = ({
 
   return (
     <div
-      style={{ display: open ? 'block' : 'none' }}
-      className="absolute w-screen h-screen bg-black overflow-hidden"
+      style={{ display: url ? 'block' : 'none' }}
+      className="absolute w-screen h-screen bg-black overflow-hidden z-[999]"
       {...touchHandlers}
     >
       <div className="fixed w-full h-full object-contain z-10 bg-black inset-0">
@@ -188,7 +184,10 @@ const VideoDialog = ({
             ref={videoRef}
             url={url}
             playing={playing}
-            onReady={() => setIsLoading(false)} // 隐藏 Loader
+            onReady={() => {
+              setIsReady(true)
+              setIsLoading(false)
+            }} // 隐藏 Loader
             onBuffer={() => setIsLoading(true)} // 显示 Loader
             onBufferEnd={() => setIsLoading(false)} // 隐藏 Loader
             onProgress={handleProgress}

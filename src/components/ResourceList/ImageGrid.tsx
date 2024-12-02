@@ -13,7 +13,7 @@ interface ImageGridProps {
 const ImageGrid: React.FC<ImageGridProps> = ({ data, handleImageClick, resourcesEve }) => {
   if (data.media.length === 1) {
     return (
-      <Box position="relative" minH={data.media?.[0] === '' ? '200px' : 'auto'}>
+      <div className="relative px-4" style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}>
         <Image
           src={formatImage(data.media?.[0] ?? data?.media ?? '', false)}
           alt={data.title}
@@ -29,7 +29,7 @@ const ImageGrid: React.FC<ImageGridProps> = ({ data, handleImageClick, resources
         {data.media?.[0] === '' && (
           <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} />
         )}
-      </Box>
+      </div>
     )
   }
   if (data.media.length === 4) {

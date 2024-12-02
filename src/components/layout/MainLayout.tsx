@@ -12,7 +12,7 @@ import { Spinner } from '@chakra-ui/react'
 import { Menu } from '../Menu'
 import { postEvent } from '@telegram-apps/sdk'
 import { PostProgressBar } from '../NewPost/PostProgressBar'
-
+import VideoDialog from '@/components/ResourceList/VideoDialog'
 const ChatListPageLoader = {
   preload: () =>
     import('@/pages/Chat').then((module) => ({
@@ -38,6 +38,7 @@ export const MainLayout: React.FC = () => {
   const setExpanded = useStore((state) => state.setExpand)
   const isExpanded = useStore((state) => state.expand)
   const navigate = useNavigate()
+
   const { run: runLogin } = useRequest(logIn, {
     manual: true,
     onSuccess({ token, api_token, user_info }) {
@@ -200,6 +201,7 @@ export const MainLayout: React.FC = () => {
       </div>
       <PostProgressBar />
       <Menu />
+      <VideoDialog></VideoDialog>
     </div>
   )
 }

@@ -7,7 +7,8 @@ import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { LinkIcon, TelegramIcon } from '@/assets/icons'
 import { useMemoizedFn, useRequest, useSetState } from 'ahooks'
 import useCopy from '@/hooks/useCopy'
-import { getLink, getShareInlineMessageId } from '@/api/list'
+// import { getLink, getShareInlineMessageId } from '@/api/list'
+import { getLink } from '@/api/list'
 
 interface ChildMethods {
   someMethod: (username: string, uid: number) => void

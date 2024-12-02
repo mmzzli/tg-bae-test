@@ -126,19 +126,19 @@ const ShareModal = forwardRef<ChildMethods>(({}, ref) => {
   })
 
   const handShareWithTelegram = useMemoizedFn(async () => {
-    // const { result } = await getInlineMessageId({ pid: state?.uid, uid: state?.uid })
-    // console.log('result----->', result)
-    // if (result.id) {
-    //   if (window.Telegram?.WebApp) {
-    //     const WebApp = window.Telegram?.WebApp
-    //     setTimeout(() => {
-    //       WebApp.shareMessage(result.id)
-    //     }, 0)
-    //   }
-    //   off()
-    // } else {
-    //   console.warn('######## shareMessages Error ########', result)
-    // }
+    const { result } = await getInlineMessageId({ pid: state?.uid, uid: state?.uid })
+    console.log('result----->', result)
+    if (result.id) {
+      if (window.Telegram?.WebApp) {
+        const WebApp = window.Telegram?.WebApp
+        setTimeout(() => {
+          WebApp.shareMessage(result.id)
+        }, 0)
+      }
+      off()
+    } else {
+      console.warn('######## shareMessages Error ########', result)
+    }
   })
 
   return (

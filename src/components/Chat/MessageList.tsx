@@ -1,4 +1,4 @@
-import { cn, getWrappedMessage } from '@/utils/utils'
+import { cn, getMessageTimeDivider, getWrappedMessage } from '@/utils/utils'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
@@ -122,7 +122,7 @@ export const MessageList = ({ messages, className, channelInfo }: MessageListPro
   const TimeDevider = memo(({ timestamp }: { timestamp: number }) => (
     <div className="flex items-center justify-center mt-[20px] mb-4">
       <div className="text-xs dark:text-[#ffffff99] text-[#999999] px-2 py-1 rounded">
-        {dayjs(timestamp).format('MM-DD HH:mm')}
+        {getMessageTimeDivider(timestamp, true)}
       </div>
     </div>
   ))

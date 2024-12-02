@@ -8,6 +8,12 @@ export const getLink = (params: { pid: number; uid: number }) => {
   }>(`/api/v1/link`, params)
 }
 
+export const getShareInlineMessageId = (params: { pid: number; uid: number }) => {
+  return post<{
+    result: { id: string }
+  }>(`/api/v1/linkremote`, params)
+}
+
 export const getSingleMedia = (ref: string) => {
   return get<ShareInfo>(`/api/v1/post/${ref}`)
 }

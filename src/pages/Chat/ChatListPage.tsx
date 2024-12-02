@@ -114,6 +114,16 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
         sdk.start()
         setConnection(sdk)
 
+        const res = await sdk.getAllConversation()
+        setIsChatListLoaded(true)
+        setChatList(res)
+        res.forEach((conversation) => {
+          addMessageWindowListItem({
+            channel: conversation.channel,
+            messages: conversation.recents?.map(getWrappedMessage).reverse() ?? [],
+          })
+        })
+
         removeConnectionStatusListener = sdk.addConnectionStatusListener(async (status) => {
           log('-----ConnectionStatusListener------', status)
           const isChatListLoadedStateFormStore = useStore.getState().isChatListLoaded
@@ -184,7 +194,7 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
               .getPropertyValue('--tg-safe-area-inset-top'),
             10
           ) !== 0
-            ? 'var(--tg-safe-area-inset-top) + 54px'
+            ? 'var(--tg-safe-area-inset-top) + 66px'
             : '32px'
         })`,
       }}

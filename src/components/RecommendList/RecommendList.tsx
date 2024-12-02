@@ -43,7 +43,7 @@ const RecommendList = ({ className }: PostListProps) => {
         style={{ overflow: 'visible' }}
       >
         <div id="view-container">
-          <ResourceList resources={list} />
+          <ResourceList resources={list} type='recommend' />
         </div>
       </InfiniteScroll>
     </div>

@@ -38,6 +38,8 @@ export const MainLayout: React.FC = () => {
   const setExpanded = useStore((state) => state.setExpand)
   const isExpanded = useStore((state) => state.expand)
   const navigate = useNavigate()
+  const info = useStore((state) => state.videoResource)
+  const setVideoResource = useStore((state) => state.setVideoResource)
 
   const { run: runLogin } = useRequest(logIn, {
     manual: true,
@@ -77,6 +79,8 @@ export const MainLayout: React.FC = () => {
         console.warn('######    web_app_request_fullscreen error    ######', err)
       }
 
+      setVideoResource(null)
+
       postEvent('web_app_setup_swipe_behavior', {
         allow_vertical_swipe: false,
       })
@@ -98,6 +102,8 @@ export const MainLayout: React.FC = () => {
         if (useStore.getState().backToHome) {
           setBackToHome(false)
           return navigate('/home')
+        }
+        if (info) {
         }
         if (window.location.pathname === '/home') {
           tgApp
@@ -160,6 +166,17 @@ export const MainLayout: React.FC = () => {
       }
     }
   }, [location.pathname])
+
+  useEffect(() => {
+    if (window.Telegram?.WebApp) {
+      const tgApp = window.Telegram.WebApp
+      if (info) {
+        tgApp.BackButton.show()
+      } else {
+        tgApp.BackButton.hide()
+      }
+    }
+  }, [info])
 
   return (
     <div className="absolute inset-0 top-0 right-0 bottom-0 left-0overflow-hidden flex pb-[84px] transition-all duration-300 bg-white dark:bg-black">

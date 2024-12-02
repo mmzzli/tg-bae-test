@@ -43,9 +43,8 @@ export interface CacheVideo {
   id: string | number
   media: string
 }
-const recordsNum = 30
-const CACHE_VIDEOS_LIMIT = 29
-const MAX_FRAGMENTS = 1
+const recordsNum = 5
+const CACHE_VIDEOS_LIMIT = 9
 
 export interface ResourceListSlice {
   // recommend
@@ -65,8 +64,6 @@ export interface ResourceListSlice {
   setCacheVideo: (video: CacheVideo | CacheVideo[], flag?: boolean) => void // true is scroll down  false is scroll up
   updateCache: (cacheVideo: FormatterListItem[]) => void
   loadVideo: (video: FormatterListItem) => void
-  unloadVideo: (video: FormatterListItem) => void
-  loadFullVideo: (video: FormatterListItem) => void
 
   // view
   viewList: BaseListState
@@ -207,7 +204,6 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       // 确保处理的是数组
       const videosToAdd = Array.isArray(cacheVideo) ? cacheVideo : [cacheVideo]
       let updatedCacheVideo = [...state.cacheVideo]
-      let destroyedItems: any[] = []
 
       videosToAdd.forEach((video) => {
         const hasVideo = updatedCacheVideo.some((item) => item.id === video.id)
@@ -218,22 +214,13 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
           if (updatedCacheVideo.length > CACHE_VIDEOS_LIMIT) {
             if (flag) {
               // Scroll down: 移除最后的视频
-              destroyedItems = updatedCacheVideo.slice(-1)
               updatedCacheVideo = updatedCacheVideo.slice(0, -1)
             } else {
               // Scroll up: 移除最前面的视频
-              destroyedItems = updatedCacheVideo.slice(0, 1)
               updatedCacheVideo = updatedCacheVideo.slice(1)
             }
           }
         }
-      })
-
-      // 销毁移除的视频的 HLS 实例
-      destroyedItems.forEach((item) => {
-        item?.hls?.destroy?.()
-        Reflect.deleteProperty(item, 'hls')
-        console.log(`销毁视频 ID: ${item?.id}`)
       })
 
       return { cacheVideo: updatedCacheVideo }
@@ -277,26 +264,6 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         }
       })
       .sort((a, b) => a.priority - b.priority) // 按优先级从低到高排序
-      .forEach(({ video }) => {
-        if (!cacheVideo.some((v) => v.id === video.id)) {
-          console.log(video.id, 'jacob========= video-load--------')
-          if (video.id === cacheVideoIndex) {
-            get().loadFullVideo(video)
-          } else {
-            get().loadVideo(video) // 按优先级加载
-          }
-        }
-      })
-
-    // 卸载不再需要的视频
-
-    cacheVideo.forEach((video) => {
-      if (!newCache.some((v) => v.id === video.id)) {
-        const unloadVideo = videoList.find((item) => item.id === video.id)
-        unloadVideo && get().unloadVideo(unloadVideo)
-        Reflect.deleteProperty(video, 'hls')
-      }
-    })
 
     // 更新缓存池
     const newCacheVideo: any[] = newCache.map((item) => ({
@@ -305,34 +272,6 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     }))
     set({ cacheVideo: newCacheVideo })
   },
-
-  loadFullVideo: (video) => {
-    const medias = video?.media[0]
-    if (!medias) {
-      console.error('Media not found for video:', video)
-      return
-    }
-
-    const media = medias.split(',').find((item) => item.endsWith('.m3u8'))
-    if (!media) {
-      console.error('No valid m3u8 media found for video:', video)
-      return
-    }
-    const hls = new Hls({
-      startPosition: 0, // 从视频开始播放
-      maxBufferLength: 2, // 缓存最多 2 秒内容
-      enableWorker: true,
-      maxMaxBufferLength: 5,
-      autoStartLoad: true,
-      maxBufferHole: 0.5,
-      lowLatencyMode: true,
-      maxBufferSize: 10 * 1024 * 1024, // 最大缓冲区大小，限制为 5MB
-    })
-    const tempVideo = document.createElement('video')
-    hls.loadSource(media)
-    hls.attachMedia(tempVideo)
-  },
-
   // 加载视频
   loadVideo: (() => {
     const videoLoadQueue: FormatterListItem[] = [] // 视频加载队列
@@ -380,24 +319,6 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       hls.loadSource(media)
       hls.attachMedia(tempVideo)
 
-      // 检查是否超出加载限制
-      hls.on(Hls.Events.FRAG_LOADING, (event, data) => {
-        if (loadedFragments > MAX_FRAGMENTS) {
-          console.log(`Reached fragment limit (${MAX_FRAGMENTS}), stopping further loading.`)
-
-          // 解绑事件避免回调被触发
-          hls.off(Hls.Events.FRAG_LOADING)
-          hls.off(Hls.Events.FRAG_LOADED)
-
-          hls.stopLoad()
-          return
-        }
-      })
-
-      hls.on(Hls.Events.FRAG_LOADED, () => {
-        if (!hls) return // 确保 HLS 实例存在
-        loadedFragments++
-      })
       // 视频加载完成处理
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         console.log(`Video ${video.id} loaded successfully.`)
@@ -430,12 +351,6 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     }
   })(),
 
-  // 卸载视频
-  unloadVideo: (video) => {
-    video.hls?.destroy?.()
-    Reflect.deleteProperty(video, 'hls')
-    console.log(`jacob======卸载视频 ${video.id}`)
-  },
   viewList: { ...initialListState },
   setViewPage: (page) =>
     set((state) => ({

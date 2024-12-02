@@ -23,6 +23,8 @@ const HomePage: FC = () => {
   const [fadeClass, setFadeClass] = useState('fade-in')
   const userInfo = useStore((state) => state.userInfo)
 
+  const [videoOpen, setVideoOpen] = useState(false)
+
   useEffect(() => {
     console.log(getCacheVideo, '====333333========')
   }, [getCacheVideo])
@@ -117,8 +119,10 @@ const HomePage: FC = () => {
         <div className="overflow-hidden" style={{ height: '0px', opacity: 0, ...animation }}>
           <FollowingList />
         </div>
-        <CardRecommendProvider.Provider value={{ recommend: true }}>
-          <div className={`${userInfo.user_id !== -1 && userInfo.fans === 0 ? '' : 'mt-10'}`}>
+        <CardRecommendProvider.Provider value={{ recommend: true, setVideoOpen }}>
+          <div
+            className={`${userInfo.user_id !== -1 && userInfo.fans === 0 ? '' : 'mt-10'}  relative ${videoOpen ? 'z-[112]' : ''}`}
+          >
             <RecommendList />
           </div>
         </CardRecommendProvider.Provider>

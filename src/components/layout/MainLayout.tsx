@@ -39,6 +39,7 @@ export const MainLayout: React.FC = () => {
   const isExpanded = useStore((state) => state.expand)
   const navigate = useNavigate()
   const setVideoResource = useStore((state) => state.setVideoResource)
+  const videoResource = useStore((state) => state.videoResource)
 
   const { run: runLogin } = useRequest(logIn, {
     manual: true,
@@ -173,13 +174,13 @@ export const MainLayout: React.FC = () => {
   useEffect(() => {
     if (window.Telegram?.WebApp) {
       const tgApp = window.Telegram.WebApp
-      if (info) {
+      if (videoResource) {
         tgApp.BackButton.show()
       } else {
         tgApp.BackButton.hide()
       }
     }
-  }, [info])
+  }, [videoResource])
 
   return (
     <div className="absolute inset-0 top-0 right-0 bottom-0 left-0overflow-hidden flex pb-[84px] transition-all duration-300 bg-white dark:bg-black">

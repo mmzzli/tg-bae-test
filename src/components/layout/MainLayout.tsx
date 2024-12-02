@@ -12,7 +12,7 @@ import { Spinner } from '@chakra-ui/react'
 import { Menu } from '../Menu'
 import { postEvent } from '@telegram-apps/sdk'
 import { PostProgressBar } from '../NewPost/PostProgressBar'
-
+import VideoDialog from '@/components/ResourceList/VideoDialog'
 const ChatListPageLoader = {
   preload: () =>
     import('@/pages/Chat').then((module) => ({
@@ -38,6 +38,7 @@ export const MainLayout: React.FC = () => {
   const setExpanded = useStore((state) => state.setExpand)
   const isExpanded = useStore((state) => state.expand)
   const navigate = useNavigate()
+
   const { run: runLogin } = useRequest(logIn, {
     manual: true,
     onSuccess({ token, api_token, user_info }) {
@@ -71,24 +72,9 @@ export const MainLayout: React.FC = () => {
       const tgApp = window.Telegram.WebApp
       tgApp.ready()
       try {
-        // window.TelegramWebviewProxy &&
-        //   window.TelegramWebviewProxy.postEvent('web_app_request_fullscreen')
-
-        window.TelegramWebviewProxy.postEvent('web_app_invoke_custom_method', {
-          req_id: 1,
-          method: 'get_user_info',
-          params: {},
-        }).then((res: any) => {
-          console.log('web_app_invoke_custom_method', res)
-        })
+        tgApp.requestFullscreen()
       } catch (err) {
         console.warn('######    web_app_request_fullscreen error    ######', err)
-      }
-
-      try {
-        tgApp.requestFullscreen()
-      } catch (e) {
-        console.warn(e)
       }
 
       postEvent('web_app_setup_swipe_behavior', {
@@ -215,6 +201,7 @@ export const MainLayout: React.FC = () => {
       </div>
       <PostProgressBar />
       <Menu />
+      <VideoDialog></VideoDialog>
     </div>
   )
 }

@@ -99,7 +99,12 @@ const VideoDialog = () => {
   }
 
   useEffect(() => {
+<<<<<<< HEAD
     if (info?.media && info.media[0] && cacheVideoIndex === info.id) {
+=======
+    if (info?.media && info.media[0]) {
+      console.log(url, '---------jacob====url')
+>>>>>>> 1a43ce73e2ec207dacd3c1e06172780b01500ebd
       setUrl(info.media[0])
     }
   }, [info])

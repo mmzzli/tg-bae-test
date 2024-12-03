@@ -32,6 +32,7 @@ const MessagePageIOS = () => {
   const containerRef = useRef<HTMLDivElement>(null)
 
   const [initTgViewportHeight, setInitTgViewportHeight] = useState(0)
+  const [initVisualViewportHeight, setInitVisualViewportHeight] = useState(0)
 
   useEffect(() => {
     if (messageWindow) {
@@ -85,28 +86,32 @@ const MessagePageIOS = () => {
   }
 
   const initTgViewportHeightRef = useRef(0)
+  const initVisualViewportHeightRef = useRef(0)
 
   useEffect(() => {
     initTgViewportHeightRef.current = initTgViewportHeight
-  }, [initTgViewportHeight])
+    initVisualViewportHeightRef.current = initVisualViewportHeight
+  }, [initTgViewportHeight, initVisualViewportHeight])
 
   useEffect(() => {
     if (!containerRef.current) return
     const tg = window.Telegram?.WebApp
     setInitTgViewportHeight(tg.viewportStableHeight)
     // 这个函数在视口变化时立即执行 可以提前确定布局
+
     const handleViewportChange = () => {
-      console.log(
-        'handleViewportChange------------------',
-        tg.viewportStableHeight,
-        initTgViewportHeightRef.current
-      )
+      console.log('###### TG viewportChanged ######')
+      console.log('tg.viewportStableHeight', tg.viewportStableHeight)
+      console.log('initTgViewportHeightRef', initTgViewportHeightRef.current)
+      console.log('initVisualViewportHeightRef', initVisualViewportHeightRef.current)
+      console.log('###### TG viewportChanged ######')
       if (tg.viewportStableHeight < initTgViewportHeightRef.current) {
         console.log('keyboard up')
         containerRef.current!.style.height = `${tg.viewportStableHeight}px`
       } else {
         console.log('keyboard down')
-        containerRef.current!.style.height = `${tg.viewportStableHeight - 74}px`
+        containerRef.current!.style.height = `${initVisualViewportHeightRef.current - 84}px`
+        document.body.scrollIntoView()
       }
     }
 
@@ -115,12 +120,10 @@ const MessagePageIOS = () => {
       if (!window.visualViewport) return
       const currentHeight = window.visualViewport.height
 
-      console.log(
-        'currentHeight',
-        currentHeight,
-        tg.viewportStableHeight,
-        initTgViewportHeightRef.current
-      )
+      console.log('###### window visualViewport ######')
+      console.log('visualViewport.height', currentHeight)
+      console.log('tg.viewportStableHeight', tg.viewportStableHeight)
+      console.log('###### window visualViewport ######')
 
       // 这个有时候会获取不到初始的高度
       if (tg.viewportStableHeight < initTgViewportHeightRef.current) {
@@ -137,6 +140,8 @@ const MessagePageIOS = () => {
 
     tg?.onEvent('viewportChanged', handleViewportChange)
     handleVisualViewportResize()
+    // 记录window 的高度 方便tg视窗改变时能正确设置聊天div的高度 如果使用tg的viewport height会不准确，可能需要结合safe area 的高度和content safe area的高度
+    setInitVisualViewportHeight(window.visualViewport?.height || 0)
     window.visualViewport?.addEventListener('resize', handleVisualViewportResize)
     window.visualViewport?.addEventListener('scroll', handleVisualViewportResize)
 

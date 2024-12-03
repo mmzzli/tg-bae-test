@@ -78,6 +78,7 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
         height="100%"
         minH="100px"
         borderRadius="4px"
+        zIndex="1111"
       >
         <Box position="absolute" top="50%" left="50%" transform=" translate(-50%, -50%)" w="220px">
           {loading ?

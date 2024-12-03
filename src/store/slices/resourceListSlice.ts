@@ -49,6 +49,11 @@ export interface imagePreview {
   images: string[]
   currentIndex: number
 }
+export interface followPreview {
+  uid: number
+  is_follow: boolean
+  boll: boolean
+}
 const recordsNum = 10
 const CACHE_VIDEOS_LIMIT = 9
 const BUFFER_FRAGMENT_LIMIT = 1
@@ -80,6 +85,11 @@ export interface ResourceListSlice {
   imageResource: imagePreview | null
   setImageResource: (resource: imagePreview | null) => void
   setImageResourceIndex: (index: number) => void
+
+  // Follow
+  followResource: followPreview[] | null
+  setFollowResource: (resource: followPreview | null) => void
+
   // view
   viewList: BaseListState
   setViewPage: (page: number) => void
@@ -382,6 +392,11 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
   imageResource: null,
   setImageResource: (resource) => {
     set({ imageResource: resource })
+  },
+
+  followResource: null,
+  setFollowResource: (resource) => {
+    set({ followResource: resource })
   },
 
   setImageResourceIndex: (currentIndex: number) => {

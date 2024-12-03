@@ -72,7 +72,7 @@ const ProfileEdit: FC = () => {
         img.src = event!.target!.result as string
 
         img.onload = () => {
-          const minSize = 200 // 最小尺寸200px
+          const minSize = 800 // 最小尺寸200px
           let width = img.width
           let height = img.height
 
@@ -221,11 +221,8 @@ const ProfileEdit: FC = () => {
                 src={profileData?.avatar}
                 className="w-[100%] h-[100%] rounded-[50px] object-cover overflow-hidden"
               />
-              <div className='bg-[#fff] p-[3px] absolute bottom-[0px] right-[-14px] rounded-[50px]'>
-                <p
-                  className="bg-[#19191E] p-[4px] rounded-[50px]"
-                  onClick={handleDivClick}
-                >
+              <div className="bg-[#fff] p-[3px] absolute bottom-[0px] right-[-14px] rounded-[50px]">
+                <p className="bg-[#19191E] p-[4px] rounded-[50px]" onClick={handleDivClick}>
                   <img src={CameraIcon} />
                 </p>
               </div>

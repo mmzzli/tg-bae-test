@@ -132,7 +132,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
               borderRadius="8px"
             >
               {boll && <Input
-                color="#999"
+                color="#333"
                 border="none"
                 p="0"
                 inputMode="numeric"

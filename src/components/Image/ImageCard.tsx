@@ -4,12 +4,13 @@ import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import { formatImage } from '@/utils/utils'
 import { Swiper as SwiperType } from 'swiper'
 import Image from '@/components/Image/Image'
+import FrostedGlass from '@/components/ResourceList/FrostedGlass'
 interface ImageCardProps {
   data: FormatterListItem
   handleImageClick: (images: string[], index: number) => void
   resourcesEve: (post_id: number, url: string) => void
 }
-const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick }) => {
+const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resourcesEve }) => {
   const [swiper, setSwiper] = useState<SwiperType | null>(null)
 
   const imagesPreview = useMemo(() => {
@@ -59,6 +60,10 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick }) => {
             )
           })}
         </Swiper>
+
+        {data.media?.[0] === '' && (
+          <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} />
+        )}
       </div>
     </>
   )

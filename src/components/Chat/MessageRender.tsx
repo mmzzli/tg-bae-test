@@ -106,6 +106,7 @@ const ImageRenderer = React.memo(
     progress?: number
     uploadError?: string | null
   }) => {
+    const setImageResource = useStore((state) => state.setImageResource)
     if (file) {
       return (
         <div
@@ -142,7 +143,13 @@ const ImageRenderer = React.memo(
           height: height + 'px',
         }}
       >
-        <Image src={url} alt="" />
+        <Image
+          src={url}
+          alt=""
+          onClick={() => {
+            if (url) setImageResource({ images: [url], currentIndex: 0 })
+          }}
+        />
       </div>
     )
   }

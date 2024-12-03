@@ -13,7 +13,7 @@ interface ImageGridProps {
 const ImageGrid: React.FC<ImageGridProps> = ({ data, handleImageClick, resourcesEve }) => {
   if (data.media.length === 1) {
     return (
-      <div className="relative px-4" style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}>
+      <div className="relative" style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}>
         <Image
           src={formatImage(data.media?.[0] ?? data?.media ?? '', false)}
           alt={data.title}
@@ -34,7 +34,7 @@ const ImageGrid: React.FC<ImageGridProps> = ({ data, handleImageClick, resources
   }
   if (data.media.length === 4) {
     return (
-      <div className="relative px-4" style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}>
+      <div className="relative" style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}>
         <div className="grid grid-cols-3 gap-2">
           <div className="grid grid-cols-2 gap-2 col-span-2">
             {data.media.map((i, ind) => (
@@ -58,7 +58,7 @@ const ImageGrid: React.FC<ImageGridProps> = ({ data, handleImageClick, resources
     )
   }
   return (
-    <div className="relative px-4" style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}>
+    <div className="relative " style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}>
       <div className="grid grid-cols-3 gap-2">
         {data.media.map((i, ind) => (
           <Image

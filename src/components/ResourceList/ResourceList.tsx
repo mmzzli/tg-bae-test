@@ -23,6 +23,7 @@ import { CardRecommendProvider } from '@/utils/constants'
 import { useStore } from '@/store'
 import ImageGrid from '@/components/ResourceList/ImageGrid'
 import VideoCard from '@/components/ResourceList/VideoCard'
+import ImageCard from '@/components/Image/ImageCard'
 
 interface Like {
   id: number
@@ -246,8 +247,7 @@ const ResourceList = ({
               />
 
               {data.type === POST_TYPE_IMAGE ? (
-                <ImageGrid
-                  key={data.id}
+                <ImageCard
                   data={data}
                   handleImageClick={handleImageClick}
                   resourcesEve={resourcesEve}

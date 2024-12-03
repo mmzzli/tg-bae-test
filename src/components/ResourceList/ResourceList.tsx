@@ -108,15 +108,17 @@ const ResourceList = ({
         }
         return item
       })
-      const uniqueData: followPreview[] = []
-      const seen = new Set<number>()
-      for (const value of attr) {
-        if (!seen.has(value.uid)) {
-          seen.add(value.uid)
-          uniqueData.push(value)
+      if(type === 'recommend'){
+        const uniqueData: followPreview[] = []
+        const seen = new Set<number>()
+        for (const value of attr) {
+          if (!seen.has(value.uid)) {
+            seen.add(value.uid)
+            uniqueData.push(value)
+          }
         }
+        setFollowResource(uniqueData)
       }
-      setFollowResource(uniqueData)
 
       setResources(res)
     } else {

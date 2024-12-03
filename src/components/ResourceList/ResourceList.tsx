@@ -1,4 +1,4 @@
-import { memo, Suspense, useCallback, useContext, useEffect, useState } from 'react'
+import { memo, useCallback, useContext, useEffect, useState } from 'react'
 import { Box, Flex, HStack, IconButton, useBoolean } from '@chakra-ui/react'
 import { favDel, favPost, postLike } from '@/api'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
@@ -8,7 +8,7 @@ import useCopy from '@/hooks/useCopy'
 import { useMemoizedFn, useRequest, useSafeState, useSetState } from 'ahooks'
 import dayjs from 'dayjs'
 import { LinkIcon, StarsIcon, TelegramIcon } from '@/assets/icons'
-import { FormatterListItem } from '@/store/slices/resourceListSlice'
+import { followPreview, FormatterListItem } from '@/store/slices/resourceListSlice'
 import Image from '../Image/Image'
 import SecondaryMenu from '../SecondaryMenu/SecondaryMenu'
 import { getLink } from '@/api/list'
@@ -20,10 +20,8 @@ import Icon from '../comm/Icon'
 
 import { CardRecommendProvider } from '@/utils/constants'
 import { useStore } from '@/store'
-import ImageGrid from '@/components/ResourceList/ImageGrid'
 import VideoCard from '@/components/ResourceList/VideoCard'
 import ImageCard from '@/components/Image/ImageCard'
-import { followPreview } from '@/store/slices/resourceListSlice'
 
 interface Like {
   id: number
@@ -64,13 +62,6 @@ const ResourceList = ({
   })
   const [postId, setPostId] = useState<number | null>(null)
   const { copy } = useCopy()
-
-  // image preview
-  const [previewImages, setPreviewImages] = useState<string[]>([])
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false)
-  const [currentIndex, setCurrentIndex] = useState(0)
-  //
-  const [isVideoPreviewOpen, setIsVideoPreviewOpen] = useState<boolean>(false)
 
   const jumpToProfilePage = useProfileNavigation()
 

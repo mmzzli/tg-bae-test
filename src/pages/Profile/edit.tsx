@@ -24,6 +24,7 @@ const ProfileEdit: FC = () => {
   const toast = useToast()
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isFocused, setIsFocused] = useState<boolean>(false)
+  const setUserInfo = useStore((state) => state.setUserInfo)
 
   const [profileData, setProfileData] = useState<UserInfoProfile>({
     username: '',
@@ -155,7 +156,11 @@ const ProfileEdit: FC = () => {
     toast({
       position: 'top',
       onCloseComplete: () => {
-        location.href = '/profile'
+        console.log(profileData.avatar, '=======')
+        setUserInfo(profileData)
+        setTimeout(() => {
+          navigate('/profile')
+        })
       },
       render: () => {
         return (
@@ -221,11 +226,8 @@ const ProfileEdit: FC = () => {
                 src={profileData?.avatar}
                 className="w-[100%] h-[100%] rounded-[50px] object-cover overflow-hidden"
               />
-              <div className='bg-[#fff] p-[3px] absolute bottom-[0px] right-[-14px] rounded-[50px]'>
-                <p
-                  className="bg-[#19191E] p-[4px] rounded-[50px]"
-                  onClick={handleDivClick}
-                >
+              <div className="bg-[#fff] p-[3px] absolute bottom-[0px] right-[-14px] rounded-[50px]">
+                <p className="bg-[#19191E] p-[4px] rounded-[50px]" onClick={handleDivClick}>
                   <img src={CameraIcon} />
                 </p>
               </div>

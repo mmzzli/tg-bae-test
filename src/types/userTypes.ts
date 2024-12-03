@@ -1,8 +1,5 @@
-export interface IUserInfo {
+export interface IUserInfo extends UserInfoProfile {
   user_id: number
-  username: string
-  avatar: string
-  bio: string
   follower: number
   fans: number
   api_token: string

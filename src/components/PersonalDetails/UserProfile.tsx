@@ -1,11 +1,10 @@
-import { FC, useEffect, useState } from 'react'
-import { Heading, HStack, Box, Text, Link } from '@chakra-ui/react'
+import { FC } from 'react'
+import { Box, Heading, HStack, Link, Text } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '@/store'
 import Image from '../Image/Image'
 import EarningsPage from '@/components/PersonalDetails/Earnings'
 import ShareUser from './ShareUser'
-import { EditIcon } from '@/assets/icons'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { profileImg } from '@/assets/image'
 import More from './More'
@@ -15,6 +14,7 @@ const UserProfile: FC = () => {
   const { launchParams } = useTMAUtils()
   const userId = launchParams.initData?.user?.id ?? 0
   const userInfo = useStore((state) => state.userInfo)
+  console.log(userInfo, '=======')
   const navigate = useNavigate()
   return !userInfo.avatar ? (
     <ProfileSkeleton />

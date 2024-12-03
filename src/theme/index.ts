@@ -44,10 +44,10 @@ const theme = extendTheme({
         },
         'primary-dark': {
           borderRadius: '32px',
-          background: '#4A3AFF',
+          background: '#6254FF',
           color: '#fff',
           _hover:{
-            background: '#4A3AFF !important',
+            background: '#6254FF !important',
           }
           // _active: {
           //   color: '#E0E2F6',

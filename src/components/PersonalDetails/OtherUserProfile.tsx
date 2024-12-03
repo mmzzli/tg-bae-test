@@ -91,7 +91,7 @@ const OtherUserProfile: FC = () => {
                 <i className="iconfont icon-icon_more text-[26px] text-[#0F1233]"></i>
               </div>
             </MenuButton>
-            <MenuList minW="84px" bg="#fff" border="1px solid #EBEBF4" borderRadius="4px" p="12px">
+            <MenuList minW="84px" bg="#fff" border="1px solid #EBEBF4" borderRadius="4px" p="12px" boxShadow="none">
               {navList.map((item, key) => (
                 <Box>
                   <MenuItem

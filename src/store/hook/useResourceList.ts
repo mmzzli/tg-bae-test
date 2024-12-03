@@ -298,8 +298,12 @@ const useCacheVideo = (
   useEffect(() => {
     if (page === 1 && list.length) {
       const videos = list.filter((item) => item.type === 0)
-      setCacheVideoIndex(videos[0].id) // 初始时设置缓存视频索引
-      updateCache(videos) // 初始时更新缓存
+      try {
+        setCacheVideoIndex(videos[0]?.id) // 初始时设置缓存视频索引
+        updateCache(videos) // 初始时更新缓存
+      } catch (error) {
+
+      }
     }
   }, [page, list])
 

@@ -12,7 +12,6 @@ import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import Image from '../Image/Image'
 import SecondaryMenu from '../SecondaryMenu/SecondaryMenu'
 import { getLink } from '@/api/list'
-import ImagePreview from '../Image/ImagePreview'
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import useMobile from '@/hooks/useMobile'
 import playIcon from '@/assets/icons/videoSwitch.svg'
@@ -24,6 +23,7 @@ import { useStore } from '@/store'
 import ImageGrid from '@/components/ResourceList/ImageGrid'
 import VideoCard from '@/components/ResourceList/VideoCard'
 import ImageCard from '@/components/Image/ImageCard'
+import { followPreview } from '@/store/slices/resourceListSlice'
 
 interface Like {
   id: number
@@ -53,6 +53,8 @@ const ResourceList = ({
   const [likes, setLikes] = useSafeState<Like[]>([])
   const [saveds, setSaveds] = useState<Saveds[]>([])
   const setImageResource = useStore((state) => state.setImageResource)
+  const setFollowResource = useStore((state) => state.setFollowResource)
+  const followResource = useStore((state) => state.followResource)
 
   const { shareLink, launchParams } = useTMAUtils()
   const [isBaseModalOpen, { toggle, off }] = useBoolean(false)
@@ -87,8 +89,15 @@ const ResourceList = ({
   })
 
   useEffect(() => {
+    const attr: followPreview[] = []
     if (initialResources.length) {
       const res = initialResources.map((item) => {
+        const user = followResource?.find((user) => user.uid === item.uid)
+        attr.push({
+          uid: item.uid,
+          is_follow: item.is_follow,
+          boll: user?.boll || false,
+        })
         if (item.type === 0 && item.media.length > 0) {
           const [mediaCover, media] = item.media[0].split(',')
           return {
@@ -99,6 +108,16 @@ const ResourceList = ({
         }
         return item
       })
+      const uniqueData: followPreview[] = []
+      const seen = new Set<number>()
+      for (const value of attr) {
+        if (!seen.has(value.uid)) {
+          seen.add(value.uid)
+          uniqueData.push(value)
+        }
+      }
+      setFollowResource(uniqueData)
+
       setResources(res)
     } else {
       setResources([])
@@ -404,7 +423,7 @@ const ResourceFooter = memo<ResourceFooterProps>(
             h={6}
             w={6}
             icon={
-              <i className="iconfont icon-Frame-2 text-[#0D0D0D]" style={{ fontSize: '24px' }}></i>
+              <i className="iconfont icon-Frame-2 text-[#0F1233]" style={{ fontSize: '24px' }}></i>
             }
           />
         </div>

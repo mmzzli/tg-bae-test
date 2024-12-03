@@ -748,7 +748,7 @@ export const NewPost: FC = () => {
             )}
           </Box>
           <Textarea
-            className="placeholder-[#424048] mt-6"
+            className="placeholder-[#999] mt-6"
             value={title}
             onChange={(event) => setTitle(event.target.value)}
             mt="10px"

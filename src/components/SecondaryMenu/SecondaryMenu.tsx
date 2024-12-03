@@ -9,6 +9,8 @@ import { useModal } from '@ebay/nice-modal-react'
 import { useToast } from '@chakra-ui/react'
 import BaseButton from '../BaseButton/BaseButton'
 import { getSomeoneProfile, follow } from '@/api'
+import {useStore} from '@/store'
+import {followPreview} from '@/store/slices/resourceListSlice'
 
 type Props = {
   mediaData: FormatterListItem
@@ -23,8 +25,9 @@ const SecondaryMenu = ({ mediaData, currentUid, className, type }: Props) => {
   const menuRef = useRef<HTMLDivElement>(null)
   const [reportVisible, setReportVisible] = useSafeState(false)
   const toast = useToast()
-  const [followBoll, setFollowBoll] = useState<boolean>(!mediaData.is_follow)
   const [isFollowLoading, setIsFollowLoading] = useState<boolean>(false)
+  const followResource = useStore((state) => state.followResource)
+  const setFollowResource = useStore((state) => state.setFollowResource)
 
   const deleteDialogWrap = useModal(DeleteDialogWarp)
 
@@ -79,17 +82,20 @@ const SecondaryMenu = ({ mediaData, currentUid, className, type }: Props) => {
       tgid: mediaData.uid,
     })
     setIsFollowLoading(false)
-    setFollowBoll((rep) => !rep)
+    const res:any = followResource?.map(user =>
+      user.uid === mediaData.uid ? { ...user,  boll: !user.boll } : user
+    )
+    setFollowResource(res)
   }
 
   return (
     <div className={cn(className, 'relative')} ref={menuRef}>
       <div className="flex items-center gap-[8px]">
-        {!mediaData.is_follow && type === 'recommend' && (
+        {!followResource?.some(user => user.uid === mediaData.uid && user.is_follow) && type === 'recommend' && (
           <BaseButton
-            text={followBoll ? `Follow` : `Following`}
+            text={followResource?.some(user => user.uid === mediaData.uid && user.boll) ? `Following` : `Follow`}
             loading={isFollowLoading}
-            width={followBoll ? '80px' : '104px'}
+            width={followResource?.some(user => user.uid === mediaData.uid && user.boll) ? '104px' : '80px'}
             height="34px"
             handler={doFollow}
             className={`bg-transparent border text-[#333333] border-[#CDCDD4] ${className}`}

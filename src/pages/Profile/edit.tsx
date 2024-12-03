@@ -1,18 +1,14 @@
-import { FC, useState, useEffect, ChangeEvent, useRef } from 'react'
+import { ChangeEvent, FC, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios, { AxiosResponse } from 'axios'
-import { useToast, Button } from '@chakra-ui/react'
-
-import BaseButton from '@/components/BaseButton/BaseButton'
+import axios from 'axios'
+import { Button, useToast } from '@chakra-ui/react'
 import { profileEdit, putProfile } from '@/api'
 import Skeleton from '@/components/Skeketon/Skeleton'
-import { uploadImgUrl } from '@/utils/env'
 import { isMobileDevice } from '@/utils/utils'
 
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useStore } from '@/store/store'
 import { UserInfoProfile } from '@/types'
-import { CameraIcon } from '@/assets/icons'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 
 const ProfileEdit: FC = () => {
@@ -227,8 +223,11 @@ const ProfileEdit: FC = () => {
                 className="w-[100%] h-[100%] rounded-[50px] object-cover overflow-hidden"
               />
               <div className="bg-[#fff] p-[3px] absolute bottom-[0px] right-[-14px] rounded-[50px]">
-                <p className="bg-[#19191E] p-[4px] rounded-[50px]" onClick={handleDivClick}>
-                  <img src={CameraIcon} />
+                <p
+                  className="bg-[#19191E] w-[28px] h-[28px] flex items-center justify-center rounded-[50px]"
+                  onClick={handleDivClick}
+                >
+                  <i className="iconfont icon-camera-ai-line text-white"></i>
                 </p>
               </div>
             </p>

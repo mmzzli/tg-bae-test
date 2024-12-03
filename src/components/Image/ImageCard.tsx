@@ -31,7 +31,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick }) => {
     <>
       <div className="border-t-[0.5px] border-[rgba(0,0,0,0.1)] relative">
         {imagesPreview.length > 1 && (
-          <div className="absolute z-[100] right-3 top-3 px-3.5 py-1.5 bg-[#494950] rounded-full text-white text-3.5 font-Roboto">
+          <div className="absolute z-[2] right-3 top-3 px-3.5 py-1.5 bg-[#494950] rounded-full text-white text-3.5 font-Roboto">
             {currentIndex + 1}/{imagesPreview.length}
           </div>
         )}

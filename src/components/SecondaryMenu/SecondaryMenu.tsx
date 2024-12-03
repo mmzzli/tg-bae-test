@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react'
-import { MoreHorizontal } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSafeState } from 'ahooks'
 import { ReportIconLight } from '@/assets/icons'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
@@ -8,19 +7,27 @@ import { cn } from '@/utils/utils'
 import { DeleteDialogWarp } from '../Chat/DeleteDialog'
 import { useModal } from '@ebay/nice-modal-react'
 import { useToast } from '@chakra-ui/react'
+import BaseButton from '../BaseButton/BaseButton'
+import { getSomeoneProfile, follow } from '@/api'
+import {useStore} from '@/store'
+import {followPreview} from '@/store/slices/resourceListSlice'
 
 type Props = {
   mediaData: FormatterListItem
   currentUid: number
   className?: string
+  type?: string
 }
 
-const SecondaryMenu = ({ mediaData, currentUid, className }: Props) => {
+const SecondaryMenu = ({ mediaData, currentUid, className, type }: Props) => {
   const { uid, id } = mediaData
   const [visible, setVisible] = useSafeState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const [reportVisible, setReportVisible] = useSafeState(false)
   const toast = useToast()
+  const [isFollowLoading, setIsFollowLoading] = useState<boolean>(false)
+  const followResource = useStore((state) => state.followResource)
+  const setFollowResource = useStore((state) => state.setFollowResource)
 
   const deleteDialogWrap = useModal(DeleteDialogWarp)
 
@@ -65,22 +72,49 @@ const SecondaryMenu = ({ mediaData, currentUid, className }: Props) => {
     },
     [setVisible]
   )
+  const doFollow = async () => {
+    console.log(type)
+    setVisible(false)
+    setIsFollowLoading(true)
+    await getSomeoneProfile(mediaData.uid)
+    await follow({
+      fansid: mediaData.id,
+      tgid: mediaData.uid,
+    })
+    setIsFollowLoading(false)
+    const res:any = followResource?.map(user =>
+      user.uid === mediaData.uid ? { ...user,  boll: !user.boll } : user
+    )
+    setFollowResource(res)
+  }
 
   return (
     <div className={cn(className, 'relative')} ref={menuRef}>
-      <button className="p-2 rounded-full" onClick={() => setVisible(!visible)}>
-        <MoreHorizontal className="w-5 h-5 text-[#373738] dark:text-[#E0E2F6]" />
-      </button>
+      <div className="flex items-center gap-[8px]">
+        {!followResource?.some(user => user.uid === mediaData.uid && user.is_follow) && type === 'recommend' && (
+          <BaseButton
+            text={followResource?.some(user => user.uid === mediaData.uid && user.boll) ? `Following` : `Follow`}
+            loading={isFollowLoading}
+            width={followResource?.some(user => user.uid === mediaData.uid && user.boll) ? '104px' : '80px'}
+            height="34px"
+            handler={doFollow}
+            className={`bg-transparent border text-[#333333] border-[#CDCDD4] ${className}`}
+          />
+        )}
+        <button className="rounded-full" onClick={() => setVisible(!visible)}>
+          <i className="iconfont icon-icon_more text-[#373738]" style={{ fontSize: '26px' }}></i>
+        </button>
+      </div>
 
       {visible && (
-        <div className="absolute border rounded-lg right-0 mt-1 dark:bg-[#19191E] dark:border-[#19191E] bg-white dark:text-[#E0E2F6] text-[#333] border-[#EBEBF4] font-medium text-xs rounded-[4px] z-50">
+        <div className="absolute border rounded-lg right-0 top-[36px] mt-1 dark:bg-[#19191E] dark:border-[#19191E] bg-white dark:text-[#E0E2F6] text-[#333] border-[#EBEBF4] font-medium text-xs rounded-[4px] z-50">
           {currentUid === uid && (
             <button
               onClick={() => {
                 deleteDialogWrap.show({ data: mediaData })
                 setVisible(false)
               }}
-              className="w-[83px] h-[40px] hover:bg-gray-500 rounded-[4px] flex items-center justify-center gap-1 text-[#FF684A]"
+              className="w-[83px] h-[40px] rounded-[4px] flex items-center justify-center gap-1 text-[#FF684A]"
             >
               <i className="iconfont icon-delete-bin-line text-base"></i>
               Delete
@@ -88,7 +122,7 @@ const SecondaryMenu = ({ mediaData, currentUid, className }: Props) => {
           )}
           {currentUid !== uid && (
             <button
-              className="w-[83px] h-[40px] hover:bg-gray-500 rounded-[4px] flex items-center justify-center gap-1"
+              className="w-[83px] h-[40px] rounded-[4px] flex items-center justify-center gap-1"
               onClick={() => {
                 handleOptionClick('report')
                 setVisible(false)

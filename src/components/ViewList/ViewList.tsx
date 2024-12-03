@@ -3,11 +3,10 @@ import { Box } from '@chakra-ui/react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import ResourceList from '../ResourceList/ResourceList'
 import { cn } from '@/utils/utils'
-import useCacheVideo, { useFavList, useOrdersList, useViewList } from '@/store/hook/useResourceList'
+import { useFavList, useOrdersList, useViewList } from '@/store/hook/useResourceList'
 import Empty from '../comm/Empty'
 import Icon from '../comm/Icon'
 import PostSkeleton from '../Skeketon/PostSkeleton'
-import { useStore } from '@/store'
 
 interface PostListProps {
   className?: string

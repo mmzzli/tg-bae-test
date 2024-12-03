@@ -1,18 +1,14 @@
-import { FC, useState, useEffect, ChangeEvent, useRef } from 'react'
+import { ChangeEvent, FC, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios, { AxiosResponse } from 'axios'
-import { useToast, Button } from '@chakra-ui/react'
-
-import BaseButton from '@/components/BaseButton/BaseButton'
+import axios from 'axios'
+import { Button, useToast } from '@chakra-ui/react'
 import { profileEdit, putProfile } from '@/api'
 import Skeleton from '@/components/Skeketon/Skeleton'
-import { uploadImgUrl } from '@/utils/env'
 import { isMobileDevice } from '@/utils/utils'
 
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useStore } from '@/store/store'
 import { UserInfoProfile } from '@/types'
-import { CameraIcon } from '@/assets/icons'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 
 const ProfileEdit: FC = () => {
@@ -24,6 +20,7 @@ const ProfileEdit: FC = () => {
   const toast = useToast()
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isFocused, setIsFocused] = useState<boolean>(false)
+  const setUserInfo = useStore((state) => state.setUserInfo)
 
   const [profileData, setProfileData] = useState<UserInfoProfile>({
     username: '',
@@ -155,7 +152,11 @@ const ProfileEdit: FC = () => {
     toast({
       position: 'top',
       onCloseComplete: () => {
-        location.href = '/profile'
+        console.log(profileData.avatar, '=======')
+        setUserInfo(profileData)
+        setTimeout(() => {
+          navigate('/profile')
+        })
       },
       render: () => {
         return (
@@ -209,24 +210,26 @@ const ProfileEdit: FC = () => {
 
   return (
     <div
-      className="pt-[10px] px-[16px] fixed w-screen h-screen bg-[#fff] z-10 overflow-auto scrollbar-hide"
+      className="pt-[24px] px-[16px] fixed w-screen h-screen bg-[#fff] z-10 overflow-auto scrollbar-hide"
       id="scrollable"
     >
-      <h2 className="text-[20px] text-[#0F1233]">Profile</h2>
+      <h2 className="text-[20px] text-[#0F1233] font-[500]">Profile</h2>
       {profileData.avatar ? (
         <>
-          <div className="mt-[44px]">
+          <div className="mt-[38px]">
             <p className="w-[88px] h-[88px] m-[auto] rounded-[50px] relative">
               <img
                 src={profileData?.avatar}
                 className="w-[100%] h-[100%] rounded-[50px] object-cover overflow-hidden"
               />
-              <p
-                className="absolute bottom-[0px] right-[-14px]  bg-[#19191E] rounded-[50px] p-[5px]"
-                onClick={handleDivClick}
-              >
-                <img src={CameraIcon} />
-              </p>
+              <div className="bg-[#fff] p-[3px] absolute bottom-[0px] right-[-14px] rounded-[50px]">
+                <p
+                  className="bg-[#19191E] w-[28px] h-[28px] flex items-center justify-center rounded-[50px]"
+                  onClick={handleDivClick}
+                >
+                  <i className="iconfont icon-camera-ai-line text-white"></i>
+                </p>
+              </div>
             </p>
           </div>
           <input
@@ -238,7 +241,7 @@ const ProfileEdit: FC = () => {
           />
           <div className="px-[8px] mt-[48px]">
             <div className="flex justify-between items-center mb-[16px]">
-              <h3 className="text-[16px] text-[#0F1233]">* Name</h3>
+              <h3 className="text-[16px] text-[#0F1233] font-[500]">* Name</h3>
               <p className="text-[#888] text-[12px]">{profileData?.username.length}/20</p>
             </div>
             <input
@@ -248,7 +251,7 @@ const ProfileEdit: FC = () => {
             />
             <div className="mt-[24px]">
               <div className="flex justify-between items-center mb-[16px]">
-                <h3 className="text-[16px] text-[#0F1233]">Bio</h3>
+                <h3 className="text-[16px] text-[#0F1233] font-[500]">Bio</h3>
                 <p className="text-[#888] text-[12px]">{profileData?.bio.length}/500</p>
               </div>
               <textarea
@@ -280,7 +283,7 @@ const ProfileEdit: FC = () => {
           </div>
         </>
       ) : (
-        <div className="mt-[44px]">
+        <div className="mt-[38px]">
           <Skeleton childClassName="w-[88px] h-[88px] m-[auto] rounded-full" />
           <Skeleton childClassName="w-[100%] h-[188px] m-[auto] rounded-[4px] mt-[48px]" />
         </div>

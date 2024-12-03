@@ -1,7 +1,7 @@
 import { StateCreator } from 'zustand'
 import { StoreState, useStore } from '../store'
 import { shallow } from 'zustand/shallow'
-import { IUserInfo, OthersUserInfo, Follow } from '@/types'
+import { IUserInfo, OthersUserInfo, Follow, UserInfoProfile } from '@/types'
 
 export interface FollowListState {
   list: Follow[]
@@ -14,7 +14,7 @@ export interface FollowListState {
 export interface UserSlice {
   othersUserInfo: OthersUserInfo & { user_id: number }
   userInfo: IUserInfo
-  setUserInfo: (info: IUserInfo) => void
+  setUserInfo: (info: IUserInfo | UserInfoProfile) => void
   resetUserInfo: () => void
   setOthersUserInfo: (info: OthersUserInfo & { user_id: number }, merge?: boolean) => void
   resetOthersUserInfo: () => void
@@ -72,7 +72,10 @@ const initialFollowListState: FollowListState = {
 export const createUserSlice: StateCreator<UserSlice> = (set, get) => ({
   userInfo: initialUserInfo,
   othersUserInfo: initialOthersUserInfo,
-  setUserInfo: (info) => set({ userInfo: info }),
+  setUserInfo: (info) =>
+    set(({ userInfo }) => {
+      return { userInfo: { ...userInfo, ...info } }
+    }),
   resetUserInfo: () => set({ userInfo: initialUserInfo }),
   setOthersUserInfo: (info, merge = false) => {
     set((state) => ({

@@ -37,7 +37,7 @@ const ChatContent: FC<{ user: OthersUserInfo | null; chat: Conversation }> = ({ 
     </div>
 
     <div className="flex justify-between items-start min-h-[24px]">
-      <p className="flex-1 text-[#666] text-sm truncate mt-1">
+      <p className="flex-1 text-[#666] text-sm truncate mt-1 font-normal">
         {chat?.lastMessage?.content?.entity?.text}
       </p>
       {chat.unread ? (

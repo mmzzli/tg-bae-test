@@ -1,11 +1,10 @@
-import { FC, useEffect, useState } from 'react'
-import { Heading, HStack, Box, Text, Link } from '@chakra-ui/react'
+import { FC } from 'react'
+import { Box, Heading, HStack, Link, Text } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '@/store'
 import Image from '../Image/Image'
 import EarningsPage from '@/components/PersonalDetails/Earnings'
 import ShareUser from './ShareUser'
-import { EditIcon } from '@/assets/icons'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { profileImg } from '@/assets/image'
 import More from './More'
@@ -15,11 +14,8 @@ const UserProfile: FC = () => {
   const { launchParams } = useTMAUtils()
   const userId = launchParams.initData?.user?.id ?? 0
   const userInfo = useStore((state) => state.userInfo)
+  console.log(userInfo, '=======')
   const navigate = useNavigate()
-
-  useEffect(() => {
-    console.log(userInfo, 'userInfo========')
-  }, [userInfo])
   return !userInfo.avatar ? (
     <ProfileSkeleton />
   ) : (
@@ -37,11 +33,11 @@ const UserProfile: FC = () => {
             10
           ) !== 0
             ? '8px'
-            : '24px'
+            : '30px'
         })`,
       }}
     >
-      <HStack gap="16px" paddingLeft="8px" justifyContent="space-between">
+      <HStack paddingLeft="0" justifyContent="space-between">
         <div className="w-[64px] h-[64px] overflow-hidden rounded-[50%]">
           <Image
             rect
@@ -58,12 +54,12 @@ const UserProfile: FC = () => {
         </Box>
       </HStack>
 
-      <HStack marginTop="4">
+      <HStack marginTop="10px" gap="4px">
         <Heading as="h3" color="#0F1233" fontWeight="500" fontSize="20px">
           {userInfo.username}
         </Heading>
         <Link onClick={() => navigate('/profile/edit')}>
-          <Image src={EditIcon} alt="Edit Profile" />
+          <i className="iconfont icon-a-edit-line1 text-[#7a7a7a]" style={{ fontSize: '18px' }}></i>
         </Link>
       </HStack>
 

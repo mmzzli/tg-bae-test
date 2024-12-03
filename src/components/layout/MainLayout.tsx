@@ -12,7 +12,8 @@ import { Spinner } from '@chakra-ui/react'
 import { Menu } from '../Menu'
 import { postEvent } from '@telegram-apps/sdk'
 import { PostProgressBar } from '../NewPost/PostProgressBar'
-
+import VideoDialog from '@/components/ResourceList/VideoDialog'
+import ImageDialog from '@/components/ResourceList/ImageDialog'
 const ChatListPageLoader = {
   preload: () =>
     import('@/pages/Chat').then((module) => ({
@@ -38,6 +39,11 @@ export const MainLayout: React.FC = () => {
   const setExpanded = useStore((state) => state.setExpand)
   const isExpanded = useStore((state) => state.expand)
   const navigate = useNavigate()
+  const setVideoResource = useStore((state) => state.setVideoResource)
+  const videoResource = useStore((state) => state.videoResource)
+  const imageResource = useStore((state) => state.imageResource)
+  const setImageResource = useStore((state) => state.setImageResource)
+
   const { run: runLogin } = useRequest(logIn, {
     manual: true,
     onSuccess({ token, api_token, user_info }) {
@@ -71,21 +77,10 @@ export const MainLayout: React.FC = () => {
       const tgApp = window.Telegram.WebApp
       tgApp.ready()
       try {
-        // window.TelegramWebviewProxy &&
-        //   window.TelegramWebviewProxy.postEvent('web_app_request_fullscreen')
-
-        window.TelegramWebviewProxy.postEvent('web_app_invoke_custom_method', {
-          req_id: 1,
-          method: 'get_user_info',
-          params: {},
-        }).then((res: any) => {
-          console.log('web_app_invoke_custom_method', res)
-        })
+        tgApp.requestFullscreen()
       } catch (err) {
         console.warn('######    web_app_request_fullscreen error    ######', err)
       }
-
-      tgApp.requestFullscreen()
 
       postEvent('web_app_setup_swipe_behavior', {
         allow_vertical_swipe: false,
@@ -105,10 +100,23 @@ export const MainLayout: React.FC = () => {
         console.log('window.location.pathname', window.location.pathname)
         console.log('location previous', location.state?.from)
         console.log('location previous backToHome', useStore.getState().backToHome)
+
+        console.log(useStore.getState().videoResource, '=================')
+        if (useStore.getState().videoResource) {
+          setVideoResource(null)
+          return // navigate('/home')
+        }
+
+        if (useStore.getState().imageResource) {
+          setImageResource(null)
+          return // navigate('/home')
+        }
+
         if (useStore.getState().backToHome) {
           setBackToHome(false)
           return navigate('/home')
         }
+
         if (window.location.pathname === '/home') {
           tgApp
             .showConfirm({
@@ -171,6 +179,28 @@ export const MainLayout: React.FC = () => {
     }
   }, [location.pathname])
 
+  useEffect(() => {
+    if (window.Telegram?.WebApp) {
+      const tgApp = window.Telegram.WebApp
+      if (videoResource) {
+        tgApp.BackButton.show()
+      } else {
+        tgApp.BackButton.hide()
+      }
+    }
+  }, [videoResource])
+
+  useEffect(() => {
+    if (window.Telegram?.WebApp) {
+      const tgApp = window.Telegram.WebApp
+      if (imageResource) {
+        tgApp.BackButton.show()
+      } else {
+        tgApp.BackButton.hide()
+      }
+    }
+  }, [imageResource])
+
   return (
     <div className="absolute inset-0 top-0 right-0 bottom-0 left-0overflow-hidden flex pb-[84px] transition-all duration-300 bg-white dark:bg-black">
       <div
@@ -211,6 +241,8 @@ export const MainLayout: React.FC = () => {
       </div>
       <PostProgressBar />
       <Menu />
+      <VideoDialog></VideoDialog>
+      <ImageDialog></ImageDialog>
     </div>
   )
 }

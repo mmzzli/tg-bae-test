@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { shallow } from 'zustand/shallow'
 import { useStore } from '../store'
-import { debounce } from '@/utils/utils'
+import { debounce, throttle } from '@/utils/utils'
+import { FormatterListItem } from '@/store/slices/resourceListSlice'
 
 export const useRecommendList = () => {
   const { recommendList, setRecommendPage, loadRecommendList, resetRecommendList, token } =
@@ -258,16 +259,17 @@ export const useSharedList = () => {
 }
 
 const useCacheVideo = (
-  list: any[], // 视频列表
+  list: FormatterListItem[], // 视频列表
   page: number, // 当前页码
   setCacheVideoIndex: (index: number) => void, // 更新缓存视频索引的函数
   getCacheVideoindex: number | string, // 当前缓存视频索引
-  updateCache: (videos: any[]) => void, // 更新缓存的函数
+  updateCache: (videos: FormatterListItem[]) => void, // 更新缓存的函数
   domId: string,
   cardClass: string = 'video-card'
 ) => {
   const handleScroll = debounce(() => {
     const videos = list.filter((item) => item.type === 0) // 过滤出视频类型
+
     const container = document.getElementById(`${domId}`)
     if (container) {
       const elements = container.querySelectorAll(`.${cardClass}`) // 获取需要监听的元素
@@ -286,7 +288,6 @@ const useCacheVideo = (
           if (videoId) visibleItems.push(parseInt(videoId))
         }
       })
-      //
       if (visibleItems.length > 0) {
         setCacheVideoIndex(visibleItems[Math.floor(visibleItems.length / 2)]) // 更新缓存视频索引
         updateCache(videos) // 更新缓存

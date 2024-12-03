@@ -1,16 +1,11 @@
-import { useEffect, type FC, useRef, useState, useMemo } from 'react'
-import { HStack, Heading, Image } from '@chakra-ui/react'
+import { type FC, useMemo, useRef, useState } from 'react'
+import { Heading, HStack } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
-import { AddIcon1 } from '@/assets/icons'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import RecommendList from '@/components/RecommendList/RecommendList'
 import FollowingList from '@/components/RecommendList/FollowingList'
-import BaseButton from '@/components/BaseButton/BaseButton'
-import PostWrapSkeleton from '@/components/Skeketon/PostWrapSkeleton'
 
 import { useStore } from '@/store'
-import { getRecommendMedia } from '@/api/list'
-import Hls from 'hls.js'
 import { CardRecommendProvider } from '@/utils/constants'
 import NewPostButton from '@/components/NewPost/NewPostButton'
 
@@ -23,9 +18,7 @@ const HomePage: FC = () => {
   const [fadeClass, setFadeClass] = useState('fade-in')
   const userInfo = useStore((state) => state.userInfo)
 
-  useEffect(() => {
-    console.log(getCacheVideo, '====333333========')
-  }, [getCacheVideo])
+  const [videoOpen, setVideoOpen] = useState(false)
 
   const styles = {
     fadeIn: {
@@ -50,40 +43,6 @@ const HomePage: FC = () => {
     return {}
   }, [userInfo.user_id, userInfo.fans])
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (selectedPostsRef.current) {
-        const rect = selectedPostsRef.current.getBoundingClientRect()
-        const isVisible = rect.top < 0
-
-        // if (isVisible && title !== 'Selected Posts') {
-        //   triggerTitleChange('Selected Posts')
-        // } else if (!isVisible && title !== 'Following') {
-        //   triggerTitleChange('Following')
-        // }
-      }
-    }
-
-    const scrollableDiv = document.getElementById('recommendScrollableDiv')
-    if (scrollableDiv) {
-      scrollableDiv.addEventListener('scroll', handleScroll)
-    }
-
-    return () => {
-      if (scrollableDiv) {
-        scrollableDiv.removeEventListener('scroll', handleScroll)
-      }
-    }
-  }, [title])
-
-  const triggerTitleChange = (newTitle: string) => {
-    setFadeClass('fade-out')
-    setTimeout(() => {
-      setTitle(newTitle)
-      setFadeClass('fade-in')
-    }, 300)
-  }
-
   return (
     <div
       className="relative w-full h-full overflow-auto scrollbar-hide"
@@ -106,19 +65,16 @@ const HomePage: FC = () => {
           >
             {title}
           </Heading>
-          {/* <BaseButton
-            text="Create"
-            icon={<Image src={AddIcon1} />}
-            width="87px"
-            handler={() => navigate('/post')}
-          /> */}
+
           <NewPostButton />
         </HStack>
         <div className="overflow-hidden" style={{ height: '0px', opacity: 0, ...animation }}>
           <FollowingList />
         </div>
-        <CardRecommendProvider.Provider value={{ recommend: true }}>
-          <div className={`${userInfo.user_id !== -1 && userInfo.fans === 0 ? '' : 'mt-10'}`}>
+        <CardRecommendProvider.Provider value={{ recommend: true, setVideoOpen }}>
+          <div
+            className={`${userInfo.user_id !== -1 && userInfo.fans === 0 ? '' : 'mt-[68px]'}  relative ${videoOpen ? 'z-[112]' : ''}`}
+          >
             <RecommendList />
           </div>
         </CardRecommendProvider.Provider>

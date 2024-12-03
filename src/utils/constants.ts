@@ -12,8 +12,7 @@ export const COMMUNITY_LINK = 'https://t.me/bae_epoch'
 //   'query_id=AAGPWGl0AgAAAI9YaXRCJCcS&user=%7B%22id%22%3A6248028303%2C%22first_name%22%3A%22GrayCookie%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22GrayJy1915%22%2C%22language_code%22%3A%22zh-hans%22%2C%22allows_write_to_pm%22%3Atrue%7D&auth_date=1730567469&hash=4c7ee210c591d2cfb1c879ffd2436530d0b81f6fa1731ac852dc31e3e3c3b51c'
 
 export const DEV_INIT_DATA_RAW =
-  'query_id=AAFNmGp-AgAAAE2Yan73V7iE&user=%7B%22id%22%3A6415882317%2C%22first_name%22%3A%22Jacob%22%2C%22last_name%22%3A%22zhao%22%2C%22username%22%3A%22Jacobizhao%22%2C%22language_code%22%3A%22zh-hans%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FXmEI1Kz5fjkOSL6oEMDY4XkK6Rst74TQzQC1S2TAV_buacn8uBVk0MhT80JaAvDT.svg%22%7D&auth_date=1733042576&signature=asmukWw2wSB-BESzxsK6ckA_OrygfTdlM1EPqw-tezm4nWtqHZNbSao85NrWgqM_Ms72UvfUKDA9GKzmf5KeCg&hash=5c7056511515035f35b563dfc8e4cdc194222cc179886f972935e512172dddfd'
-
+  `query_id=AAGQGLRPAwAAAJAYtE_iQ-AH&user=%7B%22id%22%3A7779653776%2C%22first_name%22%3A%22hdhdb%22%2C%22last_name%22%3A%22h%20d%20h%20h%20d%22%2C%22username%22%3A%22ccc1111ss%22%2C%22language_code%22%3A%22zh-hans%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FhLXLGQ7EHSR2l024yd7YWwk8_6iYpy9pO5Qd-VZD_e_UoqYRIcq8mxHndSHo1rbY.svg%22%7D&auth_date=1733126254&signature=Pf9uIjHkp8dWmc9sXCLRFSaU01DIOFFeG7amdC76fYDzSYW6UDnOjQs_pbMQyqIS2jKwiOsHEjfaW8ffprr8Bw&hash=eb08657b57983570aae3cb890af173643d52a2ce6493ed2041378f3ffe4dee46`
 export const CardRecommendProvider = createContext<
   { recommend: boolean; setVideoOpen: React.Dispatch<React.SetStateAction<boolean>> } | undefined
 >(undefined)

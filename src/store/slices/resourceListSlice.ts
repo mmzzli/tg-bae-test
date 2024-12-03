@@ -88,7 +88,7 @@ export interface ResourceListSlice {
 
   // Follow
   followResource: followPreview[] | null
-  setFollowResource: (resource: followPreview | null) => void
+  setFollowResource: (resource: followPreview[] | null) => void
 
   // view
   viewList: BaseListState

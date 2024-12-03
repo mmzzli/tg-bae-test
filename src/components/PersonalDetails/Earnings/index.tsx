@@ -49,7 +49,7 @@ const Earnings = () => {
       <BaseModal
         isOpen={isBaseModalOpen}
         onClose={off}
-        height="60vh"
+        height="386px"
         animation={{
           duration: 400,
           timingFunction: 'ease-in-out',
@@ -73,17 +73,9 @@ const Earnings = () => {
             >
               Earning History
             </p>
-            <p
-              className="text-[15px] text-[#808080]"
-              onClick={() =>
-                navigate(`/profile/earningsHistory?exchange_rate=${data.exchange_rate}`)
-              }
-            >
-              Earning History
-            </p>
             <img className="mt-[2px]" src={RightIcon} />
           </div>
-          <div className="mt-[56px] flex gap-[30px] items-center justify-between">
+          <div className="mt-[40px] flex gap-[30px] items-center justify-between">
             <div>
               <div className="flex gap-[11px]">
                 <h3 className="text-[30px] text-[#333]">{data.total}</h3>
@@ -92,7 +84,7 @@ const Earnings = () => {
               <p className="text-[#62636F] text-[14px]">Total earnings</p>
               <p className="text-[#999] text-[14px]">${data.total * data.exchange_rate}</p>
             </div>
-            <p className="h-[31px] w-[1px] bg-[rgba(255,255,255,0.10)]"></p>
+            <p className="h-[31px] w-[1px] bg-[#CCC]"></p>
             <div>
               <div className="flex gap-[11px]">
                 <h3 className="text-[30px] text-[#333]">{data.available}</h3>
@@ -102,7 +94,7 @@ const Earnings = () => {
               <p className="text-[#999] text-[14px]">${data.available * data.exchange_rate}</p>
             </div>
           </div>
-          <div className="mt-[58px] mb-[43px] px-[17px]">
+          <div className="mt-[48px] mb-[30px] px-[17px]">
             <BaseButton
               text="Withdraw"
               width="100%"

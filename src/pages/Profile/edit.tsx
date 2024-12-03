@@ -212,7 +212,7 @@ const ProfileEdit: FC = () => {
       className="pt-[24px] px-[16px] fixed w-screen h-screen bg-[#fff] z-10 overflow-auto scrollbar-hide"
       id="scrollable"
     >
-      <h2 className="text-[20px] text-[#0F1233]">Profile</h2>
+      <h2 className="text-[20px] text-[#0F1233] font-[500]">Profile</h2>
       {profileData.avatar ? (
         <>
           <div className="mt-[38px]">
@@ -221,12 +221,14 @@ const ProfileEdit: FC = () => {
                 src={profileData?.avatar}
                 className="w-[100%] h-[100%] rounded-[50px] object-cover overflow-hidden"
               />
-              <p
-                className="absolute bottom-[0px] right-[-14px]  bg-[#19191E] rounded-[50px] p-[5px]"
-                onClick={handleDivClick}
-              >
-                <img src={CameraIcon} />
-              </p>
+              <div className='bg-[#fff] p-[3px] absolute bottom-[0px] right-[-14px] rounded-[50px]'>
+                <p
+                  className="bg-[#19191E] p-[4px] rounded-[50px]"
+                  onClick={handleDivClick}
+                >
+                  <img src={CameraIcon} />
+                </p>
+              </div>
             </p>
           </div>
           <input
@@ -238,7 +240,7 @@ const ProfileEdit: FC = () => {
           />
           <div className="px-[8px] mt-[48px]">
             <div className="flex justify-between items-center mb-[16px]">
-              <h3 className="text-[16px] text-[#0F1233]">* Name</h3>
+              <h3 className="text-[16px] text-[#0F1233] font-[500]">* Name</h3>
               <p className="text-[#888] text-[12px]">{profileData?.username.length}/20</p>
             </div>
             <input
@@ -248,7 +250,7 @@ const ProfileEdit: FC = () => {
             />
             <div className="mt-[24px]">
               <div className="flex justify-between items-center mb-[16px]">
-                <h3 className="text-[16px] text-[#0F1233]">Bio</h3>
+                <h3 className="text-[16px] text-[#0F1233] font-[500]">Bio</h3>
                 <p className="text-[#888] text-[12px]">{profileData?.bio.length}/500</p>
               </div>
               <textarea

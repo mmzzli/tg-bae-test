@@ -1,4 +1,4 @@
-import { memo, Suspense, useCallback, useContext, useEffect, useState } from 'react'
+import { memo, useCallback, useContext, useEffect, useState } from 'react'
 import { Box, Flex, HStack, IconButton, useBoolean } from '@chakra-ui/react'
 import { favDel, favPost, postLike } from '@/api'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
@@ -12,7 +12,6 @@ import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import Image from '../Image/Image'
 import SecondaryMenu from '../SecondaryMenu/SecondaryMenu'
 import { getLink } from '@/api/list'
-import ImagePreview from '../Image/ImagePreview'
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import useMobile from '@/hooks/useMobile'
 import playIcon from '@/assets/icons/videoSwitch.svg'
@@ -23,7 +22,7 @@ import { CardRecommendProvider } from '@/utils/constants'
 import { useStore } from '@/store'
 import ImageGrid from '@/components/ResourceList/ImageGrid'
 import VideoCard from '@/components/ResourceList/VideoCard'
-import {followPreview} from '@/store/slices/resourceListSlice'
+import { followPreview } from '@/store/slices/resourceListSlice'
 
 interface Like {
   id: number
@@ -65,13 +64,6 @@ const ResourceList = ({
   const [postId, setPostId] = useState<number | null>(null)
   const { copy } = useCopy()
 
-  // image preview
-  const [previewImages, setPreviewImages] = useState<string[]>([])
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false)
-  const [currentIndex, setCurrentIndex] = useState(0)
-  //
-  const [isVideoPreviewOpen, setIsVideoPreviewOpen] = useState<boolean>(false)
-
   const jumpToProfilePage = useProfileNavigation()
 
   const handleImageClick = useCallback((images: string[], index: number) => {
@@ -92,11 +84,11 @@ const ResourceList = ({
     const attr: followPreview[] = []
     if (initialResources.length) {
       const res = initialResources.map((item) => {
-        const user = followResource?.find(user => user.uid === item.uid);
+        const user = followResource?.find((user) => user.uid === item.uid)
         attr.push({
           uid: item.uid,
           is_follow: item.is_follow,
-          boll: user?.boll || false
+          boll: user?.boll || false,
         })
         if (item.type === 0 && item.media.length > 0) {
           const [mediaCover, media] = item.media[0].split(',')
@@ -108,15 +100,15 @@ const ResourceList = ({
         }
         return item
       })
-      const uniqueData: followPreview[] = [];
-      const seen = new Set<number>();
+      const uniqueData: followPreview[] = []
+      const seen = new Set<number>()
       for (const value of attr) {
         if (!seen.has(value.uid)) {
-          seen.add(value.uid);
-          uniqueData.push(value);
+          seen.add(value.uid)
+          uniqueData.push(value)
         }
       }
-      setFollowResource(uniqueData);
+      setFollowResource(uniqueData)
 
       setResources(res)
     } else {
@@ -424,7 +416,7 @@ const ResourceFooter = memo<ResourceFooterProps>(
             h={6}
             w={6}
             icon={
-              <i className="iconfont icon-Frame-2 text-[#0D0D0D]" style={{ fontSize: '24px' }}></i>
+              <i className="iconfont icon-Frame-2 text-[#0F1233]" style={{ fontSize: '24px' }}></i>
             }
           />
         </div>

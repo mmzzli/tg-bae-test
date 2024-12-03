@@ -1,8 +1,6 @@
 import { useRef } from 'react'
-import { Image } from '@chakra-ui/react'
 
 import { useTMAUtils } from '@/hooks/useTMAUtils'
-import { ShareIcon } from '@/assets/icons'
 import { IUserInfo } from '@/types'
 import ShareModal from './ShareModal'
 
@@ -27,7 +25,7 @@ const ShareUser = ({ userInfo }: { userInfo: IUserInfo }) => {
           handleClick()
         }}
       >
-        <Image src={ShareIcon} />
+        <i className="iconfont icon-Frame-2 text-[#333333]" style={{ fontSize: '20px' }}></i>
       </div>
       <ShareModal ref={childRef} />
     </>

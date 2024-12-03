@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
-import { Box, Flex, Image, Text, IconButton, useBoolean, useToast } from '@chakra-ui/react'
+import { useBoolean, useToast } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 
 import { totalAvailable } from '@/types'
 
 import { BaseModal } from '@/components/Modal/BaseModal'
 import BaseButton from '@/components/BaseButton/BaseButton'
-import { StarsIcon, MoneyIcon, RightIcon } from '@/assets/icons'
+import { StarsIcon, RightIcon } from '@/assets/icons'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import { totalAvailableInvoice } from '@/api'
 import { useStore } from '@/store/store'
@@ -39,8 +39,7 @@ const Earnings = () => {
 
       <BaseButton
         text="️Earnings"
-        icon={<Image src={MoneyIcon} />}
-        width="104px"
+        width="86px"
         height="36px"
         handler={() => {
           toggle()

@@ -69,7 +69,7 @@ const ProfileEdit: FC = () => {
         img.src = event!.target!.result as string
 
         img.onload = () => {
-          const minSize = 200 // 最小尺寸200px
+          const minSize = 800 // 最小尺寸200px
           let width = img.width
           let height = img.height
 

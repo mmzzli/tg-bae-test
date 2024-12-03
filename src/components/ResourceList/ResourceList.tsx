@@ -99,7 +99,7 @@ const ResourceList = ({
         }
         return item
       })
-      if(type === 'recommend'){
+      if (type === 'recommend') {
         const uniqueData: followPreview[] = []
         const seen = new Set<number>()
         for (const value of attr) {
@@ -250,7 +250,7 @@ const ResourceList = ({
       <div className="pt-[24px]">
         {resources.map((data, index: number) => {
           return (
-            <Box key={data.id}>
+            <Box key={data.id} mb="40px">
               <ResourceHeader
                 data={data}
                 currentUid={launchParams.initData?.user?.id ?? 0}
@@ -279,9 +279,9 @@ const ResourceList = ({
                   toggle()
                 }}
               />
-              <div className="pt-8 pb-8 pl-4 pr-4">
+              {/* <div className="pt-8 pb-8 pl-4 pr-4">
                 <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
-              </div>
+              </div> */}
             </Box>
           )
         })}

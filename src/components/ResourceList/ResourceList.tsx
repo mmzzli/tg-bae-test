@@ -23,6 +23,7 @@ import { CardRecommendProvider } from '@/utils/constants'
 import { useStore } from '@/store'
 import VideoCard from '@/components/ResourceList/VideoCard'
 import ImageCard from '@/components/Image/ImageCard'
+import { getTimeStringAutoShort } from '@/utils/utils'
 
 interface Like {
   id: number
@@ -321,6 +322,7 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
             height={48}
             className="rounded-full"
             src={data.avatar}
+            type={'avatar'}
             alt={data.username}
           />
         </div>
@@ -329,10 +331,14 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
             {data.username}
             {data.is_follow}
           </div>
-
-          {cardValue?.recommend && !data.is_follow && (
-            <div className="text-[#333333] text-[12px]">Bae selected</div>
-          )}
+          <div className="flex gap-1.5 items-center">
+            <p className="text-[#868686] dark:text-[#424048] text-xs">
+              {getTimeStringAutoShort(new Date(data.created_at).getTime(), true)}
+            </p>
+            {cardValue?.recommend && !data.is_follow && (
+              <div className="text-[#333333] text-[12px]">Bae selected</div>
+            )}
+          </div>
         </div>
       </div>
       <SecondaryMenu
@@ -353,9 +359,6 @@ const ResourceFooter = memo<ResourceFooterProps>(
         <div className="px-4 py-3">
           <p className="text-[#0F1419] dark:text-[#ccc] text-sm leading-6">{data.title}</p>
           <HStack pt="2" justifyContent="space-between">
-            <p className="text-[#868686] dark:text-[#424048] text-xs">
-              {dayjs(data.created_at).format('YYYY-MM-DD HH:mm')}
-            </p>
             {type === 'payment' && (
               <HStack gap="4px">
                 <p className="text-[#666666] dark:text-[#424048] text-[12px]">
@@ -367,7 +370,7 @@ const ResourceFooter = memo<ResourceFooterProps>(
           </HStack>
         </div>
         <div className="px-4 flex items-center justify-between">
-          <Flex gap="16px">
+          <Flex gap="16px" alignItems="center">
             {data.media && data.media[0] && (
               <Flex
                 as={'button'}
@@ -398,6 +401,7 @@ const ResourceFooter = memo<ResourceFooterProps>(
             )}
             {data.media && data.media[0] && (
               <Box
+                className="w-6 h-6 flex items-center justify-center"
                 onClick={() =>
                   savedEve(data.id, saveds.find((saved) => saved.id === data.id)?.saveds === false)
                 }

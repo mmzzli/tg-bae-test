@@ -59,7 +59,26 @@ button,
   }
 }
 
-video{
+@keyframes slideInFromRight {
+  0% {
+    transform: translateX(90%);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(30%);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.slide-in-from-right {
+  animation: slideInFromRight 0.25s ease-out forwards;
+}
+
+video {
   transform: translate3d(0, 0, 0);
   will-change: transform, opacity;
 }

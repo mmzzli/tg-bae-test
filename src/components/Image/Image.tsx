@@ -90,6 +90,7 @@ const Image = React.memo(
               ref={imageRef}
               src={DefaultAvatarIcon}
               alt={alt}
+              onClick={() => onClick && onClick()}
               className={cn('w-full h-full object-cover', imageClassNames)}
               {...props}
             />

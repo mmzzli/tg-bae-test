@@ -211,7 +211,7 @@ const MessagePageIOS = () => {
 
       {/* FAKE INPUT */}
       <div
-        className={`'flex h-[68px] absolute border-t border-t-[#EBEBF4] dark:border-t-black bottom-0 left-0 right-0 dark:bg-black bg-white pr-[14px] pt-[8px] pl-[42px] ${
+        className={`'flex h-[68px] absolute border-t border-t-[#EBEBF4] dark:border-t-black bottom-0 left-0 right-0 dark:bg-black bg-white pr-[14px] pt-[5px] pl-[42px] ${
           showInput ? 'hidden' : 'block'
         }`}
       >
@@ -229,12 +229,15 @@ const MessagePageIOS = () => {
         </div>
         <div
           onClick={handleSubmit}
-          className="absolute items-center justify-center top-[8px] h-[34px] right-[27px] cursor-pointer text-[#6761FF] text-sm z[999]"
+          className="absolute items-center justify-center top-[10px] rounded-full h-[26px] w-[48px] right-[20px] cursor-pointer bg-[#6761FF] z[999]"
           style={{
             display: message ? 'flex' : 'none',
           }}
         >
-          Send
+          <i
+            className="iconfont icon-a-Frame2085661744 text-white mt-[2px]"
+            style={{ fontSize: '20px' }}
+          ></i>
         </div>
       </div>
 
@@ -251,7 +254,6 @@ const MessagePageIOS = () => {
       <div
         className={cn(
           'flex h-[68px] absolute left-0 right-0 dark:bg-black bg-[#ffffff] border-t dark:border-none border-t-[#F5F3F3] overflow-hidden',
-          // isFocused ? 'opacity-100' : 'opacity-0',
           showInput ? 'bottom-0 opacity-100' : '-top-32 opacity-0'
         )}
       >
@@ -261,19 +263,22 @@ const MessagePageIOS = () => {
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyPress}
           type="text"
-          className="absolute left-[42px] right-4 top-[8px] h-[36px] text-sm border-[1px] dark:bg-black
+          className="absolute left-[42px] right-[14px] top-[5px] h-[36px] text-sm dark:border-[1px] dark:bg-black
            dark:border-[#4B4B4D] dark:focus:border-[#4B4B4D] focus:border-[#F5F3F3] bg-[#F5F3F3] rounded-full px-3 outline-none
             dark:text-white dark:placeholder:text-[#5D5D60] placeholder:text-[#999999] pr-[60px]"
           placeholder="Type a Message..."
         />
         <div
           onClick={handleSubmit}
-          className="absolute items-center justify-center top-[8px] h-[34px] right-[27px] cursor-pointer text-[#6761FF] text-sm z[999]"
+          className="absolute items-center justify-center rounded-full top-[10px] h-[26px] w-[48px] right-[20px] cursor-pointer bg-[#6761FF] z[999]"
           style={{
             display: message ? 'flex' : 'none',
           }}
         >
-          Send
+          <i
+            className="iconfont icon-a-Frame2085661744 text-white mt-[2px]"
+            style={{ fontSize: '20px' }}
+          ></i>
         </div>
       </div>
     </div>

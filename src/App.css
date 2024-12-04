@@ -40,6 +40,11 @@ button,
   font-display: swap;
 } */
 
+
+img{
+  max-width: none;
+}
+
 .swiper-slide {
   overflow: hidden !important;
 }

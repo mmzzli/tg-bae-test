@@ -1,11 +1,12 @@
 import { FC, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useToast } from '@chakra-ui/react'
+import { Checkbox, useToast } from '@chakra-ui/react'
 
 import BaseButton from '@/components/BaseButton/BaseButton'
 import Image from '@/components/Image/Image'
-import { GateImg } from '@/assets/image'
+// import { GateImg } from '@/assets/image'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
+import Icon from '@/components/comm/Icon'
 
 const AgeGate = () => {
   const toast = useToast()
@@ -23,11 +24,13 @@ const AgeGate = () => {
   }, [])
   return (
     <div className="px-[20px] fixed w-screen h-screen bg-[#fff] z-10 overflow-auto scrollbar-hide">
-      <Image className="mx-[auto] mt-[94px] mb-[50px]" src={GateImg} />
+      <div className="mx-[auto] mt-[94px] mb-[50px] flex items-center justify-center">
+        <Icon name={'icon-a-Frame2085661681'} style={{ width: '164px', height: '164px' }}></Icon>
+      </div>
 
       <h3 className="text-[#333] text-[24px] text-center">Are you 18 years of age or older?</h3>
 
-      <div className="text-[14px] mt-[10px] leading-[22px]">
+      <div className="text-[14px] mt-[10px] leading-[22px] text-center">
         <p className="text-[#62636F]">
           You must be 18 years or older and agree to our Terms of Service to access and use this
           app. By tapping the button below, you certify that you are 18 years or older and that you
@@ -38,17 +41,13 @@ const AgeGate = () => {
         </p>
       </div>
       <div className="mt-[88px] text-center">
-        <div className="flex justify-center gap-[8px]">
-          <input
-            type="checkbox"
-            checked={isChecked}
-            onChange={handleChange}
-            className="w-[20px] h-[20px] bg-gray-100 border-gray-300 rounded checked:bg-[#E0E2F6] checked:border-[#E0E2F6] focus:ring-[#E0E2F6]"
-          />
-          <p className="text-[#999] text-[12px]">
-            I have read and accept the
-            <a className="underline ml-[4px]">Terms of Service</a>
-          </p>
+        <div className="flex justify-center gap-[8px] flex-col items-center">
+          <Checkbox type="checkbox" checked={isChecked} onChange={handleChange}>
+            <p className="text-[#999] text-[12px] whitespace-nowrap">
+              I have read and accept the
+              <a className="underline ml-[4px] ]">Terms of Service</a>
+            </p>
+          </Checkbox>
         </div>
         <BaseButton
           text="I’m 18 or older"

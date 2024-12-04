@@ -370,7 +370,7 @@ const ResourceFooter = memo<ResourceFooterProps>(
           </HStack>
         </div>
         <div className="px-4 flex items-center justify-between">
-          <Flex gap="16px">
+          <Flex gap="16px" alignItems="center">
             {data.media && data.media[0] && (
               <Flex
                 as={'button'}
@@ -401,6 +401,7 @@ const ResourceFooter = memo<ResourceFooterProps>(
             )}
             {data.media && data.media[0] && (
               <Box
+                className="w-6 h-6 flex items-center justify-center"
                 onClick={() =>
                   savedEve(data.id, saveds.find((saved) => saved.id === data.id)?.saveds === false)
                 }

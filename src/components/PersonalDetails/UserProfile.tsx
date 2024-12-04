@@ -50,7 +50,7 @@ const UserProfile: FC = () => {
         </div>
         <Box display="flex" alignItems="center">
           <EarningsPage />
-          <Notification />
+          {/* <Notification /> */}
           <ShareUser userInfo={userInfo} />
         </Box>
       </HStack>

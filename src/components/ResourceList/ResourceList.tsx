@@ -24,6 +24,7 @@ import { useStore } from '@/store'
 import VideoCard from '@/components/ResourceList/VideoCard'
 import ImageCard from '@/components/Image/ImageCard'
 import { getTimeStringAutoShort } from '@/utils/utils'
+import MoreText from '@/components/More/MoreText'
 
 interface Like {
   id: number
@@ -357,7 +358,9 @@ const ResourceFooter = memo<ResourceFooterProps>(
     return (
       <>
         <div className="px-4 py-3">
-          <p className="text-[#0F1419] dark:text-[#ccc] text-sm leading-6">{data.title}</p>
+          <p className="text-[#0F1419] dark:text-[#ccc] text-sm leading-6">
+            <MoreText text={data.title} />
+          </p>
           <HStack pt="2" justifyContent="space-between">
             {type === 'payment' && (
               <HStack gap="4px">

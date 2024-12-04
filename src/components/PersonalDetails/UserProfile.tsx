@@ -14,7 +14,6 @@ const UserProfile: FC = () => {
   const { launchParams } = useTMAUtils()
   const userId = launchParams.initData?.user?.id ?? 0
   const userInfo = useStore((state) => state.userInfo)
-  console.log(userInfo, '=======')
   const navigate = useNavigate()
   return !userInfo.avatar ? (
     <ProfileSkeleton />

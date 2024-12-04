@@ -49,7 +49,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
             return (
               <SwiperSlide
                 key={`${data.id}-${image}`}
-                style={{ minHeight: data.price ? firImageHeight : 'auto' + 'px' }}
+                style={{ height: data.price !== 0 ? firImageHeight + 'px' : 'auto' + 'px' }}
                 className={'flex items-center overflow-hidden'}
               >
                 <Image

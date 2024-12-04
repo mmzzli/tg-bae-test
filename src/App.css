@@ -90,3 +90,6 @@ video {
 
 
 
+* {
+  -webkit-tap-highlight-color: transparent;
+}

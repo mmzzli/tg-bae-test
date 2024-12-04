@@ -126,7 +126,7 @@ const FollowPage: FC = () => {
     >
       <h1 className="text-[24px] font-bold text-black dark:text-white">{title}</h1>
       <div className="flex-1 overflow-hidden">
-        <div className="flex flex-col h-full overflow-auto scrollbar-hide">
+        <div className="flex flex-col h-full overflow-auto scrollbar-hide justify-center items-center">
           {loading ? (
             <div className="flex-1 flex items-center justify-center">
               <i
@@ -154,15 +154,17 @@ const FollowPage: FC = () => {
                     <div className="h-[40px]"></div>
                   </InfiniteScroll>
                 ) : (
-                  <Empty
-                    title="No followers yet."
-                    icon={
-                      <Icon
-                        name="icon-Empty_white_follow"
-                        style={{ width: '164px', height: '164px' }}
-                      ></Icon>
-                    }
-                  ></Empty>
+                  <div className="mb-[40px]">
+                    <Empty
+                      title="No followers yet."
+                      icon={
+                        <Icon
+                          name="icon-Empty_white_follow"
+                          style={{ width: '164px', height: '164px' }}
+                        ></Icon>
+                      }
+                    ></Empty>
+                  </div>
                 ))}
 
               {type !== 'follower' &&
@@ -183,15 +185,17 @@ const FollowPage: FC = () => {
                     <div className="h-[40px]"></div>
                   </InfiniteScroll>
                 ) : (
-                  <Empty
-                    title="You haven't followed anyone."
-                    icon={
-                      <Icon
-                        name="icon-Empty_white_follow"
-                        style={{ width: '164px', height: '164px' }}
-                      ></Icon>
-                    }
-                  ></Empty>
+                  <div className="mb-[40px]">
+                    <Empty
+                      title="You haven't followed anyone."
+                      icon={
+                        <Icon
+                          name="icon-Empty_white_follow"
+                          style={{ width: '164px', height: '164px' }}
+                        ></Icon>
+                      }
+                    ></Empty>
+                  </div>
                 ))}
             </>
           )}

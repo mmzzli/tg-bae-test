@@ -1,3 +1,4 @@
+import { cn } from '@/utils/utils'
 import { Text } from '@chakra-ui/react'
 
 const Empty: React.FC<{
@@ -5,9 +6,10 @@ const Empty: React.FC<{
   description?: string | React.ReactNode
   icon?: React.ReactNode
   children?: React.ReactNode | React.ReactNode[]
-}> = ({ title, description, icon, children }) => {
+  className?: string
+}> = ({ title, description, icon, children, className }) => {
   return (
-    <div className="flex flex-col items-center justify-center space-y-4 mt-[115px] mb-[115px]">
+    <div className={cn('flex flex-col items-center justify-center space-y-4', className)}>
       {icon && <div className="icon w-[164px] h-[164px]">{icon}</div>}
       {title && (
         <Text color="#62636F" fontSize="14px" lineHeight="16px" marginBottom="4px">

@@ -1,14 +1,11 @@
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import { Box, HStack, Text } from '@chakra-ui/react'
 import { formatTime } from '@/utils/utils'
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useContext } from 'react'
 import FrostedGlass from '@/components/ResourceList/FrostedGlass'
 import Image from '../Image/Image'
-import { VideoIcon } from '@/assets/icons'
 import { PlayButton } from '@/components/ResourceList/ResourceList'
 import { useStore } from '@/store'
-import VideoDialog from '@/components/ResourceList/VideoDialog'
-import ReactPlayer from 'react-player'
 import { CardRecommendProvider } from '@/utils/constants'
 
 interface VideoCardProps {

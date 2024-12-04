@@ -182,7 +182,7 @@ export const MessageList = ({ messages, className, channelInfo }: MessageListPro
         scrollableTarget="scrollableDiv"
         style={{ display: 'flex', flexDirection: 'column-reverse', overflow: 'visible' }} // start from bottom
       >
-        <div className="h-[38px]"></div>
+        <div className="h-[22px]"></div>
         {messageGroups.map((group) => (
           <div key={`group-${group.timestamp}`}>
             <TimeDevider timestamp={group.timestamp} />

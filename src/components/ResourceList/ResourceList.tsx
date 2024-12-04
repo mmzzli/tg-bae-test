@@ -6,12 +6,11 @@ import { BaseModal } from '../Modal/BaseModal'
 import BaseButton from '../BaseButton/BaseButton'
 import useCopy from '@/hooks/useCopy'
 import { useMemoizedFn, useRequest, useSafeState, useSetState } from 'ahooks'
-import dayjs from 'dayjs'
 import { LinkIcon, StarsIcon, TelegramIcon } from '@/assets/icons'
 import { followPreview, FormatterListItem } from '@/store/slices/resourceListSlice'
 import Image from '../Image/Image'
 import SecondaryMenu from '../SecondaryMenu/SecondaryMenu'
-import { getLink } from '@/api/list'
+import { getLink, getShareInlineMessageId } from '@/api/list'
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import useMobile from '@/hooks/useMobile'
 import playIcon from '@/assets/icons/videoSwitch.svg'
@@ -64,6 +63,9 @@ const ResourceList = ({
   })
   const [postId, setPostId] = useState<number | null>(null)
   const { copy } = useCopy()
+  const [currentShareData, setCurrentShareData] = useState<{ pid: number; uid: number } | null>(
+    null
+  )
 
   const jumpToProfilePage = useProfileNavigation()
 
@@ -80,6 +82,16 @@ const ResourceList = ({
       console.log(res)
     },
   })
+
+  const { runAsync: getInlineMessageId, loading: getInlineMessageIdLoading } = useRequest(
+    getShareInlineMessageId,
+    {
+      manual: true,
+      onSuccess(res) {
+        console.log(res)
+      },
+    }
+  )
 
   useEffect(() => {
     const attr: followPreview[] = []
@@ -160,7 +172,6 @@ const ResourceList = ({
     }
     setFavBoll((prev) => !prev)
   }
-
   const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
     const shareText = encodeURIComponent(title)
     const { host, ref } = await getLinkHandlerAsync({ pid, uid })
@@ -171,6 +182,27 @@ const ResourceList = ({
 
     const shareLink = `https://t.me/share/url?url=${copyLink}&text=${shareText}`
     setLinks({ shareLink, copyLink: decodeURIComponent(copyLink) })
+  })
+
+  const handShareWithTelegram = useMemoizedFn(async () => {
+    if (currentShareData) {
+      const { result } = await getInlineMessageId({
+        pid: currentShareData.pid,
+        uid: currentShareData.uid,
+      })
+      console.log('result----->', result)
+      if (result.id) {
+        if (window.Telegram?.WebApp) {
+          const WebApp = window.Telegram?.WebApp
+          setTimeout(() => {
+            WebApp.shareMessage(result.id)
+          }, 0)
+        }
+        off()
+      } else {
+        console.warn('######## shareMessages Error ########', result)
+      }
+    }
   })
 
   const resourcesEve = (post_id: number, url: string) => {
@@ -188,7 +220,7 @@ const ResourceList = ({
     <BaseModal
       isOpen={isBaseModalOpen}
       onClose={off}
-      height={isMobile ? '351px' : '300px'}
+      height="351px"
       animation={{
         duration: 400,
         timingFunction: 'ease-in-out',
@@ -209,21 +241,21 @@ const ResourceList = ({
           Earn $Bae every time you share from Bae
         </div>
 
-        {isMobile && (
-          <div className="mt-12 mb-[18px] mx-4">
-            <BaseButton
-              text="Share via Telegram"
-              height="48px"
-              icon={<Image src={TelegramIcon} />}
-              handler={() => {
-                shareLink(links.shareLink ?? '')
-                off()
-              }}
-            />
-          </div>
-        )}
+        <div className="mt-12 mb-[18px] mx-4">
+          <BaseButton
+            text="Share via Telegram"
+            height="48px"
+            loading={getInlineMessageIdLoading}
+            icon={<Image src={TelegramIcon} />}
+            handler={() => {
+              // shareLink(links.shareLink ?? '')
+              handShareWithTelegram()
+              // off()
+            }}
+          />
+        </div>
 
-        <div className={isMobile ? 'mx-4' : 'mx-4 mt-[50px]'}>
+        <div className="mx-4">
           <BaseButton
             text="Copy link"
             height="48px"
@@ -278,6 +310,10 @@ const ResourceList = ({
                 type={type}
                 onShare={() => {
                   getShareLink(data.title, data.id, data.uid)
+                  setCurrentShareData({
+                    pid: data.id,
+                    uid: data.uid,
+                  })
                   toggle()
                 }}
               />

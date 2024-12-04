@@ -8,7 +8,7 @@ import useCopy from '@/hooks/useCopy'
 import { useMemoizedFn, useRequest, useSafeState, useSetState } from 'ahooks'
 import dayjs from 'dayjs'
 import { LinkIcon, StarsIcon, TelegramIcon } from '@/assets/icons'
-import { FormatterListItem } from '@/store/slices/resourceListSlice'
+import { followPreview, FormatterListItem } from '@/store/slices/resourceListSlice'
 import Image from '../Image/Image'
 import SecondaryMenu from '../SecondaryMenu/SecondaryMenu'
 import { getLink } from '@/api/list'
@@ -20,9 +20,8 @@ import Icon from '../comm/Icon'
 
 import { CardRecommendProvider } from '@/utils/constants'
 import { useStore } from '@/store'
-import ImageGrid from '@/components/ResourceList/ImageGrid'
 import VideoCard from '@/components/ResourceList/VideoCard'
-import { followPreview } from '@/store/slices/resourceListSlice'
+import ImageCard from '@/components/Image/ImageCard'
 
 interface Like {
   id: number
@@ -100,15 +99,17 @@ const ResourceList = ({
         }
         return item
       })
-      const uniqueData: followPreview[] = []
-      const seen = new Set<number>()
-      for (const value of attr) {
-        if (!seen.has(value.uid)) {
-          seen.add(value.uid)
-          uniqueData.push(value)
+      if (type === 'recommend') {
+        const uniqueData: followPreview[] = []
+        const seen = new Set<number>()
+        for (const value of attr) {
+          if (!seen.has(value.uid)) {
+            seen.add(value.uid)
+            uniqueData.push(value)
+          }
         }
+        setFollowResource(uniqueData)
       }
-      setFollowResource(uniqueData)
 
       setResources(res)
     } else {
@@ -249,7 +250,7 @@ const ResourceList = ({
       <div className="pt-[24px]">
         {resources.map((data, index: number) => {
           return (
-            <Box key={data.id}>
+            <Box key={data.id} mb="40px">
               <ResourceHeader
                 data={data}
                 currentUid={launchParams.initData?.user?.id ?? 0}
@@ -258,8 +259,7 @@ const ResourceList = ({
               />
 
               {data.type === POST_TYPE_IMAGE ? (
-                <ImageGrid
-                  key={data.id}
+                <ImageCard
                   data={data}
                   handleImageClick={handleImageClick}
                   resourcesEve={resourcesEve}
@@ -279,9 +279,9 @@ const ResourceList = ({
                   toggle()
                 }}
               />
-              <div className="pt-8 pb-8 pl-4 pr-4">
+              {/* <div className="pt-8 pb-8 pl-4 pr-4">
                 <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
-              </div>
+              </div> */}
             </Box>
           )
         })}

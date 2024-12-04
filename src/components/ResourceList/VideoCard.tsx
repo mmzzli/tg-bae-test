@@ -29,31 +29,32 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
   return (
     <>
       <Box className="video-card" data-id={data.id}>
-        <div className="relative px-4">
+        <div className="relative ">
           <Box position="relative">
             <Box minH={data.media?.[0] === '' ? '200px' : '130px'}>
               <Box minH={data.media?.[0] === '' ? '200px' : '130px'}>
                 <Image
                   src={data.mediaCover}
                   alt={data.title}
-                  wrapperClassName="rounded-[4px] overflow-hidden"
-                  errorClassName="rounded-[4px] h-[150px]"
-                  className="object-left w-[100%] rounded-[4px] m-[auto]"
+                  wrapperClassName=" overflow-hidden"
+                  errorClassName="rounded-[0px] h-[150px]"
+                  className="object-left w-[100%] m-[auto]"
                   onClick={() => handleVideoClick(data)}
                 />
                 {data.media?.[0] && <PlayButton onClick={() => handleVideoClick(data)} />}
               </Box>
               <HStack
                 borderRadius="4px"
-                bg="rgba(0, 0, 0, 0.20)"
+                bg="rgba(0, 0, 0, 0.40)"
                 position="absolute"
-                top="18px"
-                left="18px"
-                p="4px 8px"
+                top="12px"
+                right="12px"
+                p="4px 10px"
                 gap="4px"
+                rounded="20px"
               >
-                <Image src={VideoIcon} />
-                <Text color="#E0E2F6" fontSize="12px">
+                <i className="iconfont icon-a-Frame2085661742 text-[12px] text-white"></i>
+                <Text color="#E0E2F6" fontSize="14px">
                   {formatTime(Number(data.duration))}
                 </Text>
               </HStack>
@@ -62,23 +63,6 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
                 <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} />
               )}
             </Box>
-            <HStack
-              borderRadius="4px"
-              bg="rgba(0, 0, 0, 0.20)"
-              position="absolute"
-              top="18px"
-              left="18px"
-              p="4px 8px"
-              gap="4px"
-            >
-              <Image src={VideoIcon} />
-              <Text color="#E0E2F6" fontSize="12px">
-                {formatTime(Number(data.duration))}
-              </Text>
-            </HStack>
-            {data.media?.[0] === '' && (
-              <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} />
-            )}
           </Box>
         </div>
       </Box>

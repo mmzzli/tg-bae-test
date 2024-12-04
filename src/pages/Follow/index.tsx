@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { useStore } from '@/store'
 import { useParams } from 'react-router-dom'
 import { getFollowerList, getFollowingList } from '@/api'
@@ -21,6 +21,7 @@ const FollowPage: FC = () => {
   const { launchParams } = useTMAUtils()
   const currentUid = launchParams.initData?.user?.id ?? 0
   const jumpToProfilePage = useProfileNavigation()
+  const [loading, setLoading] = useState(true)
   const {
     token,
     myFollow,
@@ -46,9 +47,13 @@ const FollowPage: FC = () => {
   useEffect(() => {
     if (uid && token) {
       if (type === 'follower') {
-        getFollowerList(Number(uid)).then((res) => setFollowerList(res))
+        getFollowerList(Number(uid))
+          .then((res) => setFollowerList(res))
+          .then(() => setLoading(false))
       } else {
-        getFollowingList(Number(uid)).then((res) => setFollowingList(res))
+        getFollowingList(Number(uid))
+          .then((res) => setFollowingList(res))
+          .then(() => setLoading(false))
       }
     }
   }, [uid, token])
@@ -83,6 +88,7 @@ const FollowPage: FC = () => {
             width={56}
             height={56}
             rect
+            type="avatar"
             onClick={() => {
               jumpToProfilePage({
                 avatar: item.avatar,
@@ -113,78 +119,88 @@ const FollowPage: FC = () => {
 
   return (
     <div
-      className="fixed w-screen h-screen dark:bg-black bg-white flex flex-col text-white px-4 pb-[30px] z-10 overflow-auto scrollbar-hide"
+      className="fixed top-0 left-0 right-0 bottom-0 dark:bg-black bg-white flex flex-col text-white px-4 z-10 overflow-hidden"
       style={{
-        paddingTop: `calc(${
-          window
-            .getComputedStyle(document.documentElement)
-            .getPropertyValue('--tg-safe-area-inset-top') &&
-          parseInt(
-            window
-              .getComputedStyle(document.documentElement)
-              .getPropertyValue('--tg-safe-area-inset-top'),
-            10
-          ) !== 0
-            ? '8px'
-            : '30px'
-        })`,
+        paddingTop: `calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 24px)`,
       }}
     >
       <h1 className="text-[24px] font-bold text-black dark:text-white">{title}</h1>
-      {type === 'follower' &&
-        (follower.list.length ? (
-          <InfiniteScroll
-            dataLength={follower.list.length}
-            next={() => {}}
-            hasMore={false}
-            loader={
-              <div className="flex items-center justify-center">
-                <Spinner color="#4A3AFF" />
-              </div>
-            }
-          >
-            {follower.list.map((item) => (
-              <FollowItem key={item.tg_id} item={item} />
-            ))}
-          </InfiniteScroll>
-        ) : (
-          <Empty
-            title="No followers yet."
-            icon={
-              <Icon
-                name="icon-Empty_white_follow"
-                style={{ width: '164px', height: '164px' }}
-              ></Icon>
-            }
-          ></Empty>
-        ))}
-      {type !== 'follower' &&
-        (following.list.length ? (
-          <InfiniteScroll
-            dataLength={following.list.length}
-            next={() => {}}
-            hasMore={false}
-            loader={
-              <div className="flex items-center justify-center">
-                <Spinner color="#4A3AFF" />
-              </div>
-            }
-          >
-            {[...following.list].map((item) => (
-              <FollowItem key={item.tg_id} item={item} />
-            ))}
-          </InfiniteScroll>
-        ) : (
-          <Empty
-            title="You haven't followed anyone."
-            icon={
-              <Icon
-                name="icon-Empty_white_follow"
-                style={{ width: '164px', height: '164px' }}
-              ></Icon>
-            }
-          ></Empty>
-        ))}
+      <div className="flex-1 overflow-hidden">
+        <div className="flex flex-col h-full overflow-auto scrollbar-hide">
+          {loading ? (
+            <div className="flex-1 flex items-center justify-center">
+              <i
+                className="iconfont icon-loading animate-spin text-[#6254FF]"
+                style={{ fontSize: '40px' }}
+              ></i>
+            </div>
+          ) : (
+            <>
+              {type === 'follower' &&
+                (follower.list.length ? (
+                  <InfiniteScroll
+                    dataLength={follower.list.length}
+                    next={() => {}}
+                    hasMore={false}
+                    loader={
+                      <div className="flex items-center justify-center">
+                        <Spinner color="#4A3AFF" />
+                      </div>
+                    }
+                  >
+                    {follower.list.map((item) => (
+                      <FollowItem key={item.tg_id} item={item} />
+                    ))}
+                    <div className="h-[40px]"></div>
+                  </InfiniteScroll>
+                ) : (
+                  <div className="h-full flex items-center justify-center pb-[40px]">
+                    <Empty
+                      title="No followers yet."
+                      icon={
+                        <Icon
+                          name="icon-Empty_white_follow"
+                          style={{ width: '164px', height: '164px' }}
+                        ></Icon>
+                      }
+                    ></Empty>
+                  </div>
+                ))}
+
+              {type !== 'follower' &&
+                (following.list.length ? (
+                  <InfiniteScroll
+                    dataLength={following.list.length}
+                    next={() => {}}
+                    hasMore={false}
+                    loader={
+                      <div className="flex items-center justify-center">
+                        <Spinner color="#4A3AFF" />
+                      </div>
+                    }
+                  >
+                    {[...following.list].map((item) => (
+                      <FollowItem key={item.tg_id} item={item} />
+                    ))}
+                    <div className="h-[40px]"></div>
+                  </InfiniteScroll>
+                ) : (
+                  <div className="h-full flex items-center justify-center pb-[40px]">
+                    <Empty
+                      title="You haven't followed anyone."
+                      icon={
+                        <Icon
+                          name="icon-Empty_white_follow"
+                          style={{ width: '164px', height: '164px' }}
+                        ></Icon>
+                      }
+                    ></Empty>
+                  </div>
+                ))}
+            </>
+          )}
+        </div>
+      </div>
     </div>
   )
 }

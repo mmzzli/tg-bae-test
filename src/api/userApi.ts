@@ -41,3 +41,6 @@ export const profileEdit = (uid: number) => {
 export const putProfile = (params: { avatar: string; bio: string; username: string }) => {
   return put(`/api/v1/profile`, params)
 }
+export const getUnreadNotificationCount = (uid: number) => {
+  return get<{ amount: number }>(`/api/v1/unread/${uid}`)
+}

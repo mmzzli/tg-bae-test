@@ -46,7 +46,10 @@ const MessagePageRouteGuard: FC = () => {
   if (!ready) {
     return (
       <div className="fixed inset-0 w-screen h-screen flex items-center justify-center dark:bg-[#0D0D0D] bg-white z-10">
-        <div className="w-10 h-10 border-4 border-t-4 border-t-[#D1D0DE] border-transparent rounded-full animate-spin"></div>
+        <i
+          className="iconfont icon-loading animate-spin text-[#6254FF]"
+          style={{ fontSize: '40px' }}
+        ></i>
       </div>
     )
   }

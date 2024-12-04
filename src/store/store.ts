@@ -13,6 +13,7 @@ import { createIMSlice, IMSlice } from './slices/imSlice'
 import { LinkPreviewSlice, createLinkPreviewSlice } from './slices/linkPreviewSlice'
 import { createTGSlice, TGSlice } from '@/store/slices/tg'
 import { createTaskSlice, TaskSlice } from './slices/taskSlice'
+import { createSystemSlice, SystemSlice } from './slices/systemSlice'
 
 export interface StoreState
   extends UserSlice,
@@ -21,7 +22,8 @@ export interface StoreState
     IMSlice,
     TGSlice,
     TaskSlice,
-    LinkPreviewSlice {
+    LinkPreviewSlice,
+    SystemSlice {
   recommendList: BaseListState
   viewList: BaseListState
 }
@@ -68,4 +70,5 @@ export const useStore = createStore(((...a) => ({
   ...createLinkPreviewSlice(...a),
   ...createTGSlice(...a),
   ...createTaskSlice(...a),
+  ...createSystemSlice(...a),
 })) as StateCreator<StoreState, [], MyMiddlewares>)

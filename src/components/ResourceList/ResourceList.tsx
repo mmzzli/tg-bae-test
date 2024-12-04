@@ -6,22 +6,24 @@ import { BaseModal } from '../Modal/BaseModal'
 import BaseButton from '../BaseButton/BaseButton'
 import useCopy from '@/hooks/useCopy'
 import { useMemoizedFn, useRequest, useSafeState, useSetState } from 'ahooks'
-import dayjs from 'dayjs'
 import { LinkIcon, StarsIcon, TelegramIcon } from '@/assets/icons'
 import { followPreview, FormatterListItem } from '@/store/slices/resourceListSlice'
 import Image from '../Image/Image'
 import SecondaryMenu from '../SecondaryMenu/SecondaryMenu'
-import { getLink } from '@/api/list'
+import { getLink, getShareInlineMessageId } from '@/api/list'
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import useMobile from '@/hooks/useMobile'
 import playIcon from '@/assets/icons/videoSwitch.svg'
 import Empty from '../comm/Empty'
 import Icon from '../comm/Icon'
-
+import Lottie from 'lottie-react'
+import likeAnimationData from '@/assets/animations/like.json'
 import { CardRecommendProvider } from '@/utils/constants'
 import { useStore } from '@/store'
 import VideoCard from '@/components/ResourceList/VideoCard'
 import ImageCard from '@/components/Image/ImageCard'
+import { getTimeStringAutoShort } from '@/utils/utils'
+import MoreText from '@/components/More/MoreText'
 
 interface Like {
   id: number
@@ -54,7 +56,7 @@ const ResourceList = ({
   const setFollowResource = useStore((state) => state.setFollowResource)
   const followResource = useStore((state) => state.followResource)
 
-  const { shareLink, launchParams } = useTMAUtils()
+  const { launchParams, getCurrentUid } = useTMAUtils()
   const [isBaseModalOpen, { toggle, off }] = useBoolean(false)
   const [links, setLinks] = useSetState<{ shareLink: string; copyLink: string }>({
     shareLink: '',
@@ -62,7 +64,11 @@ const ResourceList = ({
   })
   const [postId, setPostId] = useState<number | null>(null)
   const { copy } = useCopy()
+  const [currentShareData, setCurrentShareData] = useState<{ pid: number; uid: number } | null>(
+    null
+  )
 
+  const currentUid = getCurrentUid()
   const jumpToProfilePage = useProfileNavigation()
 
   const handleImageClick = useCallback((images: string[], index: number) => {
@@ -78,6 +84,16 @@ const ResourceList = ({
       console.log(res)
     },
   })
+
+  const { runAsync: getInlineMessageId, loading: getInlineMessageIdLoading } = useRequest(
+    getShareInlineMessageId,
+    {
+      manual: true,
+      onSuccess(res) {
+        console.log(res)
+      },
+    }
+  )
 
   useEffect(() => {
     const attr: followPreview[] = []
@@ -158,7 +174,6 @@ const ResourceList = ({
     }
     setFavBoll((prev) => !prev)
   }
-
   const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
     const shareText = encodeURIComponent(title)
     const { host, ref } = await getLinkHandlerAsync({ pid, uid })
@@ -169,6 +184,27 @@ const ResourceList = ({
 
     const shareLink = `https://t.me/share/url?url=${copyLink}&text=${shareText}`
     setLinks({ shareLink, copyLink: decodeURIComponent(copyLink) })
+  })
+
+  const handShareWithTelegram = useMemoizedFn(async () => {
+    if (currentShareData) {
+      const { result } = await getInlineMessageId({
+        pid: currentShareData.pid,
+        uid: currentUid,
+      })
+      console.log('result----->', result)
+      if (result.id) {
+        if (window.Telegram?.WebApp) {
+          const WebApp = window.Telegram?.WebApp
+          setTimeout(() => {
+            WebApp.shareMessage(result.id)
+          }, 0)
+        }
+        off()
+      } else {
+        console.warn('######## shareMessages Error ########', result)
+      }
+    }
   })
 
   const resourcesEve = (post_id: number, url: string) => {
@@ -186,7 +222,7 @@ const ResourceList = ({
     <BaseModal
       isOpen={isBaseModalOpen}
       onClose={off}
-      height={isMobile ? '351px' : '300px'}
+      height="351px"
       animation={{
         duration: 400,
         timingFunction: 'ease-in-out',
@@ -207,21 +243,21 @@ const ResourceList = ({
           Earn $Bae every time you share from Bae
         </div>
 
-        {isMobile && (
-          <div className="mt-12 mb-[18px] mx-4">
-            <BaseButton
-              text="Share via Telegram"
-              height="48px"
-              icon={<Image src={TelegramIcon} />}
-              handler={() => {
-                shareLink(links.shareLink ?? '')
-                off()
-              }}
-            />
-          </div>
-        )}
+        <div className="mt-12 mb-[18px] mx-4">
+          <BaseButton
+            text="Share via Telegram"
+            height="48px"
+            loading={getInlineMessageIdLoading}
+            icon={<Image src={TelegramIcon} />}
+            handler={() => {
+              // shareLink(links.shareLink ?? '')
+              handShareWithTelegram()
+              // off()
+            }}
+          />
+        </div>
 
-        <div className={isMobile ? 'mx-4' : 'mx-4 mt-[50px]'}>
+        <div className="mx-4">
           <BaseButton
             text="Copy link"
             height="48px"
@@ -276,6 +312,10 @@ const ResourceList = ({
                 type={type}
                 onShare={() => {
                   getShareLink(data.title, data.id, data.uid)
+                  setCurrentShareData({
+                    pid: data.id,
+                    uid: data.uid,
+                  })
                   toggle()
                 }}
               />
@@ -320,6 +360,7 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
             height={48}
             className="rounded-full"
             src={data.avatar}
+            type={'avatar'}
             alt={data.username}
           />
         </div>
@@ -328,10 +369,14 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
             {data.username}
             {data.is_follow}
           </div>
-
-          {cardValue?.recommend && !data.is_follow && (
-            <div className="text-[#333333] text-[12px]">Bae selected</div>
-          )}
+          <div className="flex gap-1.5 items-center">
+            <p className="text-[#868686] dark:text-[#424048] text-xs">
+              {getTimeStringAutoShort(new Date(data.created_at).getTime(), true)}
+            </p>
+            {cardValue?.recommend && !data.is_follow && (
+              <div className="text-[#333333] text-[12px]">Bae selected</div>
+            )}
+          </div>
         </div>
       </div>
       <SecondaryMenu
@@ -350,11 +395,10 @@ const ResourceFooter = memo<ResourceFooterProps>(
     return (
       <>
         <div className="px-4 py-3">
-          <p className="text-[#0F1419] dark:text-[#ccc] text-sm leading-6">{data.title}</p>
+          <p className="text-[#0F1419] dark:text-[#ccc] text-sm leading-6">
+            <MoreText text={data.title} />
+          </p>
           <HStack pt="2" justifyContent="space-between">
-            <p className="text-[#868686] dark:text-[#424048] text-xs">
-              {dayjs(data.created_at).format('YYYY-MM-DD HH:mm')}
-            </p>
             {type === 'payment' && (
               <HStack gap="4px">
                 <p className="text-[#666666] dark:text-[#424048] text-[12px]">
@@ -366,7 +410,7 @@ const ResourceFooter = memo<ResourceFooterProps>(
           </HStack>
         </div>
         <div className="px-4 flex items-center justify-between">
-          <Flex gap="16px">
+          <Flex gap="16px" alignItems="center">
             {data.media && data.media[0] && (
               <Flex
                 as={'button'}
@@ -376,10 +420,17 @@ const ResourceFooter = memo<ResourceFooterProps>(
                 }
               >
                 {likes.find((like) => like.id === data.id)?.liked === true ? (
-                  <i
-                    className="iconfont icon-Frame text-[#FF5596]"
-                    style={{ fontSize: '24px' }}
-                  ></i>
+                  // <i
+                  //   className="iconfont icon-Frame text-[#FF5596]"
+                  //   style={{ fontSize: '24px' }}
+                  // ></i>
+                  <Lottie
+                    animationData={likeAnimationData}
+                    loop={false}
+                    style={{
+                      width: '22px',
+                    }}
+                  ></Lottie>
                 ) : (
                   <i className="iconfont icon-like text-[#0D0D0D]" style={{ fontSize: '24px' }}></i>
                 )}
@@ -390,6 +441,7 @@ const ResourceFooter = memo<ResourceFooterProps>(
             )}
             {data.media && data.media[0] && (
               <Box
+                className="w-6 h-6 flex items-center justify-center"
                 onClick={() =>
                   savedEve(data.id, saveds.find((saved) => saved.id === data.id)?.saveds === false)
                 }

@@ -33,18 +33,19 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
   useEffect(() => {
     if (swiper && swiper.activeIndex !== currentIndex) {
       swiper.slideTo(currentIndex, 0)
-      console.log('333')
+      setLoading(true)
     }
   }, [currentIndex, swiper])
 
   useEffect(() => {
     loadImage(currentIndex)
-  }, [currentIndex])
+  }, [currentIndex, images])
 
   // load the current image
   const loadImage = (index: number) => {
     try {
       console.log(images)
+      setLoading(true)
       const img = new Image()
       img.src = images[index]
       console.log(images[index])
@@ -56,10 +57,13 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
 
       img.onerror = () => {
         console.log('444')
-        setLoading(false)
+        setLoading(true)
       }
     } catch (e) {
       console.log(e)
+      setLoading(true)
+    } finally {
+      // setLoading(false)
     }
   }
 
@@ -119,10 +123,12 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
         </button>
       )}
 
-      <div className="absolute bottom-[91px] text-white text-sm opacity-60 z-10 w-full text-center">
-        {currentIndex + 1} / {images.length}
-      </div>
-      {/* loading */}
+      {images.length > 1 && (
+        <div className="absolute bottom-[91px] text-white text-sm opacity-60 z-10 w-full text-center">
+          {currentIndex + 1} / {images.length}
+        </div>
+      )}
+
       {loading && (
         <div
           className="absolute w-full h-full flex items-center justify-center  z-100 "
@@ -140,7 +146,6 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
         onSlideChange={(swiper: SwiperType) => {
           // 加载当前大图
           setLoading(true)
-          loadImage(swiper.activeIndex)
           onIndexChange(swiper.activeIndex)
         }}
         spaceBetween={30}

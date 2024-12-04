@@ -8,6 +8,26 @@ const config: ThemeConfig = {
 const theme = extendTheme({
   config,
   components: {
+    Checkbox: {
+      baseStyle: {
+        control: {
+          _checked: {
+            bg: '#6254FF',
+            borderColor: '#6254FF',
+            color: 'white',
+          },
+          _hover: {
+            bg: 'transparent',
+          },
+          _focus: {
+            boxShadow: 'none',
+          },
+          _active: {
+            bg: 'transparent',
+          },
+        },
+      },
+    },
     Button: {
       baseStyle: {
         fontWeight: '500',
@@ -50,9 +70,9 @@ const theme = extendTheme({
             background: '#6254FF !important',
           },
           _disabled: {
-            background: "#D1D0DE",
-            opacity: 1
-          }
+            background: '#D1D0DE',
+            opacity: 1,
+          },
           // _active: {
           //   color: '#E0E2F6',
           //   // border: '1px solid #4A3AFF',

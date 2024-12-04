@@ -65,8 +65,11 @@ const ProfileGuard: FC<ProfileGuardProps> = ({ children }) => {
 
   if (!ready) {
     return (
-      <div className="fixed w-screen h-screen flex flex-col items-center justify-center bg-white dark:bg-[#0D0D0D] z-10">
-        <div className="w-10 h-10 border-4 border-t-4 border-t-[#D1D0DE] border-transparent rounded-full animate-spin"></div>
+      <div className="fixed top-0 left-0 right-0 bottom-0 flex flex-col items-center justify-center bg-white dark:bg-[#0D0D0D] z-10">
+        <i
+          className="iconfont icon-loading animate-spin text-[#6254FF]"
+          style={{ fontSize: '40px' }}
+        ></i>
       </div>
     )
   }

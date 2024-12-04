@@ -1,5 +1,5 @@
 import { Swiper, SwiperSlide } from 'swiper/react'
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import { formatImage } from '@/utils/utils'
 import { Swiper as SwiperType } from 'swiper'
@@ -12,12 +12,15 @@ interface ImageCardProps {
 }
 const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resourcesEve }) => {
   const [swiper, setSwiper] = useState<SwiperType | null>(null)
-
   const imagesPreview = useMemo(() => {
     return data.media.map((item) => formatImage(item, false))
   }, [data])
 
   const [currentIndex, SetCurrentIndex] = useState(0)
+
+  const firImageWidth = useMemo(() => {
+    return document.body.getBoundingClientRect().width
+  }, [])
 
   const firImageHeight = useMemo(() => {
     if (data.pic_height && data.pic_width) {
@@ -30,7 +33,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
   }, [data])
   return (
     <>
-      <div className="border-t-[0.5px] border-[rgba(0,0,0,0.1)] relative">
+      <div className="border-t-[0.5px] border-[rgba(0,0,0,0.1)] relative z-[1]">
         {imagesPreview.length > 1 && (
           <div className="absolute z-[2] right-3 top-3 px-3.5 py-1.5 bg-[#494950] rounded-full text-white text-3.5 font-Roboto">
             {currentIndex + 1}/{imagesPreview.length}
@@ -46,14 +49,15 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
             return (
               <SwiperSlide
                 key={`${data.id}-${image}`}
-                style={{ height: firImageHeight + 'px' }}
+                style={{ minHeight: firImageHeight + 'px' }}
                 className={'flex items-center overflow-hidden'}
               >
                 <Image
+                  wrapperClassName={'w-full h-full'}
                   src={formatImage(image, false)}
                   alt={data.title}
-                  width="100%"
-                  height="100%"
+                  width={'100%'}
+                  height={firImageHeight}
                   onClick={() => handleImageClick(data.media, index)}
                 />
               </SwiperSlide>

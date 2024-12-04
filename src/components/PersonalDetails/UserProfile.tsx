@@ -21,6 +21,7 @@ const UserProfile: FC = () => {
   ) : (
     <Box
       padding="0 16px"
+      className="no-tap"
       style={{
         paddingTop: `calc(${
           window

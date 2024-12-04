@@ -46,6 +46,7 @@ const OtherUserProfile: FC = () => {
   return (
     <Box
       p="0px 16px"
+      className="no-tap"
       style={{
         position: 'relative',
         paddingTop: `calc(${
@@ -91,7 +92,14 @@ const OtherUserProfile: FC = () => {
                 <i className="iconfont icon-icon_more text-[26px] text-[#0F1233]"></i>
               </div>
             </MenuButton>
-            <MenuList minW="84px" bg="#fff" border="1px solid #EBEBF4" borderRadius="4px" p="12px" boxShadow="none">
+            <MenuList
+              minW="84px"
+              bg="#fff"
+              border="1px solid #EBEBF4"
+              borderRadius="4px"
+              p="12px"
+              boxShadow="none"
+            >
               {navList.map((item, key) => (
                 <Box>
                   <MenuItem

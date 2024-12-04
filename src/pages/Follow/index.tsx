@@ -119,13 +119,13 @@ const FollowPage: FC = () => {
 
   return (
     <div
-      className="fixed top-0 left-0 right-0 bottom-0 dark:bg-black bg-white flex flex-col text-white px-4 pb-[30px] z-10 overflow-hidden"
+      className="fixed top-0 left-0 right-0 bottom-0 dark:bg-black bg-white flex flex-col text-white px-4 z-10 overflow-hidden"
       style={{
         paddingTop: `calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 24px)`,
       }}
     >
       <h1 className="text-[24px] font-bold text-black dark:text-white">{title}</h1>
-      <div className="flex-1 pb-[10px] overflow-hidden">
+      <div className="flex-1 overflow-hidden">
         <div className="flex flex-col h-full overflow-auto scrollbar-hide">
           {loading ? (
             <div className="flex-1 flex items-center justify-center">
@@ -151,6 +151,7 @@ const FollowPage: FC = () => {
                     {follower.list.map((item) => (
                       <FollowItem key={item.tg_id} item={item} />
                     ))}
+                    <div className="h-[40px]"></div>
                   </InfiniteScroll>
                 ) : (
                   <Empty
@@ -179,6 +180,7 @@ const FollowPage: FC = () => {
                     {[...following.list].map((item) => (
                       <FollowItem key={item.tg_id} item={item} />
                     ))}
+                    <div className="h-[40px]"></div>
                   </InfiniteScroll>
                 ) : (
                   <Empty

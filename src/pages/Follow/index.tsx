@@ -88,6 +88,7 @@ const FollowPage: FC = () => {
             width={56}
             height={56}
             rect
+            type="avatar"
             onClick={() => {
               jumpToProfilePage({
                 avatar: item.avatar,
@@ -118,28 +119,16 @@ const FollowPage: FC = () => {
 
   return (
     <div
-      className="fixed w-screen h-screen dark:bg-black bg-white flex flex-col text-white px-4 pb-[30px] z-10 overflow-auto scrollbar-hide"
+      className="fixed top-0 left-0 right-0 bottom-0 dark:bg-black bg-white flex flex-col text-white px-4 pb-[30px] z-10 overflow-hidden"
       style={{
-        paddingTop: `calc(${
-          window
-            .getComputedStyle(document.documentElement)
-            .getPropertyValue('--tg-safe-area-inset-top') &&
-          parseInt(
-            window
-              .getComputedStyle(document.documentElement)
-              .getPropertyValue('--tg-safe-area-inset-top'),
-            10
-          ) !== 0
-            ? '8px'
-            : '30px'
-        })`,
+        paddingTop: `calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 24px)`,
       }}
     >
       <h1 className="text-[24px] font-bold text-black dark:text-white">{title}</h1>
       <div className="flex-1 pb-[10px] overflow-hidden">
-        <div className="h-full overflow-auto scrollbar-hide">
+        <div className="flex flex-col h-full overflow-auto scrollbar-hide">
           {loading ? (
-            <div className="h-full flex items-center justify-center">
+            <div className="flex-1 flex items-center justify-center">
               <i
                 className="iconfont icon-loading animate-spin text-[#6254FF]"
                 style={{ fontSize: '40px' }}

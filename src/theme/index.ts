@@ -14,7 +14,16 @@ const theme = extendTheme({
           _checked: {
             bg: '#6254FF',
             borderColor: '#6254FF',
-            color: 'white', // 勾选图标的颜色
+            color: 'white',
+          },
+          _hover: {
+            bg: 'transparent',
+          },
+          _focus: {
+            boxShadow: 'none',
+          },
+          _active: {
+            bg: 'transparent',
           },
         },
       },

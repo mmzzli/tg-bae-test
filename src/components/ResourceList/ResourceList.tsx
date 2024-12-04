@@ -17,7 +17,8 @@ import useMobile from '@/hooks/useMobile'
 import playIcon from '@/assets/icons/videoSwitch.svg'
 import Empty from '../comm/Empty'
 import Icon from '../comm/Icon'
-
+import Lottie from 'lottie-react'
+import likeAnimationData from '@/assets/animations/like.json'
 import { CardRecommendProvider } from '@/utils/constants'
 import { useStore } from '@/store'
 import VideoCard from '@/components/ResourceList/VideoCard'
@@ -376,10 +377,17 @@ const ResourceFooter = memo<ResourceFooterProps>(
                 }
               >
                 {likes.find((like) => like.id === data.id)?.liked === true ? (
-                  <i
-                    className="iconfont icon-Frame text-[#FF5596]"
-                    style={{ fontSize: '24px' }}
-                  ></i>
+                  // <i
+                  //   className="iconfont icon-Frame text-[#FF5596]"
+                  //   style={{ fontSize: '24px' }}
+                  // ></i>
+                  <Lottie
+                    animationData={likeAnimationData}
+                    loop={false}
+                    style={{
+                      width: '22px',
+                    }}
+                  ></Lottie>
                 ) : (
                   <i className="iconfont icon-like text-[#0D0D0D]" style={{ fontSize: '24px' }}></i>
                 )}

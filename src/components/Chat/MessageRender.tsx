@@ -146,6 +146,8 @@ const ImageRenderer = React.memo(
         <Image
           src={url}
           alt=""
+          width={width + 'px'}
+          height={height + 'px'}
           onClick={() => {
             if (url) setImageResource({ images: [url], currentIndex: 0 })
           }}

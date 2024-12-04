@@ -45,6 +45,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
   const loadImage = (index: number) => {
     try {
       console.log(images)
+      setLoading(true)
       const img = new Image()
       img.src = images[index]
       console.log(images[index])
@@ -60,6 +61,8 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
       }
     } catch (e) {
       console.log(e)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -119,9 +122,12 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
         </button>
       )}
 
-      <div className="absolute bottom-[91px] text-white text-sm opacity-60 z-10 w-full text-center">
-        {currentIndex + 1} / {images.length}
-      </div>
+      {images.length > 1 && (
+        <div className="absolute bottom-[91px] text-white text-sm opacity-60 z-10 w-full text-center">
+          {currentIndex + 1} / {images.length}
+        </div>
+      )}
+
       {/* loading */}
       {loading && (
         <div

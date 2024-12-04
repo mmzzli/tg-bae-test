@@ -126,7 +126,7 @@ const FollowPage: FC = () => {
     >
       <h1 className="text-[24px] font-bold text-black dark:text-white">{title}</h1>
       <div className="flex-1 overflow-hidden">
-        <div className="flex flex-col h-full overflow-auto scrollbar-hide justify-center items-center">
+        <div className="flex flex-col h-full overflow-auto scrollbar-hide">
           {loading ? (
             <div className="flex-1 flex items-center justify-center">
               <i
@@ -154,7 +154,7 @@ const FollowPage: FC = () => {
                     <div className="h-[40px]"></div>
                   </InfiniteScroll>
                 ) : (
-                  <div className="mb-[40px]">
+                  <div className="h-full flex items-center justify-center pb-[40px]">
                     <Empty
                       title="No followers yet."
                       icon={
@@ -185,7 +185,7 @@ const FollowPage: FC = () => {
                     <div className="h-[40px]"></div>
                   </InfiniteScroll>
                 ) : (
-                  <div className="mb-[40px]">
+                  <div className="h-full flex items-center justify-center pb-[40px]">
                     <Empty
                       title="You haven't followed anyone."
                       icon={

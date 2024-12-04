@@ -33,13 +33,13 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
   useEffect(() => {
     if (swiper && swiper.activeIndex !== currentIndex) {
       swiper.slideTo(currentIndex, 0)
-      console.log('333')
+      setLoading(true)
     }
   }, [currentIndex, swiper])
 
   useEffect(() => {
     loadImage(currentIndex)
-  }, [currentIndex])
+  }, [currentIndex, images])
 
   // load the current image
   const loadImage = (index: number) => {
@@ -57,12 +57,13 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
 
       img.onerror = () => {
         console.log('444')
-        setLoading(false)
+        setLoading(true)
       }
     } catch (e) {
       console.log(e)
+      setLoading(true)
     } finally {
-      setLoading(false)
+      // setLoading(false)
     }
   }
 
@@ -128,7 +129,6 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
         </div>
       )}
 
-      {/* loading */}
       {loading && (
         <div
           className="absolute w-full h-full flex items-center justify-center  z-100 "
@@ -146,7 +146,6 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
         onSlideChange={(swiper: SwiperType) => {
           // 加载当前大图
           setLoading(true)
-          loadImage(swiper.activeIndex)
           onIndexChange(swiper.activeIndex)
         }}
         spaceBetween={30}

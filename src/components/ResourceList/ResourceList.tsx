@@ -56,7 +56,7 @@ const ResourceList = ({
   const setFollowResource = useStore((state) => state.setFollowResource)
   const followResource = useStore((state) => state.followResource)
 
-  const { shareLink, launchParams } = useTMAUtils()
+  const { launchParams, getCurrentUid } = useTMAUtils()
   const [isBaseModalOpen, { toggle, off }] = useBoolean(false)
   const [links, setLinks] = useSetState<{ shareLink: string; copyLink: string }>({
     shareLink: '',
@@ -68,6 +68,7 @@ const ResourceList = ({
     null
   )
 
+  const currentUid = getCurrentUid()
   const jumpToProfilePage = useProfileNavigation()
 
   const handleImageClick = useCallback((images: string[], index: number) => {
@@ -189,7 +190,7 @@ const ResourceList = ({
     if (currentShareData) {
       const { result } = await getInlineMessageId({
         pid: currentShareData.pid,
-        uid: currentShareData.uid,
+        uid: currentUid,
       })
       console.log('result----->', result)
       if (result.id) {

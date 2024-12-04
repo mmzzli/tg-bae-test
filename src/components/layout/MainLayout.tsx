@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { retrieveLaunchParams } from '@telegram-apps/sdk'
-import { logIn } from '@/api'
+import { logIn, getUnreadNotificationCount } from '@/api'
 import { DEV_INIT_DATA_RAW } from '@/utils/constants'
 import { isLocalEnv } from '@/utils/env'
 import { useStore } from '@/store'
@@ -14,6 +14,7 @@ import { postEvent } from '@telegram-apps/sdk'
 import { PostProgressBar } from '../NewPost/PostProgressBar'
 import VideoDialog from '@/components/ResourceList/VideoDialog'
 import ImageDialog from '@/components/ResourceList/ImageDialog'
+import { useTMAUtils } from '@/hooks/useTMAUtils'
 const ChatListPageLoader = {
   preload: () =>
     import('@/pages/Chat').then((module) => ({
@@ -25,6 +26,8 @@ const ChatListPageLoader = {
     }))
   ),
 }
+
+const HIDE_BACK_BUTTON_PATHS = ['/home', '/chat', '/profile', '/', '/ageGate']
 
 export const MainLayout: React.FC = () => {
   const location = useLocation()
@@ -43,13 +46,27 @@ export const MainLayout: React.FC = () => {
   const videoResource = useStore((state) => state.videoResource)
   const imageResource = useStore((state) => state.imageResource)
   const setImageResource = useStore((state) => state.setImageResource)
+  const virtualRoutePage = useStore((state) => state.virtualRoutePage)
+  const setUnreadNotificationCount = useStore((state) => state.setUnreadNotificationCount)
+  const { getCurrentUid } = useTMAUtils()
+  const current_uid = getCurrentUid()
+
+  const { data: unreadNotificationCount, run: runGetUnreadNotificationCount } = useRequest(
+    getUnreadNotificationCount,
+    {
+      pollingInterval: 6000,
+      manual: true,
+      pollingWhenHidden: false,
+      pollingErrorRetryCount: 6,
+    }
+  )
 
   const { run: runLogin } = useRequest(logIn, {
     manual: true,
     onSuccess({ token, api_token, user_info }) {
       setToken(token)
       setUserInfo({ ...user_info, api_token })
-      // ChatListPageLoader.preload()
+      runGetUnreadNotificationCount(current_uid)
     },
   })
 
@@ -102,6 +119,11 @@ export const MainLayout: React.FC = () => {
         console.log('location previous backToHome', useStore.getState().backToHome)
 
         console.log(useStore.getState().videoResource, '=================')
+        if (useStore.getState().virtualRoutePage) {
+          useStore.getState().resetVirtualRoutePage()
+          return
+        }
+
         if (useStore.getState().videoResource) {
           setVideoResource(null)
           return // navigate('/home')
@@ -156,10 +178,13 @@ export const MainLayout: React.FC = () => {
 
   useEffect(() => {
     console.log('pathname-------------------------------_>', location.pathname)
+    // handle page refresh or open app from share link
     const BASE_PATHS = ['/home', '/chat', '/profile', '/ageGate']
     if (BASE_PATHS.includes(location.pathname)) {
       setBackToHome(false)
     }
+
+    // handle chat page
     if (location.pathname.startsWith('/chat') && !shouldLoadChat) {
       setShouldLoadChat(true)
     }
@@ -168,9 +193,10 @@ export const MainLayout: React.FC = () => {
     } else {
       setHiddenChatPage(true)
     }
+
     if (window.Telegram?.WebApp) {
       const tgApp = window.Telegram.WebApp
-      const HIDE_BACK_BUTTON_PATHS = ['/home', '/chat', '/profile', '/', '/ageGate']
+
       if (HIDE_BACK_BUTTON_PATHS.includes(location.pathname)) {
         tgApp.BackButton.hide()
       } else {
@@ -184,22 +210,43 @@ export const MainLayout: React.FC = () => {
       const tgApp = window.Telegram.WebApp
       if (videoResource) {
         tgApp.BackButton.show()
-      } else {
+      } else if (HIDE_BACK_BUTTON_PATHS.includes(location.pathname)) {
         tgApp.BackButton.hide()
       }
     }
   }, [videoResource])
 
   useEffect(() => {
+    if (
+      unreadNotificationCount &&
+      (unreadNotificationCount?.amount === 0 || unreadNotificationCount?.amount)
+    ) {
+      console.log('unreadNotificationCount change', unreadNotificationCount)
+      setUnreadNotificationCount(unreadNotificationCount?.amount)
+    }
+  }, [unreadNotificationCount])
+
+  useEffect(() => {
     if (window.Telegram?.WebApp) {
       const tgApp = window.Telegram.WebApp
       if (imageResource) {
         tgApp.BackButton.show()
-      } else {
+      } else if (HIDE_BACK_BUTTON_PATHS.includes(location.pathname)) {
         tgApp.BackButton.hide()
       }
     }
   }, [imageResource])
+
+  useEffect(() => {
+    if (window.Telegram?.WebApp) {
+      const tgApp = window.Telegram.WebApp
+      if (virtualRoutePage) {
+        tgApp.BackButton.show()
+      } else if (HIDE_BACK_BUTTON_PATHS.includes(location.pathname)) {
+        tgApp.BackButton.hide()
+      }
+    }
+  }, [virtualRoutePage])
 
   return (
     <div className="absolute inset-0 top-0 right-0 bottom-0 left-0overflow-hidden flex pb-[84px] transition-all duration-300 bg-white dark:bg-black">

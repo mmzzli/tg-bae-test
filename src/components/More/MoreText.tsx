@@ -28,7 +28,6 @@ const MoreText: React.FC<MoreTextProps> = ({ text, maxLines = 3 }) => {
           position: 'relative',
           overflow: 'hidden',
           WebkitBoxOrient: 'vertical',
-          WebkitLineClamp: isExpanded ? 'unset' : maxLines, // 限制行数或展开
           display: isExpanded ? 'block' : '-webkit-box',
           textOverflow: 'ellipsis',
           wordBreak: 'break-all',

@@ -55,7 +55,7 @@ const MessagePageRouteGuard: FC = () => {
   }
 
   return (
-    <div className="absolute inset-0 top-0 bottom-[84px] left-0 right-0 slide-in-from-right overflow-hidden">
+    <div className="absolute inset-0 top-0 bottom-0 left-0 right-0 slide-in-from-right overflow-hidden">
       <MessagePageIOS />
     </div>
   )

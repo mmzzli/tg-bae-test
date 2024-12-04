@@ -3,7 +3,6 @@ import { Image, useBoolean } from '@chakra-ui/react'
 
 import { BaseModal } from '@/components/Modal/BaseModal'
 import BaseButton from '@/components/BaseButton/BaseButton'
-import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { LinkIcon, TelegramIcon } from '@/assets/icons'
 import { useMemoizedFn, useRequest, useSetState } from 'ahooks'
 import useCopy from '@/hooks/useCopy'
@@ -24,7 +23,6 @@ const ShareModal = forwardRef<ChildMethods>(({}, ref) => {
   const [state, setState] = useSetState<Record<string, any>>({
     hello: '',
   })
-  const { shareLink } = useTMAUtils()
   const [isBaseModalOpen, { toggle, off }] = useBoolean(false)
   const [links, setLinks] = useSetState<{ shareLink: string; copyLink: string }>({
     shareLink: '',

@@ -193,13 +193,15 @@ const MessagePageIOS = () => {
           })`,
         }}
       >
-        <Image
-          type="avatar"
-          rect
-          src={chatPeople?.avatar}
-          alt="avatar"
-          className="w-[32px] h-[32px] rounded-full"
-        />
+        <div className="w-[32px] h-[32px]">
+          <Image
+            type="avatar"
+            rect
+            src={chatPeople?.avatar}
+            alt="avatar"
+            className="w-[32px] h-[32px] rounded-full"
+          />
+        </div>
         <span className="dark:text-white text-[#333] text-lg ml-2">{chatPeople?.username}</span>
       </div>
 

@@ -14,7 +14,7 @@ const MoreText: React.FC<MoreTextProps> = ({ text, maxLines = 3 }) => {
     return <></>
   }
   if (text.trim().length < 150) {
-    return text
+    return <span>text</span>
   }
   return (
     <div

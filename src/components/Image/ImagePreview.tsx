@@ -45,6 +45,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
   const loadImage = (index: number) => {
     try {
       console.log(images)
+      setLoading(true)
       const img = new Image()
       img.src = images[index]
       console.log(images[index])
@@ -60,6 +61,8 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
       }
     } catch (e) {
       console.log(e)
+    } finally {
+      setLoading(false)
     }
   }
 

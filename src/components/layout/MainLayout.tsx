@@ -111,6 +111,15 @@ export const MainLayout: React.FC = () => {
           setExpanded(true)
         }
       })
+      window.Telegram.WebView.onEvent(
+        'visibility_changed',
+        (eventType: string, eventData: { is_visible: boolean }) => {
+          console.log(eventType, eventData)
+          if (eventData.is_visible) {
+            tgApp.setHeaderColor('#ffffff')
+          }
+        }
+      )
       tgApp.BackButton.onClick(() => {
         console.log('location.pathname', location.pathname)
         console.log('window.location.pathname', window.location.pathname)

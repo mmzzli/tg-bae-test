@@ -39,7 +39,7 @@ const Searching = () => {
   }, [debouncedField]);
 
   return (
-    <div className="px-[16px] pt-[16px]">
+    <div className="px-[16px] pt-[16px] fixed w-screen h-screen bg-[#fff] z-10 overflow-auto scrollbar-hide">
       <div className="flex items-center bg-[#F5F3F3] rounded-[24px] pl-[16px] pr-[12px]">
         <div className="w-[48px] h-[48px] p-[12px] flex items-center justify-center cursor-pointer">
           <i className="iconfont icon-search-line text-[#999999] text-[24px]"></i>

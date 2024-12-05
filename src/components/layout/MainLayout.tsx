@@ -109,6 +109,7 @@ export const MainLayout: React.FC = () => {
         color: '#ffffff',
       })
       tgApp.expand()
+      tgApp.setHeaderColor('#000')
       tgApp.headerColor = '#ffffff'
       tgApp.backgroundColor = '#ffffff'
       tgApp.MainButton.hide()

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useRequest } from 'ahooks';
 
 import { Search, SearchItem } from '@/types'
 import { searchByUsername } from '@/api'
@@ -14,14 +15,20 @@ const Searching = () => {
   const [data, setData] = useState<SearchItem | null>(null)
   const [field, setField] = useState<string>('')
   const [debouncedField, setDebouncedField] = useState<string>('')
-  const searchingEve = async (field: string) => {
-    const res = await searchByUsername({
+  const { loading, run, data:res } = useRequest((field:string) =>
+    searchByUsername({
       field: field.toLowerCase(),
       page_num: 1,
       records: 10,
-    })
-    setData(res)
-  }
+    }),
+    { manual: true }
+  );
+
+  useEffect(()=>{
+    if(res){
+      setData(res)
+    }
+  },[res])
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -35,7 +42,7 @@ const Searching = () => {
 
   useEffect(() => {
     if (debouncedField) {
-      searchingEve(field)
+      run(field)
     }else{
       setData({ users: [] })
     }

@@ -8,6 +8,7 @@ import { useStore } from '@/store'
 // Object is Follow, I Follow Someone, so fansid is current user id
 const FollowButton: FC<{
   fansid: number
+  // tg_id username avatar is other user info
   tgid: number
   avatar: string
   username: string

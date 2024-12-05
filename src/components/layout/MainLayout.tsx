@@ -117,12 +117,7 @@ export const MainLayout: React.FC = () => {
         console.log('window.location.pathname', window.location.pathname)
         console.log('location previous', location.state?.from)
         console.log('location previous backToHome', useStore.getState().backToHome)
-
         console.log(useStore.getState().videoResource, '=================')
-        if (useStore.getState().virtualRoutePage) {
-          useStore.getState().resetVirtualRoutePage()
-          return
-        }
 
         if (useStore.getState().videoResource) {
           setVideoResource(null)
@@ -132,6 +127,12 @@ export const MainLayout: React.FC = () => {
         if (useStore.getState().imageResource) {
           setImageResource(null)
           return // navigate('/home')
+        }
+
+        // low priority then media dialog
+        if (useStore.getState().virtualRoutePage) {
+          useStore.getState().resetVirtualRoutePage()
+          return
         }
 
         if (useStore.getState().backToHome) {

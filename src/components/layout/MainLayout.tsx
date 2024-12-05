@@ -140,36 +140,7 @@ export const MainLayout: React.FC = () => {
           return navigate('/home')
         }
 
-        if (window.location.pathname === '/home') {
-          tgApp
-            .showConfirm({
-              message: 'Are you sure you want to Exit?',
-              ok_button: 'Yes',
-              cancel_button: 'No',
-            })
-            .then((result: boolean) => {
-              if (result) {
-                tgApp.close()
-              } else {
-                console.log(1)
-              }
-            })
-            .catch((error: Error) => {
-              console.error('Error showing confirmation:', error)
-            })
-
-          // tgApp.showConfirm("Changes that you m de may not besaved.", function (isConfirmed:boolean) {
-          //   if (isConfirmed) {
-          //     console.log("User confirmed the action.");
-          //     tgApp.close();
-          //   } else {
-          //     console.log(1)
-          //   }
-          // });
-          // window.history.back()
-        } else {
-          window.history.back()
-        }
+        navigate(-1)
       })
       setExpanded(window.Telegram.WebApp.isExpanded)
       console.log(window.Telegram.WebApp.isExpanded, 'window.Telegram.WebApp.isExpanded')
@@ -209,13 +180,13 @@ export const MainLayout: React.FC = () => {
   useEffect(() => {
     if (window.Telegram?.WebApp) {
       const tgApp = window.Telegram.WebApp
-      if (videoResource) {
+      if (videoResource || imageResource || virtualRoutePage) {
         tgApp.BackButton.show()
       } else if (HIDE_BACK_BUTTON_PATHS.includes(location.pathname)) {
         tgApp.BackButton.hide()
       }
     }
-  }, [videoResource])
+  }, [videoResource, imageResource, virtualRoutePage])
 
   const prevUnreadNotificationCount = useRef(0)
 
@@ -231,28 +202,6 @@ export const MainLayout: React.FC = () => {
       }
     }
   }, [unreadNotificationCount])
-
-  useEffect(() => {
-    if (window.Telegram?.WebApp) {
-      const tgApp = window.Telegram.WebApp
-      if (imageResource) {
-        tgApp.BackButton.show()
-      } else if (HIDE_BACK_BUTTON_PATHS.includes(location.pathname)) {
-        tgApp.BackButton.hide()
-      }
-    }
-  }, [imageResource])
-
-  useEffect(() => {
-    if (window.Telegram?.WebApp) {
-      const tgApp = window.Telegram.WebApp
-      if (virtualRoutePage) {
-        tgApp.BackButton.show()
-      } else if (HIDE_BACK_BUTTON_PATHS.includes(location.pathname)) {
-        tgApp.BackButton.hide()
-      }
-    }
-  }, [virtualRoutePage])
 
   return (
     <div className="absolute inset-0 top-0 right-0 bottom-0 left-0overflow-hidden flex pb-[84px] transition-all duration-300 bg-white dark:bg-black">

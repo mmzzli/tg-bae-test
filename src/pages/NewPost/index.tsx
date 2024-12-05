@@ -666,6 +666,9 @@ export const NewPost: FC = () => {
             onClick={handleUpload}
             isLoading={isLoading}
             isDisabled={firstFileType === 'image' ? files.length === 0 : videoFile == null}
+            _hover={{
+              bg:"#D1D0DE"
+            }}
           >
             <Image src={PostIcon} mr="5px" /> Post
           </Button>
@@ -740,7 +743,7 @@ export const NewPost: FC = () => {
                       onClick={handleChooseFile}
                       className="w-full h-full flex items-center justify-center border-dashed border border-[#CDCDD4] rounded-lg cursor-pointer"
                     >
-                      <Icon name={'icon-addpost1'} style={{ width: '100%', height: '100%' }}></Icon>
+                      <i className="iconfont icon-add text-[#999999] text-[30px]"></i>
                     </div>
                   </GridItem>
                 )}

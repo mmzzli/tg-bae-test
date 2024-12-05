@@ -75,7 +75,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
     <>
       <Box position="fixed" bottom="56px" w="100%" left="0" p="0px 16px">
         <HStack
-          border="1px solid #CDCDD4"
+          border="0.5px solid #CDCDD4"
           h="52px"
           lineHeight="52px"
           p="0 16px"
@@ -139,7 +139,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
             </Grid>
             <HStack
               h="48px"
-              border="1px solid #CDCDD4"
+              border="0.5px solid #CDCDD4"
               mt="17px"
               p="0 20px"
               borderRadius="8px"

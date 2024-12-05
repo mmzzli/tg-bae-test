@@ -18,8 +18,8 @@ button,
   -ms-user-select: none;
   user-select: none;
 }
-a {
-  text-decoration: none;
+a, a:hover {
+  text-decoration: none !important;
 }
 
 /* add CSS variables to handle safe area */

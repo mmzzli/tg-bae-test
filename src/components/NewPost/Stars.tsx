@@ -105,7 +105,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
                 borderRadius="50px"
                onClick={onClose} float="right" mt="16px" mb="24px" src={Remove1Icon} alt="Remove Icon" />
             </Box> */}
-            <div className='overflow-hidden mt-[6px]'>
+            <div className='overflow-hidden mt-[6px]' onClick={onClose}>
               {<div className="w-[36px] h-[36px] p-[8px] float-right bg-[#F5F5FA] rounded-[50px] flex items-center justify-center cursor-pointer"
               >
                 <i className="iconfont icon-icon_close text-[#12122A] text-[24px]"></i>
@@ -113,7 +113,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
             </div>
 
             <Heading as="h3" fontSize="24px" color="#333" mt="12px">
-              Choose the stars to unlock this post
+              Choose the stars to unlock <br/>this post
             </Heading>
             <Grid pt="28px" templateColumns="repeat(3, 1fr)" gap={3}>
               {starList.map((item) => (
@@ -124,7 +124,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
                       h="40px"
                       lineHeight="40px"
                       borderRadius="8px"
-                      border={`1px solid ${price === item? "#6254FF" : "#CDCDD4"}`}
+                      border={`0.5px solid ${price === item? "#6254FF" : "#CDCDD4"}`}
                       justifyContent="center"
                       gap="4px"
                       bg={price === item ? '#6254FF' : ''}

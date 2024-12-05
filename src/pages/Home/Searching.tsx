@@ -16,7 +16,7 @@ const Searching = () => {
   const [debouncedField, setDebouncedField] = useState<string>('')
   const searchingEve = async (field: string) => {
     const res = await searchByUsername({
-      field,
+      field: field.toLowerCase(),
       page_num: 1,
       records: 10,
     })
@@ -89,12 +89,12 @@ const Searching = () => {
               </div>
               <h3 className="text-[#333] text-[16px]">{item.tgname}</h3>
             </div>
-            {/* <FollowButton
-                fansid={item}
+            <FollowButton
+                fansid={item.fans_id}
                 tgid={item.tg_id}
                 avatar={item.avatar}
                 username={item.tgname}
-              /> */}
+              />
           </div>
         ))}
       </div>

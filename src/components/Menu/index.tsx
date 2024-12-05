@@ -1,15 +1,6 @@
-import type { FC } from 'react'
+import { memo, type FC } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import {
-  HomeIcon,
-  ProfileIcon,
-  ProfileActiveIcon,
-  HomeActiveIcon,
-  ChatIcon,
-  ChatActiveIcon,
-} from '@/assets/icons'
-import Image from '../Image/Image'
 import { cn } from '@/utils/utils'
 
 interface NavItem {
@@ -19,7 +10,7 @@ interface NavItem {
   url: string
 }
 
-export const Menu: FC = () => {
+const Menu: FC = () => {
   const navigate = useNavigate()
   const pathname = useLocation().pathname
 
@@ -88,3 +79,5 @@ export const Menu: FC = () => {
     </div>
   )
 }
+
+export default memo(Menu)

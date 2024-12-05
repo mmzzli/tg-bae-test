@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from 'react'
+import { FC, memo, useCallback, useEffect, useState } from 'react'
 import ChatList from '@/components/Chat/ChatList'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { Spinner } from '@chakra-ui/react'
@@ -231,4 +231,4 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
   )
 }
 
-export default ChatListPage
+export default memo(ChatListPage)

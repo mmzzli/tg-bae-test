@@ -9,7 +9,7 @@ import { useRequest } from 'ahooks'
 import { Outlet } from 'react-router-dom'
 import { log } from 'console'
 import { Spinner } from '@chakra-ui/react'
-import { Menu } from '../Menu'
+import Menu from '../Menu'
 import { postEvent } from '@telegram-apps/sdk'
 import { PostProgressBar } from '../NewPost/PostProgressBar'
 import VideoDialog from '@/components/ResourceList/VideoDialog'
@@ -94,7 +94,7 @@ export const MainLayout: React.FC = () => {
       const tgApp = window.Telegram.WebApp
       tgApp.ready()
       try {
-        tgApp.requestFullscreen()
+        // tgApp.requestFullscreen()
       } catch (err) {
         console.warn('######    web_app_request_fullscreen error    ######', err)
       }

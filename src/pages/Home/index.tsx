@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import RecommendList from '@/components/RecommendList/RecommendList'
 import FollowingList from '@/components/RecommendList/FollowingList'
+import Icon from '@/components/comm/Icon'
 
 import { useStore } from '@/store'
 import { CardRecommendProvider } from '@/utils/constants'
@@ -65,8 +66,14 @@ const HomePage: FC = () => {
           >
             {title}
           </Heading>
-
-          <NewPostButton />
+          <div className='flex gap-[13px]'>
+            <div className="w-[48px] h-[48px] p-[12px] bg-[#F5F3F3] rounded-[50px] flex items-center justify-center cursor-pointer"
+              onClick={()=>navigate('/home/searching')}
+            >
+              <i className="iconfont icon-search-line text-[#333333] text-[24px]"></i>
+            </div>
+            <NewPostButton />
+          </div>
         </HStack>
         <div className="overflow-hidden" style={{ height: '0px', opacity: 0, ...animation }}>
           <FollowingList />

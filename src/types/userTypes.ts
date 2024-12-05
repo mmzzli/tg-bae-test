@@ -54,6 +54,7 @@ export interface Search {
   tg_id: number
   tgname: string
   if_follow: boolean
+  fans_id: number
 }
 
 export type SearchItem = { users: Array<Search> }

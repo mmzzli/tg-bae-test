@@ -8,9 +8,14 @@ import {
   getNotifications,
 } from '@/api'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
-import { NotificationType as NotificationTypes, Notification as TypeNotification } from '@/types'
+import {
+  NotificationType as NotificationTypes,
+  Notification as TypeNotification,
+  UserItem,
+} from '@/types'
 import { getTimeStringAutoShort } from '@/utils/utils'
 import FollowButton from '../FollowButton'
+import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 const Notification = () => {
   const setVirtualRoutePage = useStore((state) => state.setVirtualRoutePage)
   const virtualRoutePage = useStore((state) => state.virtualRoutePage)
@@ -21,6 +26,7 @@ const Notification = () => {
   const latestReadNotificationIdFromStore = useStore((state) => state.latestReadNotificationId)
   const { getCurrentUid } = useTMAUtils()
   const currentUid = getCurrentUid()
+  const jumpToProfilePage = useProfileNavigation()
 
   const [notificationList, setNotificationList] = useState<TypeNotification[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -39,8 +45,8 @@ const Notification = () => {
     if (amount === 0) {
       return
     }
-    // 10 because may have new notifications while reading unread notifications amount(5s interval)
-    const res = await getNotifications({ page_num: 1, records: amount + 10 })
+    // because may have new notifications while reading unread notifications amount(5s interval)
+    const res = await getNotifications({ page_num: 1, records: amount + 4 })
     // need remove duplicated notifications by id
     const newNotifications: TypeNotification[] = []
     let idsInList = new Set(notificationList.map((notification) => notification.id))
@@ -152,6 +158,9 @@ const Notification = () => {
                             width={48}
                             height={48}
                             className="w-full h-full rounded-full"
+                            onClick={() => {
+                              jumpToProfilePage(notification.user as unknown as UserItem)
+                            }}
                           />
                           {latestReadNotificationId.current < notification.id && (
                             <span className="absolute -left-[12px] top-[27px] w-[8px] h-[8px] rounded-full overflow-hidden bg-[#6254FF]"></span>

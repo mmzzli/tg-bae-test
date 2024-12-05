@@ -45,7 +45,7 @@ const Report: React.FC<ReportProps> = ({ isOpen, onClose }) => {
         </h3>
         <div className="flex flex-col gap-[15px]">
           <CheckboxGroup>
-            {options.map((option) => (
+            {options.map((option, index) => (
               // <label key={option} className="flex items-center gap-2 not-tap">
               //   <input
               //     type="checkbox"
@@ -64,7 +64,7 @@ const Report: React.FC<ReportProps> = ({ isOpen, onClose }) => {
               //   <span className="dark:text-white text-[#666] no-tap">{option}</span>
               // </label>
 
-              <Checkbox value={option}>
+              <Checkbox value={option} key={index}>
                 <span className="dark:text-white text-[#666] text-sm pl-[2px] mb-[2px]">
                   {option}
                 </span>

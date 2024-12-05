@@ -103,6 +103,7 @@ export const MainLayout: React.FC = () => {
         allow_vertical_swipe: false,
       })
       tgApp.expand()
+      tgApp.setHeaderColor("#000")
       tgApp.headerColor = '#000'
       tgApp.backgroundColor = '#0d0d0d'
       tgApp.MainButton.hide()

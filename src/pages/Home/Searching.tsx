@@ -12,6 +12,7 @@ const Searching = () => {
   const navigate = useNavigate()
   const [data, setData] = useState<SearchItem | null>(null)
   const [field, setField] = useState<string>('')
+  const [debouncedField, setDebouncedField] = useState<string>('')
   const searchingEve = async (field: string) => {
     const res = await searchByUsername({
       field,
@@ -22,10 +23,20 @@ const Searching = () => {
   }
 
   useEffect(() => {
-    if (field) {
+    const handler = setTimeout(() => {
+      setDebouncedField(field);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [field]);
+
+  useEffect(() => {
+    if (debouncedField) {
       searchingEve(field)
     }
-  }, [field])
+  }, [debouncedField]);
 
   return (
     <div className="px-[16px] pt-[16px]">

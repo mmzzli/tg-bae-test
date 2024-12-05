@@ -457,7 +457,7 @@ const ResourceFooter = memo<ResourceFooterProps>(
             }
           />
         </div>
-        <div className='px-4'>
+        <div className='px-4 min-h-[18px]'>
           <p className="text-[#0F1419] dark:text-[#ccc] text-sm leading-6">
             <MoreText text={data.title} />
           </p>

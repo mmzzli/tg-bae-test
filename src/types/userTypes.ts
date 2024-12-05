@@ -22,3 +22,13 @@ export interface Follow {
   tg_id: number
   tgname: string
 }
+
+
+export interface Search {
+  avatar: string
+  tg_id: number
+  tgname: string
+  if_follow: boolean
+}
+
+export type SearchItem = { users: Array<Search> }

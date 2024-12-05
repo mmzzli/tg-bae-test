@@ -1,5 +1,5 @@
 import { post, get, put } from './base'
-import { IUserLogIn, OthersUserInfo, PostItem, UserInfoProfile, Follow } from '@/types'
+import { IUserLogIn, OthersUserInfo, PostItem, UserInfoProfile, Follow, Search, SearchItem } from '@/types'
 
 export const logIn = (params: { user: string }) => {
   return post<IUserLogIn>(`/api/v1/login`, params)
@@ -43,4 +43,8 @@ export const putProfile = (params: { avatar: string; bio: string; username: stri
 }
 export const getUnreadNotificationCount = (uid: number) => {
   return get<{ amount: number }>(`/api/v1/unread/${uid}`)
+}
+
+export const searchByUsername = (params: { field: string; page_num: number; records: number }) => {
+  return post<SearchItem>(`/api/v1/user/search_by_username`, params)
 }

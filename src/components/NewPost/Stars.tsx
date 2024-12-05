@@ -98,8 +98,21 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
         <DrawerOverlay />
         <DrawerContent bg="no-repeat">
           <DrawerBody bg="#FFF" border="none" borderTopRadius="16px">
-            <Image onClick={onClose} mt="16px" mb="24px" src={Remove1Icon} alt="Remove Icon" />
-            <Heading as="h3" fontSize="24px" color="#333">
+            {/* <Box overflow="hidden">
+              <Image
+                bg="#F5F5FA"
+                padding="8px"
+                borderRadius="50px"
+               onClick={onClose} float="right" mt="16px" mb="24px" src={Remove1Icon} alt="Remove Icon" />
+            </Box> */}
+            <div className='overflow-hidden mt-[6px]'>
+              {<div className="w-[36px] h-[36px] p-[8px] float-right bg-[#F5F5FA] rounded-[50px] flex items-center justify-center cursor-pointer"
+              >
+                <i className="iconfont icon-icon_close text-[#12122A] text-[24px]"></i>
+              </div>}
+            </div>
+
+            <Heading as="h3" fontSize="24px" color="#333" mt="12px">
               Choose the stars to unlock this post
             </Heading>
             <Grid pt="28px" templateColumns="repeat(3, 1fr)" gap={3}>
@@ -111,10 +124,10 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
                       h="40px"
                       lineHeight="40px"
                       borderRadius="8px"
-                      border="1px solid #CDCDD4"
+                      border={`1px solid ${price === item? "#6254FF" : "#CDCDD4"}`}
                       justifyContent="center"
                       gap="4px"
-                      bg={price === item ? 'rgba(74, 58, 255, 1)' : ''}
+                      bg={price === item ? '#6254FF' : ''}
                       onClick={() => handleStarSelect(item)}
                     >
                       <Text color={price === item ? '#fff' : '#333'} fontSize="14px">{item}</Text>
@@ -134,6 +147,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
               {boll && <Input
                 color="#333"
                 border="none"
+                className="placeholder-[#999]"
                 p="0"
                 inputMode="numeric"
                 placeholder="customize"
@@ -155,6 +169,8 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
                 mt="30px"
                 mb="42px"
                 onClick={onClose}
+                border="1px solid #6254FF"
+                bg="#6254FF"
               >
                 Done
               </Button>}

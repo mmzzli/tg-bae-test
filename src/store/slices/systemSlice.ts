@@ -5,7 +5,7 @@ export type RoutePage = {
   params?: Record<string, string>
 }
 export type Notification = {
-  id: string
+  id: number
   type: 'follow' | 'message'
   content: string
   timestamp: number
@@ -20,6 +20,8 @@ export interface SystemSlice {
   resetNotificationList: () => void
   unreadNotificationCount: number
   setUnreadNotificationCount: (count: number) => void
+  latestReadNotificationId: number
+  setLatestReadNotificationId: (id: number) => void
 }
 
 export const createSystemSlice: StateCreator<SystemSlice> = (set) => ({
@@ -40,5 +42,9 @@ export const createSystemSlice: StateCreator<SystemSlice> = (set) => ({
   unreadNotificationCount: 0,
   setUnreadNotificationCount: (count) => {
     set({ unreadNotificationCount: count })
+  },
+  latestReadNotificationId: 0,
+  setLatestReadNotificationId: (id) => {
+    set({ latestReadNotificationId: id })
   },
 })

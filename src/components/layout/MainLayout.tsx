@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { retrieveLaunchParams } from '@telegram-apps/sdk'
 import { logIn, getUnreadNotificationCount } from '@/api'
@@ -94,7 +94,7 @@ export const MainLayout: React.FC = () => {
       const tgApp = window.Telegram.WebApp
       tgApp.ready()
       try {
-        // tgApp.requestFullscreen()
+        tgApp.requestFullscreen()
       } catch (err) {
         console.warn('######    web_app_request_fullscreen error    ######', err)
       }
@@ -216,13 +216,18 @@ export const MainLayout: React.FC = () => {
     }
   }, [videoResource])
 
+  const prevUnreadNotificationCount = useRef(0)
+
   useEffect(() => {
     if (
       unreadNotificationCount &&
       (unreadNotificationCount?.amount === 0 || unreadNotificationCount?.amount)
     ) {
-      console.log('unreadNotificationCount change', unreadNotificationCount)
-      setUnreadNotificationCount(unreadNotificationCount?.amount)
+      if (prevUnreadNotificationCount.current !== unreadNotificationCount?.amount) {
+        console.log('unreadNotificationCount change', unreadNotificationCount)
+        setUnreadNotificationCount(unreadNotificationCount?.amount)
+        prevUnreadNotificationCount.current = unreadNotificationCount?.amount
+      }
     }
   }, [unreadNotificationCount])
 

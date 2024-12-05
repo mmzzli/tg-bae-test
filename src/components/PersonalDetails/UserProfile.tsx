@@ -9,7 +9,7 @@ import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { profileImg } from '@/assets/image'
 import More from './More'
 import ProfileSkeleton from '../Skeketon/ProfileSkeleton'
-// import Notification from './Notification/Notification'
+import Notification from './Notification/Notification'
 const UserProfile: FC = () => {
   const { launchParams } = useTMAUtils()
   const userId = launchParams.initData?.user?.id ?? 0
@@ -50,7 +50,7 @@ const UserProfile: FC = () => {
         </div>
         <Box display="flex" alignItems="center">
           <EarningsPage />
-          {/* <Notification /> */}
+          <Notification />
           <ShareUser userInfo={userInfo} />
         </Box>
       </HStack>

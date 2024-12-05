@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 
 import { Search, SearchItem } from '@/types'
 import { searchByUsername } from '@/api'
+import Empty from '@/components/comm/Empty'
+import Icon from '@/components/comm/Icon'
 
 import Image from '@/components/Image/Image'
 import FollowButton from '@/components/PersonalDetails/FollowButton'
@@ -34,6 +36,8 @@ const Searching = () => {
   useEffect(() => {
     if (debouncedField) {
       searchingEve(field)
+    }else{
+      setData({ users: [] })
     }
   }, [debouncedField])
 
@@ -73,7 +77,7 @@ const Searching = () => {
         {data?.users.map((item, key) => (
           <div className="flex items-center justify-between py-[12px] mb-[12px]" key={key}>
             <div className="flex gap-[12px] items-center">
-              <div className="flex-shrink-0" onClick={() => navigate('/profile/520003')}>
+              <div className="flex-shrink-0" onClick={() => navigate(`/profile/${item.tg_id}`)}>
                 <Image
                   width={56}
                   height={56}
@@ -94,6 +98,14 @@ const Searching = () => {
           </div>
         ))}
       </div>
+      {(data?.users.length === 0 && debouncedField.length > 0) && <div>
+        <Empty
+          title="No search result."
+          icon={
+            <Icon name="icon-search" style={{ width: '164px', height: '164px' }}></Icon>
+          }
+        ></Empty>
+      </div>}
     </div>
   )
 }

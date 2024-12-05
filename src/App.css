@@ -18,6 +18,9 @@ button,
   -ms-user-select: none;
   user-select: none;
 }
+a, a:hover {
+  text-decoration: none !important;
+}
 
 /* add CSS variables to handle safe area */
 :root {
@@ -40,8 +43,7 @@ button,
   font-display: swap;
 } */
 
-
-img{
+img {
   max-width: none;
 }
 
@@ -87,8 +89,6 @@ video {
   transform: translate3d(0, 0, 0);
   will-change: transform, opacity;
 }
-
-
 
 * {
   -webkit-tap-highlight-color: transparent;

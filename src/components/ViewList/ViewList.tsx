@@ -48,7 +48,7 @@ const ViewList = ({ className }: PostListProps) => {
           </div>
         ))}
       </Box>
-      <div className={cn(className, 'pb-24')}>
+      <div className={cn(className, '')}>
         {ids === 'posts' && <MyPosts key={'posts'} />}
         {ids === 'purchased' && <OrderList key={'purchased'} />}
         {ids === 'saved' && <FavList key={'saved'} />}

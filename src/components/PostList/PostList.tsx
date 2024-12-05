@@ -28,7 +28,7 @@ const PostList = ({ className, list, hasMore, fetchMoreData }: PostListProps) =>
     )
   }
   return (
-    <div className={cn(className, 'pb-24')}>
+    <div className={cn(className, '')}>
       <InfiniteScroll
         dataLength={list.length}
         next={fetchMoreData}

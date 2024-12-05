@@ -394,22 +394,7 @@ const ResourceFooter = memo<ResourceFooterProps>(
   ({ data, likes, linkEve, onShare, savedEve, saveds, type }) => {
     return (
       <>
-        <div className="px-4 py-3">
-          <p className="text-[#0F1419] dark:text-[#ccc] text-sm leading-6">
-            <MoreText text={data.title} />
-          </p>
-          <HStack pt="2" justifyContent="space-between">
-            {type === 'payment' && (
-              <HStack gap="4px">
-                <p className="text-[#666666] dark:text-[#424048] text-[12px]">
-                  Purchased for {data.price}
-                </p>
-                <Image src={StarsIcon} />
-              </HStack>
-            )}
-          </HStack>
-        </div>
-        <div className="px-4 flex items-center justify-between">
+        <div className="px-4 py-3 flex items-center justify-between">
           <Flex gap="16px" alignItems="center">
             {data.media && data.media[0] && (
               <Flex
@@ -471,6 +456,21 @@ const ResourceFooter = memo<ResourceFooterProps>(
               <i className="iconfont icon-Frame-2 text-[#0F1233]" style={{ fontSize: '24px' }}></i>
             }
           />
+        </div>
+        <div className='px-4 min-h-[18px]'>
+          <p className="text-[#0F1419] dark:text-[#ccc] text-sm leading-6">
+            <MoreText text={data.title} />
+          </p>
+          <HStack pt="2" justifyContent="space-between">
+            {type === 'payment' && (
+              <HStack gap="4px">
+                <p className="text-[#666666] dark:text-[#424048] text-[12px]">
+                  Purchased for {data.price}
+                </p>
+                <Image src={StarsIcon} />
+              </HStack>
+            )}
+          </HStack>
         </div>
       </>
     )

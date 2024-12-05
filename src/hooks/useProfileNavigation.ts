@@ -8,7 +8,7 @@ export function useProfileNavigation() {
   const navigate = useNavigate()
   const { launchParams } = useTMAUtils()
   const currentUid = launchParams.initData?.user?.id ?? 0
-  const { setOthersUserInfo, othersUserInfo, resetOthersViewList } = useStore((state) => ({
+  const { othersUserInfo, resetOthersViewList } = useStore((state) => ({
     othersUserInfo: state.othersUserInfo,
     setOthersUserInfo: state.setOthersUserInfo,
     resetOthersViewList: state.resetOthersViewList,

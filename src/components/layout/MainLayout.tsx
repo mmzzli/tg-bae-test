@@ -102,16 +102,8 @@ export const MainLayout: React.FC = () => {
       postEvent('web_app_setup_swipe_behavior', {
         allow_vertical_swipe: false,
       })
-      postEvent('web_app_set_background_color', {
-        color: '#ffffff',
-      })
-      postEvent('web_app_set_header_color', {
-        color: '#ffffff',
-      })
       tgApp.expand()
-      tgApp.setHeaderColor('#000')
       tgApp.headerColor = '#ffffff'
-      tgApp.backgroundColor = '#ffffff'
       tgApp.MainButton.hide()
       tgApp.onEvent('viewportChanged', () => {
         if (!tgApp.isExpanded) {
@@ -212,11 +204,6 @@ export const MainLayout: React.FC = () => {
 
   return (
     <div className="absolute inset-0 top-0 right-0 bottom-0 left-0overflow-hidden flex pb-[84px] transition-all duration-300 bg-white dark:bg-black">
-      <div className="fixed top-0 left-0 right-0 bg-white text-black">
-        <div>111111</div>
-        <div>222</div>
-        <div>3333</div>
-      </div>
       <div
         className="absolute left-0 right-0 top-0 bottom-[84px] flex-col bg-white dark:bg-[#0D0D0D] overflow-hidden"
         style={{ display: hiddenChatPage ? 'none' : 'flex', zIndex: hiddenChatPage ? -1 : 200 }}

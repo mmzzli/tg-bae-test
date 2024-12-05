@@ -667,7 +667,7 @@ export const NewPost: FC = () => {
             isLoading={isLoading}
             isDisabled={firstFileType === 'image' ? files.length === 0 : videoFile == null}
             _hover={{
-              bg:"#D1D0DE"
+              bg: (firstFileType === 'image' ? files.length === 0 : videoFile == null) ? "#D1D0DE" : "#6254FF"
             }}
           >
             <Image src={PostIcon} mr="5px" /> Post
@@ -707,13 +707,17 @@ export const NewPost: FC = () => {
                     />
                   </Box>
                 ) : (
-                  <Image
-                    w="88px"
-                    h="88px"
-                    cursor="pointer"
-                    src={PostAddIcon}
-                    onClick={handleChooseFile}
-                  />
+                <Grid templateColumns="repeat(3, 1fr)" gap={4}>
+                  <GridItem aspectRatio={1}>
+                    <div
+                      onClick={handleChooseFile}
+                      className="w-full h-full flex items-center justify-center border-dashed border border-[#CDCDD4] rounded-lg cursor-pointer"
+                    >
+                      <i className="iconfont icon-add text-[#999999] text-[30px]"></i>
+                    </div>
+                  </GridItem>
+                </Grid>
+
                 )}
               </>
             )}

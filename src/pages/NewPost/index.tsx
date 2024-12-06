@@ -41,28 +41,30 @@ export const NewPost: FC = () => {
   const [imgAttr, setImgAttr] = useState<any[]>([])
   const [files, setFiles] = useState<File[]>([])
   const token = useStore((state) => state.token)
-  const [frameSelectorBoll, setFrameSelectorBoll] = useState<boolean>(false)
+  // const [frameSelectorBoll, setFrameSelectorBoll] = useState<boolean>(false)
   // start
   const [price, setPrice] = useState<number | null>(null)
   // cover
   const [cover, setCover] = useState<string | null>(null)
 
-  const imageArrStyle = useMemo(() => {
-    const width: number[] = []
-    const height: number[] = []
-    for (const imgitem of imgAttr) {
-      const image = new window.Image()
-      image.src = imgitem
+
+  const [widths, setWidths] = useState<number[]>([]);
+  const [heights, setHeights] = useState<number[]>([]);
+
+  useEffect(() => {
+    imgAttr.forEach((imgitem) => {
+      const image = new window.Image();
+      image.src = imgitem;
       image.onload = () => {
-        width.push(image.width)
-        height.push(image.height)
-      }
-    }
-    return {
-      width,
-      height,
-    }
-  }, [imgAttr])
+        setWidths((prevWidths) => [...prevWidths, image.width]);
+        setHeights((prevHeights) => [...prevHeights, image.height]);
+      };
+
+      image.onerror = () => {
+        console.error(`Failed to load: ${imgitem}`);
+      };
+    });
+  }, [imgAttr]);
 
   // upload states
   const { addUploadThread, updateUploadThread, addUploadTask, resetUploadTask } = useStore(
@@ -131,8 +133,8 @@ export const NewPost: FC = () => {
           type: 1,
           currency: 0,
           price: price || 0,
-          width: imageArrStyle.width.join(':'),
-          height: imageArrStyle.height.join(':'),
+          width: widths.join(':'),
+          height: heights.join(':'),
         })
         toast({
           render: () => {
@@ -636,6 +638,10 @@ export const NewPost: FC = () => {
   }
 
   const removeImg = (key: number) => {
+
+    setWidths((prevWidths) => prevWidths.filter((_, index) => index !== key));
+    setHeights((prevWidths) => prevWidths.filter((_, index) => index !== key));
+
     setImgAttr((prevItems) => prevItems.filter((_, index) => index !== key))
     setFiles((prevItems) => prevItems.filter((_, index) => index !== key))
   }

@@ -53,11 +53,11 @@ const HomePage: FC = () => {
       left: 16,
     }
 
-    const handleScroll = debounce(() => {
+    const handleScroll = throttle(() => {
       if (!scrollDiv) return
       setScrollPosition(scrollDiv.scrollTop)
       console.log(scrollDiv.scrollTop)
-    }, 50)
+    }, 34)
 
     scrollDiv?.addEventListener('scroll', handleScroll)
     return () => scrollDiv?.removeEventListener('scroll', handleScroll)
@@ -116,7 +116,7 @@ const HomePage: FC = () => {
         <h3
           ref={titleRef}
           style={getTitleStyle()}
-          className="fixed text-black dark:text-[#E0E2F6] text-[20px] flex items-center transition-all"
+          className="fixed text-black dark:text-[#E0E2F6] text-[20px] flex items-center transition-all duration-0 ease-linear"
         >
           {title}
         </h3>

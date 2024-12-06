@@ -20,7 +20,7 @@ export default function ChatSkeleton() {
 export const SkeletonShine = () => {
   return (
     <div
-      className="absolute top-0 left-[-120px] w-[120px] h-full animate-shimmer bg-gradient-to-r from-transparent via-white/10 to-transparent dark:via-white/10 via-black/5"
+      className="absolute top-0 left-[-120px] w-[120px] h-full animate-shimmer bg-gradient-to-r from-transparent via-[#999]/10 to-transparent dark:via-[#999]/10 via-black/5"
       //   style={{
       //     background: `linear-gradient(
       //   90deg,

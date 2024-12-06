@@ -238,3 +238,23 @@ export function throttle(func: (...args: any[]) => void, wait: number) {
     }
   }
 }
+
+export const genShareLinkFn = async (
+  title: string,
+  pid: number,
+  uid: number,
+  getLinkHandlerAsync: any
+) => {
+  const shareText = encodeURIComponent(title)
+  const { host, ref } = await getLinkHandlerAsync({ pid, uid })
+  console.log(host, ref, 'getLinkResult')
+
+  const copyLink = encodeURIComponent(`${import.meta.env.VITE_API_URL}link/${ref}`)
+  console.log('copyLink', decodeURIComponent(copyLink))
+
+  const shareLink = `https://t.me/share/url?url=${copyLink}&text=${shareText}`
+  return {
+    copyLink,
+    shareLink,
+  }
+}

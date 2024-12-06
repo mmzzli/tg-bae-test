@@ -129,9 +129,12 @@ export const MainLayout: React.FC = () => {
       window.Telegram.WebView.onEvent(
         'visibility_changed',
         (eventType: string, eventData: { is_visible: boolean }) => {
-          console.log(eventType, eventData)
           if (eventData.is_visible) {
-            tgApp.setHeaderColor('#ffffff')
+            console.log('eventData.is_visible', eventData.is_visible)
+            window.Telegram.WebApp.setHeaderColor('#000')
+            setTimeout(() => {
+              window.Telegram.WebApp.setHeaderColor('#ffffff')
+            }, 1000)
           }
         }
       )

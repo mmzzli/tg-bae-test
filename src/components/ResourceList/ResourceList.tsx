@@ -457,12 +457,12 @@ const ResourceFooter = memo<ResourceFooterProps>(
             }
           />
         </div>
-        <div className='px-4 min-h-[18px]'>
-          <p className="text-[#0F1419] dark:text-[#ccc] text-sm leading-6">
+        {(data.title || data.price > 0) && <div className='px-4 min-h-[18px]'>
+          {data.title && <p className="text-[#0F1419] dark:text-[#ccc] text-sm leading-6">
             <MoreText text={data.title} />
-          </p>
+          </p>}
           <HStack pt="2" justifyContent="space-between">
-            {type === 'payment' && (
+            {data.price && (
               <HStack gap="4px">
                 <p className="text-[#666666] dark:text-[#424048] text-[12px]">
                   Purchased for {data.price}
@@ -471,7 +471,7 @@ const ResourceFooter = memo<ResourceFooterProps>(
               </HStack>
             )}
           </HStack>
-        </div>
+        </div>}
       </>
     )
   }

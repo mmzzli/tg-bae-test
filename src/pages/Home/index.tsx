@@ -6,6 +6,7 @@ import FollowingList from '@/components/RecommendList/FollowingList'
 import { useStore } from '@/store'
 import { CardRecommendProvider } from '@/utils/constants'
 import NewPostButton from '@/components/NewPost/NewPostButton'
+import { debounce, throttle } from '@/utils/chat/schedulers'
 
 const HomePage: FC = () => {
   const navigate = useNavigate()
@@ -52,10 +53,11 @@ const HomePage: FC = () => {
       left: 16,
     }
 
-    const handleScroll = () => {
+    const handleScroll = debounce(() => {
       if (!scrollDiv) return
       setScrollPosition(scrollDiv.scrollTop)
-    }
+      console.log(scrollDiv.scrollTop)
+    }, 50)
 
     scrollDiv?.addEventListener('scroll', handleScroll)
     return () => scrollDiv?.removeEventListener('scroll', handleScroll)
@@ -66,8 +68,8 @@ const HomePage: FC = () => {
 
     const maxScroll = 100
     const progress = Math.min(scrollPosition / maxScroll, 1)
-
-    const targetTop = 0
+    const safeAreaTop = document.documentElement.style.getPropertyValue('--tg-safe-area-inset-top')
+    const targetTop = parseInt(safeAreaTop, 10)
     const targetLeft = window.innerWidth / 2 - titleRef.current.offsetWidth / 2
 
     const currentTop = Math.max(initialTitlePosition.current.top - scrollPosition, targetTop)
@@ -76,12 +78,8 @@ const HomePage: FC = () => {
       (targetLeft - initialTitlePosition.current.left) * progress
 
     return {
-      ...(fadeClass === 'fade-in' ? styles.fadeIn : styles.fadeOut),
-      position: 'fixed' as const,
       top: `${currentTop}px`,
       left: `${currentLeft}px`,
-      transform: 'translateY(var(--tg-safe-area-inset-top))',
-      transition: 'all 0.1s ease-out',
     }
   }
 
@@ -118,7 +116,7 @@ const HomePage: FC = () => {
         <h3
           ref={titleRef}
           style={getTitleStyle()}
-          className="text-black dark:text-[#E0E2F6] text-[20px] flex items-center"
+          className="fixed text-black dark:text-[#E0E2F6] text-[20px] flex items-center transition-all"
         >
           {title}
         </h3>

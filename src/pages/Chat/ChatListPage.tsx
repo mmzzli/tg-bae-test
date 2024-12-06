@@ -54,6 +54,23 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
   const handleContainerClick = () => {
     setResetTrigger((prev) => prev + 1)
   }
+  const [status, setStatus] = useState<ConnectStatus>(ConnectStatus.Disconnect)
+  const getStatusText = () => {
+    switch (status) {
+      case ConnectStatus.Connected:
+        return ''
+      case ConnectStatus.ConnectKick:
+        return 'kick'
+      case ConnectStatus.Disconnect:
+        return 'connecting...'
+      case ConnectStatus.Connecting:
+        return 'connecting...'
+      case ConnectStatus.ConnectFail:
+        return 'network error'
+      default:
+        return 'Unknown'
+    }
+  }
 
   const handleMessage = useCallback(
     (message: FormattedMessage) => {
@@ -115,6 +132,7 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
         setConnection(sdk)
 
         removeConnectionStatusListener = sdk.addConnectionStatusListener(async (status) => {
+          setStatus(status)
           console.warn('-----ConnectionStatusListener------', status)
           const isChatListLoadedStateFormStore = useStore.getState().isChatListLoaded
           if (status === ConnectStatus.Connected && !isChatListLoadedStateFormStore) {
@@ -133,11 +151,18 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
                 (conversation, action) => {
                   if (action === ConversationAction.add) {
                     console.warn('addConversationListener add conversation', conversation)
-                    addChatListItem(conversation)
-                    addMessageWindowListItem({
-                      channel: conversation.channel,
-                      messages: conversation.recents?.map(getWrappedMessage) ?? [],
-                    })
+                    const repeat = useStore
+                      .getState()
+                      .chatList.some(
+                        (item) => item.channel.channelID === conversation.channel.channelID
+                      )
+                    if (!repeat) {
+                      addChatListItem(conversation)
+                      addMessageWindowListItem({
+                        channel: conversation.channel,
+                        messages: conversation.recents?.map(getWrappedMessage) ?? [],
+                      })
+                    }
                   } else if (action === ConversationAction.update) {
                     console.warn('addConversationListener update conversation', conversation)
                     updateChatListItem(conversation)
@@ -167,17 +192,16 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
   console.log('chatListPage render')
   return (
     <div
-      className={cn(
-        'dark:bg-black bg-white min-h-screen overflow-auto',
-        'scrollbar-hide',
-        className
-      )}
+      className={cn('dark:bg-black bg-white overflow-auto min-h-full', 'scrollbar-hide', className)}
       onClick={handleContainerClick}
       style={{
         paddingTop:
           'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 32px)',
       }}
     >
+      <div className="absolute top-0 left-0 right-0 h-[32px] pl-6 text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-black flex items-center justify-center">
+        {getStatusText()}
+      </div>
       {isChatListLoaded && chatList.length > 0 && (
         <InfiniteScroll
           dataLength={chatList.length}

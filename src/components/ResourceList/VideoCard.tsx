@@ -65,7 +65,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
                 rounded="20px"
               >
                 <i className="iconfont icon-a-Frame2085661742 text-[12px] text-white"></i>
-                <Text color="#E0E2F6" fontSize="14px">
+                <Text color="white" fontSize="14px">
                   {formatTime(Number(data.duration))}
                 </Text>
               </HStack>

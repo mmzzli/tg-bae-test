@@ -49,11 +49,12 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
             right="12px"
             p="4px 10px"
             gap="4px"
+            height="29px"
             rounded="20px"
           >
-            <div className="text-white">
-              {currentIndex + 1}/{data.pic_num}
-            </div>
+            <Text color="white" fontSize="14px">
+              {currentIndex + 1}&nbsp;/&nbsp;{data.pic_num}
+            </Text>
           </HStack>
         ) : (
           ''

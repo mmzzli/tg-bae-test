@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useRequest } from 'ahooks';
+import { useRequest } from 'ahooks'
 
 import { Search, SearchItem } from '@/types'
 import { searchByUsername } from '@/api'
@@ -9,26 +9,33 @@ import Icon from '@/components/comm/Icon'
 
 import Image from '@/components/Image/Image'
 import FollowButton from '@/components/PersonalDetails/FollowButton'
-
+import { useTMAUtils } from '@/hooks/useTMAUtils'
 const Searching = () => {
   const navigate = useNavigate()
   const [data, setData] = useState<SearchItem | null>(null)
   const [field, setField] = useState<string>('')
   const [debouncedField, setDebouncedField] = useState<string>('')
-  const { loading, run, data:res } = useRequest((field:string) =>
-    searchByUsername({
-      field: field.toLowerCase(),
-      page_num: 1,
-      records: 10,
-    }),
+  const { getCurrentUid } = useTMAUtils()
+  const currentUid = getCurrentUid()
+  const {
+    loading,
+    run,
+    data: res,
+  } = useRequest(
+    (field: string) =>
+      searchByUsername({
+        field: field.toLowerCase(),
+        page_num: 1,
+        records: 10,
+      }),
     { manual: true }
-  );
+  )
 
-  useEffect(()=>{
-    if(res){
+  useEffect(() => {
+    if (res) {
       setData(res)
     }
-  },[res])
+  }, [res])
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -43,7 +50,7 @@ const Searching = () => {
   useEffect(() => {
     if (debouncedField) {
       run(field)
-    }else{
+    } else {
       setData({ users: [] })
     }
   }, [debouncedField])
@@ -97,22 +104,22 @@ const Searching = () => {
               <h3 className="text-[#333] text-[16px]">{item.tgname}</h3>
             </div>
             <FollowButton
-                fansid={item.fans_id}
-                tgid={item.tg_id}
-                avatar={item.avatar}
-                username={item.tgname}
-              />
+              fansid={currentUid}
+              tgid={item.tg_id}
+              avatar={item.avatar}
+              username={item.tgname}
+            />
           </div>
         ))}
       </div>
-      {(data?.users.length === 0 && debouncedField.length > 0) && <div>
-        <Empty
-          title="No search result."
-          icon={
-            <Icon name="icon-search" style={{ width: '164px', height: '164px' }}></Icon>
-          }
-        ></Empty>
-      </div>}
+      {data?.users.length === 0 && debouncedField.length > 0 && (
+        <div>
+          <Empty
+            title="No search result."
+            icon={<Icon name="icon-search" style={{ width: '164px', height: '164px' }}></Icon>}
+          ></Empty>
+        </div>
+      )}
     </div>
   )
 }

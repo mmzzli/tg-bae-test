@@ -214,7 +214,7 @@ export const MainLayout: React.FC = () => {
   }, [videoResource, imageResource, virtualRoutePage])
 
   return (
-    <div className="absolute inset-0 top-0 right-0 bottom-0 left-0overflow-hidden flex pb-[84px] transition-all duration-300 bg-white dark:bg-black">
+    <div className="absolute inset-0 top-0 right-0 bottom-0 left-0overflow-hidden flex pb-[84px] transition-all duration-300 bg-white dark:bg-black no-tap">
       <div
         className="absolute left-0 right-0 top-0 bottom-[84px] flex-col bg-white dark:bg-[#0D0D0D] overflow-hidden"
         style={{ display: hiddenChatPage ? 'none' : 'flex', zIndex: hiddenChatPage ? -1 : 200 }}
@@ -233,20 +233,7 @@ export const MainLayout: React.FC = () => {
       <div
         className={`absolute inset-0 top-0 bottom-[84px] z-1`}
         style={{
-          paddingTop: `calc(${
-            window
-              .getComputedStyle(document.documentElement)
-              .getPropertyValue('--tg-safe-area-inset-top') &&
-            parseInt(
-              window
-                .getComputedStyle(document.documentElement)
-                .getPropertyValue('--tg-safe-area-inset-top'),
-              10
-            ) !== 0
-              ? 'var(--tg-safe-area-inset-top) + 54px'
-              : '0'
-          })`,
-          // paddingTop: 'var(--tg-safe-area-inset-top)',
+          paddingTop: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
         }}
       >
         <Outlet />

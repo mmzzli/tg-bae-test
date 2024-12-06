@@ -1,14 +1,8 @@
 import { StateCreator } from 'zustand'
-
+import { Notification } from '@/types'
 export type RoutePage = {
   name: string
   params?: Record<string, string>
-}
-export type Notification = {
-  id: number
-  type: 'follow' | 'message'
-  content: string
-  timestamp: number
 }
 
 export interface SystemSlice {

@@ -114,18 +114,8 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
         sdk.start()
         setConnection(sdk)
 
-        const res = await sdk.getAllConversation()
-        setIsChatListLoaded(true)
-        setChatList(res)
-        res.forEach((conversation) => {
-          addMessageWindowListItem({
-            channel: conversation.channel,
-            messages: conversation.recents?.map(getWrappedMessage).reverse() ?? [],
-          })
-        })
-
         removeConnectionStatusListener = sdk.addConnectionStatusListener(async (status) => {
-          log('-----ConnectionStatusListener------', status)
+          console.warn('-----ConnectionStatusListener------', status)
           const isChatListLoadedStateFormStore = useStore.getState().isChatListLoaded
           if (status === ConnectStatus.Connected && !isChatListLoadedStateFormStore) {
             try {
@@ -142,24 +132,24 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
               removeSyncConversationListener = sdk.addConversationListener(
                 (conversation, action) => {
                   if (action === ConversationAction.add) {
-                    console.log('addConversationListener add conversation', conversation)
+                    console.warn('addConversationListener add conversation', conversation)
                     addChatListItem(conversation)
                     addMessageWindowListItem({
                       channel: conversation.channel,
                       messages: conversation.recents?.map(getWrappedMessage) ?? [],
                     })
                   } else if (action === ConversationAction.update) {
-                    console.log('addConversationListener update conversation', conversation)
+                    console.warn('addConversationListener update conversation', conversation)
                     updateChatListItem(conversation)
                   } else if (action === ConversationAction.remove) {
-                    console.log('addConversationListener remove conversation', conversation)
+                    console.warn('addConversationListener remove conversation', conversation)
                     deleteChatListItem(conversation.channel.channelID)
                   }
                 }
               )
-              log('getAllConversation', res)
+              console.warn('getAllConversation', res)
             } catch (error) {
-              log('getAllConversation error', error)
+              console.warn('getAllConversation error', error)
             }
           } else if (status === ConnectStatus.ConnectKick || status === ConnectStatus.Disconnect) {
             removeSyncConversationListener && removeSyncConversationListener()

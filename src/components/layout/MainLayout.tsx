@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { retrieveLaunchParams } from '@telegram-apps/sdk'
-import { logIn, getUnreadNotificationCount } from '@/api'
+import { logIn, getUnreadNotificationCount, getFollowingList } from '@/api'
 import { DEV_INIT_DATA_RAW } from '@/utils/constants'
 import { isLocalEnv } from '@/utils/env'
 import { useStore } from '@/store'
@@ -48,18 +48,32 @@ export const MainLayout: React.FC = () => {
   const setImageResource = useStore((state) => state.setImageResource)
   const virtualRoutePage = useStore((state) => state.virtualRoutePage)
   const setUnreadNotificationCount = useStore((state) => state.setUnreadNotificationCount)
+  const myFollow = useStore((state) => state.myFollow)
+  const setMyFollow = useStore((state) => state.setMyFollow)
   const { getCurrentUid } = useTMAUtils()
   const current_uid = getCurrentUid()
 
-  const { data: unreadNotificationCount, run: runGetUnreadNotificationCount } = useRequest(
-    getUnreadNotificationCount,
-    {
-      pollingInterval: 6000,
-      manual: true,
-      pollingWhenHidden: false,
-      pollingErrorRetryCount: 6,
+  const { run: runGetUnreadNotificationCount } = useRequest(getUnreadNotificationCount, {
+    pollingInterval: 6000,
+    manual: true,
+    pollingWhenHidden: false,
+    pollingErrorRetryCount: 6,
+    onSuccess({ amount }) {
+      setUnreadNotificationCount(amount)
+    },
+  })
+
+  const updateMyFollow = () => {
+    if (!useStore.getState().token) {
+      setTimeout(() => {
+        updateMyFollow()
+      }, 150)
+      return
     }
-  )
+    if (myFollow.length === 0) {
+      getFollowingList(current_uid).then((res) => setMyFollow(res))
+    }
+  }
 
   const { run: runLogin } = useRequest(logIn, {
     manual: true,
@@ -67,6 +81,7 @@ export const MainLayout: React.FC = () => {
       setToken(token)
       setUserInfo({ ...user_info, api_token })
       runGetUnreadNotificationCount(current_uid)
+      updateMyFollow()
     },
   })
 
@@ -195,21 +210,6 @@ export const MainLayout: React.FC = () => {
       }
     }
   }, [videoResource, imageResource, virtualRoutePage])
-
-  const prevUnreadNotificationCount = useRef(0)
-
-  useEffect(() => {
-    if (
-      unreadNotificationCount &&
-      (unreadNotificationCount?.amount === 0 || unreadNotificationCount?.amount)
-    ) {
-      if (prevUnreadNotificationCount.current !== unreadNotificationCount?.amount) {
-        console.log('unreadNotificationCount change', unreadNotificationCount)
-        setUnreadNotificationCount(unreadNotificationCount?.amount)
-        prevUnreadNotificationCount.current = unreadNotificationCount?.amount
-      }
-    }
-  }, [unreadNotificationCount])
 
   return (
     <div className="absolute inset-0 top-0 right-0 bottom-0 left-0overflow-hidden flex pb-[84px] transition-all duration-300 bg-white dark:bg-black">

@@ -41,6 +41,7 @@ const UserProfile: FC = () => {
         <div className="w-[64px] h-[64px] overflow-hidden rounded-[50%]">
           <Image
             rect
+            type="avatar"
             width={64}
             height={64}
             className="rounded-full"

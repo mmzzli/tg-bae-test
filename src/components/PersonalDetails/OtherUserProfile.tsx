@@ -67,6 +67,7 @@ const OtherUserProfile: FC = () => {
       <HStack gap="16px" pl="8px" justifyContent="space-between">
         <Image
           rect
+          type="avatar"
           width={64}
           height={64}
           className="rounded-full"

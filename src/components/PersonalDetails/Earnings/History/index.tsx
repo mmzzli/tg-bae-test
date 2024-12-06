@@ -109,7 +109,7 @@ const EarningsHistory = () => {
         </InfiniteScroll>
         {loading && !hasMore && (
           <Icon
-            name="icon-none_search"
+            name="icon-Empty_white_chat"
             style={{ width: '164px', height: '164px', margin: 'auto' }}
           />
         )}

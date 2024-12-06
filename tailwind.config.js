@@ -13,6 +13,10 @@ export default {
         'white-opacity-15': 'rgba(255, 255, 255, 0.15)', // 自定义颜色
         'white-close': '#E0E2F6',
       },
+      backgroundImage: {
+        'video-gradient':
+          'linear-gradient(180deg, rgba(0, 0, 0, 0.70) 0%, rgba(0, 0, 0, 0.30) 14.22%, rgba(0, 0, 0, 0.10) 30.87%, rgba(0, 0, 0, 0.00) 48.98%, rgba(0, 0, 0, 0.10) 68.55%, rgba(0, 0, 0, 0.30) 86.66%, rgba(0, 0, 0, 0.70) 100%)',
+      },
       keyframes: {
         ripple: {
           '0%': { transform: 'scale(0)', opacity: 1 },

@@ -89,6 +89,10 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
     }
   }, [isOpen, swiper])
 
+  const handlerClose = () => {
+    onClose()
+  }
+
   if (!isOpen) return null
 
   return (
@@ -155,7 +159,11 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
         speed={300}
       >
         {images.map((src, index) => (
-          <SwiperSlide key={index} className="flex items-center justify-center">
+          <SwiperSlide
+            key={index}
+            className="flex items-center justify-center"
+            onClick={handlerClose}
+          >
             <img
               src={loading ? formatImage(src, false) : src}
               alt={`Image ${index + 1}`}
@@ -164,6 +172,9 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
                 'object-contain select-none preview-image',
                 'touch-none'
               )}
+              onClick={(e) => {
+                e.stopPropagation()
+              }}
               draggable={false}
               style={{
                 transformOrigin: 'center center',

@@ -63,6 +63,9 @@ export const setLatestReadNotificationId = (msgid: number) => {
 export const getNotifications = (params: { page_num: number; records: number }) => {
   return post<{ posts: Notification[] }>(`/api/v1/message`, params)
 }
+export const getNotificationsById = (params: { id: number; records: number }) => {
+  return post<{ posts: Notification[] }>(`/api/v1/unread_message`, params)
+}
 // Notification END
 
 export const searchByUsername = (params: { field: string; page_num: number; records: number }) => {

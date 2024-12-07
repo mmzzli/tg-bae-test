@@ -6,7 +6,7 @@ import { Notification as TypeNotification } from '@/types'
 import NotificationList from './NotificationList'
 
 const NOTIFICATION_ICON_SIZE = '20px'
-const INITIAL_EXTRA_RECORDS = 5
+const INITIAL_EXTRA_RECORDS = 6
 const NOTIFICATION_UPDATE_BUFFER = 4
 
 const NotificationIcon = ({ unreadCount }: { unreadCount: number }) => (

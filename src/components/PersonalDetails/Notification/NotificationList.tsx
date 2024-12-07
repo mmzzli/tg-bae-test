@@ -137,13 +137,23 @@ const NotificationList: FC = () => {
                     <Image
                       rect
                       onClick={() => {
-                        if (notification.post.media.split(',')[0])
+                        if (notification.post.type === 1 && notification.post.media.split(',')[0]) {
                           setImageResource({
                             images: notification.post.media.split(','),
                             currentIndex: 0,
                           })
+                        } else {
+                          setImageResource({
+                            images: [notification.post.thumbnail],
+                            currentIndex: 0,
+                          })
+                        }
                       }}
-                      src={notification.post.media.split(',')[0]}
+                      src={
+                        notification.post.type === 1 && notification.post.media.split(',')[0]
+                          ? notification.post.media.split(',')[0]
+                          : notification.post.thumbnail
+                      }
                       width={80}
                       height={80}
                     />

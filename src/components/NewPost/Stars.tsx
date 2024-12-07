@@ -73,25 +73,27 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
 
   return (
     <>
-      <Box position="fixed" bottom="56px" w="100%" left="0" p="0px 16px">
-        <HStack
-          border="0.5px solid #CDCDD4"
-          h="52px"
-          lineHeight="52px"
-          p="0 16px"
-          justifyContent="space-between"
-          borderRadius="40px"
-          onClick={onOpen}
-        >
-          <HStack gap="12px" w="100%" justifyContent="space-between">
-            <Text color="#333" w="100%" fontSize="14px">Stars to unlock this post</Text>
-            <HStack justifyContent="flex-end">
-              <Image src={StarsIcon} />
-              <Text color="#333" fontSize="14px">{price}</Text>
+      <Box position="fixed" bottom="0px" w="100%" left="0" p="0px 16px" bg="#fff">
+        <Box pb="56px">
+          <HStack
+            border="0.5px solid #CDCDD4"
+            h="52px"
+            lineHeight="52px"
+            p="0 16px"
+            justifyContent="space-between"
+            borderRadius="40px"
+            onClick={onOpen}
+          >
+            <HStack gap="12px" w="100%" justifyContent="space-between">
+              <Text color="#333" w="100%" fontSize="14px">Stars to unlock this post</Text>
+              <HStack justifyContent="flex-end">
+                <Image src={StarsIcon} />
+                <Text color="#333" fontSize="14px">{price}</Text>
+              </HStack>
             </HStack>
+            <Image src={Right1Icon} />
           </HStack>
-          <Image src={Right1Icon} />
-        </HStack>
+        </Box>
       </Box>
 
       <Drawer placement="bottom" onClose={onClose} isOpen={isOpen}>

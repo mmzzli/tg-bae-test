@@ -107,11 +107,17 @@ export const DeleteDialogWarp = NiceModal.create(
           position: 'top',
         })
       } catch (e: any) {
+        let message = ''
+        if (e.status === 400) {
+          message = 'Paid content cannot be deleted'
+        } else {
+          message = e.message
+        }
         toast({
           render: () => {
             return (
               <CustomToast
-                title={`Error ${e.message}`}
+                title={`${message}`}
                 type={typeOptions.error}
                 top={
                   window

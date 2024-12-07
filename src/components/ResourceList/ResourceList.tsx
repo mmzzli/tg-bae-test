@@ -268,6 +268,7 @@ const ResourceList = ({
   const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
     const { shareLink, copyLink } = await genShareLinkFn(title, pid, uid, getLinkHandlerAsync)
     setLinks({ shareLink, copyLink: decodeURIComponent(copyLink) })
+    toggle()
   })
 
   const resourcesEve = (post_id: number, url: string) => {
@@ -327,7 +328,6 @@ const ResourceList = ({
                     pid: data.id,
                     uid: data.uid,
                   })
-                  toggle()
                 }}
               />
             </Box>

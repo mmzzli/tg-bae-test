@@ -90,7 +90,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
             )
           })}
         </Swiper>
-        {data.uid !== getCurrentUid() && !data.is_pay && (
+        {(data.uid !== getCurrentUid() && !data.is_pay && data.price > 0) && (
           <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} />
         )}
       </div>

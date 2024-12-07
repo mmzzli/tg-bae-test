@@ -43,9 +43,9 @@ const NotificationList: FC = () => {
         setNotificationList([...notificationList, ...newNotifications.posts])
       }
     } catch (error) {
+      setHasMore(false)
       console.error('Failed to load more notifications:', error)
     } finally {
-      setHasMore(false)
       setIsLoading(false)
     }
   }

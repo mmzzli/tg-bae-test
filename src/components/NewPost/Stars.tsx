@@ -73,7 +73,8 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
 
   return (
     <>
-      <Box position="fixed" bottom="56px" w="100%" left="0" p="0px 16px">
+      <Box position="fixed" bottom="0px" w="100%" left="0" p="0px 16px" bg="#fff">
+      <Box pb="56px">
         <HStack
           border="0.5px solid #CDCDD4"
           h="52px"
@@ -92,6 +93,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
           </HStack>
           <Image src={Right1Icon} />
         </HStack>
+      </Box>
       </Box>
 
       <Drawer placement="bottom" onClose={onClose} isOpen={isOpen}>

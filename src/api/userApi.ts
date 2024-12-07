@@ -1,5 +1,14 @@
 import { post, get, put } from './base'
-import { IUserLogIn, OthersUserInfo, PostItem, UserInfoProfile, Follow } from '@/types'
+import {
+  IUserLogIn,
+  OthersUserInfo,
+  PostItem,
+  UserInfoProfile,
+  Follow,
+  Search,
+  SearchItem,
+  Notification,
+} from '@/types'
 
 export const logIn = (params: { user: string }) => {
   return post<IUserLogIn>(`/api/v1/login`, params)
@@ -41,6 +50,24 @@ export const profileEdit = (uid: number) => {
 export const putProfile = (params: { avatar: string; bio: string; username: string }) => {
   return put(`/api/v1/profile`, params)
 }
+// Notification START
 export const getUnreadNotificationCount = (uid: number) => {
   return get<{ amount: number }>(`/api/v1/unread/${uid}`)
+}
+export const getLatestReadNotificationId = (uid: number) => {
+  return get<{ latest_id: number }>(`/api/v1/read/${uid}`)
+}
+export const setLatestReadNotificationId = (msgid: number) => {
+  return post<{ id: number }>(`/api/v1/read`, { read_id: msgid })
+}
+export const getNotifications = (params: { page_num: number; records: number }) => {
+  return post<{ posts: Notification[] }>(`/api/v1/message`, params)
+}
+export const getNotificationsById = (params: { id: number; records: number }) => {
+  return post<{ posts: Notification[] }>(`/api/v1/unread_message`, params)
+}
+// Notification END
+
+export const searchByUsername = (params: { field: string; page_num: number; records: number }) => {
+  return post<SearchItem>(`/api/v1/user/search_by_username`, params)
 }

@@ -19,29 +19,21 @@ button,
   user-select: none;
 }
 
+a,
+a:hover {
+  text-decoration: none !important;
+}
+
 /* add CSS variables to handle safe area */
 :root {
-  --safe-area-inset-bottom: env(safe-area-inset-bottom, 24px);
   --Dark-T1: #e0e2f6;
   --Light-T1: #0f1233;
   --Light-T2: #333;
 }
 
-/* create a utility class */
-.safe-area-bottom {
-  padding-bottom: calc(var(--safe-area-inset-bottom) + 1rem);
-}
-
-/* @font-face {
-  font-family: 'Poppins';
-  src: url('https://pub-b66b819f148445b792a6e91af8481614.r2.dev/Poppins-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-} */
 
 
-img{
+img {
   max-width: none;
 }
 
@@ -54,10 +46,12 @@ img{
     opacity: 0;
     height: 0px;
   }
+
   50% {
     opacity: 0;
     height: 100px;
   }
+
   100% {
     opacity: 1;
     height: 230px;
@@ -69,10 +63,12 @@ img{
     transform: translateX(90%);
     opacity: 0;
   }
+
   50% {
     transform: translateX(30%);
     opacity: 0.4;
   }
+
   100% {
     transform: translateX(0);
     opacity: 1;
@@ -87,8 +83,6 @@ video {
   transform: translate3d(0, 0, 0);
   will-change: transform, opacity;
 }
-
-
 
 * {
   -webkit-tap-highlight-color: transparent;

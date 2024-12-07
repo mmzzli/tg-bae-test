@@ -5,7 +5,7 @@ import { useDialog } from '@/hooks/useDialog'
 import deleteIcon from '@/assets/image/chat/delete.png'
 import NiceModal, { useModal } from '@ebay/nice-modal-react'
 import { useRequest, useSafeState } from 'ahooks'
-import { deletePost } from '@/api'
+import { deletePost, getNotifications } from '@/api'
 import { useStore } from '@/store'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import { CustomToast, typeOptions } from '../comm/Toast'
@@ -68,6 +68,16 @@ export const DeleteDialogWarp = NiceModal.create(
     const { runAsync: deleteHandlerAsync } = useRequest(deletePost, { manual: true })
     const deleteViewList = useStore((state) => state.deleteViewList)
     const toast = useToast()
+    const unreadNotificationCount = useStore((state) => state.unreadNotificationCount)
+    const setNotificationList = useStore((state) => state.setNotificationList)
+
+    const getInitialNotificationList = async () => {
+      const res = await getNotifications({
+        page_num: 1,
+        records: unreadNotificationCount + 6,
+      })
+      setNotificationList(res.posts)
+    }
 
     const handleDelete = async () => {
       if (loading) return
@@ -75,6 +85,8 @@ export const DeleteDialogWarp = NiceModal.create(
         setLoading(true)
         await deleteHandlerAsync(id)
         deleteViewList(data)
+        // update notification list when delete a post
+        getInitialNotificationList()
         toast({
           render: () => {
             return (
@@ -107,11 +119,17 @@ export const DeleteDialogWarp = NiceModal.create(
           position: 'top',
         })
       } catch (e: any) {
+        let message = ''
+        if (e.status === 400) {
+          message = 'Paid content cannot be deleted'
+        } else {
+          message = e.message
+        }
         toast({
           render: () => {
             return (
               <CustomToast
-                title={`Error ${e.message}`}
+                title={`${message}`}
                 type={typeOptions.error}
                 top={
                   window

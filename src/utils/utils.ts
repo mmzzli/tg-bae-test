@@ -85,7 +85,7 @@ export const getTimeStringAutoShort = (timestamp: number, mustIncludeTime: boole
 
       // Comparing the "month" and "day" of the target date with the "yesterday" calculated above is the most accurate (if using the time difference, it is inaccurate, e.g., the current time is 2019/02/22 01:00, and srcDate is 2019/02/21 23:00, the difference between the two is only 2 hours, and directly using "deltaTime/(3600 * 1000) > 24 hours" to determine if it is yesterday is completely ridiculous)
       if (srcMonth === yesterdayDate.getMonth() + 1 && srcDateD === yesterdayDate.getDate())
-        ret = 'yesterday' // + timeExtraStr // -1d
+        ret = 'Yesterday' // + timeExtraStr // -1d
       else {
         // let deltaHour = deltaTime / (3600 * 1000)
 
@@ -145,7 +145,7 @@ export const getMessageTimeDivider = (timestamp: number, mustIncludeTime: boolea
 
       // Comparing the "month" and "day" of the target date with the "yesterday" calculated above is the most accurate (if using the time difference, it is inaccurate, e.g., the current time is 2019/02/22 01:00, and srcDate is 2019/02/21 23:00, the difference between the two is only 2 hours, and directly using "deltaTime/(3600 * 1000) > 24 hours" to determine if it is yesterday is completely ridiculous)
       if (srcMonth === yesterdayDate.getMonth() + 1 && srcDateD === yesterdayDate.getDate())
-        ret = 'yesterday' + timeExtraStr // -1d
+        ret = 'Yesterday' + timeExtraStr // -1d
       else {
         // let deltaHour = deltaTime / (3600 * 1000)
 
@@ -236,5 +236,25 @@ export function throttle(func: (...args: any[]) => void, wait: number) {
       // @ts-ignore
       func.apply(this, args)
     }
+  }
+}
+
+export const genShareLinkFn = async (
+  title: string,
+  pid: number,
+  uid: number,
+  getLinkHandlerAsync: any
+) => {
+  const shareText = encodeURIComponent(title)
+  const { host, ref } = await getLinkHandlerAsync({ pid, uid })
+  console.log(host, ref, 'getLinkResult')
+
+  const copyLink = encodeURIComponent(`${import.meta.env.VITE_API_URL}link/${ref}`)
+  console.log('copyLink', decodeURIComponent(copyLink))
+
+  const shareLink = `https://t.me/share/url?url=${copyLink}&text=${shareText}`
+  return {
+    copyLink,
+    shareLink,
   }
 }

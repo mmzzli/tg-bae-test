@@ -31,6 +31,9 @@ export type FormatterListItem = Omit<ListItem['post'], 'media'> & {
   pic_width?: string
   pic_height?: string
   loaded?: boolean
+  like?: number
+  pic_num?: number
+  is_pay?: number | boolean
 } & UserItem
 export interface ListState {
   list: FormatterListItem[]
@@ -54,11 +57,31 @@ export interface followPreview {
   is_follow: boolean
   boll: boolean
 }
+
+export interface Like {
+  id: number
+  liked: boolean
+  like: number
+}
+export interface Saveds {
+  id: number
+  saveds: boolean
+}
+
 const recordsNum = 10
 const CACHE_VIDEOS_LIMIT = 9
 const BUFFER_FRAGMENT_LIMIT = 1
 
 export interface ResourceListSlice {
+  like: Like[]
+  initPatchLike: (list: FormatterListItem[]) => void
+  setPatchLike: (list: FormatterListItem, flag?: boolean) => void
+
+  // save
+  save: Saveds[]
+  initPatchSave: (list: FormatterListItem[]) => void
+  setPatchSave: (list: FormatterListItem) => void
+
   // recommend
   recommendList: BaseListState
   setRecommendPage: (page: number) => void
@@ -146,6 +169,65 @@ const initialListState: BaseListState = {
 }
 
 export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, get) => ({
+  // like
+  like: [],
+  initPatchLike: (list: FormatterListItem[]) => {
+    set(({ like }) => {
+      return {
+        like: list.map((item) => ({
+          id: item.id,
+          liked: item.is_liked,
+          like: item.like,
+        })),
+      }
+    })
+  },
+  setPatchLike: (data: FormatterListItem) => {
+    set(({ like }) => {
+      const updatedLike = like.map((likeItem) =>
+        likeItem.id === data.id
+          ? {
+              ...likeItem, // 创建一个新对象
+              liked: !likeItem.liked, // 切换 liked 状态
+              like: !likeItem.liked
+                ? likeItem.like + 1 // 切换为 true，like +1
+                : Math.max(likeItem.like - 1, 0), // 切换为 false，like -1，确保最小值为 0
+            }
+          : likeItem
+      )
+
+      return {
+        like: updatedLike,
+      }
+    })
+  },
+  // save
+  save: [],
+  initPatchSave: (list: FormatterListItem[]) => {
+    set(({ save }) => {
+      return {
+        save: list.map((item) => ({
+          id: item.id,
+          saveds: item.is_collected ?? false,
+        })),
+      }
+    })
+  },
+  setPatchSave: (data) => {
+    set(({ save }) => {
+      const updatedSave = save.map((saveItem) =>
+        saveItem.id === data.id
+          ? { ...saveItem, saveds: !saveItem.saveds } // 创建一个新对象并切换 saveds 状态
+          : saveItem
+      )
+
+      // 返回更新后的 save 列表
+      return {
+        save: updatedSave,
+      }
+    })
+  },
+
   recommendList: { ...initialListState },
   setRecommendPage: (page) =>
     set((state) => ({

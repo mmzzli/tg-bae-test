@@ -9,6 +9,7 @@ import './types/window.d.ts'
 import { MainLayout } from '@/components/layout'
 import Splash from '@/pages/Splash'
 import HomePage from '@/pages/Home'
+import Searching from '@/pages/Home/Searching'
 import { NewPost } from '@/pages/NewPost'
 import Shares from '@/pages/Shares'
 import Profile from '@/pages/Profile'
@@ -75,7 +76,10 @@ function App() {
             <Routes>
               <Route path="/" element={<MainLayout />}>
                 <Route index element={<Splash />} />
-                <Route path="/home" element={<HomePage />} />
+                <Route path="home">
+                  <Route index element={<HomePage />} />
+                  <Route path="searching" element={<Searching />} />
+                </Route>
                 <Route path="post" element={<NewPost />} />
                 <Route path="shares" element={<Shares />} />
 

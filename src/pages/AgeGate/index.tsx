@@ -31,7 +31,7 @@ const AgeGate = () => {
       <h3 className="text-[#333] text-[24px] text-center">Are you 18 years of age or older?</h3>
 
       <div className="text-[14px] mt-[10px] leading-[22px] text-center">
-        <p className="text-[#62636F]">
+        <p className="text-[#666] font-normal leading-[1.5]  text-[14px]">
           You must be 18 years or older and agree to our Terms of Service to access and use this
           app. By tapping the button below, you certify that you are 18 years or older and that you
           accept our.

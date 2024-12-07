@@ -22,3 +22,40 @@ export interface Follow {
   tg_id: number
   tgname: string
 }
+
+export enum NotificationType {
+  Follow = 1,
+  Like = 2,
+  Purchase = 3,
+}
+
+export type Notification = {
+  id: number
+  type: NotificationType
+  content: string
+  time: string
+  post: {
+    id: number
+    title: string
+    price: number
+    media: string
+    thumbnail: string
+    type: number
+  }
+  user: {
+    avatar: string
+    if_follow: boolean
+    uid: number
+    username: string
+  }
+}
+
+export interface Search {
+  avatar: string
+  tg_id: number
+  tgname: string
+  if_follow: boolean
+  fans_id: number
+}
+
+export type SearchItem = { users: Array<Search> }

@@ -1,11 +1,11 @@
-import { memo, useCallback, useContext, useEffect, useState } from 'react'
+import { memo, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { Box, Flex, HStack, IconButton, useBoolean } from '@chakra-ui/react'
 import { favDel, favPost, postLike } from '@/api'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { BaseModal } from '../Modal/BaseModal'
 import BaseButton from '../BaseButton/BaseButton'
 import useCopy from '@/hooks/useCopy'
-import { useMemoizedFn, useRequest, useSafeState, useSetState } from 'ahooks'
+import { useMemoizedFn, useRequest, useSetState } from 'ahooks'
 import { LinkIcon, StarsIcon, TelegramIcon } from '@/assets/icons'
 import { followPreview, FormatterListItem } from '@/store/slices/resourceListSlice'
 import Image from '../Image/Image'
@@ -22,68 +22,33 @@ import { CardRecommendProvider } from '@/utils/constants'
 import { useStore } from '@/store'
 import VideoCard from '@/components/ResourceList/VideoCard'
 import ImageCard from '@/components/Image/ImageCard'
-import { getTimeStringAutoShort } from '@/utils/utils'
+import { genShareLinkFn, getTimeStringAutoShort } from '@/utils/utils'
 import MoreText from '@/components/More/MoreText'
 
-interface Like {
-  id: number
-  liked: boolean
-  like: number
-}
-interface Saveds {
-  id: number
-  saveds: boolean
+interface ShareDataProps {
+  pid: number
+  uid: number
 }
 
-const POST_TYPE_IMAGE = 1
-const POST_TYPE_VIDEO = 0
+interface ShreLinkProps {
+  shareLink: string
+  copyLink: string
+}
+interface ShareModalProps {
+  isBaseModalOpen: boolean
+  off: () => void
+  currentShareData: ShareDataProps | null
+  links: ShreLinkProps
+}
 
-const ResourceList = ({
-  resources: initialResources,
-  type,
-  hasMore,
-}: {
-  resources: FormatterListItem[]
-  type?: string
-  hasMore?: boolean
-}) => {
-  const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
-  const isMobile = useMobile()
-  const [resources, setResources] = useState<FormatterListItem[]>([])
-  const [likes, setLikes] = useSafeState<Like[]>([])
-  const [saveds, setSaveds] = useState<Saveds[]>([])
-  const setImageResource = useStore((state) => state.setImageResource)
-  const setFollowResource = useStore((state) => state.setFollowResource)
-  const followResource = useStore((state) => state.followResource)
-
+export const ShareModal: React.FC<ShareModalProps> = ({
+                                                        isBaseModalOpen,
+                                                        off,
+                                                        currentShareData,
+                                                        links,
+                                                      }) => {
   const { launchParams, getCurrentUid } = useTMAUtils()
-  const [isBaseModalOpen, { toggle, off }] = useBoolean(false)
-  const [links, setLinks] = useSetState<{ shareLink: string; copyLink: string }>({
-    shareLink: '',
-    copyLink: '',
-  })
-  const [postId, setPostId] = useState<number | null>(null)
   const { copy } = useCopy()
-  const [currentShareData, setCurrentShareData] = useState<{ pid: number; uid: number } | null>(
-    null
-  )
-
-  const currentUid = getCurrentUid()
-  const jumpToProfilePage = useProfileNavigation()
-
-  const handleImageClick = useCallback((images: string[], index: number) => {
-    setImageResource({
-      images,
-      currentIndex: index,
-    })
-  }, [])
-
-  const { runAsync: getLinkHandlerAsync } = useRequest(getLink, {
-    manual: true,
-    onSuccess(res) {
-      console.log(res)
-    },
-  })
 
   const { runAsync: getInlineMessageId, loading: getInlineMessageIdLoading } = useRequest(
     getShareInlineMessageId,
@@ -94,103 +59,11 @@ const ResourceList = ({
       },
     }
   )
-
-  useEffect(() => {
-    const attr: followPreview[] = []
-    if (initialResources.length) {
-      const res = initialResources.map((item) => {
-        const user = followResource?.find((user) => user.uid === item.uid)
-        attr.push({
-          uid: item.uid,
-          is_follow: item.is_follow,
-          boll: user?.boll || false,
-        })
-        if (item.type === 0 && item.media.length > 0) {
-          const [mediaCover, media] = item.media[0].split(',')
-          return {
-            ...item,
-            media: [media || mediaCover],
-            mediaCover: item.thumbnail,
-          }
-        }
-        return item
-      })
-      if (type === 'recommend') {
-        const uniqueData: followPreview[] = []
-        const seen = new Set<number>()
-        for (const value of attr) {
-          if (!seen.has(value.uid)) {
-            seen.add(value.uid)
-            uniqueData.push(value)
-          }
-        }
-        setFollowResource(uniqueData)
-      }
-
-      setResources(res)
-    } else {
-      setResources([])
-    }
-  }, [initialResources])
-
-  useEffect(() => {
-    if (resources.length > 0) {
-      setLikes(resources.map((item) => ({ id: item.id, liked: item.is_liked, like: item.like })))
-      setSaveds(resources.map((item) => ({ id: item.id, saveds: item.is_collected })))
-    }
-  }, [resources])
-
-  const [linksBoll, setLinksBoll] = useState(false)
-  const linkEve = async (post_id: number, boll: boolean) => {
-    if (linksBoll) return
-    setLikes((prevLikes) =>
-      prevLikes.map((item: any) =>
-        item.id === post_id
-          ? { ...item, liked: !item.liked, like: item.like + (boll ? 1 : -1) }
-          : item
-      )
-    )
-    setLinksBoll((prev) => !prev)
-    await postLike({
-      act_type: boll ? 1 : 2,
-      post_id,
-    })
-    setLinksBoll((prev) => !prev)
-  }
-  const [favBoll, setFavBoll] = useState(false)
-  const savedEve = async (pid: number, boll: boolean) => {
-    if (favBoll) return
-    setSaveds((prevLikes) =>
-      prevLikes.map((item: any) => (item.id === pid ? { ...item, saveds: boll } : item))
-    )
-    if (type === 'fav') {
-      setResources((favResources) => favResources.filter((item) => item.id !== pid))
-    }
-    setFavBoll((prev) => !prev)
-    if (boll) {
-      await favPost(pid)
-    } else {
-      await favDel(pid)
-    }
-    setFavBoll((prev) => !prev)
-  }
-  const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
-    const shareText = encodeURIComponent(title)
-    const { host, ref } = await getLinkHandlerAsync({ pid, uid })
-    console.log(host, ref, 'getLinkResult')
-
-    const copyLink = encodeURIComponent(`${import.meta.env.VITE_API_URL}link/${ref}`)
-    console.log('copyLink', decodeURIComponent(copyLink))
-
-    const shareLink = `https://t.me/share/url?url=${copyLink}&text=${shareText}`
-    setLinks({ shareLink, copyLink: decodeURIComponent(copyLink) })
-  })
-
   const handShareWithTelegram = useMemoizedFn(async () => {
     if (currentShareData) {
       const { result } = await getInlineMessageId({
         pid: currentShareData.pid,
-        uid: currentUid,
+        uid: launchParams.initData?.user?.id ?? 0,
       })
       console.log('result----->', result)
       if (result.id) {
@@ -206,19 +79,7 @@ const ResourceList = ({
       }
     }
   })
-
-  const resourcesEve = (post_id: number, url: string) => {
-    setPostId(post_id)
-    const updatedUsers = resources.map((item) => {
-      if (item.id === post_id) {
-        return { ...item, media: url.split(',') }
-      }
-      return item
-    })
-    setResources(updatedUsers)
-  }
-
-  const renderBaseModal = () => (
+  return (
     <BaseModal
       isOpen={isBaseModalOpen}
       onClose={off}
@@ -271,10 +132,161 @@ const ResourceList = ({
       </div>
     </BaseModal>
   )
+}
+
+interface Like {
+  id: number
+  liked: boolean
+  like: number
+}
+interface Saveds {
+  id: number
+  saveds: boolean
+}
+
+const POST_TYPE_IMAGE = 1
+const POST_TYPE_VIDEO = 0
+
+const ResourceList = ({
+                        resources: initialResources,
+                        type,
+                        hasMore,
+                      }: {
+  resources: FormatterListItem[]
+  type?: string
+  hasMore?: boolean
+}) => {
+  const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
+  const isMobile = useMobile()
+  const [resources, setResources] = useState<FormatterListItem[]>([])
+  const likes = useStore((state) => state.like)
+  const setLikes = useStore((state) => state.setPatchLike)
+  const initPatchLikes = useStore((state) => state.initPatchLike)
+
+  const saveds = useStore((state) => state.save)
+
+  const initPatchSaves = useStore((state) => state.initPatchSave)
+
+  const setSaveds = useStore((state) => state.setPatchSave)
+
+  const setImageResource = useStore((state) => state.setImageResource)
+  const setFollowResource = useStore((state) => state.setFollowResource)
+  const followResource = useStore((state) => state.followResource)
+
+  const { launchParams, getCurrentUid } = useTMAUtils()
+  const [isBaseModalOpen, { toggle, off }] = useBoolean(false)
+  const [links, setLinks] = useSetState<ShreLinkProps>({
+    shareLink: '',
+    copyLink: '',
+  })
+  const [postId, setPostId] = useState<number | null>(null)
+  const [currentShareData, setCurrentShareData] = useState<ShareDataProps | null>(null)
+
+  const currentUid = getCurrentUid()
+  const jumpToProfilePage = useProfileNavigation()
+
+  const handleImageClick = useCallback((images: string[], index: number) => {
+    setImageResource({
+      images,
+      currentIndex: index,
+    })
+  }, [])
+
+  const { runAsync: getLinkHandlerAsync } = useRequest(getLink, {
+    manual: true,
+    onSuccess(res) {
+      console.log(res)
+    },
+  })
+
+  useEffect(() => {
+    const attr: followPreview[] = []
+    if (initialResources.length) {
+      const res = initialResources.map((item) => {
+        const user = followResource?.find((user) => user.uid === item.uid)
+        attr.push({
+          uid: item.uid,
+          is_follow: item.is_follow,
+          boll: user?.boll || false,
+        })
+        if (item.type === 0 && item.media.length > 0) {
+          const [mediaCover, media] = item.media[0].split(',')
+          return {
+            ...item,
+            media: [media || mediaCover],
+            mediaCover: item.thumbnail,
+          }
+        }
+        return item
+      })
+      if (type === 'recommend') {
+        const uniqueData: followPreview[] = []
+        const seen = new Set<number>()
+        for (const value of attr) {
+          if (!seen.has(value.uid)) {
+            seen.add(value.uid)
+            uniqueData.push(value)
+          }
+        }
+        setFollowResource(uniqueData)
+      }
+
+      setResources(res)
+    } else {
+      setResources([])
+    }
+  }, [initialResources])
+
+  useEffect(() => {
+    if (resources.length > 0) {
+      initPatchLikes(resources)
+      initPatchSaves(resources)
+    }
+  }, [resources])
+
+  const linkEve = async (data: FormatterListItem) => {
+    const curLiked = likes.find((item) => item.id === data.id)?.liked
+    await postLike({
+      act_type: !curLiked ? 1 : 2,
+      post_id: data.id,
+    })
+    setLikes(data)
+  }
+  const savedEve = async (data: FormatterListItem) => {
+    const isSaved = saveds.find((item) => item.id === data.id)?.saveds
+    if (!isSaved) {
+      await favPost(data.id)
+    } else {
+      await favDel(data.id)
+    }
+    setSaveds(data)
+
+    if (type === 'fav') {
+      setResources((favResources) => favResources.filter((item) => item.id !== data.id))
+    }
+  }
+  const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
+    const { shareLink, copyLink } = await genShareLinkFn(title, pid, uid, getLinkHandlerAsync)
+    setLinks({ shareLink, copyLink: decodeURIComponent(copyLink) })
+    toggle()
+  })
+
+  const resourcesEve = (post_id: number, url: string) => {
+    setPostId(post_id)
+    const updatedUsers = resources.map((item) => {
+      if (item.id === post_id) {
+        return { ...item, media: url.split(',') }
+      }
+      return item
+    })
+    setResources(updatedUsers)
+  }
+
   if (type === 'fav' && !hasMore && !resources.length) {
     return (
       <Empty
         title="No post yet."
+        className="w-full fixed top-[63%] left-1/2 transform -translate-x-1/2 -translate-y-1/2"
         icon={
           <Icon name="icon-Empty_white_post" style={{ width: '164px', height: '164px' }}></Icon>
         }
@@ -286,7 +298,7 @@ const ResourceList = ({
       <div className="pt-[24px]">
         {resources.map((data, index: number) => {
           return (
-            <Box key={data.id} mb="40px">
+            <Box key={data.id} pb={10}>
               <ResourceHeader
                 data={data}
                 currentUid={launchParams.initData?.user?.id ?? 0}
@@ -316,16 +328,17 @@ const ResourceList = ({
                     pid: data.id,
                     uid: data.uid,
                   })
-                  toggle()
                 }}
               />
-              {/* <div className="pt-8 pb-8 pl-4 pr-4">
-                <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}></div>
-              </div> */}
             </Box>
           )
         })}
-        {renderBaseModal()}
+        <ShareModal
+          isBaseModalOpen={isBaseModalOpen}
+          off={off}
+          currentShareData={currentShareData}
+          links={links}
+        ></ShareModal>
       </div>
     </>
   )
@@ -342,8 +355,8 @@ interface ResourceFooterProps {
   data: FormatterListItem
   likes: Like[]
   saveds: Saveds[]
-  linkEve: (postId: number, isLike: boolean) => void
-  savedEve: (postId: number, isSaveds: boolean) => void
+  linkEve: (data: FormatterListItem) => void
+  savedEve: (data: FormatterListItem) => void
   onShare: () => void
   type?: string
 }
@@ -390,92 +403,93 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
   )
 })
 
-const ResourceFooter = memo<ResourceFooterProps>(
-  ({ data, likes, linkEve, onShare, savedEve, saveds, type }) => {
-    return (
-      <>
-        <div className="px-4 py-3">
-          <p className="text-[#0F1419] dark:text-[#ccc] text-sm leading-6">
-            <MoreText text={data.title} />
-          </p>
-          <HStack pt="2" justifyContent="space-between">
-            {type === 'payment' && (
-              <HStack gap="4px">
-                <p className="text-[#666666] dark:text-[#424048] text-[12px]">
-                  Purchased for {data.price}
-                </p>
-                <Image src={StarsIcon} />
-              </HStack>
+const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, savedEve, type }) => {
+  const likes = useStore((state) => state.like)
+  const saveds = useStore((state) => state.save)
+
+  const liked = useMemo(() => {
+    return likes.find((like) => like.id === data.id)?.liked || false
+  }, [likes])
+
+  const likeNum = useMemo(() => {
+    return likes.find((like) => like.id === data.id)?.like || 0
+  }, [likes])
+
+  const saved = useMemo(() => {
+    return saveds.find((saved) => saved.id === data.id)?.saveds
+  }, [saveds])
+  return (
+    <>
+      <div className="px-4 flex items-center justify-between h-6 py-3 box-content items-center">
+        <Flex gap="16px" alignItems="center">
+          <Flex
+            as={'button'}
+            alignItems={'center'}
+            onClick={() => {
+              linkEve(data)
+            }}
+          >
+            {liked ? (
+              <Lottie
+                animationData={likeAnimationData}
+                loop={false}
+                style={{
+                  width: '24px',
+                }}
+              ></Lottie>
+            ) : (
+              <i className="iconfont icon-like text-[#0D0D0D]" style={{ fontSize: '24px' }}></i>
             )}
-          </HStack>
-        </div>
-        <div className="px-4 flex items-center justify-between">
-          <Flex gap="16px" alignItems="center">
-            {data.media && data.media[0] && (
-              <Flex
-                as={'button'}
-                alignItems={'center'}
-                onClick={() =>
-                  linkEve(data.id, likes.find((like) => like.id === data.id)?.liked === false)
-                }
-              >
-                {likes.find((like) => like.id === data.id)?.liked === true ? (
-                  // <i
-                  //   className="iconfont icon-Frame text-[#FF5596]"
-                  //   style={{ fontSize: '24px' }}
-                  // ></i>
-                  <Lottie
-                    animationData={likeAnimationData}
-                    loop={false}
-                    style={{
-                      width: '22px',
-                    }}
-                  ></Lottie>
-                ) : (
-                  <i className="iconfont icon-like text-[#0D0D0D]" style={{ fontSize: '24px' }}></i>
-                )}
-                <span className="pl-1 text-sm text-[##0D0D0D]">
-                  {likes.find((like) => like.id === data.id)?.like}
-                </span>
-              </Flex>
-            )}
-            {data.media && data.media[0] && (
-              <Box
-                className="w-6 h-6 flex items-center justify-center"
-                onClick={() =>
-                  savedEve(data.id, saveds.find((saved) => saved.id === data.id)?.saveds === false)
-                }
-              >
-                {saveds.find((saved) => saved.id === data.id)?.saveds === true ? (
-                  <i
-                    className="iconfont icon-saved text-[#FFCC5D]"
-                    style={{ fontSize: '24px' }}
-                  ></i>
-                ) : (
-                  <i
-                    className="iconfont icon-bookmark-line text-[#0D0D0D]"
-                    style={{ fontSize: '24px' }}
-                  ></i>
-                )}
-              </Box>
-            )}
+            <span className="pl-1 text-sm text-[##0D0D0D]">{likeNum}</span>
           </Flex>
-          <IconButton
-            onClick={onShare}
-            aria-label="share"
-            background={'transparent'}
-            colorScheme={'transparent'}
-            h={6}
-            w={6}
-            icon={
-              <i className="iconfont icon-Frame-2 text-[#0F1233]" style={{ fontSize: '24px' }}></i>
-            }
-          />
-        </div>
-      </>
-    )
-  }
-)
+          <Box
+            className="w-6 h-6 flex items-center justify-center"
+            onClick={() => {
+              savedEve(data)
+            }}
+          >
+            {saved ? (
+              <i className="iconfont icon-saved text-[#FFCC5D]" style={{ fontSize: '24px' }}></i>
+            ) : (
+              <i
+                className="iconfont icon-bookmark-line text-[#0D0D0D]"
+                style={{ fontSize: '24px' }}
+              ></i>
+            )}
+          </Box>
+        </Flex>
+
+        <IconButton
+          onClick={onShare}
+          aria-label="share"
+          background={'transparent'}
+          colorScheme={'transparent'}
+          h={6}
+          w={6}
+          icon={
+            <i className="iconfont icon-Frame-2 text-[#0F1233]" style={{ fontSize: '24px' }}></i>
+          }
+        />
+      </div>
+
+      <div className="px-4 py-3">
+        <p className="text-[#0F1419] dark:text-[#ccc] text-sm leading-6">
+          <MoreText text={data.title} />
+        </p>
+        <HStack pt="2" justifyContent="space-between">
+          {type === 'payment' && (
+            <HStack gap="4px">
+              <p className="text-[#666666] dark:text-[#424048] text-[12px]">
+                Purchased for {data.price}
+              </p>
+              <Image src={StarsIcon} />
+            </HStack>
+          )}
+        </HStack>
+      </div>
+    </>
+  )
+})
 
 export const PlayButton = memo(({ onClick }: { onClick: (e: React.MouseEvent) => void }) => (
   <div

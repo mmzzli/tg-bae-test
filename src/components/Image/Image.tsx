@@ -1,6 +1,7 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react'
 import { cn, formatImage } from '@/utils/utils'
 import { DefaultAvatarIcon } from '@/assets/icons'
+import Icon from '@/components/comm/Icon'
 
 interface ImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'onClick'> {
   wrapperClassName?: string
@@ -166,19 +167,7 @@ const Image = React.memo(
               )}
             >
               <div className="text-center">
-                <svg
-                  className="mx-auto h-12 w-12"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
+                <i className="iconfont icon-image text-[#ccc] text-[42px]"></i>
                 <p className="mt-2">Failed to load image</p>
               </div>
             </div>

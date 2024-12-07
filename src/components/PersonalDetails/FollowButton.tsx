@@ -1,5 +1,4 @@
 import { FC, useMemo } from 'react'
-import { useToast } from '@chakra-ui/react'
 import BaseButton from '../BaseButton/BaseButton'
 import { follow, getSomeoneProfile } from '@/api'
 import { useRequest } from 'ahooks'
@@ -8,6 +7,7 @@ import { useStore } from '@/store'
 // Object is Follow, I Follow Someone, so fansid is current user id
 const FollowButton: FC<{
   fansid: number
+  // tg_id username avatar is other user info
   tgid: number
   avatar: string
   username: string
@@ -25,17 +25,10 @@ const FollowButton: FC<{
   const isFollowing = useMemo(() => {
     return myFollow.some((item) => item.tg_id === tgid)
   }, [myFollow, tgid])
-  const toast = useToast()
 
   const { runAsync: followHandler, loading: followLoading } = useRequest(follow, {
     manual: true,
     onSuccess: () => {
-      // toast({
-      //   position: 'top',
-      //   render: () => {
-      //     return <CustomToast title="success" type={typeOptions.success} />
-      //   },
-      // })
       if (isFollowing) {
         setMyFollow(myFollow.filter((item) => item.tg_id !== tgid))
       } else {

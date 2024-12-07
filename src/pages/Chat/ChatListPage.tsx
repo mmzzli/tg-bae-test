@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from 'react'
+import { FC, memo, useCallback, useEffect, useState } from 'react'
 import ChatList from '@/components/Chat/ChatList'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { Spinner } from '@chakra-ui/react'
@@ -53,6 +53,23 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
   const [resetTrigger, setResetTrigger] = useState(0)
   const handleContainerClick = () => {
     setResetTrigger((prev) => prev + 1)
+  }
+  const [status, setStatus] = useState<ConnectStatus>(ConnectStatus.Disconnect)
+  const getStatusText = () => {
+    switch (status) {
+      case ConnectStatus.Connected:
+        return ''
+      case ConnectStatus.ConnectKick:
+        return 'kick'
+      case ConnectStatus.Disconnect:
+        return 'connecting...'
+      case ConnectStatus.Connecting:
+        return 'connecting...'
+      case ConnectStatus.ConnectFail:
+        return 'network error'
+      default:
+        return 'Unknown'
+    }
   }
 
   const handleMessage = useCallback(
@@ -114,18 +131,9 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
         sdk.start()
         setConnection(sdk)
 
-        const res = await sdk.getAllConversation()
-        setIsChatListLoaded(true)
-        setChatList(res)
-        res.forEach((conversation) => {
-          addMessageWindowListItem({
-            channel: conversation.channel,
-            messages: conversation.recents?.map(getWrappedMessage).reverse() ?? [],
-          })
-        })
-
         removeConnectionStatusListener = sdk.addConnectionStatusListener(async (status) => {
-          log('-----ConnectionStatusListener------', status)
+          setStatus(status)
+          console.warn('-----ConnectionStatusListener------', status)
           const isChatListLoadedStateFormStore = useStore.getState().isChatListLoaded
           if (status === ConnectStatus.Connected && !isChatListLoadedStateFormStore) {
             try {
@@ -142,24 +150,31 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
               removeSyncConversationListener = sdk.addConversationListener(
                 (conversation, action) => {
                   if (action === ConversationAction.add) {
-                    console.log('addConversationListener add conversation', conversation)
-                    addChatListItem(conversation)
-                    addMessageWindowListItem({
-                      channel: conversation.channel,
-                      messages: conversation.recents?.map(getWrappedMessage) ?? [],
-                    })
+                    console.warn('addConversationListener add conversation', conversation)
+                    const repeat = useStore
+                      .getState()
+                      .chatList.some(
+                        (item) => item.channel.channelID === conversation.channel.channelID
+                      )
+                    if (!repeat) {
+                      addChatListItem(conversation)
+                      addMessageWindowListItem({
+                        channel: conversation.channel,
+                        messages: conversation.recents?.map(getWrappedMessage) ?? [],
+                      })
+                    }
                   } else if (action === ConversationAction.update) {
-                    console.log('addConversationListener update conversation', conversation)
+                    console.warn('addConversationListener update conversation', conversation)
                     updateChatListItem(conversation)
                   } else if (action === ConversationAction.remove) {
-                    console.log('addConversationListener remove conversation', conversation)
+                    console.warn('addConversationListener remove conversation', conversation)
                     deleteChatListItem(conversation.channel.channelID)
                   }
                 }
               )
-              log('getAllConversation', res)
+              console.warn('getAllConversation', res)
             } catch (error) {
-              log('getAllConversation error', error)
+              console.warn('getAllConversation error', error)
             }
           } else if (status === ConnectStatus.ConnectKick || status === ConnectStatus.Disconnect) {
             removeSyncConversationListener && removeSyncConversationListener()
@@ -177,28 +192,16 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
   console.log('chatListPage render')
   return (
     <div
-      className={cn(
-        'dark:bg-black bg-white min-h-screen overflow-auto',
-        'scrollbar-hide',
-        className
-      )}
+      className={cn('dark:bg-black bg-white overflow-auto min-h-full', 'scrollbar-hide', className)}
       onClick={handleContainerClick}
       style={{
-        paddingTop: `calc(${
-          window
-            .getComputedStyle(document.documentElement)
-            .getPropertyValue('--tg-safe-area-inset-top') &&
-          parseInt(
-            window
-              .getComputedStyle(document.documentElement)
-              .getPropertyValue('--tg-safe-area-inset-top'),
-            10
-          ) !== 0
-            ? 'var(--tg-safe-area-inset-top) + 66px'
-            : '32px'
-        })`,
+        paddingTop:
+          'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 32px)',
       }}
     >
+      <div className="absolute top-0 left-0 right-0 h-[32px] pl-6 text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-black flex items-center justify-center">
+        {getStatusText()}
+      </div>
       {isChatListLoaded && chatList.length > 0 && (
         <InfiniteScroll
           dataLength={chatList.length}
@@ -231,4 +234,4 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
   )
 }
 
-export default ChatListPage
+export default memo(ChatListPage)

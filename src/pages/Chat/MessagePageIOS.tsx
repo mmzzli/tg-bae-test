@@ -11,6 +11,7 @@ import { OthersUserInfo } from '@/types'
 import Image from '@/components/Image/Image'
 import { cn } from '@/utils/utils'
 import SendMediaModal from '@/components/Chat/SendMediaModal'
+import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 // const PAGE_SIZE = 20
 const isIOS = () => {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
@@ -28,6 +29,7 @@ const MessagePageIOS = () => {
   const messageWindow = getMessageWindow(uid || '')
   const messageWindowList = useStore((state) => state.messageWindowList)
   const [showInput, setShowInput] = useState(false)
+  const jumpToProfilePage = useProfileNavigation()
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -200,6 +202,11 @@ const MessagePageIOS = () => {
             src={chatPeople?.avatar}
             alt="avatar"
             className="w-[32px] h-[32px] rounded-full"
+            onClick={() => {
+              if (chatPeople) {
+                jumpToProfilePage(chatPeople)
+              }
+            }}
           />
         </div>
         <span className="dark:text-white text-[#333] text-lg ml-2">{chatPeople?.username}</span>

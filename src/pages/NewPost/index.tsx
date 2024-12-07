@@ -41,28 +41,30 @@ export const NewPost: FC = () => {
   const [imgAttr, setImgAttr] = useState<any[]>([])
   const [files, setFiles] = useState<File[]>([])
   const token = useStore((state) => state.token)
-  const [frameSelectorBoll, setFrameSelectorBoll] = useState<boolean>(false)
+  // const [frameSelectorBoll, setFrameSelectorBoll] = useState<boolean>(false)
   // start
   const [price, setPrice] = useState<number | null>(null)
   // cover
   const [cover, setCover] = useState<string | null>(null)
 
-  const imageArrStyle = useMemo(() => {
-    const width: number[] = []
-    const height: number[] = []
-    for (const imgitem of imgAttr) {
-      const image = new window.Image()
-      image.src = imgitem
+
+  const [widths, setWidths] = useState<number[]>([]);
+  const [heights, setHeights] = useState<number[]>([]);
+
+  useEffect(() => {
+    imgAttr.forEach((imgitem) => {
+      const image = new window.Image();
+      image.src = imgitem;
       image.onload = () => {
-        width.push(image.width)
-        height.push(image.height)
-      }
-    }
-    return {
-      width,
-      height,
-    }
-  }, [imgAttr])
+        setWidths((prevWidths) => [...prevWidths, image.width]);
+        setHeights((prevHeights) => [...prevHeights, image.height]);
+      };
+
+      image.onerror = () => {
+        console.error(`Failed to load: ${imgitem}`);
+      };
+    });
+  }, [imgAttr]);
 
   // upload states
   const { addUploadThread, updateUploadThread, addUploadTask, resetUploadTask } = useStore(
@@ -131,8 +133,8 @@ export const NewPost: FC = () => {
           type: 1,
           currency: 0,
           price: price || 0,
-          width: imageArrStyle.width.join(':'),
-          height: imageArrStyle.height.join(':'),
+          width: widths.join(':'),
+          height: heights.join(':'),
         })
         toast({
           render: () => {
@@ -636,6 +638,10 @@ export const NewPost: FC = () => {
   }
 
   const removeImg = (key: number) => {
+
+    setWidths((prevWidths) => prevWidths.filter((_, index) => index !== key));
+    setHeights((prevWidths) => prevWidths.filter((_, index) => index !== key));
+
     setImgAttr((prevItems) => prevItems.filter((_, index) => index !== key))
     setFiles((prevItems) => prevItems.filter((_, index) => index !== key))
   }
@@ -666,6 +672,9 @@ export const NewPost: FC = () => {
             onClick={handleUpload}
             isLoading={isLoading}
             isDisabled={firstFileType === 'image' ? files.length === 0 : videoFile == null}
+            _hover={{
+              bg: (firstFileType === 'image' ? files.length === 0 : videoFile == null) ? "#D1D0DE" : "#6254FF"
+            }}
           >
             <Image src={PostIcon} mr="5px" /> Post
           </Button>
@@ -693,7 +702,7 @@ export const NewPost: FC = () => {
                     />
                     <VideoFrameSelector videoRef={videoRefCover} setCover={setCover} />
                     <Image
-                      onClick={() => setVideoSrc('')}
+                      onClick={() => {setVideoSrc(''); setVideoFile(null)}}
                       w="24px"
                       h="24px"
                       position="absolute"
@@ -704,13 +713,17 @@ export const NewPost: FC = () => {
                     />
                   </Box>
                 ) : (
-                  <Image
-                    w="88px"
-                    h="88px"
-                    cursor="pointer"
-                    src={PostAddIcon}
-                    onClick={handleChooseFile}
-                  />
+                <Grid templateColumns="repeat(3, 1fr)" gap={4}>
+                  <GridItem aspectRatio={1}>
+                    <div
+                      onClick={handleChooseFile}
+                      className="w-full h-full flex items-center justify-center border-dashed border border-[#CDCDD4] rounded-lg cursor-pointer"
+                    >
+                      <i className="iconfont icon-add text-[#999999] text-[30px]"></i>
+                    </div>
+                  </GridItem>
+                </Grid>
+
                 )}
               </>
             )}
@@ -740,7 +753,7 @@ export const NewPost: FC = () => {
                       onClick={handleChooseFile}
                       className="w-full h-full flex items-center justify-center border-dashed border border-[#CDCDD4] rounded-lg cursor-pointer"
                     >
-                      <Icon name={'icon-addpost1'} style={{ width: '100%', height: '100%' }}></Icon>
+                      <i className="iconfont icon-add text-[#999999] text-[30px]"></i>
                     </div>
                   </GridItem>
                 )}

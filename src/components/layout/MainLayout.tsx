@@ -1,7 +1,7 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { retrieveLaunchParams } from '@telegram-apps/sdk'
-import { logIn } from '@/api'
+import { logIn, getUnreadNotificationCount, getFollowingList } from '@/api'
 import { DEV_INIT_DATA_RAW } from '@/utils/constants'
 import { isLocalEnv } from '@/utils/env'
 import { useStore } from '@/store'
@@ -9,11 +9,12 @@ import { useRequest } from 'ahooks'
 import { Outlet } from 'react-router-dom'
 import { log } from 'console'
 import { Spinner } from '@chakra-ui/react'
-import { Menu } from '../Menu'
+import Menu from '../Menu'
 import { postEvent } from '@telegram-apps/sdk'
 import { PostProgressBar } from '../NewPost/PostProgressBar'
 import VideoDialog from '@/components/ResourceList/VideoDialog'
 import ImageDialog from '@/components/ResourceList/ImageDialog'
+import { useTMAUtils } from '@/hooks/useTMAUtils'
 const ChatListPageLoader = {
   preload: () =>
     import('@/pages/Chat').then((module) => ({
@@ -25,6 +26,8 @@ const ChatListPageLoader = {
     }))
   ),
 }
+
+const HIDE_BACK_BUTTON_PATHS = ['/home', '/chat', '/profile', '/', '/ageGate']
 
 export const MainLayout: React.FC = () => {
   const location = useLocation()
@@ -43,13 +46,42 @@ export const MainLayout: React.FC = () => {
   const videoResource = useStore((state) => state.videoResource)
   const imageResource = useStore((state) => state.imageResource)
   const setImageResource = useStore((state) => state.setImageResource)
+  const virtualRoutePage = useStore((state) => state.virtualRoutePage)
+  const setUnreadNotificationCount = useStore((state) => state.setUnreadNotificationCount)
+  const myFollow = useStore((state) => state.myFollow)
+  const setMyFollow = useStore((state) => state.setMyFollow)
+  const { getCurrentUid } = useTMAUtils()
+  const current_uid = getCurrentUid()
+
+  const { run: runGetUnreadNotificationCount } = useRequest(getUnreadNotificationCount, {
+    pollingInterval: 6000,
+    manual: true,
+    pollingWhenHidden: false,
+    pollingErrorRetryCount: 6,
+    onSuccess({ amount }) {
+      setUnreadNotificationCount(amount)
+    },
+  })
+
+  const updateMyFollow = () => {
+    if (!useStore.getState().token) {
+      setTimeout(() => {
+        updateMyFollow()
+      }, 150)
+      return
+    }
+    if (myFollow.length === 0) {
+      getFollowingList(current_uid).then((res) => setMyFollow(res))
+    }
+  }
 
   const { run: runLogin } = useRequest(logIn, {
     manual: true,
     onSuccess({ token, api_token, user_info }) {
       setToken(token)
       setUserInfo({ ...user_info, api_token })
-      // ChatListPageLoader.preload()
+      runGetUnreadNotificationCount(current_uid)
+      updateMyFollow()
     },
   })
 
@@ -86,8 +118,7 @@ export const MainLayout: React.FC = () => {
         allow_vertical_swipe: false,
       })
       tgApp.expand()
-      tgApp.headerColor = '#000'
-      tgApp.backgroundColor = '#0d0d0d'
+      tgApp.headerColor = '#ffffff'
       tgApp.MainButton.hide()
       tgApp.onEvent('viewportChanged', () => {
         if (!tgApp.isExpanded) {
@@ -95,13 +126,24 @@ export const MainLayout: React.FC = () => {
           setExpanded(true)
         }
       })
+      window.Telegram.WebView.onEvent(
+        'visibility_changed',
+        (eventType: string, eventData: { is_visible: boolean }) => {
+          if (eventData.is_visible) {
+            window.Telegram.WebApp.setHeaderColor('#000')
+            setTimeout(() => {
+              window.Telegram.WebApp.setHeaderColor('#ffffff')
+            }, 100)
+          }
+        }
+      )
       tgApp.BackButton.onClick(() => {
         console.log('location.pathname', location.pathname)
         console.log('window.location.pathname', window.location.pathname)
         console.log('location previous', location.state?.from)
         console.log('location previous backToHome', useStore.getState().backToHome)
-
         console.log(useStore.getState().videoResource, '=================')
+
         if (useStore.getState().videoResource) {
           setVideoResource(null)
           return // navigate('/home')
@@ -112,41 +154,18 @@ export const MainLayout: React.FC = () => {
           return // navigate('/home')
         }
 
+        // low priority then media dialog
+        if (useStore.getState().virtualRoutePage) {
+          useStore.getState().resetVirtualRoutePage()
+          return
+        }
+
         if (useStore.getState().backToHome) {
           setBackToHome(false)
           return navigate('/home')
         }
 
-        if (window.location.pathname === '/home') {
-          tgApp
-            .showConfirm({
-              message: 'Are you sure you want to Exit?',
-              ok_button: 'Yes',
-              cancel_button: 'No',
-            })
-            .then((result: boolean) => {
-              if (result) {
-                tgApp.close()
-              } else {
-                console.log(1)
-              }
-            })
-            .catch((error: Error) => {
-              console.error('Error showing confirmation:', error)
-            })
-
-          // tgApp.showConfirm("Changes that you m de may not besaved.", function (isConfirmed:boolean) {
-          //   if (isConfirmed) {
-          //     console.log("User confirmed the action.");
-          //     tgApp.close();
-          //   } else {
-          //     console.log(1)
-          //   }
-          // });
-          // window.history.back()
-        } else {
-          window.history.back()
-        }
+        navigate(-1)
       })
       setExpanded(window.Telegram.WebApp.isExpanded)
       console.log(window.Telegram.WebApp.isExpanded, 'window.Telegram.WebApp.isExpanded')
@@ -156,10 +175,13 @@ export const MainLayout: React.FC = () => {
 
   useEffect(() => {
     console.log('pathname-------------------------------_>', location.pathname)
+    // handle page refresh or open app from share link
     const BASE_PATHS = ['/home', '/chat', '/profile', '/ageGate']
     if (BASE_PATHS.includes(location.pathname)) {
       setBackToHome(false)
     }
+
+    // handle chat page
     if (location.pathname.startsWith('/chat') && !shouldLoadChat) {
       setShouldLoadChat(true)
     }
@@ -168,9 +190,10 @@ export const MainLayout: React.FC = () => {
     } else {
       setHiddenChatPage(true)
     }
+
     if (window.Telegram?.WebApp) {
       const tgApp = window.Telegram.WebApp
-      const HIDE_BACK_BUTTON_PATHS = ['/home', '/chat', '/profile', '/', '/ageGate']
+
       if (HIDE_BACK_BUTTON_PATHS.includes(location.pathname)) {
         tgApp.BackButton.hide()
       } else {
@@ -182,27 +205,16 @@ export const MainLayout: React.FC = () => {
   useEffect(() => {
     if (window.Telegram?.WebApp) {
       const tgApp = window.Telegram.WebApp
-      if (videoResource) {
+      if (videoResource || imageResource || virtualRoutePage) {
         tgApp.BackButton.show()
-      } else {
+      } else if (HIDE_BACK_BUTTON_PATHS.includes(location.pathname)) {
         tgApp.BackButton.hide()
       }
     }
-  }, [videoResource])
-
-  useEffect(() => {
-    if (window.Telegram?.WebApp) {
-      const tgApp = window.Telegram.WebApp
-      if (imageResource) {
-        tgApp.BackButton.show()
-      } else {
-        tgApp.BackButton.hide()
-      }
-    }
-  }, [imageResource])
+  }, [videoResource, imageResource, virtualRoutePage])
 
   return (
-    <div className="absolute inset-0 top-0 right-0 bottom-0 left-0overflow-hidden flex pb-[84px] transition-all duration-300 bg-white dark:bg-black">
+    <div className="absolute inset-0 top-0 right-0 bottom-0 left-0overflow-hidden flex pb-[84px] transition-all duration-300 bg-white dark:bg-black no-tap">
       <div
         className="absolute left-0 right-0 top-0 bottom-[84px] flex-col bg-white dark:bg-[#0D0D0D] overflow-hidden"
         style={{ display: hiddenChatPage ? 'none' : 'flex', zIndex: hiddenChatPage ? -1 : 200 }}
@@ -221,20 +233,7 @@ export const MainLayout: React.FC = () => {
       <div
         className={`absolute inset-0 top-0 bottom-[84px] z-1`}
         style={{
-          paddingTop: `calc(${
-            window
-              .getComputedStyle(document.documentElement)
-              .getPropertyValue('--tg-safe-area-inset-top') &&
-            parseInt(
-              window
-                .getComputedStyle(document.documentElement)
-                .getPropertyValue('--tg-safe-area-inset-top'),
-              10
-            ) !== 0
-              ? 'var(--tg-safe-area-inset-top) + 54px'
-              : '0'
-          })`,
-          // paddingTop: 'var(--tg-safe-area-inset-top)',
+          paddingTop: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
         }}
       >
         <Outlet />

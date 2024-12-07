@@ -53,11 +53,11 @@ const HomePage: FC = () => {
       left: 16,
     }
 
-    const handleScroll = debounce(() => {
+    const handleScroll = throttle(() => {
       if (!scrollDiv) return
-      setScrollPosition(scrollDiv.scrollTop)
+      setScrollPosition(scrollDiv.scrollTop >= 0 ? scrollDiv.scrollTop : 0)
       console.log(scrollDiv.scrollTop)
-    }, 50)
+    }, 30)
 
     scrollDiv?.addEventListener('scroll', handleScroll)
     return () => scrollDiv?.removeEventListener('scroll', handleScroll)
@@ -80,6 +80,8 @@ const HomePage: FC = () => {
     return {
       top: `${currentTop}px`,
       left: `${currentLeft}px`,
+      transform: `translateZ(0)`,
+      opacity: progress < 0.1 || scrollPosition > 90 ? 1 : 0.2,
     }
   }
 
@@ -116,7 +118,7 @@ const HomePage: FC = () => {
         <h3
           ref={titleRef}
           style={getTitleStyle()}
-          className="fixed text-black dark:text-[#E0E2F6] text-[20px] flex items-center transition-all"
+          className="fixed text-black dark:text-[#E0E2F6] text-[20px] flex items-center transition-all duration-100 ease-in-out"
         >
           {title}
         </h3>

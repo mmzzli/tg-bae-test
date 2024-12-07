@@ -12,6 +12,11 @@ const MessagePageRouteGuard: FC = () => {
   const { getMessageWindow } = useIM()
   const connection = useStore((state) => state.connection)
 
+  const { addChatListItem, addMessageWindowListItem } = useStore((state) => ({
+    addChatListItem: state.addChatListItem,
+    addMessageWindowListItem: state.addMessageWindowListItem,
+  }))
+
   const isChatListLoaded = useStore((state) => state.isChatListLoaded)
 
   useEffect(() => {
@@ -26,6 +31,16 @@ const MessagePageRouteGuard: FC = () => {
             ?.createEmptyConversation(uid)
             .then((res) => {
               console.log('createEmptyConversation', res)
+              const repeat = useStore
+                .getState()
+                .chatList.some((item) => item.channel.channelID === res.channel.channelID)
+              if (!repeat) {
+                addChatListItem(res)
+                addMessageWindowListItem({
+                  channel: res.channel,
+                  messages: [],
+                })
+              }
               setReady(true)
             })
             .catch((error) => {

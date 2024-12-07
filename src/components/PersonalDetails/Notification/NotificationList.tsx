@@ -1,6 +1,6 @@
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import { useStore } from '@/store'
-import { FC, memo, useEffect, RefObject, useRef, useState } from 'react'
+import { FC, memo, useEffect, useRef, useState } from 'react'
 import Image from '@/components/Image/Image'
 import { NotificationType, UserItem } from '@/types'
 import { getTimeStringAutoShort } from '@/utils/utils'
@@ -43,6 +43,7 @@ const NotificationList: FC = () => {
         setNotificationList([...notificationList, ...newNotifications.posts])
       }
     } catch (error) {
+      setHasMore(false)
       console.error('Failed to load more notifications:', error)
     } finally {
       setIsLoading(false)
@@ -136,13 +137,23 @@ const NotificationList: FC = () => {
                     <Image
                       rect
                       onClick={() => {
-                        if (notification.post.media.split(',')[0])
+                        if (notification.post.type === 1 && notification.post.media.split(',')[0]) {
                           setImageResource({
                             images: notification.post.media.split(','),
                             currentIndex: 0,
                           })
+                        } else {
+                          setImageResource({
+                            images: [notification.post.thumbnail],
+                            currentIndex: 0,
+                          })
+                        }
                       }}
-                      src={notification.post.media.split(',')[0]}
+                      src={
+                        notification.post.type === 1 && notification.post.media.split(',')[0]
+                          ? notification.post.media.split(',')[0]
+                          : notification.post.thumbnail
+                      }
                       width={80}
                       height={80}
                     />
@@ -155,7 +166,7 @@ const NotificationList: FC = () => {
       ))}
       <div ref={forwardsTriggerRef} key="forwards-trigger" className="forwards-trigger">
         {isLoading && (
-          <div className="text-center py-4">
+          <div className="py-4 flex items-center justify-center">
             <i
               className="iconfont icon-loading animate-spin text-[#6254FF]"
               style={{ fontSize: '40px' }}

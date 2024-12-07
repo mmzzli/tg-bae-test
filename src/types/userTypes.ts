@@ -40,6 +40,7 @@ export type Notification = {
     price: number
     media: string
     thumbnail: string
+    type: number
   }
   user: {
     avatar: string

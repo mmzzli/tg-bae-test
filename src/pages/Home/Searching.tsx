@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useRequest } from 'ahooks'
 
@@ -12,6 +12,8 @@ import FollowButton from '@/components/PersonalDetails/FollowButton'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 const Searching = () => {
   const navigate = useNavigate()
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const [data, setData] = useState<SearchItem | null>(null)
   const [field, setField] = useState<string>('')
   const [debouncedField, setDebouncedField] = useState<string>('')
@@ -55,6 +57,11 @@ const Searching = () => {
     }
   }, [debouncedField])
 
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
   return (
     <div
       className="absolute px-[16px] top-0 left-0 right-0 bg-[#fff] z-10 overflow-auto scrollbar-hide"
@@ -73,6 +80,7 @@ const Searching = () => {
           value={field}
           placeholder="Search Users"
           onChange={(e) => setField(e.target.value)}
+          ref={inputRef}
         />
         {field.length > 0 && (
           <div

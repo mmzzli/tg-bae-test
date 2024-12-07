@@ -80,7 +80,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
                   alt={data.title}
                   width={'100%'}
                   onClick={() => {
-                    if (data.uid !== getCurrentUid() && !data.is_pay) {
+                    if (data.uid !== getCurrentUid() && !data.is_pay && data.price > 0) {
                       return
                     }
                     handleImageClick(data.media, index)

@@ -95,7 +95,7 @@ const ResourceFooter: React.FC<ResourceFooterProps> = ({ data }) => {
           ) : (
             <i className="iconfont icon-like text-white text-6" style={{ fontSize: '24px' }}></i>
           )}
-          <span className="pl-1 text-sm text-white">{data.like}</span>
+          <span className="pl-1 text-sm text-white">{likeNum}</span>
         </Flex>
         <Box
           className="w-6 h-6 flex items-center justify-center"

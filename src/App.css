@@ -87,3 +87,8 @@ video {
 * {
   -webkit-tap-highlight-color: transparent;
 }
+
+.chakra-checkbox__control[data-checked] {
+  background:#6254FF !important;
+  border-color: #6254FF !important;
+}

@@ -35,9 +35,9 @@ const CloseButton = memo(({ onClose }: { onClose: () => void }) => (
 
 const ProgressDisplay = memo(
   ({ progress, isDragging }: { progress: number; isDragging: boolean }) => (
-    <div className="h-full bg-white rounded-full relative" style={{ width: `${progress}%` }}>
+    <div className="h-full bg-white rounded-full relative " style={{ width: `${progress}%` }}>
       <div
-        className={`absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full ${
+        className={`absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full ${
           isDragging ? 'scale-100' : 'scale-0'
         } transition-transform duration-200`}
       />
@@ -308,14 +308,14 @@ const VideoDialog = () => {
             x-webkit-airplay="allow"
           />
           {showLoader && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+            <div className="absolute z-[18] inset-0 flex items-center justify-center bg-black/50">
               <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin" />
             </div>
           )}
           {!isLoading && !playing && <PlayButton onClick={togglePlay} />}
           <div
             ref={progressBarRef}
-            className="absolute bottom-[-6px] left-0 right-0 px-4 touch-none z-20"
+            className="absolute bottom-[-6px] left-0 right-0  touch-none z-20"
             onMouseDown={() => setIsDragging(true)}
             onMouseMove={(e) => isDragging && handleSeek(e)}
             onMouseUp={() => setIsDragging(false)}
@@ -327,8 +327,8 @@ const VideoDialog = () => {
               <div className="absolute inset-0" />
 
               <div
-                className={`w-full ${isDragging ? 'h-2' : 'h-[1px] group-hover:h-2'}
-                    bg-gray-500/30 rounded-full transition-[height] duration-200`}
+                className={`w-full h-[2px] group-hover:h-2'}
+                    bg-white/20 rounded-full transition-[height] duration-200`}
               >
                 <ProgressDisplay progress={progress} isDragging={isDragging} />
               </div>

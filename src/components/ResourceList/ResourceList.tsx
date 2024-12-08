@@ -477,7 +477,7 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
           <MoreText text={data.title} />
         </p>
         <HStack pt="2" justifyContent="space-between">
-          {type === 'payment' && (
+          {data.is_pay && (
             <HStack gap="4px">
               <p className="text-[#666666] dark:text-[#424048] text-[12px]">
                 Purchased for {data.price}

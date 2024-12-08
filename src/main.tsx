@@ -9,4 +9,20 @@ if (import.meta.env.MODE !== 'production') {
   })
 }
 
+if (import.meta.env.MODE === 'production') {
+  const gaScript = document.createElement('script')
+  gaScript.setAttribute('async', '')
+  gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-XPKLLC0SSN'
+  document.head.appendChild(gaScript)
+
+  const inlineScript = document.createElement('script')
+  inlineScript.innerHTML = `
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XPKLLC0SSN');
+  `
+  document.head.appendChild(inlineScript)
+}
+
 createRoot(document.getElementById('root')!).render(<App />)

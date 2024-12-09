@@ -17,7 +17,7 @@ import { useToast } from '@chakra-ui/react'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 
 const MOVE_SIZE = 64
-const MOVE_THRESHOLD = -38
+const MOVE_THRESHOLD = 38
 
 const NotificationItem: FC<{
   notification: any // 根据你的类型定义修改
@@ -84,6 +84,12 @@ const NotificationItem: FC<{
     }
   }
 
+  const handleDrag = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    if (Math.abs(info.offset.y) > Math.abs(info.offset.x)) {
+      itemControls.start({ x: 0 })
+    }
+  }
+
   const handleClick = () => {
     resetAllControls()
   }
@@ -113,6 +119,7 @@ const NotificationItem: FC<{
         drag="x"
         dragConstraints={{ left: -MOVE_SIZE, right: 0 }}
         dragElastic={0.2}
+        onDrag={handleDrag}
         onDragEnd={(event, info) => onDragEnd(notification.id, itemControls, event, info)}
         animate={itemControls}
         style={{ x: 0 }}

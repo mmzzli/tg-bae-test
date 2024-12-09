@@ -164,7 +164,7 @@ const NotificationItem: FC<{
                       : ' purchased your post'}
                 </span>
               </div>
-              <span className="text-[#999] text-[12px] ml-4">
+              <span className="text-[#999] text-[12px] ml-[10px]">
                 {getTimeStringAutoShort(new Date(notification.time).getTime(), true)}
               </span>
             </div>

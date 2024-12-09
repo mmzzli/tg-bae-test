@@ -129,6 +129,10 @@ const HomePage: FC = () => {
     <div
       className="relative w-full h-full overflow-auto scrollbar-hide"
       id="recommendScrollableDiv"
+      style={{
+        paddingTop: "env(safe-area-inset-top)",
+        paddingBottom: "env(safe-area-inset-bottom)",
+      }}
     >
       <div
         className="flex p-[10px_16px] fixed w-full z-[111]"

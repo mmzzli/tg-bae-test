@@ -209,7 +209,16 @@ const MessagePageIOS = () => {
             }}
           />
         </div>
-        <span className="dark:text-white text-[#333] text-lg ml-2">{chatPeople?.username}</span>
+        <span
+          onClick={() => {
+            if (chatPeople) {
+              jumpToProfilePage(chatPeople)
+            }
+          }}
+          className="dark:text-white text-[#333] text-lg ml-2"
+        >
+          {chatPeople?.username}
+        </span>
       </div>
 
       <MemoizedMessageList

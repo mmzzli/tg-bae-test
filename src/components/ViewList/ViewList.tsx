@@ -60,7 +60,7 @@ const ViewList = ({ className }: PostListProps) => {
 
   return (
     <>
-      <div className={targetBoll ? `fixed top-0 w-full bg-white z-[111]` : ''}>
+      <div className={false ? `fixed top-0 w-full bg-white z-[111]` : ''}>
         <Box className="flex justify-around" borderBottom="1px solid #EBEBF4">
           {menuList.map((item) => (
             <div

@@ -28,7 +28,7 @@ const Searching = () => {
       searchByUsername({
         field: field.toLowerCase(),
         page_num: 1,
-        records: 10,
+        records: 100,
       }),
     { manual: true }
   )

@@ -42,11 +42,11 @@ interface ShareModalProps {
 }
 
 export const ShareModal: React.FC<ShareModalProps> = ({
-                                                        isBaseModalOpen,
-                                                        off,
-                                                        currentShareData,
-                                                        links,
-                                                      }) => {
+  isBaseModalOpen,
+  off,
+  currentShareData,
+  links,
+}) => {
   const { launchParams, getCurrentUid } = useTMAUtils()
   const { copy } = useCopy()
 
@@ -148,10 +148,10 @@ const POST_TYPE_IMAGE = 1
 const POST_TYPE_VIDEO = 0
 
 const ResourceList = ({
-                        resources: initialResources,
-                        type,
-                        hasMore,
-                      }: {
+  resources: initialResources,
+  type,
+  hasMore,
+}: {
   resources: FormatterListItem[]
   type?: string
   hasMore?: boolean
@@ -268,6 +268,7 @@ const ResourceList = ({
   const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
     const { shareLink, copyLink } = await genShareLinkFn(title, pid, uid, getLinkHandlerAsync)
     setLinks({ shareLink, copyLink: decodeURIComponent(copyLink) })
+    toggle()
   })
 
   const resourcesEve = (post_id: number, url: string) => {
@@ -285,6 +286,7 @@ const ResourceList = ({
     return (
       <Empty
         title="No post yet."
+        className="w-full fixed top-[63%] left-1/2 transform -translate-x-1/2 -translate-y-1/2"
         icon={
           <Icon name="icon-Empty_white_post" style={{ width: '164px', height: '164px' }}></Icon>
         }
@@ -326,7 +328,6 @@ const ResourceList = ({
                     pid: data.id,
                     uid: data.uid,
                   })
-                  toggle()
                 }}
               />
             </Box>
@@ -433,11 +434,11 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
                 animationData={likeAnimationData}
                 loop={false}
                 style={{
-                  width: '24px',
+                  width: '22px',
                 }}
               ></Lottie>
             ) : (
-              <i className="iconfont icon-like text-[#0D0D0D]" style={{ fontSize: '24px' }}></i>
+              <i className="iconfont icon-like text-[#0D0D0D]" style={{ fontSize: '22px' }}></i>
             )}
             <span className="pl-1 text-sm text-[##0D0D0D]">{likeNum}</span>
           </Flex>
@@ -448,11 +449,11 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
             }}
           >
             {saved ? (
-              <i className="iconfont icon-saved text-[#FFCC5D]" style={{ fontSize: '24px' }}></i>
+              <i className="iconfont icon-saved text-[#FFCC5D]" style={{ fontSize: '22px' }}></i>
             ) : (
               <i
                 className="iconfont icon-bookmark-line text-[#0D0D0D]"
-                style={{ fontSize: '24px' }}
+                style={{ fontSize: '22px' }}
               ></i>
             )}
           </Box>
@@ -471,12 +472,12 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
         />
       </div>
 
-      <div className="px-4 py-3">
+      {(data.title || data.is_pay) && <div className="px-4 py-3">
         <p className="text-[#0F1419] dark:text-[#ccc] text-sm leading-6">
           <MoreText text={data.title} />
         </p>
         <HStack pt="2" justifyContent="space-between">
-          {type === 'payment' && (
+          {data.is_pay && (
             <HStack gap="4px">
               <p className="text-[#666666] dark:text-[#424048] text-[12px]">
                 Purchased for {data.price}
@@ -485,7 +486,7 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
             </HStack>
           )}
         </HStack>
-      </div>
+      </div>}
     </>
   )
 })

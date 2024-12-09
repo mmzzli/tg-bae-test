@@ -682,7 +682,7 @@ export const NewPost: FC = () => {
         <Box pt="16px">
           <Input
             type="file"
-            accept="image/*,video/*"
+            accept=".png,.jpg,.jpeg,.mp4,.webm"
             multiple
             onChange={handleFileChange}
             style={{ display: 'none' }}

@@ -60,7 +60,7 @@ const ViewList = ({ className }: PostListProps) => {
 
   return (
     <>
-      <div className={targetBoll ? `fixed top-0 w-full bg-white z-[111]` : ''}
+      <div className={false ? `fixed top-0 w-full bg-white z-[111]` : ''}
         style={{
           top: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
         }}

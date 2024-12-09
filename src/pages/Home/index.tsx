@@ -84,6 +84,15 @@ const HomePage: FC = () => {
       opacity: progress < 0.1 || scrollPosition > 90 ? 1 : 0.2,
     }
   }
+  const ScrollToTopOnDoubleClick = ()=>{
+    const element = document.getElementById("recommendScrollableDiv");
+    if (element) {
+      element.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
+  }
 
   return (
     <div
@@ -95,6 +104,7 @@ const HomePage: FC = () => {
         style={{
           top: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
         }}
+        onDoubleClick={ScrollToTopOnDoubleClick}
       >
         <div
           className="absolute top-0 left-0 right-0 bg-white dark:bg-black -z-1"

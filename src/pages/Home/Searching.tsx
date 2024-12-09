@@ -98,8 +98,8 @@ const Searching = () => {
       <div className="pt-[28px]">
         {data?.users.map((item, key) => (
           <div className="flex items-center justify-between py-[12px] mb-[12px]" key={key}>
-            <div className="flex gap-[12px] items-center">
-              <div className="flex-shrink-0" onClick={() => navigate(`/profile/${item.tg_id}`)}>
+            <div className="flex gap-[12px] items-center" onClick={() => navigate(`/profile/${item.tg_id}`)}>
+              <div className="flex-shrink-0">
                 <Image
                   width={56}
                   height={56}

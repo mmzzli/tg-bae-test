@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en" style="--tg-safe-area-inset-top: 0px; --tg-content-safe-area-inset-top: 0px">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="referrer" content="no-referrer" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0,user-scalable=no"
+    />
+    <meta name="theme-color" content="#ff0000" />
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_4749276_aqw5v9iaaje.css" />
+    <title>DITTO</title>
+  </head>
+  <body>
+    <div id="root" style="position: relative; z-index: 9; width: 100vw; height: 100vh"></div>
+    <video
+      class="fixed top-0 left-0"
+      id="splash_video"
+      src="https://img.bae.boo/bae_loading_1.mp4"
+      autoplay
+      muted
+      preload="auto"
+      playsinline
+      style="z-index: 1000; object-fit: cover; width: 100vw; height: 100vh"
+    ></video>
+    <script>
+      window.loading = true
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+    <script src="https://at.alicdn.com/t/c/font_4749304_ljhtroq82h.js"></script>
+    <script type="module" src="/src/main.tsx"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  </body>
+</html>

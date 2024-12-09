@@ -84,7 +84,12 @@ const HomePage: FC = () => {
       opacity: progress < 0.1 || scrollPosition > 90 ? 1 : 0.2,
     }
   }
-  const ScrollToTopOnDoubleClick = ()=>{
+
+  const lastTapTime = useRef<number>(0);
+
+  // 双击触发的逻辑
+  const handleDoubleTap = (): void => {
+    console.log("Double-tap detected!");
     const element = document.getElementById("recommendScrollableDiv");
     if (element) {
       element.scrollTo({
@@ -92,7 +97,33 @@ const HomePage: FC = () => {
         behavior: "smooth",
       });
     }
-  }
+  };
+
+  // 单击事件，用于模拟手机双击
+  const handleSingleClick = (): void => {
+    const currentTime = Date.now();
+    if (currentTime - lastTapTime.current < 300) {
+      handleDoubleTap();
+    }
+    lastTapTime.current = currentTime;
+  };
+
+  // 双击事件，支持电脑端
+  const handleDoubleClick = (): void => {
+    handleDoubleTap();
+  };
+
+
+
+  // const ScrollToTopOnDoubleClick = ()=>{
+  //   const element = document.getElementById("recommendScrollableDiv");
+  //   if (element) {
+  //     element.scrollTo({
+  //       top: 0,
+  //       behavior: "smooth",
+  //     });
+  //   }
+  // }
 
   return (
     <div
@@ -104,7 +135,8 @@ const HomePage: FC = () => {
         style={{
           top: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
         }}
-        onDoubleClick={ScrollToTopOnDoubleClick}
+        onClick={handleSingleClick} // 手机双击逻辑
+        onDoubleClick={handleDoubleClick} // 电脑端双击逻辑
       >
         <div
           className="absolute top-0 left-0 right-0 bg-white dark:bg-black -z-1"

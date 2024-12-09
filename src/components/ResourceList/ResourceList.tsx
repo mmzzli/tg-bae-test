@@ -472,7 +472,7 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
         />
       </div>
 
-      <div className="px-4 py-3">
+      {(data.title || data.is_pay) && <div className="px-4 py-3">
         <p className="text-[#0F1419] dark:text-[#ccc] text-sm leading-6">
           <MoreText text={data.title} />
         </p>
@@ -486,7 +486,7 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
             </HStack>
           )}
         </HStack>
-      </div>
+      </div>}
     </>
   )
 })

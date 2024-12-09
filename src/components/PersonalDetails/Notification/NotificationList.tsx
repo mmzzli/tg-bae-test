@@ -148,7 +148,12 @@ const NotificationItem: FC<{
             {/* Info Area */}
             <div className="flex items-center justify-between">
               <div className="text-black font-normal flex-1 flex overflow-hidden">
-                <span className="text-[#333] font-medium text-ellipsis overflow-hidden whitespace-nowrap min-w-[50px]">
+                <span
+                  onClick={() => {
+                    jumpToProfilePage(notification.user as unknown as UserItem)
+                  }}
+                  className="text-[#333] font-medium text-ellipsis overflow-hidden whitespace-nowrap min-w-[50px]"
+                >
                   {notification.user.username}
                 </span>
                 <span className="text-[#666] flex-1 whitespace-nowrap ml-[10px]">

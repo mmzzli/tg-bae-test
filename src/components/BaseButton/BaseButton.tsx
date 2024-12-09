@@ -28,7 +28,7 @@ const BaseButton = ({
     <div>
       <div
         className={cn(
-          'no-tap flex items-center justify-center gap-2 bg-[#6254FF] dark:bg-[#4A3AFF] rounded-[42px] text-white dark:text-[#E0E2F6] text-sm font-medium cursor-pointer',
+          'relative no-tap flex items-center justify-center gap-2 bg-[#6254FF] dark:bg-[#4A3AFF] rounded-[42px] text-white dark:text-[#E0E2F6] text-sm font-medium cursor-pointer',
           className,
           loading || disabled
             ? 'dark:bg-[#6a5cfc] bg-[#D1D0DE] cursor-not-allowed text-white border-[#D1D0DE]'
@@ -38,11 +38,13 @@ const BaseButton = ({
         style={{ width, height }}
       >
         {loading && (
-          <div className="w-5 h-5 border-4 border-t-4 border-t-white border-transparent rounded-full animate-spin"></div>
+          <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+            <div className="w-5 h-5 border-4 border-t-4 border-t-white border-transparent rounded-full animate-spin"></div>
+          </div>
         )}
-        {icon}
-        <span className="font-medium !important">{text}</span>
-        {iconRight}
+        {!loading && icon}
+        <span className="font-medium !important">{!loading && text}</span>
+        {!loading && iconRight}
       </div>
     </div>
   )

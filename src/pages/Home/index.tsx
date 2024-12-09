@@ -129,10 +129,6 @@ const HomePage: FC = () => {
     <div
       className="relative w-full h-full overflow-auto scrollbar-hide"
       id="recommendScrollableDiv"
-      style={{
-        paddingTop: "env(safe-area-inset-top)",
-        paddingBottom: "env(safe-area-inset-bottom)",
-      }}
     >
       <div
         className="flex p-[10px_16px] fixed w-full z-[111]"
@@ -165,6 +161,7 @@ const HomePage: FC = () => {
           ref={titleRef}
           style={getTitleStyle()}
           className="fixed text-black dark:text-[#E0E2F6] text-[20px] flex items-center transition-all duration-100 ease-in-out"
+          onClick={handleSingleClick} // 手机双击逻辑
         >
           {title}
         </h3>

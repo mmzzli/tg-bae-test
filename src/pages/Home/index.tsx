@@ -84,7 +84,12 @@ const HomePage: FC = () => {
       opacity: progress < 0.1 || scrollPosition > 90 ? 1 : 0.2,
     }
   }
-  const ScrollToTopOnDoubleClick = ()=>{
+
+  const lastTapTime = useRef<number>(0);
+
+  // 双击触发的逻辑
+  const handleDoubleTap = (): void => {
+    console.log("Double-tap detected!");
     const element = document.getElementById("recommendScrollableDiv");
     if (element) {
       element.scrollTo({
@@ -92,7 +97,21 @@ const HomePage: FC = () => {
         behavior: "smooth",
       });
     }
-  }
+  };
+
+  const handleSingleClick = (): void => {
+    const currentTime = Date.now();
+    if (currentTime - lastTapTime.current < 300) {
+      handleDoubleTap();
+    }
+    lastTapTime.current = currentTime;
+  };
+
+  const handleDoubleClick = (): void => {
+    handleDoubleTap();
+  };
+
+
 
   return (
     <div
@@ -104,7 +123,8 @@ const HomePage: FC = () => {
         style={{
           top: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
         }}
-        onDoubleClick={ScrollToTopOnDoubleClick}
+        onClick={handleSingleClick}
+        onDoubleClick={handleDoubleClick}
       >
         <div
           className="absolute top-0 left-0 right-0 bg-white dark:bg-black -z-1"

@@ -62,7 +62,7 @@ const ViewList = ({ className }: PostListProps) => {
     <>
       <div className={targetBoll ? `fixed top-0 w-full bg-white z-[111]` : ''}
         style={{
-          paddingTop: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
+          paddingTop: targetBoll ? `calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))`:'',
         }}
       >
         <Box className="flex justify-around" borderBottom="1px solid #EBEBF4">

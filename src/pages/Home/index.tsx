@@ -101,6 +101,7 @@ const HomePage: FC = () => {
 
   // 单击事件，用于模拟手机双击
   const handleSingleClick = (): void => {
+    alert(1)
     const currentTime = Date.now();
     if (currentTime - lastTapTime.current < 300) {
       handleDoubleTap();

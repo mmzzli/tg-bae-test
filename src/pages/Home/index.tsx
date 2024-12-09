@@ -99,9 +99,7 @@ const HomePage: FC = () => {
     }
   };
 
-  // 单击事件，用于模拟手机双击
   const handleSingleClick = (): void => {
-    alert(1)
     const currentTime = Date.now();
     if (currentTime - lastTapTime.current < 300) {
       handleDoubleTap();
@@ -109,22 +107,11 @@ const HomePage: FC = () => {
     lastTapTime.current = currentTime;
   };
 
-  // 双击事件，支持电脑端
   const handleDoubleClick = (): void => {
     handleDoubleTap();
   };
 
 
-
-  // const ScrollToTopOnDoubleClick = ()=>{
-  //   const element = document.getElementById("recommendScrollableDiv");
-  //   if (element) {
-  //     element.scrollTo({
-  //       top: 0,
-  //       behavior: "smooth",
-  //     });
-  //   }
-  // }
 
   return (
     <div
@@ -136,8 +123,8 @@ const HomePage: FC = () => {
         style={{
           top: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
         }}
-        onClick={handleSingleClick} // 手机双击逻辑
-        onDoubleClick={handleDoubleClick} // 电脑端双击逻辑
+        onClick={handleSingleClick}
+        onDoubleClick={handleDoubleClick}
       >
         <div
           className="absolute top-0 left-0 right-0 bg-white dark:bg-black -z-1"
@@ -162,7 +149,6 @@ const HomePage: FC = () => {
           ref={titleRef}
           style={getTitleStyle()}
           className="fixed text-black dark:text-[#E0E2F6] text-[20px] flex items-center transition-all duration-100 ease-in-out"
-          onClick={handleSingleClick} // 手机双击逻辑
         >
           {title}
         </h3>

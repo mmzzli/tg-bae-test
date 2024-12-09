@@ -1,4 +1,4 @@
-import { post, get, put } from './base'
+import { post, get, put, del } from './base'
 import {
   IUserLogIn,
   OthersUserInfo,
@@ -65,6 +65,9 @@ export const getNotifications = (params: { page_num: number; records: number }) 
 }
 export const getNotificationsById = (params: { id: number; records: number }) => {
   return post<{ posts: Notification[] }>(`/api/v1/unread_message`, params)
+}
+export const deleteNotification = (mid: number) => {
+  return del(`/api/v1/message/${mid}`)
 }
 // Notification END
 

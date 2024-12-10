@@ -17,11 +17,12 @@ const Searching = () => {
   const [data, setData] = useState<SearchItem | null>(null)
   const [field, setField] = useState<string>('')
   const [debouncedField, setDebouncedField] = useState<string>('')
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const { getCurrentUid } = useTMAUtils()
   const currentUid = getCurrentUid()
   const {
     loading,
-    run,
+    runAsync,
     data: res,
   } = useRequest(
     (field: string) =>
@@ -49,9 +50,14 @@ const Searching = () => {
     }
   }, [field])
 
+  const load = async()=>{
+    setIsLoading(false)
+    await runAsync(field)
+    setIsLoading(true)
+  }
   useEffect(() => {
     if (debouncedField) {
-      run(field)
+      load()
     } else {
       setData({ users: [] })
     }
@@ -107,6 +113,7 @@ const Searching = () => {
                   src={item.avatar}
                   alt="Avatar"
                   className="w-[56px] h-[56px] rounded-full"
+                  loaderClassName="rounded-full"
                 />
               </div>
               <h3 className="text-[#333] text-[16px]">{item.tgname}</h3>
@@ -120,7 +127,7 @@ const Searching = () => {
           </div>
         ))}
       </div>
-      {data?.users.length === 0 && debouncedField.length > 0 && (
+      {data?.users.length === 0 && debouncedField.length > 0 && isLoading && (
         <div>
           <Empty
             title="No search result."

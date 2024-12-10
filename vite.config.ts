@@ -5,14 +5,29 @@ import path from 'path'
 import mkcert from 'vite-plugin-mkcert'
 import { createFilter } from '@rollup/pluginutils'
 import fs from 'fs'
+const routes = [
+  '/home',
+  '/home/searching',
+  '/post',
+  '/shares',
+  '/task',
+  '/profile',
+  '/profile/edit',
+  '/profile/earningsHistory',
+  '/profile/',
+  '/follow/',
+  '/chat',
+  '/ageGate',
+]
 const htmlPlugin = (mode: string) => {
   return {
     name: 'html-transform',
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
-        if (req.url === '/') {
+        if (req.url === '/' || routes.some((route) => req.url.startsWith(route))) {
           req.url = `/${mode === 'production' ? 'index.prod.html' : 'index.dev.html'}`
         }
+        console.log('req.url', req.url)
         next()
       })
     },

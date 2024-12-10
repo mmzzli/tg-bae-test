@@ -27,7 +27,6 @@ const htmlPlugin = (mode: string) => {
         if (req.url === '/' || routes.some((route) => req.url.startsWith(route))) {
           req.url = `/${mode === 'production' ? 'index.prod.html' : 'index.dev.html'}`
         }
-        console.log('req.url', req.url)
         next()
       })
     },

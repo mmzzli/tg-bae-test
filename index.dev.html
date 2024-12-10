@@ -14,16 +14,35 @@
   </head>
   <body>
     <div id="root" style="position: relative; z-index: 9; width: 100vw; height: 100vh"></div>
-    <video
-      class="fixed top-0 left-0"
+    <div
       id="splash_video"
-      src="https://img.bae.boo/bae_loading_1.mp4"
-      autoplay
-      muted
-      preload="auto"
-      playsinline
-      style="z-index: 1000; object-fit: cover; width: 100vw; height: 100vh"
-    ></video>
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 9999;
+        background-color: #ffffff;
+      "
+    >
+      <video
+        src="https://img.bae.boo/bae_loading_1.mp4"
+        autoplay
+        muted
+        preload="auto"
+        playsinline
+        style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          z-index: 9999;
+          object-fit: cover;
+          width: 100vw;
+          height: 100vh;
+        "
+      ></video>
+    </div>
     <script>
       window.loading = true
     </script>

@@ -112,7 +112,7 @@ const UserInfo = memo(
                     : `Follow`
                 }
                 loading={isFollowLoading}
-                loadingColor="#999"
+                loadingColor="border-t-[#999]"
                 width={
                   followResource?.some((user) => user.uid === uid && user.boll) ? '104px' : '80px'
                 }

@@ -24,7 +24,7 @@ const BaseButton = ({
   className,
   loading = false,
   disabled = false,
-  loadingColor = '#ffffff'
+  loadingColor = 'border-t-[#ffffff]'
 }: Props) => {
   return (
     <div>
@@ -41,7 +41,10 @@ const BaseButton = ({
       >
         {loading && (
           <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-            <div className={`w-5 h-5 border-2 border-t-2 border-t-[${loadingColor}] border-transparent rounded-full animate-spin`}></div>
+            <div className={cn(
+              `w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin`,
+              loadingColor
+            )}></div>
           </div>
         )}
         {!loading && icon}

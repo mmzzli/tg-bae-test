@@ -17,7 +17,6 @@ const ShareModal = forwardRef<ChildMethods>(({}, ref) => {
     someMethod: (username: string, uid: number) => {
       getShareLink(username, uid)
       setState({ uid })
-      toggle()
     },
   }))
   const [state, setState] = useSetState<Record<string, any>>({
@@ -50,6 +49,7 @@ const ShareModal = forwardRef<ChildMethods>(({}, ref) => {
     const shareText = encodeURIComponent(title)
 
     const { ref } = await getLinkHandlerAsync({ pid: uid, uid })
+    toggle()
 
     const copyLink = encodeURIComponent(`${import.meta.env.VITE_API_URL}link/${ref}`)
     console.log('copyLink', decodeURIComponent(copyLink))
@@ -130,7 +130,7 @@ const ShareModal = forwardRef<ChildMethods>(({}, ref) => {
         const WebApp = window.Telegram?.WebApp
         setTimeout(() => {
           WebApp.shareMessage(result.id)
-        }, 0)
+        }, 100)
       }
       off()
     } else {

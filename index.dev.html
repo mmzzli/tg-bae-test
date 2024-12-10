@@ -27,11 +27,12 @@
       "
     >
       <video
-        src="https://img.bae.boo/bae_loading_1.mp4"
+        class="video-js"
         autoplay
         muted
         preload="auto"
         playsinline
+        webkit-playsinline="true"
         style="
           position: absolute;
           top: 0;
@@ -40,12 +41,19 @@
           object-fit: cover;
           width: 100vw;
           height: 100vh;
+          -webkit-appearance: none;
+          ::-webkit-media-controls {
+            display: none !important;
+          }
         "
-      ></video>
+      >
+        <source src="https://img.bae.boo/bae_loading_1.mp4" type="video/mp4" />
+      </video>
     </div>
     <script>
       window.loading = true
     </script>
+    <script src="https://vjs.zencdn.net/8.16.1/video.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
     <script src="https://at.alicdn.com/t/c/font_4749304_ljhtroq82h.js"></script>
     <script type="module" src="/src/main.tsx"></script>

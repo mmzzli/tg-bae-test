@@ -56,7 +56,6 @@ const HomePage: FC = () => {
     const handleScroll = throttle(() => {
       if (!scrollDiv) return
       setScrollPosition(scrollDiv.scrollTop >= 0 ? scrollDiv.scrollTop : 0)
-      console.log(scrollDiv.scrollTop)
     }, 30)
 
     scrollDiv?.addEventListener('scroll', handleScroll)
@@ -85,33 +84,31 @@ const HomePage: FC = () => {
     }
   }
 
-  const lastTapTime = useRef<number>(0);
+  const lastTapTime = useRef<number>(0)
 
   // 双击触发的逻辑
   const handleDoubleTap = (): void => {
-    console.log("Double-tap detected!");
-    const element = document.getElementById("recommendScrollableDiv");
+    console.log('Double-tap detected!')
+    const element = document.getElementById('recommendScrollableDiv')
     if (element) {
       element.scrollTo({
         top: 0,
-        behavior: "smooth",
-      });
+        behavior: 'smooth',
+      })
     }
-  };
+  }
 
   const handleSingleClick = (): void => {
-    const currentTime = Date.now();
+    const currentTime = Date.now()
     if (currentTime - lastTapTime.current < 300) {
-      handleDoubleTap();
+      handleDoubleTap()
     }
-    lastTapTime.current = currentTime;
-  };
+    lastTapTime.current = currentTime
+  }
 
   const handleDoubleClick = (): void => {
-    handleDoubleTap();
-  };
-
-
+    handleDoubleTap()
+  }
 
   return (
     <div

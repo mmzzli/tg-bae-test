@@ -61,7 +61,8 @@ const FollowButton: FC<{
       loading={followLoading}
       width="104px"
       handler={doFollow}
-      className={`bg-transparent border text-[#333333] border-[#333] ${className}`}
+      className={`bg-transparent border text-[#333333] border-[#CDCDD4] ${className}`}
+      loadingColor="#999"
       // loadingClassName="bg-transparent border text-[#333333] border-[#333]"
     />
   ) : (

@@ -100,6 +100,7 @@ const SecondaryMenu = ({ mediaData, currentUid, className, type }: Props) => {
                   : `Follow`
               }
               loading={isFollowLoading}
+              loadingColor="#999"
               width={
                 followResource?.some((user) => user.uid === mediaData.uid && user.boll)
                   ? '104px'

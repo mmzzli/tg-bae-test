@@ -6,7 +6,7 @@ import { useStore } from '@/store'
 import { DailyTaskItem, DailyTaskStatusEnum } from '@/store/slices/systemSlice'
 import { useToast } from '@chakra-ui/react'
 import { useRequest } from 'ahooks'
-import { FC, useEffect, useState } from 'react'
+import { FC, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 enum TaskType {
@@ -265,9 +265,15 @@ const Tasks: FC = () => {
 }
 
 const AnimatedNumber: React.FC<{ value: number }> = ({ value }) => {
-  const [displayValue, setDisplayValue] = useState(0)
+  const [displayValue, setDisplayValue] = useState(value)
+  const isFirstRender = useRef(true)
 
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+
     const startValue = displayValue
     const endValue = value
     const duration = 1000

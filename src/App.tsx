@@ -20,11 +20,12 @@ import Follow from './pages/Follow'
 import ProfileGuard from './pages/OthersProfile/routeGuard'
 import MessagePageRouteGuard from './pages/Chat/MessagePageRouteGuard'
 import AgeGate from '@/pages/AgeGate'
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import NiceModal from '@ebay/nice-modal-react'
 
-// import { mockTelegramEnv, parseInitData } from '@tma.js/sdk'
-// import { DEV_INIT_DATA_RAW } from './utils/constants'
+import { mockTelegramEnv, parseInitData } from '@tma.js/sdk'
+import { DEV_INIT_DATA_RAW } from './utils/constants'
+const Task = lazy(() => import('./pages/Task'))
 
 // mockTelegramEnv({
 //   themeParams: {
@@ -82,6 +83,24 @@ function App() {
                 </Route>
                 <Route path="post" element={<NewPost />} />
                 <Route path="shares" element={<Shares />} />
+
+                <Route
+                  path="task"
+                  element={
+                    <Suspense
+                      fallback={
+                        <div className="flex items-center justify-center h-full pb-10">
+                          <i
+                            className="iconfont icon-loading animate-spin text-[#6254FF]"
+                            style={{ fontSize: '40px' }}
+                          />
+                        </div>
+                      }
+                    >
+                      <Task />
+                    </Suspense>
+                  }
+                />
 
                 {/* Profile  */}
                 <Route path="profile">

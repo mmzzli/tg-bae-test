@@ -92,6 +92,10 @@ export const claimTask = (task_type: number) => {
   return post<any>(`/api/v1/points/claim/${task_type}`)
 }
 
+export const claimAllTasks = () => {
+  return post<any>(`/api/v1/points/complete`)
+}
+
 // Daily Task END
 
 export const searchByUsername = (params: { field: string; page_num: number; records: number }) => {

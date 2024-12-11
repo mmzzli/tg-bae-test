@@ -69,6 +69,9 @@ export type RecommendListReq = { page_num: number; records: number }
 export type ListRes = {
   posts: Array<ListItem>
 }
+export type FeaturedListRes = {
+  featured: Array<ListItem>
+}
 
 // getUserPosts
 export type UserPostsReq = { page_num: number; records: number; uid: number }

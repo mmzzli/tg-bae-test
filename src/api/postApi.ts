@@ -7,6 +7,7 @@ import {
   UserPostsReq,
   UserPostsRes,
   ListRes,
+  FeaturedListRes,
   ViewListReq,
   LinkMetadata,
   totalAvailable,
@@ -91,4 +92,15 @@ export const totalAvailableInvoice = () => {
 }
 export const accountdetailList = (params:any) => {
   return post<AccountdetailRes>(`/api/v1/order/accountdetail`,params)
+}
+
+export const featured = (params:any) => {
+  return post(`/api/v1/featured`,params)
+}
+export const allFeatured = (params:{
+  page_num: number,
+  records: number,
+  type: number
+}) => {
+  return post<FeaturedListRes>(`/api/v1/all_featured`,params)
 }

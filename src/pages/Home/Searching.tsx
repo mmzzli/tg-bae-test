@@ -118,12 +118,12 @@ const Searching = () => {
               </div>
               <h3 className="text-[#333] text-[16px]">{item.tgname}</h3>
             </div>
-            <FollowButton
+            {item.tg_id !== currentUid && <FollowButton
               fansid={currentUid}
               tgid={item.tg_id}
               avatar={item.avatar}
               username={item.tgname}
-            />
+            />}
           </div>
         ))}
       </div>

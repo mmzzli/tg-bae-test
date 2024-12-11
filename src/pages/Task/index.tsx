@@ -112,7 +112,7 @@ const TaskButton: React.FC<{
         <BaseButton
           text="Claim"
           handler={runClaimAllTask}
-          loading={claimTaskLoading}
+          loading={claimAllTaskLoading}
           className="w-[79px] h-[34px]"
         />
       )
@@ -153,7 +153,7 @@ const TaskItem: React.FC<{
   afterClaim: () => void
 }> = ({ task, onTaskAction, afterClaim }) => {
   return (
-    <div className="flex items-center justify-between bg-[#F7F9FC] p-4 rounded-lg">
+    <div className="flex items-center justify-between bg-[#F7F9FC] p-4 rounded-lg transform transition-transform duration-500">
       <div className="flex items-center">
         <div className="w-8 h-8 bg-[#333333] rounded-lg flex items-center justify-center text-white">
           {getTaskIcon(task)}
@@ -250,7 +250,7 @@ const Tasks: FC = () => {
       </div>
 
       {/* task list */}
-      <div className="space-y-3">
+      <div className="space-y-3 transition-transform duration-500">
         {dailyTaskList.map((task) => (
           <TaskItem
             key={task.task_type}

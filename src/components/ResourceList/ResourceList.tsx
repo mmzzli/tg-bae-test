@@ -1,5 +1,7 @@
 import { memo, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { Box, Flex, HStack, IconButton, useBoolean } from '@chakra-ui/react'
+import { Box, Flex, HStack, IconButton, useBoolean, Text, Heading } from '@chakra-ui/react'
+import { useNavigate } from 'react-router-dom'
+
 import { favDel, favPost, postLike } from '@/api'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { BaseModal } from '../Modal/BaseModal'
@@ -157,6 +159,7 @@ const ResourceList = ({
   type?: string
   hasMore?: boolean
 }) => {
+  const navigate = useNavigate()
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const isMobile = useMobile()
   const [resources, setResources] = useState<FormatterListItem[]>([])
@@ -308,16 +311,29 @@ const ResourceList = ({
                 onProfileClick={jumpToProfilePage}
                 type={type}
               />
-
-              {data.type === POST_TYPE_IMAGE ? (
-                <ImageCard
-                  data={data}
-                  handleImageClick={(images, index) => handleImageClick(images, index, data.id)}
-                  resourcesEve={resourcesEve}
-                />
-              ) : (
-                <VideoCard resourcesEve={resourcesEve} data={data} />
-              )}
+              <Box position="relative">
+                {data.act_type === 1 && <Box
+                  position="absolute"
+                  bottom="0px"
+                  w="100%"
+                  zIndex={11}
+                  onClick={()=> navigate('/home/christmas')}
+                >
+                  <HStack p="3px 16px" justifyContent="space-between" bg="rgba(0, 0, 0, 0.5)">
+                    <Text fontSize={14} color="#fff"> Explore more</Text>
+                    <i className="iconfont icon-icon_arrow_right text-[#fff] text-[20px]"></i>
+                  </HStack>
+                </Box>}
+                {data.type === POST_TYPE_IMAGE ? (
+                  <ImageCard
+                    data={data}
+                    handleImageClick={(images, index) => handleImageClick(images, index, data.id)}
+                    resourcesEve={resourcesEve}
+                  />
+                ) : (
+                  <VideoCard resourcesEve={resourcesEve} data={data} />
+                )}
+              </Box>
               <ResourceFooter
                 data={data}
                 likes={likes}

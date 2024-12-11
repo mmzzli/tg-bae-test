@@ -72,7 +72,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
                 style={{
                   height: firImageHeight ? firImageHeight + 'px' : 'calc(1.5*100vw)',
                   maxHeight:
-                    'calc(var(--tg-viewport-height) - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top) - 85px - 64px - 40px)',
+                    'calc(var(--tg-viewport-height) - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top) - 85px - 64px - 50px - 16px)',
                 }}
                 className={'flex items-center overflow-hidden object-contain overflow-hidden'}
               >

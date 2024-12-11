@@ -85,7 +85,7 @@ const NotificationItem: FC<{
   }
 
   const handleDrag = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    if (Math.abs(info.offset.y) > Math.abs(info.offset.x)) {
+    if (Math.abs(info.offset.y) > Math.abs(info.offset.x) && info.offset.x < 10) {
       itemControls.start({ x: 0 })
     }
   }
@@ -122,9 +122,12 @@ const NotificationItem: FC<{
         onDrag={handleDrag}
         onDragEnd={(event, info) => onDragEnd(notification.id, itemControls, event, info)}
         animate={itemControls}
-        style={{ x: 0 }}
         onClick={handleClick}
-        className="absolute top-0 left-0 right-0 bottom-0 dark:bg-black bg-white z-20 notification-item"
+        className="absolute top-0 left-0 right-0 bottom-0 dark:bg-black  z-20 notification-item"
+        style={{
+          x: 0,
+          backgroundColor: latestReadNotificationId < notification.id ? '#F7F9FC' : '#FFFFFF',
+        }}
       >
         <div className="flex px-6 py-4 text-sm">
           <div className="relative">
@@ -144,7 +147,7 @@ const NotificationItem: FC<{
             )}
           </div>
 
-          <div className="flex-1 ml-2 overflow-hidden">
+          <div className="flex-1 ml-[13px] overflow-hidden">
             {/* Info Area */}
             <div className="flex items-center justify-between">
               <div className="text-black font-normal flex-1 flex overflow-hidden">
@@ -152,11 +155,11 @@ const NotificationItem: FC<{
                   onClick={() => {
                     jumpToProfilePage(notification.user as unknown as UserItem)
                   }}
-                  className="text-[#333] font-medium text-ellipsis overflow-hidden whitespace-nowrap min-w-[50px]"
+                  className="text-[#333] font-medium text-ellipsis overflow-hidden whitespace-nowrap min-w-[1rem]"
                 >
                   {notification.user.username}
                 </span>
-                <span className="text-[#666] flex-1 whitespace-nowrap ml-[10px]">
+                <span className="text-[#666] flex-1 whitespace-nowrap ml-[4px]">
                   {notification.type === NotificationType.Follow
                     ? ' started following you'
                     : notification.type === NotificationType.Like

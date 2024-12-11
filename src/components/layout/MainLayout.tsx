@@ -8,13 +8,14 @@ import { useStore } from '@/store'
 import { useRequest } from 'ahooks'
 import { Outlet } from 'react-router-dom'
 import { log } from 'console'
-import { Spinner } from '@chakra-ui/react'
 import Menu from '../Menu'
 import { postEvent } from '@telegram-apps/sdk'
 import { PostProgressBar } from '../NewPost/PostProgressBar'
 import VideoDialog from '@/components/ResourceList/VideoDialog'
 import ImageDialog from '@/components/ResourceList/ImageDialog'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
+import { useInitDailyTask } from '@/hooks/useDailyTask'
+
 const ChatListPageLoader = {
   preload: () =>
     import('@/pages/Chat').then((module) => ({
@@ -52,7 +53,7 @@ export const MainLayout: React.FC = () => {
   const setMyFollow = useStore((state) => state.setMyFollow)
   const { getCurrentUid } = useTMAUtils()
   const current_uid = getCurrentUid()
-
+  const { runInitDailyTask } = useInitDailyTask()
   const { run: runGetUnreadNotificationCount } = useRequest(getUnreadNotificationCount, {
     pollingInterval: 6000,
     manual: true,
@@ -82,11 +83,14 @@ export const MainLayout: React.FC = () => {
       setUserInfo({ ...user_info, api_token })
       runGetUnreadNotificationCount(current_uid)
       updateMyFollow()
+      // Daily Task [Daily Login + Init Daily Task Store]
+      runInitDailyTask()
       if (window.loading) {
         setTimeout(() => {
           window.loading = false
+          // window.canvasPlayerCleanup()
           document.getElementById('splash_video')?.remove()
-        }, 4400)
+        }, 4200)
       }
     },
   })
@@ -226,12 +230,18 @@ export const MainLayout: React.FC = () => {
     <div className="absolute inset-0 top-0 right-0 bottom-0 left-0overflow-hidden flex pb-[84px] transition-all duration-300 bg-white dark:bg-black no-tap">
       <div
         className="absolute left-0 right-0 top-0 bottom-[84px] flex-col bg-white dark:bg-[#0D0D0D] overflow-hidden"
-        style={{ display: hiddenChatPage ? 'none' : 'flex', zIndex: hiddenChatPage ? -1 : 200 }}
+        style={{
+          opacity: hiddenChatPage ? 0 : 1,
+          zIndex: hiddenChatPage ? -1 : 200,
+        }}
       >
         <Suspense
           fallback={
             <div className="h-screen flex items-center justify-center">
-              <Spinner />
+              <i
+                className="iconfont icon-loading animate-spin text-[#6254FF]"
+                style={{ fontSize: '40px' }}
+              />
             </div>
           }
         >

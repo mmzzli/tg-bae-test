@@ -22,6 +22,7 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
   const { launchParams, openLink } = useTMAUtils()
   const { initData } = launchParams
   const [loading, setLoading] = useState<boolean>(false)
+  const [isPay, setIsPay] = useState<boolean>(true)
 
   const invoiceEve = async () => {
     setLoading(true)
@@ -46,6 +47,7 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
                 const viewUrl = await viewPid(post_id)
                 resourcesEve(post_id, viewUrl)
                 clearInterval(items)
+                setIsPay(false)
               } catch (error) {
                 console.log(error, 'payment')
               }
@@ -61,7 +63,7 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
   }
   return (
     <>
-      <Box
+      {isPay && <Box
         position="absolute"
         bottom="7"
         left="50%"
@@ -80,7 +82,7 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
             handler={() => invoiceEve()}
           />
         )}
-      </Box>
+      </Box>}
     </>
   )
 }

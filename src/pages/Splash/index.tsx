@@ -112,6 +112,10 @@ const Splash: FC = () => {
     })
   }, [startParam, isInTMA])
 
+  const isProd = import.meta.env.MODE === 'production'
+  if (!isProd) {
+    return null
+  }
   return (
     <div className="fixed top-0 bottom-0 left-0 right-0 dark:bg-[#0D0D0D] bg-white flex justify-center items-center z-10 flex-col">
       <div className="absolute top-[0px] right-[0px]">

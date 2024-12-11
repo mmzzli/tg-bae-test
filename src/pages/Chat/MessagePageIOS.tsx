@@ -12,6 +12,7 @@ import Image from '@/components/Image/Image'
 import { cn } from '@/utils/utils'
 import SendMediaModal from '@/components/Chat/SendMediaModal'
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
+import { useDailyTaskActions } from '@/hooks/useDailyTask'
 // const PAGE_SIZE = 20
 const isIOS = () => {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
@@ -35,6 +36,8 @@ const MessagePageIOS = () => {
 
   const [initTgViewportHeight, setInitTgViewportHeight] = useState(0)
   const [initVisualViewportHeight, setInitVisualViewportHeight] = useState(0)
+
+  const { runDailyChat } = useDailyTaskActions()
 
   useEffect(() => {
     if (messageWindow) {
@@ -69,6 +72,7 @@ const MessagePageIOS = () => {
 
   const handleSendText = () => {
     if (message.trim()) {
+      runDailyChat()
       handleSend({ type: MessageType.TEXT, text: message.trim() })
       setMessage('')
     }
@@ -84,6 +88,7 @@ const MessagePageIOS = () => {
   // mobile submit
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    e.stopPropagation()
     handleSendText()
   }
 
@@ -209,7 +214,16 @@ const MessagePageIOS = () => {
             }}
           />
         </div>
-        <span className="dark:text-white text-[#333] text-lg ml-2">{chatPeople?.username}</span>
+        <span
+          onClick={() => {
+            if (chatPeople) {
+              jumpToProfilePage(chatPeople)
+            }
+          }}
+          className="dark:text-white text-[#333] text-lg ml-2"
+        >
+          {chatPeople?.username}
+        </span>
       </div>
 
       <MemoizedMessageList
@@ -279,6 +293,19 @@ const MessagePageIOS = () => {
         />
         <div
           onClick={handleSubmit}
+          onTouchStart={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+          }}
+          onTouchEnd={handleSubmit}
+          onMouseDown={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+          }}
+          onMouseUp={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+          }}
           className="absolute items-center justify-center rounded-full top-[10px] h-[26px] w-[48px] right-[20px] cursor-pointer bg-[#6761FF] z[999]"
           style={{
             display: message ? 'flex' : 'none',

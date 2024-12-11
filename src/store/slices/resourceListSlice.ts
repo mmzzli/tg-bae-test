@@ -1,7 +1,7 @@
 import { StateCreator } from 'zustand'
 import { ListItem, UserItem } from '../../types'
 import { getRecommendMedia } from '../../api/list'
-import { favList, getUsersPosts, ordersList, viewList } from '@/api'
+import { favList, getUsersPosts, ordersList, viewList, allFeatured } from '@/api'
 import { useStore } from '../store'
 import Hls from 'hls.js'
 
@@ -91,6 +91,16 @@ export interface ResourceListSlice {
   setRecommendHasMore: (hasMore: boolean) => void
   resetRecommendList: () => void
   loadRecommendList: (page: number) => Promise<void>
+
+  // all_featured
+  allFeaturedList: BaseListState
+  setAllFeaturedPage: (page: number) => void
+  setAllFeaturedList: (list: FormatterListItem[], merge?: boolean) => void
+  setAllFeaturedLoading: (isLoading: boolean) => void
+  setAllFeaturedError: (error: string | null) => void
+  setAllFeaturedHasMore: (hasMore: boolean) => void
+  resetAllFeaturedList: () => void
+  loadAllFeaturedList: (page: number) => Promise<void>
 
   // cache
   cacheVideoIndex: number | string
@@ -187,12 +197,12 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       const updatedLike = like.map((likeItem) =>
         likeItem.id === data.id
           ? {
-              ...likeItem, // 创建一个新对象
-              liked: !likeItem.liked, // 切换 liked 状态
-              like: !likeItem.liked
-                ? likeItem.like + 1 // 切换为 true，like +1
-                : Math.max(likeItem.like - 1, 0), // 切换为 false，like -1，确保最小值为 0
-            }
+            ...likeItem, // 创建一个新对象
+            liked: !likeItem.liked, // 切换 liked 状态
+            like: !likeItem.liked
+              ? likeItem.like + 1 // 切换为 true，like +1
+              : Math.max(likeItem.like - 1, 0), // 切换为 false，like -1，确保最小值为 0
+          }
           : likeItem
       )
 
@@ -293,6 +303,76 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       get().setRecommendHasMore(false)
     } finally {
       get().setRecommendLoading(false)
+    }
+  },
+
+  //
+  allFeaturedList: { ...initialListState },
+  setAllFeaturedPage: (page) =>
+    set((state) => ({
+      allFeaturedList: {
+        ...state.allFeaturedList,
+        page,
+      },
+    })),
+  setAllFeaturedList: (newList, merge = false) =>
+    set((state) => ({
+      allFeaturedList: {
+        ...state.allFeaturedList,
+        list: merge ? [...state.allFeaturedList.list, ...newList] : newList,
+      },
+    })),
+  setAllFeaturedLoading: (isLoading) =>
+    set((state) => ({
+      allFeaturedList: {
+        ...state.allFeaturedList,
+        isLoading,
+      },
+    })),
+  setAllFeaturedError: (error) =>
+    set((state) => ({
+      allFeaturedList: {
+        ...state.allFeaturedList,
+        error,
+      },
+    })),
+  setAllFeaturedHasMore: (hasMore) =>
+    set((state) => ({
+      allFeaturedList: {
+        ...state.allFeaturedList,
+        hasMore,
+      },
+    })),
+  resetAllFeaturedList: () =>
+    set(() => ({
+      allFeaturedList: { ...initialListState },
+    })),
+  loadAllFeaturedList: async (page) => {
+    try {
+      get().setAllFeaturedLoading(true)
+      get().setAllFeaturedError(null)
+
+      const { featured } = await allFeatured({
+        page_num: page,
+        records: recordsNum,
+        type: 1
+      })
+
+      const hasMore = featured.length === recordsNum
+      const updatedPosts = featured.map(({ post, user }: ListItem) => ({
+        ...user,
+        ...post,
+        media:
+          post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
+      }))
+
+      get().setAllFeaturedList(updatedPosts, page > 1)
+      get().setAllFeaturedHasMore(hasMore)
+    } catch (error) {
+      get().setAllFeaturedError(error instanceof Error ? error.message : 'Loading Failed')
+      get().setAllFeaturedHasMore(false)
+    } finally {
+      get().setAllFeaturedLoading(false)
     }
   },
 

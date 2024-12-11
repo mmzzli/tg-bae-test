@@ -47,6 +47,50 @@ export const useRecommendList = () => {
   }
 }
 
+export const useAllFeaturedList = () => {
+  const { allFeaturedList, setAllFeaturedPage, loadAllFeaturedList, resetAllFeaturedList, token } =
+    useStore(
+      (state) => ({
+        allFeaturedList: state.allFeaturedList,
+        setAllFeaturedPage: state.setAllFeaturedPage,
+        loadAllFeaturedList: state.loadAllFeaturedList,
+        resetAllFeaturedList: state.resetAllFeaturedList,
+        token: state.token,
+      }),
+      shallow
+    )
+
+  const { list, page, hasMore, isLoading, error } = allFeaturedList
+  const [isInitialRender, setIsInitialRender] = useState(page == 1 ? -1 : page)
+
+  useEffect(() => {
+    if (!token) return
+    if (isInitialRender === page) return
+    loadAllFeaturedList(page)
+    setIsInitialRender(page)
+  }, [page, token])
+
+  const fetchMoreData = () => {
+    if (!isLoading && hasMore) {
+      setAllFeaturedPage(page + 1)
+    }
+  }
+
+  return {
+    list,
+    page,
+    hasMore,
+    isLoading,
+    error,
+    fetchMoreData,
+    refresh: () => {
+      resetAllFeaturedList()
+      loadAllFeaturedList(1)
+    },
+  }
+}
+
+
 export const useViewList = () => {
   const { viewList, setViewPage, loadViewList, resetViewList, token } = useStore(
     (state) => ({

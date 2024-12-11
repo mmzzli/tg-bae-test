@@ -12,9 +12,11 @@ import { CustomToast, typeOptions } from '../comm/Toast'
 
 export function DeleteDialog({
   onDelete,
+  onCancel,
   title = 'Delete this chat?',
 }: {
   onDelete: () => void
+  onCancel?: () => void
   title?: string
 }) {
   const { isOpen, onOpen, onClose } = useDialog()
@@ -26,6 +28,13 @@ export function DeleteDialog({
     }, 200)
   }
 
+  const handleCancel = () => {
+    onCancel?.()
+    setTimeout(() => {
+      onClose()
+    })
+  }
+
   return (
     <>
       <div
@@ -35,14 +44,14 @@ export function DeleteDialog({
         <i className="iconfont icon-delete-bin-line text-white text-[20px]"></i>
       </div>
 
-      <Dialog open={isOpen} onOpenChange={onClose}>
+      <Dialog open={isOpen} onOpenChange={handleCancel}>
         <DialogContent>
           <div className="w-[312px] h-[172px] dark:bg-[#1C1C1C] text-base font-medium bg-white dark:text-white text-[#333] text-center rounded-[16px]">
             <div className="mt-[40px]">{title}</div>
             <div className="flex justify-center gap-4 mt-[44px]">
               <div
                 className="cursor-pointer flex items-center justify-center w-[120px] h-[40px] border dark:border-white border-[#ccc] rounded-[20px] text-sm"
-                onClick={onClose}
+                onClick={handleCancel}
               >
                 Cancel
               </div>

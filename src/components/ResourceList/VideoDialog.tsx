@@ -87,7 +87,7 @@ const UserInfo = memo(
     }
     return (
       <div
-        className="absolute left-4 right-4 z-[14] flex flex-col cursor-pointer no-tap"
+        className="absolute left-4 right-4 z-[14] flex flex-col cursor-pointer no-tap pb-3"
         style={{
           bottom: `${bottom}px`,
         }}
@@ -104,7 +104,7 @@ const UserInfo = memo(
             </div>
           </div>
           <div className="pl-4">
-            {!followResource?.some((user) => user.uid === uid && user.is_follow) && (
+            {followResource?.some((user) => user.uid === uid && user.is_follow) && (
               <BaseButton
                 text={
                   followResource?.some((user) => user.uid === uid && user.boll)
@@ -112,6 +112,7 @@ const UserInfo = memo(
                     : `Follow`
                 }
                 loading={isFollowLoading}
+                loadingColor="border-t-[#999]"
                 width={
                   followResource?.some((user) => user.uid === uid && user.boll) ? '104px' : '80px'
                 }

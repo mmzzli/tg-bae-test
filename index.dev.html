@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en" style="--tg-safe-area-inset-top: 0px; --tg-content-safe-area-inset-top: 0px">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="referrer" content="no-referrer" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0,user-scalable=no"
+    />
+    <meta name="theme-color" content="#ff0000" />
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_4749276_ivr50i5443d.css" />
+    <title>DITTO</title>
+  </head>
+  <body>
+    <div id="btn" style="color: #000"></div>
+    <div id="root" style="position: relative; z-index: 9; width: 100vw; height: 100vh"></div>
+    <div
+      id="splash_video"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 9999;
+        background-color: #ffffff;
+      "
+    >
+      <video
+        id="splash_video_dom"
+        autoplay
+        muted
+        preload="auto"
+        playsinline
+        webkit-playsinline="true"
+        style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          z-index: 9999;
+          object-fit: cover;
+          width: 100vw;
+          height: 100vh;
+          -webkit-appearance: none;
+          ::-webkit-media-controls {
+            display: none !important;
+          }
+        "
+      >
+        <source src="https://img.bae.boo/bae_loading_1.mov" type="video/mp4" />
+      </video>
+    </div>
+    <script>
+      window.loading = true
+      const videoDom = document.getElementById('splash_video_dom')
+      const palyBtn = document.getElementById('btn')
+
+      palyBtn.addEventListener('click', function (e) {
+        e.preventDefault()
+        if (video.paused && !video.ended) {
+          video.play()
+        }
+        if (!video.paused) {
+          clearInterval(timer)
+        }
+      })
+
+      const timer = setTimeout(() => {
+        palyBtn.click()
+      }, 100)
+      function createVideoCanvas(videoUrl, containerId) {
+        // 创建元素
+        const container = document.getElementById(containerId)
+        const canvas = document.createElement('canvas')
+        const video = document.createElement('video')
+        const ctx = canvas.getContext('2d')
+        const palyBtn = document.getElementById('btn')
+
+        video.style.position = 'absolute'
+        video.style.top = '0'
+        video.style.left = '0'
+        video.style.zIndex = '9999'
+        video.style.objectFit = 'cover'
+        video.style.width = '100vw'
+        video.style.height = '100vh'
+
+        palyBtn.addEventListener('click', function (e) {
+          e.preventDefault()
+          if (video.paused && !video.ended) {
+            video.play()
+          }
+          if (!video.paused) {
+            clearInterval(timer)
+          }
+        })
+
+        const timer = setTimeout(() => {
+          palyBtn.click()
+        }, 100)
+
+        // 设置视频属性
+        video.src = videoUrl
+        video.muted = true
+        video.autoplay = true
+        video.playsInline = true
+        video.setAttribute('playsinline', '') // iOS 内联播放
+        video.setAttribute('webkit-playsinline', '')
+        video.setAttribute('x-webkit-airplay', 'allow')
+        video.setAttribute('autoplay', '')
+        video.setAttribute('x5-video-player-type', 'h5')
+        video.setAttribute('x-video-orientation', 'h5')
+        video.setAttribute('x5-video-player-fullscreen', 'true')
+
+        // 将 canvas 添加到容器
+        container.appendChild(canvas)
+        container.appendChild(video)
+
+        video.load()
+
+        // 视频加载完成时设置 canvas 尺寸
+        video.addEventListener('loadedmetadata', () => {
+          canvas.width = video.videoWidth
+          canvas.height = video.videoHeight
+          // 可以根据需要设置 canvas 的样式
+          canvas.style.width = '100%'
+          canvas.style.height = 'auto'
+          // document.querySelector('#testImg').src = canvas.toDataURL()
+          console.warn('loadedmetadata', video)
+        })
+
+        palyBtn.click()
+
+        // 渲染函数
+        function render() {
+          console.warn('render-----------', video.paused, video.ended)
+          if (!video.paused && !video.ended) {
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+            requestAnimationFrame(render)
+          } else if (video.ended) {
+            // 视频结束时绘制最后一帧
+            console.warn('ended')
+            video.paused()
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+          }
+        }
+
+        // 开始播放时启动渲染
+        video.addEventListener('play', render)
+        // 错误处理
+        video.addEventListener('error', (e) => {
+          console.error('Video error:', e)
+        })
+
+        // 返回清理函数
+        return () => {
+          video.pause()
+          video.src = ''
+          container.removeChild(canvas)
+          container.removeChild(video)
+        }
+      }
+      // window.canvasPlayerCleanup = createVideoCanvas(
+      //   // 'https://img.bae.boo/bae_loading_1.mp4',
+      //   '/bae_loading_1.mov',
+      //   'splash_video'
+      // )
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+    <script src="https://at.alicdn.com/t/c/font_4749304_ljhtroq82h.js"></script>
+    <script type="module" src="/src/main.tsx"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  </body>
+</html>

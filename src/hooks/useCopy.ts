@@ -19,7 +19,13 @@ const useCopy = (): UseCopyReturn => {
 
     try {
       if (navigator.clipboard) {
-        await navigator.clipboard.writeText(text)
+        try {
+          await navigator.clipboard.writeText(text)
+        } catch (clipboardError) {
+          // if clipboard API failed, fall back to traditional method
+          console.warn('Clipboard API failed, falling back to execCommand:', clipboardError)
+          throw clipboardError // force fallback to traditional method
+        }
       } else {
         const textArea = document.createElement('textarea')
         textArea.value = text
@@ -29,8 +35,12 @@ const useCopy = (): UseCopyReturn => {
         document.body.appendChild(textArea)
         textArea.focus()
         textArea.select()
-        document.execCommand('copy')
+        const successful = document.execCommand('copy')
         textArea.remove()
+
+        if (!successful) {
+          throw new Error('execCommand copy failed')
+        }
       }
 
       setIsCopied(true)
@@ -38,6 +48,28 @@ const useCopy = (): UseCopyReturn => {
       return true
     } catch (error) {
       console.error('Failed to copy text:', error)
+      // try fallback method
+      try {
+        const textArea = document.createElement('textarea')
+        textArea.value = text
+        textArea.style.position = 'fixed'
+        textArea.style.left = '-999999px'
+        textArea.style.top = '-999999px'
+        document.body.appendChild(textArea)
+        textArea.focus()
+        textArea.select()
+        const successful = document.execCommand('copy')
+        textArea.remove()
+
+        if (successful) {
+          setIsCopied(true)
+          setCopiedText(text)
+          return true
+        }
+      } catch (fallbackError) {
+        console.error('Fallback copy method failed:', fallbackError)
+      }
+
       setIsCopied(false)
       setCopiedText(null)
       return false

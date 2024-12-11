@@ -1,4 +1,4 @@
-import { post, get, put } from './base'
+import { post, get, put, del } from './base'
 import {
   IUserLogIn,
   OthersUserInfo,
@@ -66,7 +66,37 @@ export const getNotifications = (params: { page_num: number; records: number }) 
 export const getNotificationsById = (params: { id: number; records: number }) => {
   return post<{ posts: Notification[] }>(`/api/v1/unread_message`, params)
 }
+export const deleteNotification = (mid: number) => {
+  return del(`/api/v1/message/${mid}`)
+}
 // Notification END
+
+// Daily Task START
+export const dailyLoginTask = () => {
+  return post<any>(`/api/v1/points/open`)
+}
+
+export const dailyChatTask = () => {
+  return post<any>(`/api/v1/points/chat`)
+}
+
+export const dailyWatchTask = (pid: number) => {
+  return post<any>(`/api/v1/points/watch/${pid}`)
+}
+
+export const completeAllTasks = () => {
+  return post<any>(`/api/v1/points/complete`)
+}
+
+export const claimTask = (task_type: number) => {
+  return post<any>(`/api/v1/points/claim/${task_type}`)
+}
+
+export const claimAllTasks = () => {
+  return post<any>(`/api/v1/points/complete`)
+}
+
+// Daily Task END
 
 export const searchByUsername = (params: { field: string; page_num: number; records: number }) => {
   return post<SearchItem>(`/api/v1/user/search_by_username`, params)

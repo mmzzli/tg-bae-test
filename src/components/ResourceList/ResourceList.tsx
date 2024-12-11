@@ -1,5 +1,7 @@
 import { memo, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { Box, Flex, HStack, IconButton, useBoolean } from '@chakra-ui/react'
+import { Box, Flex, HStack, IconButton, useBoolean, Text, Heading } from '@chakra-ui/react'
+import { useNavigate } from 'react-router-dom'
+
 import { favDel, favPost, postLike } from '@/api'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { BaseModal } from '../Modal/BaseModal'
@@ -24,6 +26,7 @@ import VideoCard from '@/components/ResourceList/VideoCard'
 import ImageCard from '@/components/Image/ImageCard'
 import { genShareLinkFn, getTimeStringAutoShort } from '@/utils/utils'
 import MoreText from '@/components/More/MoreText'
+import { useDailyTaskActions } from '@/hooks/useDailyTask'
 
 interface ShareDataProps {
   pid: number
@@ -71,7 +74,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           const WebApp = window.Telegram?.WebApp
           setTimeout(() => {
             WebApp.shareMessage(result.id)
-          }, 0)
+          }, 100)
         }
         off()
       } else {
@@ -156,6 +159,7 @@ const ResourceList = ({
   type?: string
   hasMore?: boolean
 }) => {
+  const navigate = useNavigate()
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const isMobile = useMobile()
   const [resources, setResources] = useState<FormatterListItem[]>([])
@@ -184,8 +188,10 @@ const ResourceList = ({
 
   const currentUid = getCurrentUid()
   const jumpToProfilePage = useProfileNavigation()
+  const { runDailyWatch } = useDailyTaskActions()
 
-  const handleImageClick = useCallback((images: string[], index: number) => {
+  const handleImageClick = useCallback((images: string[], index: number, post_id: number) => {
+    runDailyWatch(post_id)
     setImageResource({
       images,
       currentIndex: index,
@@ -305,16 +311,34 @@ const ResourceList = ({
                 onProfileClick={jumpToProfilePage}
                 type={type}
               />
-
-              {data.type === POST_TYPE_IMAGE ? (
-                <ImageCard
-                  data={data}
-                  handleImageClick={handleImageClick}
-                  resourcesEve={resourcesEve}
-                />
-              ) : (
-                <VideoCard resourcesEve={resourcesEve} data={data} />
-              )}
+              <Box position="relative">
+                {data.act_type === 1 && (
+                  <Box
+                    position="absolute"
+                    bottom="0px"
+                    w="100%"
+                    zIndex={11}
+                    onClick={() => navigate('/home/christmas')}
+                  >
+                    <HStack p="3px 16px" justifyContent="space-between" bg="rgba(0, 0, 0, 0.5)">
+                      <Text fontSize={14} color="#fff">
+                        {' '}
+                        Explore more
+                      </Text>
+                      <i className="iconfont icon-icon_arrow_right text-[#fff] text-[20px]"></i>
+                    </HStack>
+                  </Box>
+                )}
+                {data.type === POST_TYPE_IMAGE ? (
+                  <ImageCard
+                    data={data}
+                    handleImageClick={(images, index) => handleImageClick(images, index, data.id)}
+                    resourcesEve={resourcesEve}
+                  />
+                ) : (
+                  <VideoCard resourcesEve={resourcesEve} data={data} />
+                )}
+              </Box>
               <ResourceFooter
                 data={data}
                 likes={likes}
@@ -420,11 +444,10 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
   }, [saveds])
   return (
     <>
-      <div className="px-4 flex items-center justify-between h-6 py-3 box-content items-center">
-        <Flex gap="16px" alignItems="center">
-          <Flex
-            as={'button'}
-            alignItems={'center'}
+      <div className="px-4 flex items-center justify-between h-6 mt-3 box-content">
+        <div className="flex items-center gap-4">
+          <div
+            className="flex h-6 items-center"
             onClick={() => {
               linkEve(data)
             }}
@@ -440,10 +463,10 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
             ) : (
               <i className="iconfont icon-like text-[#0D0D0D]" style={{ fontSize: '22px' }}></i>
             )}
-            <span className="pl-1 text-sm text-[##0D0D0D]">{likeNum}</span>
-          </Flex>
-          <Box
-            className="w-6 h-6 flex items-center justify-center"
+            <span className="pl-1 text-sm font-medium text-[##0D0D0D] mb-[1px]">{likeNum}</span>
+          </div>
+          <div
+            className="flex items-center justify-center"
             onClick={() => {
               savedEve(data)
             }}
@@ -456,8 +479,8 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
                 style={{ fontSize: '22px' }}
               ></i>
             )}
-          </Box>
-        </Flex>
+          </div>
+        </div>
 
         <IconButton
           onClick={onShare}
@@ -472,21 +495,23 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
         />
       </div>
 
-      <div className="px-4 py-3">
-        <p className="text-[#0F1419] dark:text-[#ccc] text-sm leading-6">
-          <MoreText text={data.title} />
-        </p>
-        <HStack pt="2" justifyContent="space-between">
-          {type === 'payment' && (
-            <HStack gap="4px">
-              <p className="text-[#666666] dark:text-[#424048] text-[12px]">
-                Purchased for {data.price}
-              </p>
-              <Image src={StarsIcon} />
-            </HStack>
-          )}
-        </HStack>
-      </div>
+      {(data.title || data.is_pay) && (
+        <div className="px-4 pt-[10px]">
+          <p className="text-[#0F1419] dark:text-[#ccc] font-normal text-sm leading-4">
+            <MoreText text={data.title} />
+          </p>
+          <div className="flex items-center justify-between">
+            {data.is_pay && (
+              <div className="flex items-center gap-2 mt-1">
+                <p className="text-[#666666] dark:text-[#424048] text-[12px]">
+                  Purchased for {data.price}
+                </p>
+                <Image src={StarsIcon} className="mb-1" />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </>
   )
 })

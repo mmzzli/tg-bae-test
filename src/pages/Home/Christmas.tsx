@@ -1,18 +1,12 @@
 import { type FC, useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import RecommendList from '@/components/RecommendList/RecommendList'
-import FollowingList from '@/components/RecommendList/FollowingList'
+import ChristmasList from '@/components/ChristmasList/index'
 
 import { useStore } from '@/store'
 import { CardRecommendProvider } from '@/utils/constants'
-import NewPostButton from '@/components/NewPost/NewPostButton'
 import { debounce, throttle } from '@/utils/chat/schedulers'
+import {featured, allFeatured} from '@/api'
 
-const HomePage: FC = () => {
-  const navigate = useNavigate()
-  const [title, setTitle] = useState('Following')
-  const [fadeClass, setFadeClass] = useState('fade-in')
-  const [fullscreen, setFullscreen] = useState(false)
+const Christmas: FC = () => {
   const userInfo = useStore((state) => state.userInfo)
 
   const [videoOpen, setVideoOpen] = useState(false)
@@ -21,16 +15,6 @@ const HomePage: FC = () => {
   const titleRef = useRef<HTMLHeadingElement>(null)
   const initialTitlePosition = useRef({ top: 0, left: 0 })
 
-  const styles = {
-    fadeIn: {
-      opacity: 1,
-      transition: 'opacity 0.3s ease-in',
-    },
-    fadeOut: {
-      opacity: 0,
-      transition: 'opacity 0.3s ease-out',
-    },
-  }
 
   const animation = useMemo(() => {
     if (userInfo.user_id !== -1 && userInfo.fans === 0) {
@@ -56,6 +40,7 @@ const HomePage: FC = () => {
     const handleScroll = throttle(() => {
       if (!scrollDiv) return
       setScrollPosition(scrollDiv.scrollTop >= 0 ? scrollDiv.scrollTop : 0)
+      console.log(scrollDiv.scrollTop)
     }, 30)
 
     scrollDiv?.addEventListener('scroll', handleScroll)
@@ -84,31 +69,53 @@ const HomePage: FC = () => {
     }
   }
 
-  const lastTapTime = useRef<number>(0)
+  const lastTapTime = useRef<number>(0);
 
   // 双击触发的逻辑
   const handleDoubleTap = (): void => {
-    console.log('Double-tap detected!')
-    const element = document.getElementById('recommendScrollableDiv')
+    console.log("Double-tap detected!");
+    const element = document.getElementById("recommendScrollableDiv");
     if (element) {
       element.scrollTo({
         top: 0,
-        behavior: 'smooth',
-      })
+        behavior: "smooth",
+      });
     }
-  }
+  };
 
   const handleSingleClick = (): void => {
-    const currentTime = Date.now()
+    const currentTime = Date.now();
     if (currentTime - lastTapTime.current < 300) {
-      handleDoubleTap()
+      handleDoubleTap();
     }
-    lastTapTime.current = currentTime
-  }
+    lastTapTime.current = currentTime;
+  };
 
   const handleDoubleClick = (): void => {
-    handleDoubleTap()
+    handleDoubleTap();
+  };
+
+
+
+  const christma = async()=>{
+    // await allFeatured({
+    //   type: 1,
+    //   page_num: 1,
+    //   records: 10
+    // })
+    // await featured({
+    //   type: 1,
+    //   acttype: 1,
+    //   title: "321",
+    //   media: "https://imgdev.bae.boo/1733024672609-0-IMG_1055.jpeg",
+    //   // sortorder: "",
+    //   width: "4284",
+    //   height: "5712",
+    //   currency: 0,
+    //   price: 0
+    // })
   }
+
 
   return (
     <div
@@ -142,36 +149,25 @@ const HomePage: FC = () => {
             }`,
           }}
         ></div>
+
         <h3
           ref={titleRef}
           style={getTitleStyle()}
           className="fixed text-black dark:text-[#E0E2F6] text-[20px] flex items-center transition-all duration-100 ease-in-out"
+          onClick={christma}
         >
-          {title}
+          {`Christmas Collection`}
         </h3>
 
-        <div className="ml-auto flex gap-[13px] z-10">
-          <div
-            className="w-[48px] h-[48px] p-[12px] bg-[#F5F3F3] rounded-[50px] flex items-center justify-center cursor-pointer"
-            onClick={() => navigate('/home/searching')}
-          >
-            <i className="iconfont icon-search-line text-[#333333] text-[24px]"></i>
-          </div>
-          <NewPostButton />
-        </div>
-      </div>
-
-      <div className="overflow-hidden" style={{ height: '0px', opacity: 0, ...animation }}>
-        <FollowingList />
       </div>
       <CardRecommendProvider.Provider value={{ recommend: true, setVideoOpen }}>
         <div
           className={`${userInfo.user_id !== -1 && userInfo.fans === 0 ? '' : 'mt-[68px]'}  relative ${videoOpen ? 'z-[112]' : ''}`}
         >
-          <RecommendList />
+          <ChristmasList />
         </div>
       </CardRecommendProvider.Provider>
     </div>
   )
 }
-export default HomePage
+export default Christmas

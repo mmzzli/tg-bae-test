@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Box } from '@chakra-ui/react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import ResourceList from '../ResourceList/ResourceList'
@@ -34,21 +34,51 @@ const ViewList = ({ className }: PostListProps) => {
     setIsd(id)
   }
 
+  const [targetBoll, setTargetBoll] = useState<boolean>(false)
+  useEffect(() => {
+    const element = document.getElementById("profileScrollableDiv");
+    const target = document.getElementById("targetElement");
+    const handleScroll = () => {
+      if (element && target) {
+        const rect = target.getBoundingClientRect();
+        if (rect.top - 35 >= 0) {
+          setTargetBoll(false)
+        } else {
+          setTargetBoll(true)
+        }
+      }
+    };
+    if (element) {
+      element.addEventListener("scroll", handleScroll);
+    }
+    return () => {
+      if (element) {
+        element.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, []);
+
   return (
     <>
-      <Box className="flex justify-around" borderBottom="1px solid #EBEBF4">
-        {menuList.map((item) => (
-          <div
-            key={item.id}
-            className={`text-[16px] text-[${item.id === ids ? '#0F1233' : '#666'}] font-medium`}
-            onClick={() => tabEve(item.id)}
-          >
-            {item.name}
-            {item.id === ids && <p className="w-[32px] bg-[#4A3AFF] h-[2px] m-[auto] mt-[8px]"></p>}
-          </div>
-        ))}
-      </Box>
-      <div className={cn(className, '')}>
+      <div className={targetBoll ? `fixed top-0 w-full bg-white z-[111]` : ''}
+        style={{
+          paddingTop: targetBoll ? `calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))`:'',
+        }}
+      >
+        <Box className="flex justify-around" borderBottom="1px solid #EBEBF4">
+          {menuList.map((item) => (
+            <div
+              key={item.id}
+              className={`text-[16px] text-[${item.id === ids ? '#0F1233' : '#666'}] font-medium`}
+              onClick={() => tabEve(item.id)}
+            >
+              {item.name}
+              {item.id === ids && <p className="w-[32px] bg-[#4A3AFF] h-[2px] m-[auto] mt-[8px]"></p>}
+            </div>
+          ))}
+        </Box>
+      </div>
+      <div className={cn(className, '')} id="targetElement">
         {ids === 'posts' && <MyPosts key={'posts'} />}
         {ids === 'purchased' && <OrderList key={'purchased'} />}
         {ids === 'saved' && <FavList key={'saved'} />}

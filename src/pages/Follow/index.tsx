@@ -104,7 +104,18 @@ const FollowPage: FC = () => {
             className="rounded-full"
           />
         </div>
-        <div className="flex-1 ml-3 truncate overflow-hidden whitespace-nowrap text-[#333] dark:text-black text-base">
+        <div
+          onClick={() => {
+            jumpToProfilePage({
+              avatar: item.avatar,
+              uid: item.tg_id,
+              username: item.tgname,
+              fans: 0,
+              follower: 0,
+            })
+          }}
+          className="flex-1 ml-3 truncate overflow-hidden whitespace-nowrap text-[#333] dark:text-black text-base"
+        >
           {item.tgname}
         </div>
         {item.tg_id !== currentUid && (

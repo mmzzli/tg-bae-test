@@ -17,18 +17,19 @@ const Searching = () => {
   const [data, setData] = useState<SearchItem | null>(null)
   const [field, setField] = useState<string>('')
   const [debouncedField, setDebouncedField] = useState<string>('')
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const { getCurrentUid } = useTMAUtils()
   const currentUid = getCurrentUid()
   const {
     loading,
-    run,
+    runAsync,
     data: res,
   } = useRequest(
     (field: string) =>
       searchByUsername({
         field: field.toLowerCase(),
         page_num: 1,
-        records: 10,
+        records: 100,
       }),
     { manual: true }
   )
@@ -49,9 +50,14 @@ const Searching = () => {
     }
   }, [field])
 
+  const load = async()=>{
+    setIsLoading(false)
+    await runAsync(field)
+    setIsLoading(true)
+  }
   useEffect(() => {
     if (debouncedField) {
-      run(field)
+      load()
     } else {
       setData({ users: [] })
     }
@@ -98,8 +104,8 @@ const Searching = () => {
       <div className="pt-[28px]">
         {data?.users.map((item, key) => (
           <div className="flex items-center justify-between py-[12px] mb-[12px]" key={key}>
-            <div className="flex gap-[12px] items-center">
-              <div className="flex-shrink-0" onClick={() => navigate(`/profile/${item.tg_id}`)}>
+            <div className="flex gap-[12px] items-center" onClick={() => navigate(`/profile/${item.tg_id}`)}>
+              <div className="flex-shrink-0">
                 <Image
                   width={56}
                   height={56}
@@ -107,20 +113,21 @@ const Searching = () => {
                   src={item.avatar}
                   alt="Avatar"
                   className="w-[56px] h-[56px] rounded-full"
+                  loaderClassName="rounded-full"
                 />
               </div>
               <h3 className="text-[#333] text-[16px]">{item.tgname}</h3>
             </div>
-            <FollowButton
+            {item.tg_id !== currentUid && <FollowButton
               fansid={currentUid}
               tgid={item.tg_id}
               avatar={item.avatar}
               username={item.tgname}
-            />
+            />}
           </div>
         ))}
       </div>
-      {data?.users.length === 0 && debouncedField.length > 0 && (
+      {data?.users.length === 0 && debouncedField.length > 0 && isLoading && (
         <div>
           <Empty
             title="No search result."

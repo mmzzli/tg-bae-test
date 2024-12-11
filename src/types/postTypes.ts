@@ -53,6 +53,7 @@ export type PostItem = {
   type: number
   uid: number
   is_follow: boolean
+  act_type?: number
 }
 export type UserItem = {
   avatar: string
@@ -68,6 +69,9 @@ export type ListItem = {
 export type RecommendListReq = { page_num: number; records: number }
 export type ListRes = {
   posts: Array<ListItem>
+}
+export type FeaturedListRes = {
+  featured: Array<ListItem>
 }
 
 // getUserPosts

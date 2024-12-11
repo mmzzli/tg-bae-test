@@ -8,13 +8,14 @@ import { useStore } from '@/store'
 import { useRequest } from 'ahooks'
 import { Outlet } from 'react-router-dom'
 import { log } from 'console'
-import { Spinner } from '@chakra-ui/react'
 import Menu from '../Menu'
 import { postEvent } from '@telegram-apps/sdk'
 import { PostProgressBar } from '../NewPost/PostProgressBar'
 import VideoDialog from '@/components/ResourceList/VideoDialog'
 import ImageDialog from '@/components/ResourceList/ImageDialog'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
+import { useInitDailyTask } from '@/hooks/useDailyTask'
+
 const ChatListPageLoader = {
   preload: () =>
     import('@/pages/Chat').then((module) => ({
@@ -52,7 +53,7 @@ export const MainLayout: React.FC = () => {
   const setMyFollow = useStore((state) => state.setMyFollow)
   const { getCurrentUid } = useTMAUtils()
   const current_uid = getCurrentUid()
-
+  const { runInitDailyTask } = useInitDailyTask()
   const { run: runGetUnreadNotificationCount } = useRequest(getUnreadNotificationCount, {
     pollingInterval: 6000,
     manual: true,
@@ -82,6 +83,15 @@ export const MainLayout: React.FC = () => {
       setUserInfo({ ...user_info, api_token })
       runGetUnreadNotificationCount(current_uid)
       updateMyFollow()
+      // Daily Task [Daily Login + Init Daily Task Store]
+      runInitDailyTask()
+      if (window.loading) {
+        setTimeout(() => {
+          window.loading = false
+          // window.canvasPlayerCleanup()
+          document.getElementById('splash_video')?.remove()
+        }, 4200)
+      }
     },
   })
 
@@ -96,6 +106,9 @@ export const MainLayout: React.FC = () => {
     } catch (error) {
       userInfo = DEV_INIT_DATA_RAW
     }
+
+    // userInfo =
+    //   'query_id=AAGPWGl0AgAAAI9YaXSTuFnH&user=%7B%22id%22%3A6248028303%2C%22first_name%22%3A%22GrayCookie%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22GrayJy1915%22%2C%22language_code%22%3A%22zh-hans%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2F57ZWh4A5hZVOSDDOkj2NveYI7y6C9ts22-QRBFI7Ktr9XNzy4t8AEZrZ1kasDwc9.svg%22%7D&auth_date=1733728918&signature=B6shMqyXHiV0Iszkaa1f6RimbN0U6Drcg1fJ4Y6p8TbQ1DswZ-rotej3KJd8DPouRWwONuELXPyFPJDaFsjiBQ&hash=25ada298133e32e6b1b95aeba7252e49db8ebbf256ab217f4ad8a66dba66736a'
 
     resetAllLists()
     resetUserInfo()
@@ -217,12 +230,18 @@ export const MainLayout: React.FC = () => {
     <div className="absolute inset-0 top-0 right-0 bottom-0 left-0overflow-hidden flex pb-[84px] transition-all duration-300 bg-white dark:bg-black no-tap">
       <div
         className="absolute left-0 right-0 top-0 bottom-[84px] flex-col bg-white dark:bg-[#0D0D0D] overflow-hidden"
-        style={{ display: hiddenChatPage ? 'none' : 'flex', zIndex: hiddenChatPage ? -1 : 200 }}
+        style={{
+          opacity: hiddenChatPage ? 0 : 1,
+          zIndex: hiddenChatPage ? -1 : 200,
+        }}
       >
         <Suspense
           fallback={
             <div className="h-screen flex items-center justify-center">
-              <Spinner />
+              <i
+                className="iconfont icon-loading animate-spin text-[#6254FF]"
+                style={{ fontSize: '40px' }}
+              />
             </div>
           }
         >

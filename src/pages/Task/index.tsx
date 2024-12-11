@@ -101,9 +101,7 @@ const TaskButton: React.FC<{
   }
   const status = task.status
 
-  console.log('task render')
-
-  if (task.task_type === 11) {
+  if (task.task_type === TaskType.ClaimAll) {
     if (isAllTasksCompleted && task.status !== DailyTaskStatusEnum.CLAIMED) {
       return (
         <BaseButton
@@ -197,7 +195,7 @@ const Tasks: FC = () => {
     <div className="p-6 bg-white overflow-auto h-full scrollbar-hide">
       {/* title */}
       <div className="mb-5">
-        <h1 className="text-[32px] leading-[42px] font-bold text-[#333333]">
+        <h1 className="text-[36px] leading-[42px] font-bold text-[#333333]">
           <AnimatedNumber value={totalTaskPoints} />
         </h1>
         <p className="text-[12px] leading-[16px] text-[#999999]">Points</p>

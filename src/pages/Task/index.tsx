@@ -218,7 +218,6 @@ const Tasks: FC = () => {
   }
 
   useEffect(() => {
-    console.warn('token', token)
     if (token) {
       runGetDailyTask()
     }

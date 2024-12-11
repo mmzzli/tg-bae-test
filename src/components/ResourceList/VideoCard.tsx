@@ -8,6 +8,7 @@ import { PlayButton } from '@/components/ResourceList/ResourceList'
 import { useStore } from '@/store'
 import { CardRecommendProvider } from '@/utils/constants'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
+import { useDailyTaskActions } from '@/hooks/useDailyTask'
 
 interface VideoCardProps {
   data: FormatterListItem
@@ -16,8 +17,10 @@ interface VideoCardProps {
 const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const setVideoResource = useStore((state) => state.setVideoResource)
+  const { runDailyWatch } = useDailyTaskActions()
 
   const handleVideoClick = useCallback((video: FormatterListItem) => {
+    runDailyWatch(video.id)
     setCacheVideoIndex(video.id)
     setVideoResource(video)
   }, [])

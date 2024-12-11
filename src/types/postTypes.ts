@@ -53,6 +53,7 @@ export type PostItem = {
   type: number
   uid: number
   is_follow: boolean
+  act_type?: number
 }
 export type UserItem = {
   avatar: string

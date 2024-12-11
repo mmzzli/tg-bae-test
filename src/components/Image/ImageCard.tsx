@@ -71,7 +71,8 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
                 key={`${data.id}-${image}`}
                 style={{
                   height: firImageHeight ? firImageHeight + 'px' : 'calc(1.5*100vw)',
-                  maxHeight: 'calc(1.5*100vw)',
+                  maxHeight:
+                    'calc(var(--tg-viewport-height) - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top) - 85px - 64px - 40px)',
                 }}
                 className={'flex items-center overflow-hidden object-contain overflow-hidden'}
               >
@@ -90,7 +91,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
             )
           })}
         </Swiper>
-        {(data.uid !== getCurrentUid() && !data.is_pay && data.price > 0) && (
+        {data.uid !== getCurrentUid() && !data.is_pay && data.price > 0 && (
           <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} />
         )}
       </div>

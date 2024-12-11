@@ -88,6 +88,7 @@ const MessagePageIOS = () => {
   // mobile submit
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    e.stopPropagation()
     handleSendText()
   }
 
@@ -292,6 +293,19 @@ const MessagePageIOS = () => {
         />
         <div
           onClick={handleSubmit}
+          onTouchStart={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+          }}
+          onTouchEnd={handleSubmit}
+          onMouseDown={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+          }}
+          onMouseUp={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+          }}
           className="absolute items-center justify-center rounded-full top-[10px] h-[26px] w-[48px] right-[20px] cursor-pointer bg-[#6761FF] z[999]"
           style={{
             display: message ? 'flex' : 'none',

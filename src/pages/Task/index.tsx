@@ -1,8 +1,10 @@
 import { claimTask, claimAllTasks } from '@/api'
 import BaseButton from '@/components/BaseButton/BaseButton'
+import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import { useGetDailyTask, useDailyTaskStatus } from '@/hooks/useDailyTask'
 import { useStore } from '@/store'
 import { DailyTaskItem, DailyTaskStatusEnum } from '@/store/slices/systemSlice'
+import { useToast } from '@chakra-ui/react'
 import { useRequest } from 'ahooks'
 import { FC, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -68,31 +70,34 @@ const getTaskIcon = (task: DailyTaskItem) => {
 const TaskButton: React.FC<{
   task: DailyTaskItem
   onClick: () => void
-}> = ({ task, onClick }) => {
+  afterClaim: () => void
+}> = ({ task, onClick, afterClaim }) => {
   const { runGetDailyTask, loading } = useGetDailyTask()
   const { updateDailyTask } = useStore((state) => ({
     updateDailyTask: state.updateDailyTask,
   }))
   const { isAllTasksCompleted } = useDailyTaskStatus()
+
+  const onClaimSuccess = () => {
+    updateDailyTask({
+      task_type: task.task_type,
+      status: DailyTaskStatusEnum.CLAIMED,
+    } as DailyTaskItem)
+    runGetDailyTask()
+    afterClaim()
+  }
+
   const { run: runClaimTask, loading: claimTaskLoading } = useRequest(claimTask, {
     manual: true,
     onSuccess() {
-      updateDailyTask({
-        task_type: task.task_type,
-        status: DailyTaskStatusEnum.CLAIMED,
-      } as DailyTaskItem)
-      runGetDailyTask()
+      onClaimSuccess()
     },
   })
 
   const { run: runClaimAllTask, loading: claimAllTaskLoading } = useRequest(claimAllTasks, {
     manual: true,
     onSuccess() {
-      updateDailyTask({
-        task_type: task.task_type,
-        status: DailyTaskStatusEnum.CLAIMED,
-      } as DailyTaskItem)
-      runGetDailyTask()
+      onClaimSuccess()
     },
   })
 
@@ -145,7 +150,8 @@ const TaskButton: React.FC<{
 const TaskItem: React.FC<{
   task: DailyTaskItem
   onTaskAction: (task: DailyTaskItem) => void
-}> = ({ task, onTaskAction }) => {
+  afterClaim: () => void
+}> = ({ task, onTaskAction, afterClaim }) => {
   return (
     <div className="flex items-center justify-between bg-[#F7F9FC] p-4 rounded-lg">
       <div className="flex items-center">
@@ -157,7 +163,7 @@ const TaskItem: React.FC<{
           <p className="text-xs text-[#999999]">+{task.points} points</p>
         </div>
       </div>
-      <TaskButton task={task} onClick={() => onTaskAction(task)} />
+      <TaskButton task={task} onClick={() => onTaskAction(task)} afterClaim={afterClaim} />
     </div>
   )
 }
@@ -171,6 +177,36 @@ const Tasks: FC = () => {
     token: state.token,
   }))
   const { runGetDailyTask, loading } = useGetDailyTask()
+  const toast = useToast()
+
+  const successToast = () => {
+    toast({
+      render: () => {
+        return (
+          <CustomToast
+            title="Points claimed!"
+            type={typeOptions.success}
+            top={
+              parseInt(
+                window
+                  .getComputedStyle(document.documentElement)
+                  .getPropertyValue('--tg-safe-area-inset-top'),
+                10
+              ) +
+              parseInt(
+                window
+                  .getComputedStyle(document.documentElement)
+                  .getPropertyValue('--tg-content-safe-area-inset-top'),
+                10
+              ) +
+              'px'
+            }
+          />
+        )
+      },
+      position: 'top',
+    })
+  }
 
   const handleTaskAction = (task: DailyTaskItem) => {
     if (task.status === DailyTaskStatusEnum.GO) {
@@ -178,9 +214,6 @@ const Tasks: FC = () => {
       if (action) {
         navigate(action)
       }
-    }
-
-    if (task.status === DailyTaskStatusEnum.CLAIM) {
     }
   }
 
@@ -220,7 +253,12 @@ const Tasks: FC = () => {
       {/* task list */}
       <div className="space-y-3">
         {dailyTaskList.map((task) => (
-          <TaskItem key={task.task_type} task={task} onTaskAction={handleTaskAction} />
+          <TaskItem
+            key={task.task_type}
+            task={task}
+            onTaskAction={handleTaskAction}
+            afterClaim={successToast}
+          />
         ))}
       </div>
     </div>

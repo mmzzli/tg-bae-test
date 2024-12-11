@@ -71,6 +71,29 @@ export const deleteNotification = (mid: number) => {
 }
 // Notification END
 
+// Daily Task START
+export const dailyLoginTask = () => {
+  return post<any>(`/api/v1/points/open`)
+}
+
+export const dailyChatTask = () => {
+  return post<any>(`/api/v1/points/chat`)
+}
+
+export const dailyWatchTask = (pid: number) => {
+  return post<any>(`/api/v1/points/watch/${pid}`)
+}
+
+export const completeAllTasks = () => {
+  return post<any>(`/api/v1/points/complete`)
+}
+
+export const claimTask = (task_type: number) => {
+  return post<any>(`/api/v1/points/claim/${task_type}`)
+}
+
+// Daily Task END
+
 export const searchByUsername = (params: { field: string; page_num: number; records: number }) => {
   return post<SearchItem>(`/api/v1/user/search_by_username`, params)
 }

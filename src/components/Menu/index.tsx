@@ -16,30 +16,31 @@ const Menu: FC = () => {
 
   const navList: NavItem[] = [
     {
-      // icon: HomeIcon,
       icon: 'icon-Tab_home_normal',
-      // iconActive: HomeActiveIcon,
       iconActive: 'icon-Tab_home',
       name: 'HOME',
       url: '/home',
     },
     {
-      // icon: ChatIcon,
-      // iconActive: ChatActiveIcon,
+      icon: 'icon-Frame1',
+      iconActive: 'icon-icon_task',
+      name: 'TASKS',
+      url: '/task',
+    },
+    {
       icon: 'icon-chat-smile-2-line',
       iconActive: 'icon-chat-smile-2-fill',
       name: 'CHATS',
       url: '/chat',
     },
     {
-      // icon: ProfileIcon,
-      // iconActive: ProfileActiveIcon,
       icon: 'icon-Tab_profile_normal',
       iconActive: 'icon-tab_profile_choose',
       name: 'PROFILE',
       url: '/profile',
     },
   ]
+  console.log('menu render')
   return (
     <div className="fixed bottom-0 left-0 w-full p-0 h-[84px] pt-2 border-t bg-white dark:bg-[#0D0D0D] border-[#DEDEDE] dar:border-[#212121]">
       <div className="flex justify-around items-center">

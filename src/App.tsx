@@ -10,6 +10,7 @@ import { MainLayout } from '@/components/layout'
 import Splash from '@/pages/Splash'
 import HomePage from '@/pages/Home'
 import Searching from '@/pages/Home/Searching'
+import Christmas from '@/pages/Home/Christmas'
 import { NewPost } from '@/pages/NewPost'
 import Shares from '@/pages/Shares'
 import Profile from '@/pages/Profile'
@@ -79,6 +80,7 @@ function App() {
                 <Route path="home">
                   <Route index element={<HomePage />} />
                   <Route path="searching" element={<Searching />} />
+                  <Route path="christmas" element={<Christmas />} />
                 </Route>
                 <Route path="post" element={<NewPost />} />
                 <Route path="shares" element={<Shares />} />

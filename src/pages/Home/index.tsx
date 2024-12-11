@@ -145,6 +145,7 @@ const HomePage: FC = () => {
         <h3
           ref={titleRef}
           style={getTitleStyle()}
+          onClick={() => navigate('/home/christmas')}
           className="fixed text-black dark:text-[#E0E2F6] text-[20px] flex items-center transition-all duration-100 ease-in-out"
         >
           {title}

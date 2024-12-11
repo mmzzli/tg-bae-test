@@ -463,10 +463,10 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
             ) : (
               <i className="iconfont icon-like text-[#0D0D0D]" style={{ fontSize: '22px' }}></i>
             )}
-            <span className="pl-1 text-sm text-[##0D0D0D]">{likeNum}</span>
+            <span className="pl-1 text-sm font-medium text-[##0D0D0D] mb-[1px]">{likeNum}</span>
           </div>
           <div
-            className="w-6 h-6 flex items-center justify-center mt-[2px]"
+            className="w-6 h-6 flex items-center justify-center mt-[1px]"
             onClick={() => {
               savedEve(data)
             }}
@@ -496,7 +496,7 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
       </div>
 
       {(data.title || data.is_pay) && (
-        <div className="px-4 py-3">
+        <div className="px-4 pb-3 pt-[10px]">
           <p className="text-[#0F1419] dark:text-[#ccc] font-normal text-sm leading-4">
             <MoreText text={data.title} />
           </p>

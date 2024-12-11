@@ -24,7 +24,7 @@ import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import { TaskStatus, UploadThread } from '@/store/slices/taskSlice'
 import { generateUUID } from '@/utils/utils'
 import { error } from 'console'
-import Icon from '@/components/comm/Icon'
+import { useGetDailyTask } from '@/hooks/useDailyTask'
 
 export const NewPost: FC = () => {
   const navigate = useNavigate()
@@ -47,24 +47,25 @@ export const NewPost: FC = () => {
   // cover
   const [cover, setCover] = useState<string | null>(null)
 
+  const [widths, setWidths] = useState<number[]>([])
+  const [heights, setHeights] = useState<number[]>([])
 
-  const [widths, setWidths] = useState<number[]>([]);
-  const [heights, setHeights] = useState<number[]>([]);
+  const { runGetDailyTask } = useGetDailyTask()
 
   useEffect(() => {
     imgAttr.forEach((imgitem) => {
-      const image = new window.Image();
-      image.src = imgitem;
+      const image = new window.Image()
+      image.src = imgitem
       image.onload = () => {
-        setWidths((prevWidths) => [...prevWidths, image.width]);
-        setHeights((prevHeights) => [...prevHeights, image.height]);
-      };
+        setWidths((prevWidths) => [...prevWidths, image.width])
+        setHeights((prevHeights) => [...prevHeights, image.height])
+      }
 
       image.onerror = () => {
-        console.error(`Failed to load: ${imgitem}`);
-      };
-    });
-  }, [imgAttr]);
+        console.error(`Failed to load: ${imgitem}`)
+      }
+    })
+  }, [imgAttr])
 
   // upload states
   const { addUploadThread, updateUploadThread, addUploadTask, resetUploadTask } = useStore(
@@ -136,6 +137,8 @@ export const NewPost: FC = () => {
           width: widths.join(':'),
           height: heights.join(':'),
         })
+        // when sent page will back to task page,so we need to update the task list
+        runGetDailyTask()
         toast({
           render: () => {
             return (
@@ -322,6 +325,8 @@ export const NewPost: FC = () => {
             currency: 0,
             price: price || 0,
           })
+          // when sent page will back to task page,so we need to update the task list
+          runGetDailyTask()
           toast({
             render: () => {
               return (
@@ -638,9 +643,8 @@ export const NewPost: FC = () => {
   }
 
   const removeImg = (key: number) => {
-
-    setWidths((prevWidths) => prevWidths.filter((_, index) => index !== key));
-    setHeights((prevWidths) => prevWidths.filter((_, index) => index !== key));
+    setWidths((prevWidths) => prevWidths.filter((_, index) => index !== key))
+    setHeights((prevWidths) => prevWidths.filter((_, index) => index !== key))
 
     setImgAttr((prevItems) => prevItems.filter((_, index) => index !== key))
     setFiles((prevItems) => prevItems.filter((_, index) => index !== key))
@@ -673,7 +677,9 @@ export const NewPost: FC = () => {
             isLoading={isLoading}
             isDisabled={firstFileType === 'image' ? files.length === 0 : videoFile == null}
             _hover={{
-              bg: (firstFileType === 'image' ? files.length === 0 : videoFile == null) ? "#D1D0DE" : "#6254FF"
+              bg: (firstFileType === 'image' ? files.length === 0 : videoFile == null)
+                ? '#D1D0DE'
+                : '#6254FF',
             }}
           >
             <Image src={PostIcon} mr="5px" /> Post
@@ -702,7 +708,10 @@ export const NewPost: FC = () => {
                     />
                     <VideoFrameSelector videoRef={videoRefCover} setCover={setCover} />
                     <Image
-                      onClick={() => {setVideoSrc(''); setVideoFile(null)}}
+                      onClick={() => {
+                        setVideoSrc('')
+                        setVideoFile(null)
+                      }}
                       w="24px"
                       h="24px"
                       position="absolute"
@@ -713,17 +722,16 @@ export const NewPost: FC = () => {
                     />
                   </Box>
                 ) : (
-                <Grid templateColumns="repeat(3, 1fr)" gap={4}>
-                  <GridItem aspectRatio={1}>
-                    <div
-                      onClick={handleChooseFile}
-                      className="w-full h-full flex items-center justify-center border-dashed border border-[#CDCDD4] rounded-lg cursor-pointer"
-                    >
-                      <i className="iconfont icon-add text-[#999999] text-[30px]"></i>
-                    </div>
-                  </GridItem>
-                </Grid>
-
+                  <Grid templateColumns="repeat(3, 1fr)" gap={4}>
+                    <GridItem aspectRatio={1}>
+                      <div
+                        onClick={handleChooseFile}
+                        className="w-full h-full flex items-center justify-center border-dashed border border-[#CDCDD4] rounded-lg cursor-pointer"
+                      >
+                        <i className="iconfont icon-add text-[#999999] text-[30px]"></i>
+                      </div>
+                    </GridItem>
+                  </Grid>
                 )}
               </>
             )}

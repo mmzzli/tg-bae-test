@@ -12,6 +12,7 @@ import Image from '@/components/Image/Image'
 import { cn } from '@/utils/utils'
 import SendMediaModal from '@/components/Chat/SendMediaModal'
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
+import { useDailyTaskActions } from '@/hooks/useDailyTask'
 // const PAGE_SIZE = 20
 const isIOS = () => {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
@@ -35,6 +36,8 @@ const MessagePageIOS = () => {
 
   const [initTgViewportHeight, setInitTgViewportHeight] = useState(0)
   const [initVisualViewportHeight, setInitVisualViewportHeight] = useState(0)
+
+  const { runDailyChat } = useDailyTaskActions()
 
   useEffect(() => {
     if (messageWindow) {
@@ -69,6 +72,7 @@ const MessagePageIOS = () => {
 
   const handleSendText = () => {
     if (message.trim()) {
+      runDailyChat()
       handleSend({ type: MessageType.TEXT, text: message.trim() })
       setMessage('')
     }

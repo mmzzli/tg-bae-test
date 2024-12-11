@@ -3,16 +3,18 @@ import { dailyLoginTask, dailyWatchTask, dailyChatTask, completeAllTasks } from 
 import { useStore } from '@/store'
 import { useMemo } from 'react'
 import { getDailyTask } from '@/api/list'
+import { DailyTaskStatusEnum } from '@/store/slices/systemSlice'
 
 export const useDailyTaskStatus = () => {
   const taskList = useStore((state) => state.dailyTaskList)
 
   const isAllTasksCompleted = useMemo(() => {
-    return taskList.every((task) => task.status === 2)
+    return taskList
+      .filter((task) => task.task_type !== 11)
+      .every((task) => task.status === DailyTaskStatusEnum.CLAIMED)
   }, [taskList])
 
   return {
-    taskList,
     isAllTasksCompleted,
   }
 }

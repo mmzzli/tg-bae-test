@@ -73,21 +73,11 @@ export const createSystemSlice: StateCreator<SystemSlice> = (set) => ({
   },
   dailyTaskList: [],
   setDailyTaskList: (list) => {
-    list.forEach((task) => {
-      if (task.task_type === 11 && task.status === DailyTaskStatusEnum.GO) {
-        task.status = DailyTaskStatusEnum.IN_PROGRESS
-      }
-    })
-    const claimTasks = list.filter((task) => task.status === DailyTaskStatusEnum.CLAIM)
     const claimedTasks = list.filter((task) => task.status === DailyTaskStatusEnum.CLAIMED)
-    const inProgressTasks = list.filter(
-      (task) =>
-        task.status !== DailyTaskStatusEnum.CLAIM && task.status !== DailyTaskStatusEnum.CLAIMED
-    )
+    const inProgressTasks = list.filter((task) => task.status !== DailyTaskStatusEnum.CLAIMED)
     set({
       dailyTaskList: [
         ...inProgressTasks.sort((a, b) => a.task_type - b.task_type),
-        ...claimTasks.sort((a, b) => a.task_type - b.task_type),
         ...claimedTasks.sort((a, b) => a.task_type - b.task_type),
       ],
     })

@@ -1,7 +1,6 @@
-import { claimTask } from '@/api'
-import { getDailyTask } from '@/api/list'
+import { claimTask, claimAllTasks } from '@/api'
 import BaseButton from '@/components/BaseButton/BaseButton'
-import { useGetDailyTask } from '@/hooks/useDailyTask'
+import { useGetDailyTask, useDailyTaskStatus } from '@/hooks/useDailyTask'
 import { useStore } from '@/store'
 import { DailyTaskItem, DailyTaskStatusEnum } from '@/store/slices/systemSlice'
 import { useRequest } from 'ahooks'
@@ -74,7 +73,19 @@ const TaskButton: React.FC<{
   const { updateDailyTask } = useStore((state) => ({
     updateDailyTask: state.updateDailyTask,
   }))
+  const { isAllTasksCompleted } = useDailyTaskStatus()
   const { run: runClaimTask, loading: claimTaskLoading } = useRequest(claimTask, {
+    manual: true,
+    onSuccess() {
+      updateDailyTask({
+        task_type: task.task_type,
+        status: DailyTaskStatusEnum.CLAIMED,
+      } as DailyTaskItem)
+      runGetDailyTask()
+    },
+  })
+
+  const { run: runClaimAllTask, loading: claimAllTaskLoading } = useRequest(claimAllTasks, {
     manual: true,
     onSuccess() {
       updateDailyTask({
@@ -89,6 +100,24 @@ const TaskButton: React.FC<{
     runClaimTask(task.task_type)
   }
   const status = task.status
+
+  console.log('task render')
+
+  if (task.task_type === 11) {
+    if (isAllTasksCompleted && task.status !== DailyTaskStatusEnum.CLAIMED) {
+      return (
+        <BaseButton
+          text="Claim"
+          handler={runClaimAllTask}
+          loading={claimTaskLoading}
+          className="w-[79px] h-[34px]"
+        />
+      )
+    } else if (task.status === DailyTaskStatusEnum.CLAIMED) {
+      return <ClaimedButton />
+    }
+    return <span className="text-sm text-[#999999] font-medium">In progress</span>
+  }
 
   switch (status) {
     case DailyTaskStatusEnum.GO:
@@ -111,24 +140,7 @@ const TaskButton: React.FC<{
         />
       )
     case DailyTaskStatusEnum.CLAIMED:
-      return (
-        <BaseButton
-          text=""
-          icon={
-            <div
-              className="w-[10px] h-[7px] border-[2px] border-l-[#CDCDD4] border-b-[#CDCDD4] border-t-transparent border-r-transparent"
-              style={{
-                transform: 'rotate(-45deg)',
-                marginTop: '-3px',
-                marginLeft: '6px',
-              }}
-            ></div>
-          }
-          disabled={true}
-          handler={() => {}}
-          className="bg-[#EFF2F8] w-[79px] h-[34px]"
-        />
-      )
+      return <ClaimedButton />
   }
 }
 
@@ -154,15 +166,12 @@ const TaskItem: React.FC<{
 
 const Tasks: FC = () => {
   const navigate = useNavigate()
-  const { dailyTaskList, setDailyTaskList, totalTaskPoints, setTotalTaskPoints, token } = useStore(
-    (state) => ({
-      dailyTaskList: state.dailyTaskList,
-      setDailyTaskList: state.setDailyTaskList,
-      totalTaskPoints: state.totalTaskPoints,
-      setTotalTaskPoints: state.setTotalTaskPoints,
-      token: state.token,
-    })
-  )
+  const { dailyTaskList, totalTaskPoints, token, updateDailyTask } = useStore((state) => ({
+    dailyTaskList: state.dailyTaskList,
+    totalTaskPoints: state.totalTaskPoints,
+    updateDailyTask: state.updateDailyTask,
+    token: state.token,
+  }))
   const { runGetDailyTask, loading } = useGetDailyTask()
 
   const handleTaskAction = (task: DailyTaskItem) => {
@@ -246,6 +255,27 @@ const AnimatedNumber: React.FC<{ value: number }> = ({ value }) => {
   }, [value])
 
   return <span>{displayValue.toLocaleString()}</span>
+}
+
+const ClaimedButton: React.FC = () => {
+  return (
+    <BaseButton
+      text=""
+      icon={
+        <div
+          className="w-[10px] h-[7px] border-[2px] border-l-[#CDCDD4] border-b-[#CDCDD4] border-t-transparent border-r-transparent"
+          style={{
+            transform: 'rotate(-45deg)',
+            marginTop: '-3px',
+            marginLeft: '6px',
+          }}
+        ></div>
+      }
+      disabled={true}
+      handler={() => {}}
+      className="bg-[#EFF2F8] w-[79px] h-[34px]"
+    />
+  )
 }
 
 export default Tasks

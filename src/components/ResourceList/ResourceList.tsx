@@ -24,6 +24,7 @@ import VideoCard from '@/components/ResourceList/VideoCard'
 import ImageCard from '@/components/Image/ImageCard'
 import { genShareLinkFn, getTimeStringAutoShort } from '@/utils/utils'
 import MoreText from '@/components/More/MoreText'
+import { useDailyTaskActions } from '@/hooks/useDailyTask'
 
 interface ShareDataProps {
   pid: number
@@ -184,8 +185,10 @@ const ResourceList = ({
 
   const currentUid = getCurrentUid()
   const jumpToProfilePage = useProfileNavigation()
+  const { runDailyWatch } = useDailyTaskActions()
 
-  const handleImageClick = useCallback((images: string[], index: number) => {
+  const handleImageClick = useCallback((images: string[], index: number, post_id: number) => {
+    runDailyWatch(post_id)
     setImageResource({
       images,
       currentIndex: index,
@@ -309,7 +312,7 @@ const ResourceList = ({
               {data.type === POST_TYPE_IMAGE ? (
                 <ImageCard
                   data={data}
-                  handleImageClick={handleImageClick}
+                  handleImageClick={(images, index) => handleImageClick(images, index, data.id)}
                   resourcesEve={resourcesEve}
                 />
               ) : (
@@ -472,21 +475,23 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
         />
       </div>
 
-      {(data.title || data.is_pay) && <div className="px-4 py-3">
-        <p className="text-[#0F1419] dark:text-[#ccc] text-sm leading-6">
-          <MoreText text={data.title} />
-        </p>
-        <HStack pt="2" justifyContent="space-between">
-          {data.is_pay && (
-            <HStack gap="4px">
-              <p className="text-[#666666] dark:text-[#424048] text-[12px]">
-                Purchased for {data.price}
-              </p>
-              <Image src={StarsIcon} />
-            </HStack>
-          )}
-        </HStack>
-      </div>}
+      {(data.title || data.is_pay) && (
+        <div className="px-4 py-3">
+          <p className="text-[#0F1419] dark:text-[#ccc] text-sm leading-6">
+            <MoreText text={data.title} />
+          </p>
+          <HStack pt="2" justifyContent="space-between">
+            {data.is_pay && (
+              <HStack gap="4px">
+                <p className="text-[#666666] dark:text-[#424048] text-[12px]">
+                  Purchased for {data.price}
+                </p>
+                <Image src={StarsIcon} />
+              </HStack>
+            )}
+          </HStack>
+        </div>
+      )}
     </>
   )
 })

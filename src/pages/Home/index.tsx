@@ -142,18 +142,20 @@ const HomePage: FC = () => {
             }`,
           }}
         ></div>
-        <div className='fixed bg-[#fff] z-[111] h-[40px] w-[100%] left-0 top-0 pl-[16px] pt-[10px]'
+        <div className='fixed bg-[#fff] z-[111] h-[40px] w-[100%] left-0 top-0'
           style={{
-            top: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
+            paddingTop: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
           }}
         >
-          <h3
-            ref={titleRef}
-            style={getTitleStyle()}
-            className="fixed text-black dark:text-[#E0E2F6] text-[20px] flex items-center transition-all duration-100 ease-in-out"
-          >
-            {title}
-          </h3>
+          <div className='pl-[16px] pt-[10px]'>
+            <h3
+              ref={titleRef}
+              style={getTitleStyle()}
+              className="fixed text-black dark:text-[#E0E2F6] text-[20px] flex items-center transition-all duration-100 ease-in-out"
+            >
+              {title}
+            </h3>
+          </div>
         </div>
 
         <div className="ml-auto flex gap-[13px] z-[1111] relative">

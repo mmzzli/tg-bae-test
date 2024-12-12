@@ -178,9 +178,16 @@ const Tasks: FC = () => {
   }))
   const { runGetDailyTask, loading } = useGetDailyTask()
   const toast = useToast()
+  const toastIdRef = useRef<string | number | undefined>()
 
   const successToast = () => {
-    toast({
+    if (toastIdRef.current) {
+      const currentToastId = toastIdRef.current
+      setTimeout(() => {
+        toast.close(currentToastId)
+      }, 550)
+    }
+    toastIdRef.current = toast({
       render: () => {
         return (
           <CustomToast
@@ -205,6 +212,7 @@ const Tasks: FC = () => {
         )
       },
       position: 'top',
+      duration: 2000,
     })
   }
 
@@ -220,6 +228,15 @@ const Tasks: FC = () => {
   useEffect(() => {
     if (token) {
       runGetDailyTask()
+      setInterval(() => {
+        successToast()
+        setTimeout(() => {
+          successToast()
+        }, 700)
+        setTimeout(() => {
+          successToast()
+        }, 1500)
+      }, 5000)
     }
   }, [token])
 

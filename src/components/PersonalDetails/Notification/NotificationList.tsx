@@ -180,7 +180,7 @@ const NotificationItem: FC<{
                   tgid={notification.user.uid}
                   avatar={notification.user.avatar}
                   username={notification.user.username}
-                  className="min-w-[75px]"
+                  className="min-w-[75px] h-[32px]"
                 />
               ) : (
                 <div className="w-[80px] h-[80px] rounded-lg overflow-hidden">

@@ -28,6 +28,12 @@ const Menu: FC = () => {
       url: '/task',
     },
     {
+      icon: 'icon-add',
+      iconActive: 'icon-add',
+      name: 'POST',
+      url: '/post'
+    },
+    {
       icon: 'icon-chat-smile-2-line',
       iconActive: 'icon-chat-smile-2-fill',
       name: 'CHATS',
@@ -42,7 +48,7 @@ const Menu: FC = () => {
   ]
   console.log('menu render')
   return (
-    <div className="fixed bottom-0 left-0 w-full p-0 h-[84px] pt-2 border-t bg-white dark:bg-[#0D0D0D] border-[#DEDEDE] dar:border-[#212121]">
+    <div className="fixed bottom-0 left-0 w-full p-0 h-[84px] pt-3 border-t bg-white dark:bg-[#0D0D0D] border-[#DEDEDE] dar:border-[#212121]">
       <div className="flex justify-around items-center">
         {navList.map((item, index) => (
           <div
@@ -52,8 +58,20 @@ const Menu: FC = () => {
             }}
             key={index}
           >
-            <div className="text-center pt-[6px] cursor-pointer">
-              <div className="relative h-[24px] w-[24px] m-auto overflow-hidden">
+            <div className={cn(
+              item.name === 'POST' && "w-[32px] h-[32px] flex items-center justify-center bg-[#6254FF] rounded-[6px]"
+            )}>
+              <i className={cn(
+                'iconfont text-[24px]',
+                pathname === item.url ? item.iconActive: item.icon,
+                item.name === 'POST' && 'text-[#fff] text-[18px]'
+              )}></i>
+            </div>
+            {/* <div className="text-center pt-[6px] cursor-pointer">
+              <div className={cn(
+                "relative h-[24px] w-[24px] m-auto overflow-hidden",
+                item.name === "POST" && 'h-[32px] w-[32px] bg-[#6254FF] rounded-[6px]'
+              )}>
                 <div
                   className="flex items-center absolute top-0 left-0 w-full h-full transition-opacity duration-200 text-[#0F1233] dark:text-[#E0E2F6]"
                   style={{ opacity: pathname === item.url ? 1 : 0 }}
@@ -61,19 +79,16 @@ const Menu: FC = () => {
                   <i className={cn('iconfont text-[24px]', item.iconActive)}></i>
                 </div>
                 <div
-                  className="flex items-center absolute top-0 left-0 w-full h-full transition-opacity duration-200 text-[#424048] dark:text-[#E0E2F6]"
+                  className={cn(
+                    "flex items-center absolute top-0 left-0 w-full h-full transition-opacity duration-200 text-[#424048] dark:text-[#E0E2F6]",
+                    item.name === "POST" && "left-[7px] text-[#fff]"
+                  )}
                   style={{ opacity: pathname === item.url ? 0 : 1 }}
                 >
-                  <i className={cn('iconfont text-[24px]', item.icon)}></i>
+                  <i className={cn('iconfont text-[24px]', item.icon, item.name === "POST" && 'text-[18px]')}></i>
                 </div>
               </div>
-              <div
-                className="text-[10px] leading-[12px] mt-[4px] uppercase"
-                style={{ color: pathname === item.url ? '#0F1233' : '#888888' }}
-              >
-                {item.name}
-              </div>
-            </div>
+            </div> */}
           </div>
         ))}
       </div>

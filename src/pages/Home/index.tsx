@@ -116,7 +116,7 @@ const HomePage: FC = () => {
       id="recommendScrollableDiv"
     >
       <div
-        className="flex p-[10px_16px] w-full z-[111]"
+        className="flex p-[10px_16px] fixed w-full z-[111]"
         style={{
           top: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
         }}
@@ -142,17 +142,15 @@ const HomePage: FC = () => {
             }`,
           }}
         ></div>
-        <div className='fixed bg-[#fff] z-[111]'>
-          <h3
-            ref={titleRef}
-            style={getTitleStyle()}
-            className="fixed text-black dark:text-[#E0E2F6] text-[20px] flex items-center transition-all duration-100 ease-in-out"
-          >
-            {title}
-          </h3>
-        </div>
+        <h3
+          ref={titleRef}
+          style={getTitleStyle()}
+          className="fixed text-black dark:text-[#E0E2F6] text-[20px] flex items-center transition-all duration-100 ease-in-out"
+        >
+          {title}
+        </h3>
 
-        <div className="ml-auto flex gap-[13px] z-[1111] relative">
+        <div className="ml-auto flex gap-[13px] z-10">
           <div
             className="w-[48px] h-[48px] p-[12px] bg-[#F5F3F3] rounded-[50px] flex items-center justify-center cursor-pointer"
             onClick={() => navigate('/home/searching')}

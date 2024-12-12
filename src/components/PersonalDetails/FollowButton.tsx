@@ -12,7 +12,17 @@ const FollowButton: FC<{
   avatar: string
   username: string
   className?: string
-}> = ({ fansid, tgid, avatar, username, className }) => {
+  followButtonClassName?: string
+  followingButtonClassName?: string
+}> = ({
+  fansid,
+  tgid,
+  avatar,
+  username,
+  className,
+  followButtonClassName,
+  followingButtonClassName,
+}) => {
   const { userInfo, myFollow, setMyFollow, setUserInfo, othersUserInfo, setOthersUserInfo } =
     useStore((state) => ({
       userInfo: state.userInfo,
@@ -59,18 +69,15 @@ const FollowButton: FC<{
     <BaseButton
       text="Following"
       loading={followLoading}
-      width="104px"
       handler={doFollow}
-      className={`bg-transparent border text-[#333333] border-[#CDCDD4] ${className}`}
+      className={`bg-transparent border text-[#333333] border-[#CDCDD4] w-[104px] ${followingButtonClassName} ${className}`}
       loadingColor="border-t-[#999]"
-      // loadingClassName="bg-transparent border text-[#333333] border-[#333]"
     />
   ) : (
     <BaseButton
       text="Follow"
-      width="104px"
       handler={doFollow}
-      className={className}
+      className={`w-[104px] ${followButtonClassName} ${className}`}
       loading={followLoading}
     />
   )

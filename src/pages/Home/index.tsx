@@ -90,7 +90,7 @@ const HomePage: FC = () => {
       id="recommendScrollableDiv"
     >
       <div
-        className="flex p-[10px_16px] fixed w-full z-[111]"
+        className="flex p-[10px_16px] w-full z-[111]"
         style={{
           top: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
         }}
@@ -116,32 +116,42 @@ const HomePage: FC = () => {
             }`,
           }}
         ></div>
-        <h3
-          ref={titleRef}
-          className="absolute top-[18px] text-black dark:text-[#E0E2F6] text-[20px] flex items-center duration-100 ease-out"
+        <div
+          className="fixed bg-[#fff] z-[111] h-[40px] w-[100%] left-0 top-0"
           style={{
-            opacity: showTopTitle ? 0 : 1,
+            paddingTop:
+              'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
           }}
         >
-          {title}
-        </h3>
-        <h3
-          className="fixed text-black dark:text-[#E0E2F6] text-[20px] flex items-center duration-300 ease-out"
-          style={{
-            opacity: showTopTitle ? 1 : 0,
-            transform: `translateX(-50%)`,
-            left: '50%',
-            top: `${
-              showTopTitle
-                ? 'calc(var(--tg-safe-area-inset-top) + 10px)'
-                : 'calc(var(--tg-safe-area-inset-top) + 24px)'
-            }`,
-          }}
-        >
-          {title}
-        </h3>
+          <div className="pl-[16px] pt-[18px]">
+            <h3
+              ref={titleRef}
+              className="absolute top-[18px] text-black dark:text-[#E0E2F6] text-[20px] flex items-center duration-100 ease-out"
+              style={{
+                opacity: showTopTitle ? 0 : 1,
+              }}
+            >
+              {title}
+            </h3>
+            <h3
+              className="fixed text-black dark:text-[#E0E2F6] text-[20px] flex items-center duration-300 ease-out"
+              style={{
+                opacity: showTopTitle ? 1 : 0,
+                transform: `translateX(-50%)`,
+                left: '50%',
+                top: `${
+                  showTopTitle
+                    ? 'calc(var(--tg-safe-area-inset-top) + 10px)'
+                    : 'calc(var(--tg-safe-area-inset-top) + 24px)'
+                }`,
+              }}
+            >
+              {title}
+            </h3>
+          </div>
+        </div>
 
-        <div className="ml-auto flex gap-[13px] z-10">
+        <div className="ml-auto flex gap-[13px] z-[1111] relative">
           <div
             className="w-[48px] h-[48px] p-[12px] bg-[#F5F3F3] rounded-[50px] flex items-center justify-center cursor-pointer"
             onClick={() => navigate('/home/searching')}
@@ -157,7 +167,7 @@ const HomePage: FC = () => {
       </div>
       <CardRecommendProvider.Provider value={{ recommend: true, setVideoOpen }}>
         <div
-          className={`${userInfo.user_id !== -1 && userInfo.fans === 0 ? '' : 'mt-[68px]'}  relative ${videoOpen ? 'z-[112]' : ''}`}
+          className={`${userInfo.user_id !== -1 && userInfo.fans === 0 ? '' : ''}  relative ${videoOpen ? 'z-[112]' : ''}`}
         >
           <RecommendList />
         </div>

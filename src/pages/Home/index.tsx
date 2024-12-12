@@ -8,7 +8,6 @@ import { CardRecommendProvider } from '@/utils/constants'
 import { throttle } from '@/utils/chat/schedulers'
 
 const SCROLL_THRESHOLD = 35
-const MOVE_HEIGHT_OFFSET = 18
 
 const HomePage: FC = () => {
   const navigate = useNavigate()
@@ -126,8 +125,9 @@ const HomePage: FC = () => {
           <div className="pl-[16px] pt-[18px]">
             <h3
               ref={titleRef}
-              className="absolute top-[18px] text-black dark:text-[#E0E2F6] text-[20px] flex items-center duration-100 ease-out"
+              className="absolute text-black dark:text-[#E0E2F6] text-[20px] flex items-center duration-100 ease-out"
               style={{
+                top: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top)) + 18px',
                 opacity: showTopTitle ? 0 : 1,
               }}
             >

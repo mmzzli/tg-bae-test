@@ -157,7 +157,7 @@ const HomePage: FC = () => {
           >
             <i className="iconfont icon-search-line text-[#333333] text-[24px]"></i>
           </div>
-          <NewPostButton />
+          {/* <NewPostButton /> */}
         </div>
       </div>
 

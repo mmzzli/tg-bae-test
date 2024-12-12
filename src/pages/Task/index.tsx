@@ -228,15 +228,6 @@ const Tasks: FC = () => {
   useEffect(() => {
     if (token) {
       runGetDailyTask()
-      setInterval(() => {
-        successToast()
-        setTimeout(() => {
-          successToast()
-        }, 700)
-        setTimeout(() => {
-          successToast()
-        }, 1500)
-      }, 5000)
     }
   }, [token])
 

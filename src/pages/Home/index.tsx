@@ -147,7 +147,7 @@ const HomePage: FC = () => {
             paddingTop: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
           }}
         >
-          <div className='pl-[16px] pt-[10px]'>
+          <div className='pl-[16px] pt-[18px]'>
             <h3
               ref={titleRef}
               style={getTitleStyle()}

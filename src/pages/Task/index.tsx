@@ -189,27 +189,7 @@ const Tasks: FC = () => {
     }
     toastIdRef.current = toast({
       render: () => {
-        return (
-          <CustomToast
-            title="Points claimed!"
-            type={typeOptions.success}
-            top={
-              parseInt(
-                window
-                  .getComputedStyle(document.documentElement)
-                  .getPropertyValue('--tg-safe-area-inset-top'),
-                10
-              ) +
-              parseInt(
-                window
-                  .getComputedStyle(document.documentElement)
-                  .getPropertyValue('--tg-content-safe-area-inset-top'),
-                10
-              ) +
-              'px'
-            }
-          />
-        )
+        return <CustomToast title="Points claimed!" type={typeOptions.success} />
       },
       position: 'top',
       duration: 2000,

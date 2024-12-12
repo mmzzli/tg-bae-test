@@ -2,7 +2,6 @@ import { Dialog, DialogContent } from '@/components/BaseDialog/BaseDialog'
 import { useToast } from '@chakra-ui/react'
 
 import { useDialog } from '@/hooks/useDialog'
-import deleteIcon from '@/assets/image/chat/delete.png'
 import NiceModal, { useModal } from '@ebay/nice-modal-react'
 import { useRequest, useSafeState } from 'ahooks'
 import { deletePost, getNotifications } from '@/api'
@@ -98,32 +97,7 @@ export const DeleteDialogWarp = NiceModal.create(
         getInitialNotificationList()
         toast({
           render: () => {
-            return (
-              <CustomToast
-                title="Delete post success"
-                type={typeOptions.success}
-                top={
-                  window
-                    .getComputedStyle(document.documentElement)
-                    .getPropertyValue('--tg-safe-area-inset-top') &&
-                  parseInt(
-                    window
-                      .getComputedStyle(document.documentElement)
-                      .getPropertyValue('--tg-safe-area-inset-top'),
-                    10
-                  ) !== 0
-                    ? parseInt(
-                        window
-                          .getComputedStyle(document.documentElement)
-                          .getPropertyValue('--tg-safe-area-inset-top'),
-                        10
-                      ) +
-                      44 +
-                      'px'
-                    : ''
-                }
-              />
-            )
+            return <CustomToast title="Delete post success" type={typeOptions.success} />
           },
           position: 'top',
         })
@@ -136,32 +110,7 @@ export const DeleteDialogWarp = NiceModal.create(
         }
         toast({
           render: () => {
-            return (
-              <CustomToast
-                title={`${message}`}
-                type={typeOptions.error}
-                top={
-                  window
-                    .getComputedStyle(document.documentElement)
-                    .getPropertyValue('--tg-safe-area-inset-top') &&
-                  parseInt(
-                    window
-                      .getComputedStyle(document.documentElement)
-                      .getPropertyValue('--tg-safe-area-inset-top'),
-                    10
-                  ) !== 0
-                    ? parseInt(
-                        window
-                          .getComputedStyle(document.documentElement)
-                          .getPropertyValue('--tg-safe-area-inset-top'),
-                        10
-                      ) +
-                      44 +
-                      'px'
-                    : ''
-                }
-              />
-            )
+            return <CustomToast title={`${message}`} type={typeOptions.error} />
           },
           position: 'top',
         })

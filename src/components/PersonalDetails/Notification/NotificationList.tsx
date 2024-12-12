@@ -50,32 +50,7 @@ const NotificationItem: FC<{
       console.error('Failed to delete notification:', error)
       toast({
         render: () => {
-          return (
-            <CustomToast
-              title="Delete notification failed"
-              type={typeOptions.error}
-              top={
-                window
-                  .getComputedStyle(document.documentElement)
-                  .getPropertyValue('--tg-safe-area-inset-top') &&
-                parseInt(
-                  window
-                    .getComputedStyle(document.documentElement)
-                    .getPropertyValue('--tg-safe-area-inset-top'),
-                  10
-                ) !== 0
-                  ? parseInt(
-                      window
-                        .getComputedStyle(document.documentElement)
-                        .getPropertyValue('--tg-safe-area-inset-top'),
-                      10
-                    ) +
-                    44 +
-                    'px'
-                  : ''
-              }
-            />
-          )
+          return <CustomToast title="Delete notification failed" type={typeOptions.error} />
         },
         position: 'top',
       })

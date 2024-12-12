@@ -92,3 +92,7 @@ video {
   background: #6254FF !important;
   border-color: #6254FF !important;
 }
+
+#chakra-toast-manager-top {
+  padding-top: calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top)) !important;
+}

@@ -142,7 +142,7 @@ const HomePage: FC = () => {
             }`,
           }}
         ></div>
-        <div className='fixed bg-[#fff] z-[111] h-[40px] w-[100%] left-0 top-0 pl-[16px]'
+        <div className='fixed bg-[#fff] z-[111] h-[40px] w-[100%] left-0 top-0 pl-[16px] pt-[10px]'
           style={{
             paddingTop: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
           }}

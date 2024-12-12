@@ -142,7 +142,11 @@ const HomePage: FC = () => {
             }`,
           }}
         ></div>
-        <div className='fixed bg-[#fff] z-[111] h-[40px] w-[100%] left-0 top-0'>
+        <div className='fixed bg-[#fff] z-[111] h-[40px] w-[100%] left-0 top-0'
+          style={{
+            paddingTop: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
+          }}
+        >
           <h3
             ref={titleRef}
             style={getTitleStyle()}

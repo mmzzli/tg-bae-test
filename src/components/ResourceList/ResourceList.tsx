@@ -7,7 +7,7 @@ import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { BaseModal } from '../Modal/BaseModal'
 import BaseButton from '../BaseButton/BaseButton'
 import useCopy from '@/hooks/useCopy'
-import { useMemoizedFn, useRequest, useSetState } from 'ahooks'
+import { useMemoizedFn, useRequest, useSetState, useDebounceFn } from 'ahooks'
 import { LinkIcon, StarsIcon, TelegramIcon } from '@/assets/icons'
 import { followPreview, FormatterListItem } from '@/store/slices/resourceListSlice'
 import Image from '../Image/Image'
@@ -250,26 +250,40 @@ const ResourceList = ({
     }
   }, [resources])
 
-  const linkEve = async (data: FormatterListItem) => {
-    const curLiked = likes.find((item) => item.id === data.id)?.liked
-    await postLike({
-      act_type: !curLiked ? 1 : 2,
-      post_id: data.id,
-    })
-    setLikes(data)
-  }
-  const savedEve = async (data: FormatterListItem) => {
-    const isSaved = saveds.find((item) => item.id === data.id)?.saveds
-    if (!isSaved) {
-      await favPost(data.id)
-    } else {
-      await favDel(data.id)
-    }
-    setSaveds(data)
+  const { run:linkRun } = useDebounceFn(
+    async (data: FormatterListItem) => {
+      const curLiked = likes.find((item) => item.id === data.id)?.liked
+      await postLike({
+        act_type: curLiked ? 1 : 2,
+        post_id: data.id,
+      })
+    },
+    { wait: 500 }
+  );
 
-    if (type === 'fav') {
-      setResources((favResources) => favResources.filter((item) => item.id !== data.id))
-    }
+  const linkEve = async (data: FormatterListItem) => {
+    setLikes(data)
+    linkRun(data)
+  }
+  const { run:favRun } = useDebounceFn(
+    async (data: FormatterListItem) => {
+      const isSaved = saveds.find((item) => item.id === data.id)?.saveds
+      if (isSaved) {
+        await favPost(data.id)
+      } else {
+        await favDel(data.id)
+      }
+
+      if (type === 'fav') {
+        setResources((favResources) => favResources.filter((item) => item.id !== data.id))
+      }
+    },
+    { wait: 500 }
+  );
+
+  const savedEve = async (data: FormatterListItem) => {
+    setSaveds(data)
+    favRun(data)
   }
   const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
     const { shareLink, copyLink } = await genShareLinkFn(title, pid, uid, getLinkHandlerAsync)

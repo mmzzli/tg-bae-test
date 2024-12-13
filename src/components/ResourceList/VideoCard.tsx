@@ -12,7 +12,7 @@ import { useDailyTaskActions } from '@/hooks/useDailyTask'
 
 interface VideoCardProps {
   data: FormatterListItem
-  resourcesEve: (post_id: number, url: string) => void
+  resourcesEve: (post_id: number, url: string, is_pay?: boolean) => void
 }
 const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)

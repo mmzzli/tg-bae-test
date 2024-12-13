@@ -12,7 +12,7 @@ import FollowButton from '@/components/PersonalDetails/FollowButton'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 const Searching = () => {
   const navigate = useNavigate()
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const [data, setData] = useState<SearchItem | null>(null)
   const [field, setField] = useState<string>('')
@@ -50,7 +50,7 @@ const Searching = () => {
     }
   }, [field])
 
-  const load = async () => {
+  const load = async()=>{
     setIsLoading(false)
     await runAsync(field)
     setIsLoading(true)
@@ -65,9 +65,9 @@ const Searching = () => {
 
   useEffect(() => {
     if (inputRef.current) {
-      inputRef.current.focus()
+      inputRef.current.focus();
     }
-  }, [])
+  }, []);
   return (
     <div
       className="absolute px-[16px] top-0 left-0 right-0 bg-[#fff] z-10 overflow-auto scrollbar-hide"
@@ -95,7 +95,6 @@ const Searching = () => {
               setField('')
               setData({ users: [] })
               inputRef.current?.focus();
-              setIsLoading(false)
             }}
           >
             <i className="iconfont icon-icon_close text-[#fff] text-[24px]"></i>
@@ -106,10 +105,7 @@ const Searching = () => {
       <div className="pt-[28px]">
         {data?.users.map((item, key) => (
           <div className="flex items-center justify-between py-[12px] mb-[12px]" key={key}>
-            <div
-              className="flex gap-[12px] items-center"
-              onClick={() => navigate(`/profile/${item.tg_id}`)}
-            >
+            <div className="flex gap-[12px] items-center" onClick={() => navigate(`/profile/${item.tg_id}`)}>
               <div className="flex-shrink-0">
                 <Image
                   width={56}
@@ -121,11 +117,14 @@ const Searching = () => {
                   loaderClassName="rounded-full"
                 />
               </div>
-              <h3 className="text-[#333] font-medium text-[16px] w-[16ch] whitespace-nowrap overflow-hidden text-ellipsis">{item.tgname}</h3>
+              <h3 className="text-[#333] text-[16px] w-[16ch] whitespace-nowrap overflow-hidden text-ellipsis">{item.tgname}</h3>
             </div>
-            {item.tg_id !== currentUid && (
-              <FollowButton tgid={item.tg_id} avatar={item.avatar} username={item.tgname} />
-            )}
+            {item.tg_id !== currentUid && <FollowButton
+              fansid={currentUid}
+              tgid={item.tg_id}
+              avatar={item.avatar}
+              username={item.tgname}
+            />}
           </div>
         ))}
       </div>

@@ -217,9 +217,15 @@ const Tasks: FC = () => {
     }
     toastIdRef.current = toast({
       render: () => {
-        return <CustomToast title="Points claimed!" type={typeOptions.success} />
+        return (
+          <CustomToast
+            title="Points claimed!"
+            type={typeOptions.success}
+            className="w-[155px] ml-[50%] translate-x-[-72px] px-[10px] py-[10px]"
+          />
+        )
       },
-      position: 'top',
+      position: 'bottom',
       duration: 2000,
     })
   }

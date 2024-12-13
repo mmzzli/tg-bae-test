@@ -96,3 +96,7 @@ video {
 #chakra-toast-manager-top {
   padding-top: calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top)) !important;
 }
+
+#chakra-toast-manager-bottom {
+  padding-bottom: 85px !important;
+}

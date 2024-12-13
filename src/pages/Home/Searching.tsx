@@ -117,7 +117,7 @@ const Searching = () => {
                   loaderClassName="rounded-full"
                 />
               </div>
-              <h3 className="text-[#333] text-[16px] w-[16ch] whitespace-nowrap overflow-hidden text-ellipsis">{item.tgname}</h3>
+              <h3 className="text-[#333] font-medium text-[16px] w-[16ch] whitespace-nowrap overflow-hidden text-ellipsis">{item.tgname}</h3>
             </div>
             {item.tg_id !== currentUid && <FollowButton
               fansid={currentUid}

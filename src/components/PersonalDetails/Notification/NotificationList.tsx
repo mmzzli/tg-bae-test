@@ -50,32 +50,7 @@ const NotificationItem: FC<{
       console.error('Failed to delete notification:', error)
       toast({
         render: () => {
-          return (
-            <CustomToast
-              title="Delete notification failed"
-              type={typeOptions.error}
-              top={
-                window
-                  .getComputedStyle(document.documentElement)
-                  .getPropertyValue('--tg-safe-area-inset-top') &&
-                parseInt(
-                  window
-                    .getComputedStyle(document.documentElement)
-                    .getPropertyValue('--tg-safe-area-inset-top'),
-                  10
-                ) !== 0
-                  ? parseInt(
-                      window
-                        .getComputedStyle(document.documentElement)
-                        .getPropertyValue('--tg-safe-area-inset-top'),
-                      10
-                    ) +
-                    44 +
-                    'px'
-                  : ''
-              }
-            />
-          )
+          return <CustomToast title="Delete notification failed" type={typeOptions.error} />
         },
         position: 'top',
       })
@@ -176,11 +151,11 @@ const NotificationItem: FC<{
             <div className="mt-3">
               {notification.type === NotificationType.Follow ? (
                 <FollowButton
-                  fansid={currentUid}
                   tgid={notification.user.uid}
                   avatar={notification.user.avatar}
                   username={notification.user.username}
-                  className="min-w-[75px]"
+                  followButtonClassName="w-[75px] h-[32px]"
+                  followingButtonClassName="w-[94px] h-[32px]"
                 />
               ) : (
                 <div className="w-[80px] h-[80px] rounded-lg overflow-hidden">

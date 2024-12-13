@@ -1,5 +1,12 @@
 import { useRequest } from 'ahooks'
-import { dailyLoginTask, dailyWatchTask, dailyChatTask, completeAllTasks } from '@/api'
+import {
+  dailyLoginTask,
+  dailyWatchTask,
+  dailyChatTask,
+  completeAllTasks,
+  getPaidStars,
+  getPaidStarPoints,
+} from '@/api'
 import { useStore } from '@/store'
 import { useMemo } from 'react'
 import { getDailyTask } from '@/api/list'
@@ -19,17 +26,53 @@ export const useDailyTaskStatus = () => {
   }
 }
 
-export const useGetDailyTask = () => {
-  const { setDailyTaskList, setTotalTaskPoints } = useStore((state) => ({
-    setDailyTaskList: state.setDailyTaskList,
-    setTotalTaskPoints: state.setTotalTaskPoints,
+export const useUpdatePaidStars = () => {
+  const { setPaidStars, setPaidStarsPoints } = useStore((state) => ({
+    setPaidStars: state.setPaidStars,
+    setPaidStarsPoints: state.setPaidStarsPoints,
   }))
+
+  const { run: runGetPaidStars } = useRequest(getPaidStars, {
+    manual: true,
+    onSuccess(data) {
+      setPaidStars(data.stars)
+      setPaidStarsPoints(data)
+    },
+  })
+
+  const { run: runGetPaidStarsPoints } = useRequest(getPaidStarPoints, {
+    manual: true,
+    onSuccess(data) {
+      setPaidStarsPoints(data)
+    },
+  })
+
+  const runUpdatePaidStars = () => {
+    runGetPaidStars()
+    runGetPaidStarsPoints()
+  }
+  return {
+    runUpdatePaidStars,
+  }
+}
+
+export const useGetDailyTask = () => {
+  const { setDailyTaskList, setTotalTaskPoints, setPaidStars, setPaidStarsPoints } = useStore(
+    (state) => ({
+      setDailyTaskList: state.setDailyTaskList,
+      setTotalTaskPoints: state.setTotalTaskPoints,
+      setPaidStars: state.setPaidStars,
+      setPaidStarsPoints: state.setPaidStarsPoints,
+    })
+  )
 
   const { run: runGetDailyTask, loading } = useRequest(getDailyTask, {
     manual: true,
     onSuccess(data) {
       setDailyTaskList(data.details)
       setTotalTaskPoints(data.points)
+      setPaidStars(data.used_points)
+      setPaidStarsPoints(data.earn_points)
     },
   })
   return {

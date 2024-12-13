@@ -121,7 +121,6 @@ const FollowPage: FC = () => {
         {item.tg_id !== currentUid && (
           <FollowButton
             className="ml-[32px]"
-            fansid={currentUid}
             tgid={item.tg_id}
             avatar={item.avatar}
             username={item.tgname}

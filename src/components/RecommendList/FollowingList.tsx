@@ -16,7 +16,7 @@ const FollowingList = ({ className }: PostListProps) => {
   const { shareLink } = useTMAUtils()
 
   return (
-    <div className="mt-[72px] border border-[#dbdbdb] border-dashed rounded-[16px] mx-4">
+    <div className="mt-[24px] border border-[#dbdbdb] border-dashed rounded-[16px] mx-4">
       <div className="mx-auto w-full text-center pt-[24px] text-base">
         <p className="text-[#666666]">Join our community to meet creators</p>
         <p className="text-[#666666]">and start to follow them</p>

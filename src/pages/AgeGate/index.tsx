@@ -61,32 +61,7 @@ const AgeGate = () => {
             } else {
               toast({
                 render: () => {
-                  return (
-                    <CustomToast
-                      title={`Please check terms.`}
-                      type={typeOptions.error}
-                      top={
-                        window
-                          .getComputedStyle(document.documentElement)
-                          .getPropertyValue('--tg-safe-area-inset-top') &&
-                        parseInt(
-                          window
-                            .getComputedStyle(document.documentElement)
-                            .getPropertyValue('--tg-safe-area-inset-top'),
-                          10
-                        ) !== 0
-                          ? parseInt(
-                              window
-                                .getComputedStyle(document.documentElement)
-                                .getPropertyValue('--tg-safe-area-inset-top'),
-                              10
-                            ) +
-                            44 +
-                            'px'
-                          : ''
-                      }
-                    />
-                  )
+                  return <CustomToast title={`Please check terms.`} type={typeOptions.error} />
                 },
                 position: 'top',
               })

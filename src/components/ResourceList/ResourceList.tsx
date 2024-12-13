@@ -7,7 +7,7 @@ import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { BaseModal } from '../Modal/BaseModal'
 import BaseButton from '../BaseButton/BaseButton'
 import useCopy from '@/hooks/useCopy'
-import { useMemoizedFn, useRequest, useSetState } from 'ahooks'
+import { useMemoizedFn, useRequest, useSetState, useDebounceFn } from 'ahooks'
 import { LinkIcon, StarsIcon, TelegramIcon } from '@/assets/icons'
 import { followPreview, FormatterListItem } from '@/store/slices/resourceListSlice'
 import Image from '../Image/Image'
@@ -45,11 +45,11 @@ interface ShareModalProps {
 }
 
 export const ShareModal: React.FC<ShareModalProps> = ({
-  isBaseModalOpen,
-  off,
-  currentShareData,
-  links,
-}) => {
+                                                        isBaseModalOpen,
+                                                        off,
+                                                        currentShareData,
+                                                        links,
+                                                      }) => {
   const { launchParams, getCurrentUid } = useTMAUtils()
   const { copy } = useCopy()
 
@@ -151,10 +151,10 @@ const POST_TYPE_IMAGE = 1
 const POST_TYPE_VIDEO = 0
 
 const ResourceList = ({
-  resources: initialResources,
-  type,
-  hasMore,
-}: {
+                        resources: initialResources,
+                        type,
+                        hasMore,
+                      }: {
   resources: FormatterListItem[]
   type?: string
   hasMore?: boolean
@@ -245,31 +245,59 @@ const ResourceList = ({
 
   useEffect(() => {
     if (resources.length > 0) {
+      // 每次接口更新数据，根据之前接口保存的点赞，和收藏的状态更新到新数据里面
+      const likesMap = new Map(likes.map(item => [item.id, item]));
+      const savedsMap = new Map(saveds.map(item => [item.id, item]));
+      resources.forEach(itemA => {
+        const likeMatch = likesMap.get(itemA.id);
+        if (likeMatch) {
+          itemA.like = likeMatch.like;
+          itemA.is_liked = likeMatch.liked;
+        }
+        const savedMatch = savedsMap.get(itemA.id);
+        if (savedMatch) {
+          itemA.is_collected = savedMatch.saveds;
+        }
+      });
       initPatchLikes(resources)
       initPatchSaves(resources)
     }
   }, [resources])
 
-  const linkEve = async (data: FormatterListItem) => {
-    const curLiked = likes.find((item) => item.id === data.id)?.liked
-    await postLike({
-      act_type: !curLiked ? 1 : 2,
-      post_id: data.id,
-    })
-    setLikes(data)
-  }
-  const savedEve = async (data: FormatterListItem) => {
-    const isSaved = saveds.find((item) => item.id === data.id)?.saveds
-    if (!isSaved) {
-      await favPost(data.id)
-    } else {
-      await favDel(data.id)
-    }
-    setSaveds(data)
+  const { run:linkRun } = useDebounceFn(
+    async (data: FormatterListItem) => {
+      const curLiked = likes.find((item) => item.id === data.id)?.liked
+      await postLike({
+        act_type: curLiked ? 1 : 2,
+        post_id: data.id,
+      })
+    },
+    { wait: 500 }
+  );
 
-    if (type === 'fav') {
-      setResources((favResources) => favResources.filter((item) => item.id !== data.id))
-    }
+  const linkEve = async (data: FormatterListItem) => {
+    setLikes(data)
+    linkRun(data)
+  }
+  const { run:favRun } = useDebounceFn(
+    async (data: FormatterListItem) => {
+      const isSaved = saveds.find((item) => item.id === data.id)?.saveds
+      if (isSaved) {
+        await favPost(data.id)
+      } else {
+        await favDel(data.id)
+      }
+
+      if (type === 'fav') {
+        setResources((favResources) => favResources.filter((item) => item.id !== data.id))
+      }
+    },
+    { wait: 500 }
+  );
+
+  const savedEve = async (data: FormatterListItem) => {
+    setSaveds(data)
+    favRun(data)
   }
   const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
     const { shareLink, copyLink } = await genShareLinkFn(title, pid, uid, getLinkHandlerAsync)
@@ -497,9 +525,9 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
 
       {(data.title || data.is_pay) && (
         <div className="px-4 pt-[10px]">
-          <p className="text-[#0F1419] dark:text-[#ccc] font-normal text-sm leading-4">
+          <div className="text-[#0F1419] dark:text-[#ccc] font-normal text-sm leading-4">
             <MoreText text={data.title} />
-          </p>
+          </div>
           <div className="flex items-center justify-between">
             {data.is_pay && (
               <div className="flex items-center gap-2 mt-1">

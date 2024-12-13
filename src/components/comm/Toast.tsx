@@ -32,6 +32,7 @@ interface ToastProps {
   title: string
   type: typeOptions
   top?: string
+  className?: string
 }
 
 export const ToastBeforeIcon: React.FC<{ type: typeOptions }> = ({ type }) => {
@@ -44,12 +45,12 @@ export const ToastBeforeIcon: React.FC<{ type: typeOptions }> = ({ type }) => {
   )
 }
 
-export const CustomToast: React.FC<ToastProps> = ({ title, type, top }) => {
+export const CustomToast: React.FC<ToastProps> = ({ title, type, className }) => {
   const theme = IconMap[type]
   return (
     <div
-      className={`rounded-lg p-2.5 justify-center items-center gap-1`}
-      style={{ background: theme.background, marginTop: top }}
+      className={`rounded-lg p-2.5 justify-center items-center gap-1 ${className}`}
+      style={{ background: theme.background }}
     >
       {<ToastBeforeIcon type={type}></ToastBeforeIcon>}
       <span className="text-[var(--Dark-T1)] relative top-[-2px]">{title}</span>

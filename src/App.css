@@ -54,7 +54,7 @@ img {
 
   100% {
     opacity: 1;
-    height: 230px;
+    height: 190px;
   }
 }
 
@@ -89,6 +89,10 @@ video {
 }
 
 .chakra-checkbox__control[data-checked] {
-  background:#6254FF !important;
+  background: #6254FF !important;
   border-color: #6254FF !important;
+}
+
+#chakra-toast-manager-top {
+  padding-top: calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top)) !important;
 }

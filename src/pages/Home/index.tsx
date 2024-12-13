@@ -5,8 +5,9 @@ import FollowingList from '@/components/RecommendList/FollowingList'
 
 import { useStore } from '@/store'
 import { CardRecommendProvider } from '@/utils/constants'
-import NewPostButton from '@/components/NewPost/NewPostButton'
-import { debounce, throttle } from '@/utils/chat/schedulers'
+import { throttle } from '@/utils/chat/schedulers'
+
+const SCROLL_THRESHOLD = 35
 
 const HomePage: FC = () => {
   const navigate = useNavigate()
@@ -16,10 +17,8 @@ const HomePage: FC = () => {
   const userInfo = useStore((state) => state.userInfo)
 
   const [videoOpen, setVideoOpen] = useState(false)
-
-  const [scrollPosition, setScrollPosition] = useState(0)
+  const [showTopTitle, setShowTopTitle] = useState(false)
   const titleRef = useRef<HTMLHeadingElement>(null)
-  const initialTitlePosition = useRef({ top: 0, left: 0 })
 
   const styles = {
     fadeIn: {
@@ -44,45 +43,19 @@ const HomePage: FC = () => {
   useEffect(() => {
     const scrollDiv = document.getElementById('recommendScrollableDiv')
     if (!titleRef.current) return
-    const safeAreaTop = document.documentElement.style.getPropertyValue('--tg-safe-area-inset-top')
-    const contentSafeAreaTop = document.documentElement.style.getPropertyValue(
-      '--tg-content-safe-area-inset-top'
-    )
-    initialTitlePosition.current = {
-      top: 18 + parseInt(safeAreaTop) + parseInt(contentSafeAreaTop),
-      left: 16,
-    }
 
     const handleScroll = throttle(() => {
       if (!scrollDiv) return
-      setScrollPosition(scrollDiv.scrollTop >= 0 ? scrollDiv.scrollTop : 0)
-    }, 30)
+      const shouldShowTitle = scrollDiv.scrollTop >= SCROLL_THRESHOLD
+      if (shouldShowTitle !== showTopTitle) {
+        setShowTopTitle(shouldShowTitle)
+        console.log('Title visibility updated to:', shouldShowTitle) // 更新日志输出
+      }
+    }, 40)
 
     scrollDiv?.addEventListener('scroll', handleScroll)
     return () => scrollDiv?.removeEventListener('scroll', handleScroll)
-  }, [])
-
-  const getTitleStyle = () => {
-    if (!titleRef.current) return {}
-
-    const maxScroll = 100
-    const progress = Math.min(scrollPosition / maxScroll, 1)
-    const safeAreaTop = document.documentElement.style.getPropertyValue('--tg-safe-area-inset-top')
-    const targetTop = parseInt(safeAreaTop, 10)
-    const targetLeft = window.innerWidth / 2 - titleRef.current.offsetWidth / 2
-
-    const currentTop = Math.max(initialTitlePosition.current.top - scrollPosition, targetTop)
-    const currentLeft =
-      initialTitlePosition.current.left +
-      (targetLeft - initialTitlePosition.current.left) * progress
-
-    return {
-      top: `${currentTop}px`,
-      left: `${currentLeft}px`,
-      transform: `translateZ(0)`,
-      opacity: progress < 0.1 || scrollPosition > 90 ? 1 : 0.2,
-    }
-  }
+  }, [showTopTitle])
 
   const lastTapTime = useRef<number>(0)
 
@@ -116,7 +89,7 @@ const HomePage: FC = () => {
       id="recommendScrollableDiv"
     >
       <div
-        className="flex p-[10px_16px] fixed w-full z-[111]"
+        className="flex p-[10px_16px] w-full z-[111]"
         style={{
           top: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
         }}
@@ -142,22 +115,50 @@ const HomePage: FC = () => {
             }`,
           }}
         ></div>
-        <h3
-          ref={titleRef}
-          style={getTitleStyle()}
-          className="fixed text-black dark:text-[#E0E2F6] text-[20px] flex items-center transition-all duration-100 ease-in-out"
+        <div
+          className="fixed bg-[#fff] z-[111] h-[40px] w-[100%] left-0 top-0"
+          style={{
+            paddingTop:
+              'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
+          }}
         >
-          {title}
-        </h3>
+          <div className="pl-[16px] pt-[18px]">
+            <h3
+              ref={titleRef}
+              className="absolute text-black dark:text-[#E0E2F6] text-[20px] flex items-center duration-100 ease-out"
+              style={{
+                top: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top)) + 18px',
+                opacity: showTopTitle ? 0 : 1,
+              }}
+            >
+              {title}
+            </h3>
+            <h3
+              className="fixed text-black dark:text-[#E0E2F6] text-[20px] flex items-center duration-300 ease-out"
+              style={{
+                opacity: showTopTitle ? 1 : 0,
+                transform: `translateX(-50%)`,
+                left: '50%',
+                top: `${
+                  showTopTitle
+                    ? 'calc(var(--tg-safe-area-inset-top) + 10px)'
+                    : 'calc(var(--tg-safe-area-inset-top) + 24px)'
+                }`,
+              }}
+            >
+              {title}
+            </h3>
+          </div>
+        </div>
 
-        <div className="ml-auto flex gap-[13px] z-10">
+        <div className="ml-auto flex gap-[13px] z-[1111] relative">
           <div
             className="w-[48px] h-[48px] p-[12px] bg-[#F5F3F3] rounded-[50px] flex items-center justify-center cursor-pointer"
             onClick={() => navigate('/home/searching')}
           >
             <i className="iconfont icon-search-line text-[#333333] text-[24px]"></i>
           </div>
-          <NewPostButton />
+          {/* <NewPostButton /> */}
         </div>
       </div>
 
@@ -166,7 +167,7 @@ const HomePage: FC = () => {
       </div>
       <CardRecommendProvider.Provider value={{ recommend: true, setVideoOpen }}>
         <div
-          className={`${userInfo.user_id !== -1 && userInfo.fans === 0 ? '' : 'mt-[68px]'}  relative ${videoOpen ? 'z-[112]' : ''}`}
+          className={`${userInfo.user_id !== -1 && userInfo.fans === 0 ? '' : ''}  relative ${videoOpen ? 'z-[112]' : ''}`}
         >
           <RecommendList />
         </div>

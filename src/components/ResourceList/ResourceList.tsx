@@ -45,11 +45,11 @@ interface ShareModalProps {
 }
 
 export const ShareModal: React.FC<ShareModalProps> = ({
-                                                        isBaseModalOpen,
-                                                        off,
-                                                        currentShareData,
-                                                        links,
-                                                      }) => {
+  isBaseModalOpen,
+  off,
+  currentShareData,
+  links,
+}) => {
   const { launchParams, getCurrentUid } = useTMAUtils()
   const { copy } = useCopy()
 
@@ -151,10 +151,10 @@ const POST_TYPE_IMAGE = 1
 const POST_TYPE_VIDEO = 0
 
 const ResourceList = ({
-                        resources: initialResources,
-                        type,
-                        hasMore,
-                      }: {
+  resources: initialResources,
+  type,
+  hasMore,
+}: {
   resources: FormatterListItem[]
   type?: string
   hasMore?: boolean
@@ -246,25 +246,25 @@ const ResourceList = ({
   useEffect(() => {
     if (resources.length > 0) {
       // 每次接口更新数据，根据之前接口保存的点赞，和收藏的状态更新到新数据里面
-      const likesMap = new Map(likes.map(item => [item.id, item]));
-      const savedsMap = new Map(saveds.map(item => [item.id, item]));
-      resources.forEach(itemA => {
-        const likeMatch = likesMap.get(itemA.id);
+      const likesMap = new Map(likes.map((item) => [item.id, item]))
+      const savedsMap = new Map(saveds.map((item) => [item.id, item]))
+      resources.forEach((itemA) => {
+        const likeMatch = likesMap.get(itemA.id)
         if (likeMatch) {
-          itemA.like = likeMatch.like;
-          itemA.is_liked = likeMatch.liked;
+          itemA.like = likeMatch.like
+          itemA.is_liked = likeMatch.liked
         }
-        const savedMatch = savedsMap.get(itemA.id);
+        const savedMatch = savedsMap.get(itemA.id)
         if (savedMatch) {
-          itemA.is_collected = savedMatch.saveds;
+          itemA.is_collected = savedMatch.saveds
         }
-      });
+      })
       initPatchLikes(resources)
       initPatchSaves(resources)
     }
   }, [resources])
 
-  const { run:linkRun } = useDebounceFn(
+  const { run: linkRun } = useDebounceFn(
     async (data: FormatterListItem) => {
       const curLiked = likes.find((item) => item.id === data.id)?.liked
       await postLike({
@@ -273,13 +273,13 @@ const ResourceList = ({
       })
     },
     { wait: 500 }
-  );
+  )
 
   const linkEve = async (data: FormatterListItem) => {
     setLikes(data)
     linkRun(data)
   }
-  const { run:favRun } = useDebounceFn(
+  const { run: favRun } = useDebounceFn(
     async (data: FormatterListItem) => {
       const isSaved = saveds.find((item) => item.id === data.id)?.saveds
       if (isSaved) {
@@ -293,7 +293,7 @@ const ResourceList = ({
       }
     },
     { wait: 500 }
-  );
+  )
 
   const savedEve = async (data: FormatterListItem) => {
     setSaveds(data)
@@ -305,11 +305,12 @@ const ResourceList = ({
     toggle()
   })
 
-  const resourcesEve = (post_id: number, url: string) => {
+  const resourcesEve = (post_id: number, url: string, is_pay?: boolean) => {
     setPostId(post_id)
     const updatedUsers = resources.map((item) => {
       if (item.id === post_id) {
-        return { ...item, media: url.split(',') }
+        const options = is_pay ? { is_pay } : {}
+        return { ...item, media: url.split(','), ...options }
       }
       return item
     })

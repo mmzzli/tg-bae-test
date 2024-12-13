@@ -11,7 +11,7 @@ import { useTMAUtils } from '@/hooks/useTMAUtils'
 interface ImageCardProps {
   data: FormatterListItem
   handleImageClick: (images: string[], index: number) => void
-  resourcesEve: (post_id: number, url: string) => void
+  resourcesEve: (post_id: number, url: string, is_pay?: boolean) => void
 }
 const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resourcesEve }) => {
   const userInfo = useStore((state) => state.userInfo)
@@ -81,6 +81,9 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
                   alt={data.title}
                   width={'100%'}
                   onClick={() => {
+                    console.log(data.is_pay)
+                    console.log(data.price)
+
                     if (data.uid !== getCurrentUid() && !data.is_pay && data.price > 0) {
                       return
                     }

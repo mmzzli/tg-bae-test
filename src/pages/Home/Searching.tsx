@@ -12,7 +12,7 @@ import FollowButton from '@/components/PersonalDetails/FollowButton'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 const Searching = () => {
   const navigate = useNavigate()
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const [data, setData] = useState<SearchItem | null>(null)
   const [field, setField] = useState<string>('')
@@ -65,41 +65,49 @@ const Searching = () => {
 
   useEffect(() => {
     if (inputRef.current) {
-      inputRef.current.focus();
+      inputRef.current.focus()
     }
-  }, []);
+  }, [])
   return (
     <div
       className="absolute px-[16px] top-0 left-0 right-0 bg-[#fff] z-10 overflow-auto scrollbar-hide"
       style={{
         paddingTop:
-          'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 16px)',
+          'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 64px)',
         height: 'calc(var(--tg-viewport-stable-height) + var(--tg-safe-area-inset-bottom))',
       }}
     >
-      <div className="flex items-center bg-[#F5F3F3] rounded-[24px] pl-[16px] pr-[12px]">
-        <div className="w-[48px] h-[48px] p-[12px] flex items-center justify-center cursor-pointer">
-          <i className="iconfont icon-search-line text-[#999999] text-[24px]"></i>
-        </div>
-        <input
-          className="bg-[#F5F3F3] w-[100%] pr-[12px] text-[#333] text-[15px]"
-          value={field}
-          placeholder="Search Users"
-          onChange={(e) => setField(e.target.value)}
-          ref={inputRef}
-        />
-        {field.length > 0 && (
-          <div
-            className="w-[24px] h-[24px] p-[12px] bg-[#A0A3BD] rounded-[50px] flex items-center justify-center cursor-pointer"
-            onClick={() => {
-              setField('')
-              setData({ users: [] })
-              inputRef.current?.focus();
-            }}
-          >
-            <i className="iconfont icon-icon_close text-[#fff] text-[24px]"></i>
+      <div
+        className="fixed inset-x-0 z-[999] bg-[#fff] w-full pb-2 top-0 px-[16px]"
+        style={{
+          paddingTop:
+            'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 16px)'
+        }}>
+        <div className="flex items-center bg-[#F5F3F3] rounded-[24px] pl-[16px] pr-[12px]">
+          <div className="w-[48px] h-[48px] p-[12px] flex items-center justify-center cursor-pointer">
+            <i className="iconfont icon-search-line text-[#999999] text-[24px]"></i>
           </div>
-        )}
+          <input
+            className="bg-[#F5F3F3] w-[100%] pr-[12px] text-[#333] text-[15px]"
+            value={field}
+            placeholder="Search Users"
+            onChange={(e) => setField(e.target.value)}
+            ref={inputRef}
+          />
+          {field.length > 0 && (
+            <div
+              className="w-[24px] h-[24px] p-[12px] bg-[#A0A3BD] rounded-[50px] flex items-center justify-center cursor-pointer"
+              onClick={() => {
+                setField('')
+                setData({ users: [] })
+                inputRef.current?.focus();
+                setIsLoading(false)
+              }}
+            >
+              <i className="iconfont icon-icon_close text-[#fff] text-[24px]"></i>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="pt-[28px]">

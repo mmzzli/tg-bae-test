@@ -69,7 +69,6 @@ const UserInfo = memo(
     const setFollowResource = useStore((state) => state.setFollowResource)
     const [isFollowLoading, setIsFollowLoading] = useState<boolean>(false)
     const [visible, setVisible] = useSafeState(false)
-
     const doFollow = async () => {
       if (!uid || !id) return
       setVisible(false)
@@ -104,7 +103,7 @@ const UserInfo = memo(
             </div>
           </div>
           <div className="pl-4">
-            {followResource?.some((user) => user.uid === uid && user.is_follow) && (
+            {followResource?.some((user) => user.uid === uid && !user.is_follow) && (
               <BaseButton
                 text={
                   followResource?.some((user) => user.uid === uid && user.boll)
@@ -123,9 +122,7 @@ const UserInfo = memo(
             )}
           </div>
         </div>
-        <p className="text-white text-xs mt-2 line-clamp-2 overflow-hidden">
-          <MoreText moreColor={'#fff'} moreLine={true} text={content || ''} />
-        </p>
+        <MoreText moreColor={'#fff'} bgColor={"#56554e"} moreLine={true} text={content || ''} />
       </div>
     )
   }

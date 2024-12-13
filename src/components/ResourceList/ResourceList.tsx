@@ -7,7 +7,7 @@ import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { BaseModal } from '../Modal/BaseModal'
 import BaseButton from '../BaseButton/BaseButton'
 import useCopy from '@/hooks/useCopy'
-import { useMemoizedFn, useRequest, useSetState, useDebounceFn } from 'ahooks'
+import { useMemoizedFn, useRequest, useSetState } from 'ahooks'
 import { LinkIcon, StarsIcon, TelegramIcon } from '@/assets/icons'
 import { followPreview, FormatterListItem } from '@/store/slices/resourceListSlice'
 import Image from '../Image/Image'
@@ -250,40 +250,26 @@ const ResourceList = ({
     }
   }, [resources])
 
-  const { run:linkRun } = useDebounceFn(
-    async (data: FormatterListItem) => {
-      const curLiked = likes.find((item) => item.id === data.id)?.liked
-      await postLike({
-        act_type: curLiked ? 1 : 2,
-        post_id: data.id,
-      })
-    },
-    { wait: 500 }
-  );
-
   const linkEve = async (data: FormatterListItem) => {
+    const curLiked = likes.find((item) => item.id === data.id)?.liked
+    await postLike({
+      act_type: !curLiked ? 1 : 2,
+      post_id: data.id,
+    })
     setLikes(data)
-    linkRun(data)
   }
-  const { run:favRun } = useDebounceFn(
-    async (data: FormatterListItem) => {
-      const isSaved = saveds.find((item) => item.id === data.id)?.saveds
-      if (isSaved) {
-        await favPost(data.id)
-      } else {
-        await favDel(data.id)
-      }
-
-      if (type === 'fav') {
-        setResources((favResources) => favResources.filter((item) => item.id !== data.id))
-      }
-    },
-    { wait: 500 }
-  );
-
   const savedEve = async (data: FormatterListItem) => {
+    const isSaved = saveds.find((item) => item.id === data.id)?.saveds
+    if (!isSaved) {
+      await favPost(data.id)
+    } else {
+      await favDel(data.id)
+    }
     setSaveds(data)
-    favRun(data)
+
+    if (type === 'fav') {
+      setResources((favResources) => favResources.filter((item) => item.id !== data.id))
+    }
   }
   const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
     const { shareLink, copyLink } = await genShareLinkFn(title, pid, uid, getLinkHandlerAsync)
@@ -326,23 +312,18 @@ const ResourceList = ({
                 type={type}
               />
               <Box position="relative">
-                {data.act_type === 1 && (
-                  <Box
-                    position="absolute"
-                    bottom="0px"
-                    w="100%"
-                    zIndex={11}
-                    onClick={() => navigate('/home/christmas')}
-                  >
-                    <HStack p="3px 16px" justifyContent="space-between" bg="rgba(0, 0, 0, 0.5)">
-                      <Text fontSize={14} color="#fff">
-                        {' '}
-                        Explore more
-                      </Text>
-                      <i className="iconfont icon-icon_arrow_right text-[#fff] text-[20px]"></i>
-                    </HStack>
-                  </Box>
-                )}
+                {data.act_type === 1 && <Box
+                  position="absolute"
+                  bottom="0px"
+                  w="100%"
+                  zIndex={11}
+                  onClick={()=> navigate('/home/christmas')}
+                >
+                  <HStack p="3px 16px" justifyContent="space-between" bg="rgba(0, 0, 0, 0.5)">
+                    <Text fontSize={14} color="#fff"> Explore more</Text>
+                    <i className="iconfont icon-icon_arrow_right text-[#fff] text-[20px]"></i>
+                  </HStack>
+                </Box>}
                 {data.type === POST_TYPE_IMAGE ? (
                   <ImageCard
                     data={data}
@@ -458,10 +439,11 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
   }, [saveds])
   return (
     <>
-      <div className="px-4 flex items-center justify-between h-6 mt-3 box-content">
-        <div className="flex items-center gap-4">
-          <div
-            className="flex h-6 items-center"
+      <div className="px-4 flex items-center justify-between h-6 py-3 box-content items-center">
+        <Flex gap="16px" alignItems="center">
+          <Flex
+            as={'button'}
+            alignItems={'center'}
             onClick={() => {
               linkEve(data)
             }}
@@ -477,10 +459,10 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
             ) : (
               <i className="iconfont icon-like text-[#0D0D0D]" style={{ fontSize: '22px' }}></i>
             )}
-            <span className="pl-1 text-sm font-medium text-[##0D0D0D] mb-[1px]">{likeNum}</span>
-          </div>
-          <div
-            className="flex items-center justify-center"
+            <span className="pl-1 text-sm text-[##0D0D0D]">{likeNum}</span>
+          </Flex>
+          <Box
+            className="w-6 h-6 flex items-center justify-center"
             onClick={() => {
               savedEve(data)
             }}
@@ -493,8 +475,8 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
                 style={{ fontSize: '22px' }}
               ></i>
             )}
-          </div>
-        </div>
+          </Box>
+        </Flex>
 
         <IconButton
           onClick={onShare}
@@ -510,20 +492,20 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
       </div>
 
       {(data.title || data.is_pay) && (
-        <div className="px-4 pt-[10px]">
-          <p className="text-[#0F1419] dark:text-[#ccc] font-normal text-sm leading-4">
+        <div className="px-4 py-3">
+          <div className="text-[#0F1419] dark:text-[#ccc] text-sm leading-6">
             <MoreText text={data.title} />
-          </p>
-          <div className="flex items-center justify-between">
+          </div>
+          <HStack pt="2" justifyContent="space-between">
             {data.is_pay && (
-              <div className="flex items-center gap-2 mt-1">
+              <HStack gap="4px">
                 <p className="text-[#666666] dark:text-[#424048] text-[12px]">
                   Purchased for {data.price}
                 </p>
-                <Image src={StarsIcon} className="mb-1" />
-              </div>
+                <Image src={StarsIcon} />
+              </HStack>
             )}
-          </div>
+          </HStack>
         </div>
       )}
     </>

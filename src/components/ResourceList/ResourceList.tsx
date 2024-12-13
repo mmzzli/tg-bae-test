@@ -245,6 +245,22 @@ const ResourceList = ({
 
   useEffect(() => {
     if (resources.length > 0) {
+      // 每次接口更新数据，根据之前接口保存的点赞，和收藏的状态更新到新数据里面
+      const likesMap = new Map(likes.map(item => [item.id, item]));
+      const savedsMap = new Map(saveds.map(item => [item.id, item]));
+
+      resources.forEach(itemA => {
+        const likeMatch = likesMap.get(itemA.id);
+        if (likeMatch) {
+          itemA.like = likeMatch.like;
+          itemA.is_liked = likeMatch.liked;
+        }
+        const savedMatch = savedsMap.get(itemA.id);
+        if (savedMatch) {
+          itemA.is_collected = savedMatch.saveds;
+        }
+      });
+
       initPatchLikes(resources)
       initPatchSaves(resources)
     }

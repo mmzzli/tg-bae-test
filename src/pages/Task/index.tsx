@@ -5,6 +5,7 @@ import { useGetDailyTask, useDailyTaskStatus } from '@/hooks/useDailyTask'
 import { useStore } from '@/store'
 import { DailyTaskItem, DailyTaskStatusEnum } from '@/store/slices/systemSlice'
 import { useToast } from '@chakra-ui/react'
+import { postEvent } from '@telegram-apps/sdk'
 import { useRequest } from 'ahooks'
 import { FC, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -101,7 +102,19 @@ const TaskButton: React.FC<{
     },
   })
 
+  const haptic = () => {
+    postEvent('web_app_trigger_haptic_feedback', {
+      type: 'impact',
+      impact_style: 'heavy',
+    })
+  }
+  const handleClaimAllTask = () => {
+    haptic()
+    runClaimAllTask()
+  }
+
   const handleClaimTask = () => {
+    haptic()
     runClaimTask(task.task_type)
   }
   const status = task.status
@@ -111,7 +124,7 @@ const TaskButton: React.FC<{
       return (
         <BaseButton
           text="Claim"
-          handler={runClaimAllTask}
+          handler={handleClaimAllTask}
           loading={claimAllTaskLoading}
           className="w-[79px] h-[34px]"
         />

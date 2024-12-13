@@ -1,10 +1,11 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState, useRef } from 'react'
 
 interface MoreTextProps {
   text: string
   maxLines?: number
   scroll?: boolean
   moreColor?: string
+  bgColor?: string
   moreLine?: boolean
 }
 const MoreText: React.FC<MoreTextProps> = ({
@@ -12,73 +13,61 @@ const MoreText: React.FC<MoreTextProps> = ({
   maxLines = 3,
   scroll = false,
   moreColor = '#5D6BFF',
+  bgColor = 'white',
   moreLine = false,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false)
+  const [isTextClipped, setIsTextClipped] = useState(false);
+  const textRef = useRef<HTMLDivElement | null>(null);
 
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded)
-  }
-  if (text.trim().length === 0) {
-    return <></>
-  }
-  if (text.trim().length < 80) {
-    return <span>{text}</span>
-  }
+  // text += "Do you have a Band-Aid? Because I just scraped my heart falling for youDo you have a Band-Aid? Because I just scraped my heart falling for you"
+
+  useEffect(() => {
+    const checkTextClipping = () => {
+        setTimeout(() => {
+          if (textRef.current) {
+            textRef.current.classList.remove('line-clamp-2')
+            const fullHeight = textRef.current.getBoundingClientRect().height;
+            textRef.current.classList.add('line-clamp-2')
+            const clampHeight = textRef.current.getBoundingClientRect().height;
+            setIsTextClipped(fullHeight > clampHeight);
+          }
+        }, 0)
+    };
+    checkTextClipping();
+    // Resize 监听器，窗口大小变化时重新检查
+    window.addEventListener('resize', checkTextClipping);
+    // 清理函数
+    return () => window.removeEventListener('resize', checkTextClipping);
+  }, [text]);
+
   return (
-    <div className={'overflow-y-scroll'} style={{ maxHeight: isExpanded ? '20vh' : 'auto' }}>
-      <div
+    <div className="relative">
+      {/* 内容部分 */}
+      <p
+        ref={textRef}
+        className={`text-sm leading-relaxed overflow-hidden transition-all duration-300 ${
+          isExpanded ? "line-clamp-none" : "line-clamp-2"
+        } ${ bgColor === 'white' ? 'text-[#0F1419] dark:text-[#ccc]': '' }`}
         style={{
-          display: 'inline', // 让内容和 More 一起显示
+          color: moreColor,
         }}
       >
-        {/* 文本容器 */}
-        <span
-          style={{
-            position: 'relative',
-            overflow: 'hidden',
-            WebkitBoxOrient: 'vertical',
-            display: isExpanded ? 'block' : '-webkit-box',
-            textOverflow: 'ellipsis',
-            wordBreak: 'break-all',
-            wordWrap: 'break-word',
-          }}
-        >
-          {isExpanded ? text : `${text.slice(0, 80)}...`} {/* 显示内容 */}
-          {!isExpanded && (
-            <span
-              onClick={toggleExpand}
-              style={{
-                color: moreColor,
-                textDecoration: moreLine ? 'underline' : 'none',
-                cursor: 'pointer',
-                marginLeft: '4px',
-                display: 'inline',
-              }}
-            >
-              More
-            </span>
-          )}
-          {isExpanded && (
-            <span
-              onClick={toggleExpand}
-              style={{
-                textDecoration: moreLine ? 'underline' : 'none',
-                color: moreColor,
-                cursor: 'pointer',
-                marginLeft: '4px',
-                display: 'inline',
-              }}
-            >
-              Less
-            </span>
-          )}
-        </span>
+        {text}
+      </p>
 
-        {/* More/Less 按钮 */}
-      </div>
+      {/* 切换按钮 */}
+      {isTextClipped && (
+      <button
+        className="mt-2 text-blue-500 underline text-sm absolute bottom-0 right-0 px-1"
+        style={{ background: bgColor, borderRadius: "5px"  }}
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        {isExpanded ? "Less" : "More"}
+      </button>)
+      }
     </div>
-  )
+  );
 }
 
 export default MoreText

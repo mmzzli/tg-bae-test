@@ -3,10 +3,10 @@ import BaseButton from '../BaseButton/BaseButton'
 import { follow, getSomeoneProfile } from '@/api'
 import { useRequest } from 'ahooks'
 import { useStore } from '@/store'
-
+import { useTMAUtils } from '@/hooks/useTMAUtils'
 // Object is Follow, I Follow Someone, so fansid is current user id
 const FollowButton: FC<{
-  fansid: number
+  fansid?: number
   // tg_id username avatar is other user info
   tgid: number
   avatar: string
@@ -23,6 +23,8 @@ const FollowButton: FC<{
   followButtonClassName,
   followingButtonClassName,
 }) => {
+  const { getCurrentUid } = useTMAUtils()
+  const currentUid = getCurrentUid()
   const { userInfo, myFollow, setMyFollow, setUserInfo, othersUserInfo, setOthersUserInfo } =
     useStore((state) => ({
       userInfo: state.userInfo,
@@ -51,12 +53,12 @@ const FollowButton: FC<{
   const doFollow = async () => {
     await followHandler({
       tgid,
-      fansid,
+      fansid: currentUid,
     })
   }
 
   const updateUserFollowInfo = () => {
-    getSomeoneProfile(fansid).then((res) => {
+    getSomeoneProfile(currentUid).then((res) => {
       setUserInfo({ ...userInfo, fans: res.fans, follower: res.follower })
     })
     if (othersUserInfo.uid !== -1) {

@@ -151,7 +151,6 @@ const NotificationItem: FC<{
             <div className="mt-3">
               {notification.type === NotificationType.Follow ? (
                 <FollowButton
-                  fansid={currentUid}
                   tgid={notification.user.uid}
                   avatar={notification.user.avatar}
                   username={notification.user.username}

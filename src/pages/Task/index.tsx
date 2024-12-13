@@ -4,7 +4,7 @@ import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import { useGetDailyTask, useDailyTaskStatus } from '@/hooks/useDailyTask'
 import { useStore } from '@/store'
 import { DailyTaskItem, DailyTaskStatusEnum } from '@/store/slices/systemSlice'
-import { useToast } from '@chakra-ui/react'
+import { useToast, Tooltip } from '@chakra-ui/react'
 import { postEvent } from '@telegram-apps/sdk'
 import { useRequest } from 'ahooks'
 import { FC, useEffect, useRef, useState } from 'react'
@@ -183,15 +183,30 @@ const TaskItem: React.FC<{
 
 const Tasks: FC = () => {
   const navigate = useNavigate()
-  const { dailyTaskList, totalTaskPoints, token, updateDailyTask } = useStore((state) => ({
+  const {
+    dailyTaskList,
+    totalTaskPoints,
+    token,
+    updateDailyTask,
+    paidStars,
+    paidStarsPoints,
+    setPaidStars,
+    setPaidStarsPoints,
+  } = useStore((state) => ({
     dailyTaskList: state.dailyTaskList,
     totalTaskPoints: state.totalTaskPoints,
+    paidStars: state.paidStars,
+    paidStarsPoints: state.paidStarsPoints,
     updateDailyTask: state.updateDailyTask,
+    setPaidStars: state.setPaidStars,
+    setPaidStarsPoints: state.setPaidStarsPoints,
     token: state.token,
   }))
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false)
   const { runGetDailyTask, loading } = useGetDailyTask()
   const toast = useToast()
   const toastIdRef = useRef<string | number | undefined>()
+  const tooltipRef = useRef<HTMLDivElement>(null)
 
   const successToast = () => {
     if (toastIdRef.current) {
@@ -224,14 +239,66 @@ const Tasks: FC = () => {
     }
   }, [token])
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (tooltipRef.current && !tooltipRef.current.contains(event.target as Node)) {
+        setIsTooltipOpen(false)
+      }
+    }
+
+    document.addEventListener('click', handleClickOutside)
+    return () => {
+      document.removeEventListener('click', handleClickOutside)
+    }
+  }, [])
+
   return (
     <div className="p-6 bg-white overflow-auto h-full scrollbar-hide">
       {/* title */}
-      <div className="mb-5">
-        <h1 className="text-[36px] leading-[42px] font-bold text-[#333333]">
+      <div className="mb-4 flex flex-col items-center justify-center">
+        <h1 className="text-[40px] leading-[42px] font-bold text-[#333333]">
           <AnimatedNumber value={totalTaskPoints} />
         </h1>
         <p className="text-[12px] leading-[16px] text-[#999999]">Points</p>
+      </div>
+
+      {/* stars */}
+      <div className="relative flex items-center justify-center mb-6 h-[93px] bg-[#F7F9FC] rounded-2xl">
+        <div className="flex flex-col items-center justify-center flex-1">
+          <div className="h-[38px] text-[28px] font-bold flex items-center">
+            {paidStars}
+            <i className="iconfont icon-stars text-[22px] text-[#FFC700] ml-1"></i>
+          </div>
+          <span className="text-[#666666] text-xs">Stars paid</span>
+        </div>
+        <div className="absolute top-[34px] bottom-[34px] left-1/2 w-[1px] bg-[#EBEBF4]"></div>
+        <div className="flex flex-col items-center justify-center flex-1">
+          <div className="h-[38px] text-[28px] font-bold flex items-center">{paidStarsPoints}</div>
+          <div className="flex items-center text-[#666666] text-xs">
+            Points earned
+            <Tooltip
+              label={
+                <div className="text-sm text-[#666666] w-[203px] p-3">
+                  <p>For every Telegram star you spend to unlock a post, you earn 10 points.</p>
+                </div>
+              }
+              bg="white"
+              color="black"
+              placement="bottom-end"
+              borderRadius="md"
+              boxShadow="md"
+              isOpen={isTooltipOpen}
+            >
+              <div
+                ref={tooltipRef}
+                onClick={() => setIsTooltipOpen(!isTooltipOpen)}
+                className="pt-[1px]"
+              >
+                <i className="iconfont icon-info text-[18px] text-[#999] ml-1"></i>
+              </div>
+            </Tooltip>
+          </div>
+        </div>
       </div>
 
       {/* date */}

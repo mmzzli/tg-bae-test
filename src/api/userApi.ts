@@ -96,6 +96,14 @@ export const claimAllTasks = () => {
   return post<any>(`/api/v1/points/complete`)
 }
 
+export const getPaidStars = () => {
+  return get<any>(`/api/v1/points/usepoints`)
+}
+
+export const getPaidStarPoints = () => {
+  return get<any>(`/api/v1/points/earnpoints`)
+}
+
 // Daily Task END
 
 export const searchByUsername = (params: { field: string; page_num: number; records: number }) => {

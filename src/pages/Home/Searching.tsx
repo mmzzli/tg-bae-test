@@ -95,6 +95,7 @@ const Searching = () => {
               setField('')
               setData({ users: [] })
               inputRef.current?.focus();
+              setIsLoading(false)
             }}
           >
             <i className="iconfont icon-icon_close text-[#fff] text-[24px]"></i>

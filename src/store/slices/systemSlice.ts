@@ -9,6 +9,8 @@ export interface DailyTask {
   uid: number
   points: number
   details: DailyTaskItem[]
+  used_points: number
+  earn_points: number
 }
 
 export enum DailyTaskStatusEnum {
@@ -46,6 +48,11 @@ export interface SystemSlice {
   setDailyTaskList: (list: DailyTaskItem[]) => void
   resetDailyTaskList: () => void
   updateDailyTask: (task: DailyTaskItem) => void
+  // Paid Stars
+  paidStars: number
+  setPaidStars: (stars: number) => void
+  paidStarsPoints: number
+  setPaidStarsPoints: (points: number) => void
 }
 
 export const createSystemSlice: StateCreator<SystemSlice> = (set) => ({
@@ -95,5 +102,13 @@ export const createSystemSlice: StateCreator<SystemSlice> = (set) => ({
   totalTaskPoints: 0,
   setTotalTaskPoints: (points) => {
     set({ totalTaskPoints: points })
+  },
+  paidStars: 0,
+  setPaidStars: (stars) => {
+    set({ paidStars: stars })
+  },
+  paidStarsPoints: 0,
+  setPaidStarsPoints: (points) => {
+    set({ paidStarsPoints: points })
   },
 })

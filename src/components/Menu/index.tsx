@@ -22,8 +22,8 @@ const Menu: FC = () => {
       url: '/home',
     },
     {
-      icon: 'icon-Frame1',
-      iconActive: 'icon-icon_task',
+      icon: 'icon-earn',
+      iconActive: 'icon-database-2-fill',
       name: 'TASKS',
       url: '/task',
     },
@@ -31,7 +31,7 @@ const Menu: FC = () => {
       icon: 'icon-add',
       iconActive: 'icon-add',
       name: 'POST',
-      url: '/post'
+      url: '/post',
     },
     {
       icon: 'icon-chat-smile-2-line',
@@ -58,14 +58,19 @@ const Menu: FC = () => {
             }}
             key={index}
           >
-            <div className={cn(
-              item.name === 'POST' && "w-[32px] h-[32px] flex items-center justify-center bg-[#6254FF] rounded-[6px]"
-            )}>
-              <i className={cn(
-                'iconfont text-[24px]',
-                pathname === item.url ? item.iconActive: item.icon,
-                item.name === 'POST' && 'text-[#fff] text-[18px]'
-              )}></i>
+            <div
+              className={cn(
+                item.name === 'POST' &&
+                  'w-[32px] h-[32px] flex items-center justify-center bg-[#6254FF] rounded-[6px]'
+              )}
+            >
+              <i
+                className={cn(
+                  'iconfont text-[24px]',
+                  pathname === item.url ? item.iconActive : item.icon,
+                  item.name === 'POST' && 'text-[#fff] text-[18px]'
+                )}
+              ></i>
             </div>
             {/* <div className="text-center pt-[6px] cursor-pointer">
               <div className={cn(

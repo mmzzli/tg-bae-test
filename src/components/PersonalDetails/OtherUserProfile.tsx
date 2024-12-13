@@ -5,7 +5,6 @@ import Image from '../Image/Image'
 import { ReportIcon, ShareIcon } from '@/assets/icons/profile'
 import { useStore } from '../../store'
 import FollowButton from './FollowButton'
-import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useNavigate } from 'react-router-dom'
 import { profileImg } from '@/assets/image'
 import Report from '@/components/SecondaryMenu/Report'
@@ -24,8 +23,6 @@ const OtherUserProfile: FC = () => {
   const { userInfo } = useStore((state) => ({
     userInfo: state.othersUserInfo,
   }))
-  const { launchParams } = useTMAUtils()
-  const currentUid = launchParams.initData?.user?.id ?? 0
 
   const navigate = useNavigate()
   const [reportVisible, setReportVisible] = useSafeState(false)
@@ -75,12 +72,7 @@ const OtherUserProfile: FC = () => {
           alt={userInfo.username}
         />
         <div className="flex items-center gap-4">
-          <FollowButton
-            fansid={currentUid}
-            tgid={userInfo.uid}
-            avatar={userInfo.avatar}
-            username={userInfo.username}
-          />
+          <FollowButton tgid={userInfo.uid} avatar={userInfo.avatar} username={userInfo.username} />
           <div
             className="flex items-center justify-center cursor-pointer rounded-full w-9 h-9 bg-[#F8F8F8]"
             onClick={() => navigate(`/chat/${userInfo.uid}`)}

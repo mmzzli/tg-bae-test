@@ -2,10 +2,11 @@ import { FC } from 'react'
 import ResourceList from '@/components/ResourceList/ResourceList'
 import RecommendList from '@/components/RecommendList/RecommendList'
 import { useSharedList } from '@/store/hook/useResourceList'
-import NewPostButton from '@/components/NewPost/NewPostButton'
+import { useNavigate } from 'react-router-dom'
 
 const Shares: FC = () => {
   const { sharedPostList } = useSharedList()
+  const navigate = useNavigate()
   return (
     <div
       id="recommendScrollableDiv"
@@ -30,18 +31,14 @@ const Shares: FC = () => {
         }}
       >
         <div className="font-bold text-xl dark:text-[#E0E2F6] text-black">Shared</div>
-        {/* <Button
-          size="xl"
-          fontSize="14px"
-          variant="primary-dark"
-          p="9px 12px"
-          onClick={() => {
-            navigate('/post')
-          }}
-        >
-          <Image src={AddIcon1} mr="5px" /> Create
-        </Button> */}
-        <NewPostButton />
+        <div className="ml-auto flex gap-[13px] z-[1111] relative">
+          <div
+            className="w-[48px] h-[48px] p-[12px] bg-[#F5F3F3] rounded-[50px] flex items-center justify-center cursor-pointer"
+            onClick={() => navigate('/home/searching')}
+          >
+            <i className="iconfont icon-search-line text-[#333333] text-[24px]"></i>
+          </div>
+        </div>
       </div>
       <div className="mb-12">
         <ResourceList

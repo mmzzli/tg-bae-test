@@ -110,7 +110,8 @@ export interface ResourceListSlice {
   cacheVideoIndex: number | string
   setCacheVideoIndex: (index: number | string) => void
   cacheVideo: FormatterListItem[]
-  updateCacheVideo: (cacheVideo: FormatterListItem[]) => void
+  updateCacheVideo: (cacheVideo: FormatterListItem[], force?: boolean) => void
+  loadVideoForce: (video: FormatterListItem) => void
   loadVideo: (video: FormatterListItem) => void
   unloadVideo: (video: FormatterListItem) => void
 
@@ -394,7 +395,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
   },
   cacheVideo: [],
   // 根据当前索引更新缓存池
-  updateCacheVideo: (videoList) => {
+  updateCacheVideo: (videoList, force = false) => {
     const { cacheVideoIndex, cacheVideo } = get()
     if (cacheVideoIndex === -1 || videoList.length === 0) return
     const currentIndex = videoList.findIndex((video) => video.id === cacheVideoIndex)
@@ -438,7 +439,11 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     // 加载新的视频
     newCache.forEach((video) => {
       if (!cacheVideo.some((v) => v.id === video.id)) {
-        get().loadVideo(video)
+        if (force) {
+          get().loadVideoForce(video)
+        } else {
+          get().loadVideo(video)
+        }
       }
     })
 
@@ -453,6 +458,102 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
 
     set({ cacheVideo: newCacheVideo })
   },
+  loadVideoForce: (() => {
+    const videoLoadQueue: FormatterListItem[] = [] // 视频加载队列
+    let isLoading = false
+
+    const hls = new Hls({
+      startPosition: 0,
+      maxBufferLength: 2,
+      enableWorker: true,
+      maxMaxBufferLength: 5,
+      autoStartLoad: true,
+      maxBufferHole: 0.5,
+      lowLatencyMode: false,
+      maxBufferSize: 10 * 1024 * 1024,
+    })
+    const tempVideo = document.createElement('video')
+    const processQueue = () => {
+      if (isLoading || videoLoadQueue.length === 0) return
+      isLoading = true
+
+      const video = videoLoadQueue.shift()
+      if (!video) {
+        isLoading = false
+        return
+      }
+
+      if (video.loaded) {
+        isLoading = false
+        processQueue()
+        return
+      }
+
+      let loadedFragments = 0
+
+      const medias = video?.media[0]
+      if (!medias) {
+        console.error('Media not found for video:', video)
+        isLoading = false
+        processQueue()
+        return
+      }
+
+      const media = medias.split(',').find((item) => item.endsWith('.m3u8'))
+      if (!media) {
+        console.error('No valid m3u8 media found for video:', video)
+        isLoading = false
+        processQueue()
+        return
+      }
+
+      let max_fragment_count = 0
+      hls.loadSource(media)
+      hls.attachMedia(tempVideo)
+
+      hls.on(Hls.Events.FRAG_BUFFERED, () => {
+        loadedFragments++
+        console.log(`视频 ${video.id} 缓存分片数量: ${loadedFragments} ${max_fragment_count}`)
+        if (loadedFragments >= Math.min(max_fragment_count, BUFFER_FRAGMENT_LIMIT)) {
+          isLoading = false
+          // hls.destroy()
+          hls.stopLoad()
+          setTimeout(() => {
+            video.loaded = true
+            video.hls = hls
+            processQueue()
+          })
+        }
+      })
+
+      hls.on(Hls.Events.MANIFEST_LOADED, () => {
+        console.log(`视频 ${video.id} 清单文件已加载完成。`)
+      })
+
+      hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
+        console.log(`视频 ${video.id} 流解析完成，开始缓存`)
+      })
+
+      hls.on(Hls.Events.LEVEL_LOADED, (event, data) => {
+        const levelIndex = data.level
+        const fragmentCount = data.details.fragments.length
+        console.log(`视频${video.id} Level ${levelIndex} 分片数量: ${fragmentCount}`)
+        max_fragment_count = fragmentCount
+      })
+
+      hls.on(Hls.Events.ERROR, (event, data) => {
+        isLoading = false
+        processQueue()
+        video.loaded = false
+        hls.destroy()
+      })
+    }
+
+    return (video: FormatterListItem) => {
+      videoLoadQueue.push(video)
+      processQueue()
+    }
+  })(),
   // cache lasy pool加载视频
   loadVideo: (() => {
     const videoLoadQueue: FormatterListItem[] = [] // 视频加载队列

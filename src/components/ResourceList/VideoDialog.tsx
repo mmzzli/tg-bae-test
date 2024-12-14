@@ -197,6 +197,7 @@ const VideoDialog = () => {
       hls.attachMedia(video)
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        video.muted = false
         video.play().catch((error) => {
           console.log(error, 'error====jacob')
           console.log('自动播放失败')

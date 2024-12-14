@@ -73,7 +73,7 @@ export interface Saveds {
 }
 
 const recordsNum = 20
-const CACHE_VIDEOS_LIMIT = 19
+const CACHE_VIDEOS_LIMIT = 9
 const BUFFER_FRAGMENT_LIMIT = 8
 
 export interface ResourceListSlice {

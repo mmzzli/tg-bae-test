@@ -122,7 +122,7 @@ const UserInfo = memo(
             )}
           </div>
         </div>
-        <MoreText moreColor={'#fff'} bgColor={"#56554e"} moreLine={true} text={content || ''} />
+        <MoreText moreColor={'#fff'} bgColor={'#56554e'} moreLine={true} text={content || ''} />
       </div>
     )
   }
@@ -197,7 +197,8 @@ const VideoDialog = () => {
       hls.attachMedia(video)
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        video.play().catch(() => {
+        video.play().catch((error) => {
+          console.log(error)
           console.log('自动播放失败')
         })
       })

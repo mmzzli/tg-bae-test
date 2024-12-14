@@ -74,7 +74,7 @@ export interface Saveds {
 
 const recordsNum = 20
 const CACHE_VIDEOS_LIMIT = 19
-const BUFFER_FRAGMENT_LIMIT = 5
+const BUFFER_FRAGMENT_LIMIT = 8
 
 export interface ResourceListSlice {
   like: Like[]

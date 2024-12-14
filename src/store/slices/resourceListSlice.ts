@@ -449,88 +449,93 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
   // 加载视频
   loadVideo: (() => {
     const videoLoadQueue: FormatterListItem[] = [] // 视频加载队列
-    let isLoading = false
+    let isLoading = false // 标记是否正在加载
+    const videoElement = document.createElement('video') // 复用一个 video 元素
 
-    const processQueue = (dedline: IdleDeadline) => {
-      while (dedline.timeRemaining() > 0 && videoLoadQueue.length > 0) {
-        if (isLoading) return
-        // check request Idle callback time
-        const video = videoLoadQueue.shift()
-        if (!video) {
-          isLoading = false
-          return
-        }
-        if (video.loaded) {
-          isLoading = false
-          continue // 如果视频已加载，继续处理下一个
-        }
+    const processQueue = (deadline: IdleDeadline) => {
+      if (isLoading || videoLoadQueue.length === 0) return
 
-        let loadedFragments = 0
-
-        const medias = video?.media[0]
-        if (!medias) {
-          console.error('Media not found for video:', video)
-          isLoading = false
-          continue
-        }
-
-        const media = medias.split(',').find((item) => item.endsWith('.m3u8'))
-        if (!media) {
-          console.error('No valid m3u8 media found for video:', video)
-          isLoading = false
-          continue
-        }
-        const hls = new Hls({
-          startPosition: 0,
-          maxBufferLength: 2,
-          enableWorker: true,
-          maxMaxBufferLength: 5,
-          autoStartLoad: true,
-          maxBufferHole: 0.5,
-          lowLatencyMode: false,
-          maxBufferSize: 10 * 1024 * 1024,
-        })
-
-        let max_fragment_count = 0
-        hls.loadSource(media)
-        hls.attachMedia(document.createElement('video'))
-
-        // 监听分片加载完成事件
-        hls.on(Hls.Events.FRAG_LOADED, () => {
-          loadedFragments++
-          console.log(`视频 ${video.id} Loaded fragment ${loadedFragments} 分片加载完成`)
-          if (loadedFragments >= Math.min(max_fragment_count, BUFFER_FRAGMENT_LIMIT)) {
-            isLoading = false
-            // hls.destroy()
-            hls.stopLoad()
-            video.loaded = true
-            video.hls = hls
-            requestIdleCallback(processQueue) // 继续处理队列中的下一个任务
-          }
-        })
-
-        hls.on(Hls.Events.MANIFEST_LOADED, () => {
-          console.log(`视频 ${video.id} 清单文件已加载完成。`)
-        })
-
-        hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
-          console.log(`视频 ${video.id} 流解析完成，开始缓存`)
-        })
-
-        hls.on(Hls.Events.LEVEL_LOADED, (event, data) => {
-          const levelIndex = data.level
-          const fragmentCount = data.details.fragments.length
-          console.log(`视频${video.id} Level ${levelIndex} 分片数量: ${fragmentCount}`)
-          max_fragment_count = fragmentCount
-        })
-
-        hls.on(Hls.Events.ERROR, (event, data) => {
-          isLoading = false
-          hls.destroy()
-          video.loaded = false
-          requestIdleCallback(processQueue) // 继续处理队列中的下一个任务
-        })
+      // 检查是否还有足够的空闲时间处理任务
+      if (deadline.timeRemaining() <= 0) {
+        requestIdleCallback(processQueue) // 如果没有时间，重新安排任务
+        return
       }
+
+      const video = videoLoadQueue.shift() // 从队列中取出一个视频
+      if (!video) return
+
+      isLoading = true
+
+      if (video.loaded) {
+        console.log(`视频 ${video.id} 已加载，跳过`)
+        isLoading = false
+        requestIdleCallback(processQueue)
+        return
+      }
+
+      let loadedFragments = 0
+      let maxFragmentCount = 0
+
+      const medias = video?.media[0]
+      if (!medias) {
+        console.error(`Media not found for video: ${video.id}`)
+        isLoading = false
+        requestIdleCallback(processQueue)
+        return
+      }
+
+      const media = medias.split(',').find((item) => item.endsWith('.m3u8'))
+      if (!media) {
+        console.error(`No valid m3u8 media found for video: ${video.id}`)
+        isLoading = false
+        requestIdleCallback(processQueue)
+        return
+      }
+
+      const hls = new Hls({
+        startPosition: 0,
+        maxBufferLength: 2,
+        enableWorker: true,
+        maxMaxBufferLength: 5,
+        autoStartLoad: true,
+        maxBufferHole: 0.5,
+        lowLatencyMode: false,
+        maxBufferSize: 10 * 1024 * 1024,
+      })
+
+      hls.loadSource(media)
+      hls.attachMedia(videoElement)
+
+      hls.on(Hls.Events.FRAG_LOADED, () => {
+        loadedFragments++
+        console.log(`视频 ${video.id} 分片 ${loadedFragments} 已加载`)
+
+        if (loadedFragments >= Math.min(maxFragmentCount, BUFFER_FRAGMENT_LIMIT)) {
+          console.log(`视频 ${video.id} 缓存完成`)
+          isLoading = false
+          hls.stopLoad()
+          video.loaded = true
+          video.hls = hls
+          requestIdleCallback(processQueue) // 继续处理队列
+        }
+      })
+
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        console.log(`视频 ${video.id} 流解析完成`)
+      })
+
+      hls.on(Hls.Events.LEVEL_LOADED, (event, data) => {
+        maxFragmentCount = data.details.fragments.length
+        console.log(`视频 ${video.id} 分片总数: ${maxFragmentCount}`)
+      })
+
+      hls.on(Hls.Events.ERROR, (event, data) => {
+        console.error(`视频 ${video.id} 加载错误`, data)
+        isLoading = false
+        hls.destroy()
+        video.loaded = false
+        requestIdleCallback(processQueue)
+      })
     }
 
     return (video: FormatterListItem) => {

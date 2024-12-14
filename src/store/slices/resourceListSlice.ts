@@ -4,6 +4,10 @@ import { getRecommendMedia } from '../../api/list'
 import { favList, getUsersPosts, ordersList, viewList, allFeatured } from '@/api'
 import { useStore } from '../store'
 import Hls from 'hls.js'
+import {
+  unstable_scheduleCallback as scheduleCallback,
+  unstable_NormalPriority as NormalPriority,
+} from 'scheduler'
 
 export type ListType = 'recommend' | 'view'
 
@@ -447,29 +451,28 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     set({ cacheVideo: newCacheVideo })
   },
   // 加载视频
+
   loadVideo: (() => {
     const videoLoadQueue: FormatterListItem[] = [] // 视频加载队列
-    let isLoading = false // 标记是否正在加载
+    let isLoading = false // 是否正在加载
     const videoElement = document.createElement('video') // 复用一个 video 元素
 
-    const processQueue = (deadline: IdleDeadline) => {
+    const processQueue = () => {
       if (isLoading || videoLoadQueue.length === 0) return
 
-      // 检查是否还有足够的空闲时间处理任务
-      if (deadline.timeRemaining() <= 0) {
-        requestIdleCallback(processQueue) // 如果没有时间，重新安排任务
+      // 标记正在加载
+      isLoading = true
+
+      const video = videoLoadQueue.shift() // 取出队列中的视频
+      if (!video) {
+        isLoading = false
         return
       }
-
-      const video = videoLoadQueue.shift() // 从队列中取出一个视频
-      if (!video) return
-
-      isLoading = true
 
       if (video.loaded) {
         console.log(`视频 ${video.id} 已加载，跳过`)
         isLoading = false
-        requestIdleCallback(processQueue)
+        scheduleCallback(NormalPriority, processQueue) // 调度下一个任务
         return
       }
 
@@ -480,7 +483,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       if (!medias) {
         console.error(`Media not found for video: ${video.id}`)
         isLoading = false
-        requestIdleCallback(processQueue)
+        scheduleCallback(NormalPriority, processQueue)
         return
       }
 
@@ -488,7 +491,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       if (!media) {
         console.error(`No valid m3u8 media found for video: ${video.id}`)
         isLoading = false
-        requestIdleCallback(processQueue)
+        scheduleCallback(NormalPriority, processQueue)
         return
       }
 
@@ -506,6 +509,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       hls.loadSource(media)
       hls.attachMedia(videoElement)
 
+      // 监听分片加载完成事件
       hls.on(Hls.Events.FRAG_LOADED, () => {
         loadedFragments++
         console.log(`视频 ${video.id} 分片 ${loadedFragments} 已加载`)
@@ -516,7 +520,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
           hls.stopLoad()
           video.loaded = true
           video.hls = hls
-          requestIdleCallback(processQueue) // 继续处理队列
+          scheduleCallback(NormalPriority, processQueue) // 调度下一个任务
         }
       })
 
@@ -534,13 +538,13 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         isLoading = false
         hls.destroy()
         video.loaded = false
-        requestIdleCallback(processQueue)
+        scheduleCallback(NormalPriority, processQueue)
       })
     }
 
     return (video: FormatterListItem) => {
       videoLoadQueue.push(video)
-      requestIdleCallback(processQueue)
+      scheduleCallback(NormalPriority, processQueue)
     }
   })(),
   // 卸载视频

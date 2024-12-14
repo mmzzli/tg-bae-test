@@ -461,7 +461,6 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
   loadVideoForce: (() => {
     const videoLoadQueue: FormatterListItem[] = [] // 视频加载队列
     let isLoading = false
-
     const hls = new Hls({
       startPosition: 0,
       maxBufferLength: 2,
@@ -511,18 +510,17 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       hls.loadSource(media)
       hls.attachMedia(tempVideo)
 
-      hls.on(Hls.Events.FRAG_BUFFERED, () => {
+      // 监听分片加载完成事件
+      hls.on(Hls.Events.FRAG_LOADED, () => {
         loadedFragments++
-        console.log(`视频 ${video.id} 缓存分片数量: ${loadedFragments} ${max_fragment_count}`)
+        console.log(`视频 ${video.id} Loaded fragment ${loadedFragments} 分片加载完成`)
         if (loadedFragments >= Math.min(max_fragment_count, BUFFER_FRAGMENT_LIMIT)) {
           isLoading = false
           // hls.destroy()
           hls.stopLoad()
-          setTimeout(() => {
-            video.loaded = true
-            video.hls = hls
-            processQueue()
-          })
+          video.loaded = true
+          video.hls = hls
+          processQueue()
         }
       })
 
@@ -543,9 +541,9 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
 
       hls.on(Hls.Events.ERROR, (event, data) => {
         isLoading = false
-        processQueue()
-        video.loaded = false
         hls.destroy()
+        video.loaded = false
+        processQueue()
       })
     }
 

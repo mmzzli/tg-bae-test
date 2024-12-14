@@ -68,9 +68,9 @@ export interface Saveds {
   saveds: boolean
 }
 
-const recordsNum = 10
-const CACHE_VIDEOS_LIMIT = 9
-const BUFFER_FRAGMENT_LIMIT = 1
+const recordsNum = 20
+const CACHE_VIDEOS_LIMIT = 19
+const BUFFER_FRAGMENT_LIMIT = 5
 
 export interface ResourceListSlice {
   like: Like[]
@@ -197,12 +197,12 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       const updatedLike = like.map((likeItem) =>
         likeItem.id === data.id
           ? {
-            ...likeItem, // 创建一个新对象
-            liked: !likeItem.liked, // 切换 liked 状态
-            like: !likeItem.liked
-              ? likeItem.like + 1 // 切换为 true，like +1
-              : Math.max(likeItem.like - 1, 0), // 切换为 false，like -1，确保最小值为 0
-          }
+              ...likeItem, // 创建一个新对象
+              liked: !likeItem.liked, // 切换 liked 状态
+              like: !likeItem.liked
+                ? likeItem.like + 1 // 切换为 true，like +1
+                : Math.max(likeItem.like - 1, 0), // 切换为 false，like -1，确保最小值为 0
+            }
           : likeItem
       )
 
@@ -355,7 +355,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       const { featured } = await allFeatured({
         page_num: page,
         records: recordsNum,
-        type: 1
+        type: 1,
       })
 
       const hasMore = featured.length === recordsNum

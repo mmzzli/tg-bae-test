@@ -515,7 +515,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       hls.on(Hls.Events.FRAG_LOADED, () => {
         loadedFragments++
         console.log(`视频 ${video.id} Loaded fragment ${loadedFragments} 分片加载完成`)
-        if (loadedFragments >= Math.min(max_fragment_count, BUFFER_FRAGMENT_LIMIT)) {
+        if (loadedFragments >= Math.min(max_fragment_count)) {
           isLoading = false
           // hls.destroy()
           hls.stopLoad()
@@ -614,7 +614,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         loadedFragments++
         console.log(`视频 ${video.id} 分片 ${loadedFragments} 已加载`)
 
-        if (loadedFragments >= Math.min(maxFragmentCount, BUFFER_FRAGMENT_LIMIT)) {
+        if (loadedFragments >= Math.min(maxFragmentCount)) {
           console.log(`视频 ${video.id} 缓存完成`)
           isLoading = false
           hls.stopLoad()

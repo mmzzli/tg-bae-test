@@ -461,16 +461,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
   loadVideoForce: (() => {
     const videoLoadQueue: FormatterListItem[] = [] // 视频加载队列
     let isLoading = false
-    const hls = new Hls({
-      startPosition: 0,
-      maxBufferLength: 2,
-      enableWorker: true,
-      maxMaxBufferLength: 5,
-      autoStartLoad: true,
-      maxBufferHole: 0.5,
-      lowLatencyMode: false,
-      maxBufferSize: 10 * 1024 * 1024,
-    })
+
     const tempVideo = document.createElement('video')
     const processQueue = () => {
       if (isLoading || videoLoadQueue.length === 0) return
@@ -507,6 +498,16 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       }
 
       let max_fragment_count = 0
+      const hls = new Hls({
+        startPosition: 0,
+        maxBufferLength: 2,
+        enableWorker: true,
+        maxMaxBufferLength: 5,
+        autoStartLoad: true,
+        maxBufferHole: 0.5,
+        lowLatencyMode: false,
+        maxBufferSize: 10 * 1024 * 1024,
+      })
       hls.loadSource(media)
       hls.attachMedia(tempVideo)
 
@@ -557,16 +558,6 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     const videoLoadQueue: FormatterListItem[] = [] // 视频加载队列
     let isLoading = false // 是否正在加载
     const videoElement = document.createElement('video') // 复用一个 video 元素
-    const hls = new Hls({
-      startPosition: 0,
-      maxBufferLength: 2,
-      enableWorker: true,
-      maxMaxBufferLength: 5,
-      autoStartLoad: true,
-      maxBufferHole: 0.5,
-      lowLatencyMode: false,
-      maxBufferSize: 10 * 1024 * 1024,
-    })
 
     const processQueue = () => {
       if (isLoading || videoLoadQueue.length === 0) return
@@ -605,7 +596,16 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         scheduleCallback(NormalPriority, processQueue)
         return
       }
-
+      const hls = new Hls({
+        startPosition: 0,
+        maxBufferLength: 2,
+        enableWorker: true,
+        maxMaxBufferLength: 5,
+        autoStartLoad: true,
+        maxBufferHole: 0.5,
+        lowLatencyMode: false,
+        maxBufferSize: 10 * 1024 * 1024,
+      })
       hls.loadSource(media)
       hls.attachMedia(videoElement)
 

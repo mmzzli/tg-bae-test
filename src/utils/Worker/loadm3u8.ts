@@ -20,6 +20,10 @@ const processTask = async (video: FormatterListItem): Promise<M3U8Result> => {
     return { id }
   }
 
+  if (video.hls || video.loaded) {
+    return { id }
+  }
+
   if (!medias) {
     console.error(`Media not found for video: ${video.id}`)
     return { id, error: 'Media not found' }

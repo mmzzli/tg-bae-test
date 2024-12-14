@@ -197,10 +197,12 @@ const VideoDialog = () => {
       hls.attachMedia(video)
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        video.play().catch((error) => {
-          console.log(error)
-          console.log('自动播放失败')
-        })
+        video.onloadeddata = () => {
+          video.play().catch((error) => {
+            console.log(error, 'error====jacob')
+            console.log('自动播放失败')
+          })
+        }
       })
 
       hls.on(Hls.Events.ERROR, () => {

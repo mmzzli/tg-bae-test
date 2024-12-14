@@ -250,13 +250,16 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         page,
       },
     })),
-  setRecommendList: (newList, merge = false) =>
+  setRecommendList: (newList, merge = false) => {
+    const list = merge ? [...get().recommendList.list, ...newList] : newList
+    window.m3u8Worker.postMessage({ tasks: list })
     set((state) => ({
       recommendList: {
         ...state.recommendList,
         list: merge ? [...state.recommendList.list, ...newList] : newList,
       },
-    })),
+    }))
+  },
   setRecommendLoading: (isLoading) =>
     set((state) => ({
       recommendList: {
@@ -450,12 +453,21 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
 
     set({ cacheVideo: newCacheVideo })
   },
-  // 加载视频
-
+  // cache lasy pool加载视频
   loadVideo: (() => {
     const videoLoadQueue: FormatterListItem[] = [] // 视频加载队列
     let isLoading = false // 是否正在加载
     const videoElement = document.createElement('video') // 复用一个 video 元素
+    const hls = new Hls({
+      startPosition: 0,
+      maxBufferLength: 2,
+      enableWorker: true,
+      maxMaxBufferLength: 5,
+      autoStartLoad: true,
+      maxBufferHole: 0.5,
+      lowLatencyMode: false,
+      maxBufferSize: 10 * 1024 * 1024,
+    })
 
     const processQueue = () => {
       if (isLoading || videoLoadQueue.length === 0) return
@@ -494,17 +506,6 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         scheduleCallback(NormalPriority, processQueue)
         return
       }
-
-      const hls = new Hls({
-        startPosition: 0,
-        maxBufferLength: 2,
-        enableWorker: true,
-        maxMaxBufferLength: 5,
-        autoStartLoad: true,
-        maxBufferHole: 0.5,
-        lowLatencyMode: false,
-        maxBufferSize: 10 * 1024 * 1024,
-      })
 
       hls.loadSource(media)
       hls.attachMedia(videoElement)
@@ -591,13 +592,18 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         page,
       },
     })),
-  setViewList: (newList, merge = false) =>
+  setViewList: (newList, merge = false) => {
+    const list = merge ? [...get().viewList.list, ...newList] : newList
+
+    window.m3u8Worker.postMessage({ tasks: list })
+
     set((state) => ({
       viewList: {
         ...state.viewList,
         list: merge ? [...state.viewList.list, ...newList] : newList,
       },
-    })),
+    }))
+  },
   setViewLoading: (isLoading) =>
     set((state) => ({
       viewList: {
@@ -785,13 +791,16 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     set(() => ({
       favList: { ...initialListState },
     })),
-  setFavList: (newList, merge = false) =>
+  setFavList: (newList, merge = false) => {
+    const list = merge ? [...get().favList.list, ...newList] : newList
+    window.m3u8Worker.postMessage({ tasks: list })
     set((state) => ({
       favList: {
         ...state.favList,
         list: merge ? [...state.favList.list, ...newList] : newList,
       },
-    })),
+    }))
+  },
   setFavLoading: (isLoading) =>
     set((state) => ({
       favList: {
@@ -854,13 +863,16 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     set(() => ({
       orderList: { ...initialListState },
     })),
-  setOrderList: (newList, merge = false) =>
+  setOrderList: (newList, merge = false) => {
+    const list = merge ? [...get().orderList.list, ...newList] : newList
+    window.m3u8Worker.postMessage({ tasks: list })
     set((state) => ({
       orderList: {
         ...state.orderList,
         list: merge ? [...state.orderList.list, ...newList] : newList,
       },
-    })),
+    }))
+  },
   setOrderLoading: (isLoading) =>
     set((state) => ({
       orderList: {

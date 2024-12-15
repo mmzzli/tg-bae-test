@@ -1,6 +1,14 @@
 import Hls from 'hls.js'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 const video = document.createElement('video')
+video.controls = false
+video.playsInline = true
+video.setAttribute('webkit-playsinline', 'true')
+video.setAttribute('x5-playsinline', 'true')
+video.setAttribute('x5-video-player-type', 'h5')
+video.setAttribute('x5-video-player-fullscreen', 'false')
+video.setAttribute('preload', 'auto')
+video.setAttribute('x-webkit-airplay', 'allow')
 
 export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLElement) => {
   const url = videoCard.media[0]

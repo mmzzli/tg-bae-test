@@ -15,7 +15,7 @@ interface VideoCardProps {
   resourcesEve: (post_id: number, url: string, is_pay?: boolean) => void
 }
 const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
-  const videoCardContainer = useRef<HTMLDivElement>()
+  const videoCardContainer = useRef<HTMLDivElement>(null)
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const setVideoResource = useStore((state) => state.setVideoResource)
   const { runDailyWatch } = useDailyTaskActions()

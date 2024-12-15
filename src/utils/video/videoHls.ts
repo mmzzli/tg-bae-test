@@ -25,7 +25,7 @@ export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLE
     video.style.zIndex = '4'
   }, 500)
 
-  const switchBtn = videoParentContainer.querySelector('.video-card-switch')
+  const switchBtn = videoParentContainer.querySelector('.video-card-switch') as HTMLElement | null
 
   if (switchBtn) {
     switchBtn.style.visibility = 'hidden'

@@ -650,6 +650,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
   // 卸载视频
   unloadVideo: (video) => {
     video.hls?.destroy?.()
+    video.loaded = false
     console.log(`jacob======卸载视频 ${video.id}`)
   },
   videoResource: null,

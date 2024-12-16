@@ -386,7 +386,7 @@ const useCacheVideo = (
 
       console.log(elements, 'elements========jacob')
 
-      if (container && elements && elements.length > 0) {
+      if (container && elements && elements.length > 0 && elements.length === list.length) {
         elements.forEach((element) => {
           observerRef.current?.observe(element)
         })

@@ -384,9 +384,9 @@ const useCacheVideo = (
       const container = document.getElementById(domId)
       const elements = container?.querySelectorAll(`.${cardClass}`)
 
-      console.log(elements, 'elements========jacob')
+      console.log(elements, list.length, 'elements========jacob')
 
-      if (container && elements && elements.length > 0 && elements.length === list.length) {
+      if (container && elements && elements.length > 0) {
         elements.forEach((element) => {
           observerRef.current?.observe(element)
         })

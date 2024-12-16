@@ -122,10 +122,13 @@ const ChatListItem: FC<{
     }
   }
 
+  console.log('ChatListItem Render', chat.channel.channelID)
+
   return (
     <div className={cn('relative h-[64px] w-full overflow-hidden', className)}>
       <motion.div
         drag="x"
+        dragDirectionLock
         dragConstraints={{ left: -80, right: 0 }}
         dragElastic={0.2}
         onDragEnd={handleDragEnd}

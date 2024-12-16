@@ -121,7 +121,7 @@ const SecondaryMenu = ({ mediaData, currentUid, className, type }: Props) => {
           {currentUid === uid && (
             <button
               onClick={() => {
-                deleteDialogWrap.show({ data: mediaData })
+                deleteDialogWrap.show({ data: mediaData, title: 'Delete this post?' })
                 setVisible(false)
               }}
               className="w-[83px] h-[40px] rounded-[4px] flex items-center justify-center gap-1 text-[#FF684A]"

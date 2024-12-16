@@ -1,6 +1,10 @@
 import { createRoot } from 'react-dom/client'
 import App from './App'
 import './index.css'
+// 初始化 Worker
+const m3u8Worker = new Worker(new URL('./utils/Worker/loadm3u8.ts', import.meta.url))
+
+window.m3u8Worker = m3u8Worker
 
 if (import.meta.env.MODE !== 'production') {
   import('vconsole').then((VConsole) => {

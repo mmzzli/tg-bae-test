@@ -4,6 +4,10 @@ import { getRecommendMedia } from '../../api/list'
 import { favList, getUsersPosts, ordersList, viewList, allFeatured } from '@/api'
 import { useStore } from '../store'
 import Hls from 'hls.js'
+import {
+  unstable_scheduleCallback as scheduleCallback,
+  unstable_NormalPriority as NormalPriority,
+} from 'scheduler'
 
 export type ListType = 'recommend' | 'view'
 
@@ -68,9 +72,9 @@ export interface Saveds {
   saveds: boolean
 }
 
-const recordsNum = 10
+const recordsNum = 20
 const CACHE_VIDEOS_LIMIT = 9
-const BUFFER_FRAGMENT_LIMIT = 1
+const BUFFER_FRAGMENT_LIMIT = 8
 
 export interface ResourceListSlice {
   like: Like[]
@@ -106,7 +110,8 @@ export interface ResourceListSlice {
   cacheVideoIndex: number | string
   setCacheVideoIndex: (index: number | string) => void
   cacheVideo: FormatterListItem[]
-  updateCacheVideo: (cacheVideo: FormatterListItem[]) => void
+  updateCacheVideo: (cacheVideo: FormatterListItem[], force?: boolean) => void
+  loadVideoForce: (video: FormatterListItem) => void
   loadVideo: (video: FormatterListItem) => void
   unloadVideo: (video: FormatterListItem) => void
 
@@ -197,12 +202,12 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       const updatedLike = like.map((likeItem) =>
         likeItem.id === data.id
           ? {
-            ...likeItem, // 创建一个新对象
-            liked: !likeItem.liked, // 切换 liked 状态
-            like: !likeItem.liked
-              ? likeItem.like + 1 // 切换为 true，like +1
-              : Math.max(likeItem.like - 1, 0), // 切换为 false，like -1，确保最小值为 0
-          }
+              ...likeItem, // 创建一个新对象
+              liked: !likeItem.liked, // 切换 liked 状态
+              like: !likeItem.liked
+                ? likeItem.like + 1 // 切换为 true，like +1
+                : Math.max(likeItem.like - 1, 0), // 切换为 false，like -1，确保最小值为 0
+            }
           : likeItem
       )
 
@@ -246,13 +251,16 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         page,
       },
     })),
-  setRecommendList: (newList, merge = false) =>
+  setRecommendList: (newList, merge = false) => {
+    const list = merge ? [...get().recommendList.list, ...newList] : newList
+    window.m3u8Worker.postMessage({ tasks: list })
     set((state) => ({
       recommendList: {
         ...state.recommendList,
         list: merge ? [...state.recommendList.list, ...newList] : newList,
       },
-    })),
+    }))
+  },
   setRecommendLoading: (isLoading) =>
     set((state) => ({
       recommendList: {
@@ -355,7 +363,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       const { featured } = await allFeatured({
         page_num: page,
         records: recordsNum,
-        type: 1
+        type: 1,
       })
 
       const hasMore = featured.length === recordsNum
@@ -387,7 +395,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
   },
   cacheVideo: [],
   // 根据当前索引更新缓存池
-  updateCacheVideo: (videoList) => {
+  updateCacheVideo: (videoList, force = false) => {
     const { cacheVideoIndex, cacheVideo } = get()
     if (cacheVideoIndex === -1 || videoList.length === 0) return
     const currentIndex = videoList.findIndex((video) => video.id === cacheVideoIndex)
@@ -431,7 +439,11 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     // 加载新的视频
     newCache.forEach((video) => {
       if (!cacheVideo.some((v) => v.id === video.id)) {
-        get().loadVideo(video)
+        if (force) {
+          get().loadVideoForce(video)
+        } else {
+          get().loadVideo(video)
+        }
       }
     })
 
@@ -446,11 +458,11 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
 
     set({ cacheVideo: newCacheVideo })
   },
-  // 加载视频
-  loadVideo: (() => {
+  loadVideoForce: (() => {
     const videoLoadQueue: FormatterListItem[] = [] // 视频加载队列
     let isLoading = false
 
+    const tempVideo = document.createElement('video')
     const processQueue = () => {
       if (isLoading || videoLoadQueue.length === 0) return
       isLoading = true
@@ -484,6 +496,8 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         processQueue()
         return
       }
+
+      let max_fragment_count = 0
       const hls = new Hls({
         startPosition: 0,
         maxBufferLength: 2,
@@ -494,22 +508,20 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         lowLatencyMode: false,
         maxBufferSize: 10 * 1024 * 1024,
       })
-
-      let max_fragment_count = 0
       hls.loadSource(media)
-      hls.attachMedia(document.createElement('video'))
+      hls.attachMedia(tempVideo)
 
       // 监听分片加载完成事件
       hls.on(Hls.Events.FRAG_LOADED, () => {
         loadedFragments++
         console.log(`视频 ${video.id} Loaded fragment ${loadedFragments} 分片加载完成`)
-        if (loadedFragments >= Math.min(max_fragment_count, BUFFER_FRAGMENT_LIMIT)) {
+        if (loadedFragments >= Math.min(max_fragment_count)) {
           isLoading = false
           // hls.destroy()
           hls.stopLoad()
-          processQueue()
           video.loaded = true
           video.hls = hls
+          processQueue()
         }
       })
 
@@ -539,6 +551,100 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     return (video: FormatterListItem) => {
       videoLoadQueue.push(video)
       processQueue()
+    }
+  })(),
+  // cache lasy pool加载视频
+  loadVideo: (() => {
+    const videoLoadQueue: FormatterListItem[] = [] // 视频加载队列
+    let isLoading = false // 是否正在加载
+    const videoElement = document.createElement('video') // 复用一个 video 元素
+
+    const processQueue = () => {
+      if (isLoading || videoLoadQueue.length === 0) return
+
+      // 标记正在加载
+      isLoading = true
+
+      const video = videoLoadQueue.shift() // 取出队列中的视频
+      if (!video) {
+        isLoading = false
+        return
+      }
+
+      if (video.loaded) {
+        console.log(`视频 ${video.id} 已加载，跳过`)
+        isLoading = false
+        scheduleCallback(NormalPriority, processQueue) // 调度下一个任务
+        return
+      }
+
+      let loadedFragments = 0
+      let maxFragmentCount = 0
+
+      const medias = video?.media[0]
+      if (!medias) {
+        console.error(`Media not found for video: ${video.id}`)
+        isLoading = false
+        scheduleCallback(NormalPriority, processQueue)
+        return
+      }
+
+      const media = medias.split(',').find((item) => item.endsWith('.m3u8'))
+      if (!media) {
+        console.error(`No valid m3u8 media found for video: ${video.id}`)
+        isLoading = false
+        scheduleCallback(NormalPriority, processQueue)
+        return
+      }
+      const hls = new Hls({
+        startPosition: 0,
+        maxBufferLength: 2,
+        enableWorker: true,
+        maxMaxBufferLength: 5,
+        autoStartLoad: true,
+        maxBufferHole: 0.5,
+        lowLatencyMode: false,
+        maxBufferSize: 10 * 1024 * 1024,
+      })
+      hls.loadSource(media)
+      hls.attachMedia(videoElement)
+
+      // 监听分片加载完成事件
+      hls.on(Hls.Events.FRAG_LOADED, () => {
+        loadedFragments++
+        console.log(`视频 ${video.id} 分片 ${loadedFragments} 已加载`)
+
+        if (loadedFragments >= Math.min(maxFragmentCount)) {
+          console.log(`视频 ${video.id} 缓存完成`)
+          isLoading = false
+          hls.stopLoad()
+          video.loaded = true
+          video.hls = hls
+          scheduleCallback(NormalPriority, processQueue) // 调度下一个任务
+        }
+      })
+
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        console.log(`视频 ${video.id} 流解析完成`)
+      })
+
+      hls.on(Hls.Events.LEVEL_LOADED, (event, data) => {
+        maxFragmentCount = data.details.fragments.length
+        console.log(`视频 ${video.id} 分片总数: ${maxFragmentCount}`)
+      })
+
+      hls.on(Hls.Events.ERROR, (event, data) => {
+        console.error(`视频 ${video.id} 加载错误`, data)
+        isLoading = false
+        hls.destroy()
+        video.loaded = false
+        scheduleCallback(NormalPriority, processQueue)
+      })
+    }
+
+    return (video: FormatterListItem) => {
+      videoLoadQueue.push(video)
+      scheduleCallback(NormalPriority, processQueue)
     }
   })(),
   // 卸载视频
@@ -585,13 +691,18 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         page,
       },
     })),
-  setViewList: (newList, merge = false) =>
+  setViewList: (newList, merge = false) => {
+    const list = merge ? [...get().viewList.list, ...newList] : newList
+
+    window.m3u8Worker.postMessage({ tasks: list })
+
     set((state) => ({
       viewList: {
         ...state.viewList,
         list: merge ? [...state.viewList.list, ...newList] : newList,
       },
-    })),
+    }))
+  },
   setViewLoading: (isLoading) =>
     set((state) => ({
       viewList: {
@@ -779,13 +890,16 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     set(() => ({
       favList: { ...initialListState },
     })),
-  setFavList: (newList, merge = false) =>
+  setFavList: (newList, merge = false) => {
+    const list = merge ? [...get().favList.list, ...newList] : newList
+    window.m3u8Worker.postMessage({ tasks: list })
     set((state) => ({
       favList: {
         ...state.favList,
         list: merge ? [...state.favList.list, ...newList] : newList,
       },
-    })),
+    }))
+  },
   setFavLoading: (isLoading) =>
     set((state) => ({
       favList: {
@@ -848,13 +962,16 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     set(() => ({
       orderList: { ...initialListState },
     })),
-  setOrderList: (newList, merge = false) =>
+  setOrderList: (newList, merge = false) => {
+    const list = merge ? [...get().orderList.list, ...newList] : newList
+    window.m3u8Worker.postMessage({ tasks: list })
     set((state) => ({
       orderList: {
         ...state.orderList,
         list: merge ? [...state.orderList.list, ...newList] : newList,
       },
-    })),
+    }))
+  },
   setOrderLoading: (isLoading) =>
     set((state) => ({
       orderList: {

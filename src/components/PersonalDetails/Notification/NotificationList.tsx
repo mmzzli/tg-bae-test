@@ -31,7 +31,6 @@ const NotificationItem: FC<{
   resetAllControls: () => void
 }> = ({ notification, onDragEnd, controlsRef, resetAllControls }) => {
   const itemControls = useAnimation()
-
   const latestReadNotificationId = useStore((state) => state.latestReadNotificationId)
   const setNotificationList = useStore((state) => state.setNotificationList)
   const notificationList = useStore((state) => state.notificationList)
@@ -56,12 +55,6 @@ const NotificationItem: FC<{
       })
     } finally {
       resetAllControls()
-    }
-  }
-
-  const handleDrag = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    if (Math.abs(info.offset.y) > Math.abs(info.offset.x) && info.offset.x < 10) {
-      itemControls.start({ x: 0 })
     }
   }
 
@@ -92,9 +85,9 @@ const NotificationItem: FC<{
       />
       <motion.div
         drag="x"
+        dragDirectionLock
         dragConstraints={{ left: -MOVE_SIZE, right: 0 }}
         dragElastic={0.2}
-        onDrag={handleDrag}
         onDragEnd={(event, info) => onDragEnd(notification.id, itemControls, event, info)}
         animate={itemControls}
         onClick={handleClick}

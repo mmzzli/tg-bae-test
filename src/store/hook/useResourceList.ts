@@ -3,6 +3,7 @@ import { shallow } from 'zustand/shallow'
 import { useStore } from '../store'
 import { debounce, throttle } from '@/utils/utils'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
+import { videoHls } from '@/utils/video/videoHls'
 
 export const useRecommendList = () => {
   const { recommendList, setRecommendPage, loadRecommendList, resetRecommendList, token } =
@@ -89,7 +90,6 @@ export const useAllFeaturedList = () => {
     },
   }
 }
-
 
 export const useViewList = () => {
   const { viewList, setViewPage, loadViewList, resetViewList, token } = useStore(
@@ -311,33 +311,97 @@ const useCacheVideo = (
   domId: string,
   cardClass: string = 'video-card'
 ) => {
-  const handleScroll = debounce(() => {
-    const videos = list.filter((item) => item.type === 0) // 过滤出视频类型
+  const observerRef = useRef<IntersectionObserver | null>(null)
 
-    const container = document.getElementById(`${domId}`)
-    if (container) {
-      const elements = container.querySelectorAll(`.${cardClass}`) // 获取需要监听的元素
-      const visibleItems: number[] = []
+  const handleIntersection = (entries: IntersectionObserverEntry[]) => {
+    const videos = list.filter((item) => item.type === 0)
+    let maxVisibility = 0
+    let mostVisibleElement: HTMLElement | null = null
 
-      elements.forEach((element) => {
-        const rect = element.getBoundingClientRect()
-        const containerRect = container.getBoundingClientRect() // 滚动容器的边界
-
-        const isVisible =
-          rect.bottom >= containerRect.top && // 元素底部在容器顶部以下
-          rect.top <= containerRect.bottom // 元素顶部在容器底部以上
-
-        if (isVisible) {
-          const videoId = element.getAttribute('data-id')
-          if (videoId) visibleItems.push(parseInt(videoId))
-        }
-      })
-      if (visibleItems.length > 0) {
-        setCacheVideoIndex(visibleItems[Math.floor(visibleItems.length / 2)]) // 更新缓存视频索引
-        updateCache(videos) // 更新缓存
+    // 首先检查完全在视图内的元素
+    for (const entry of entries) {
+      console.log(entry.intersectionRatio, '----jacob=======-')
+      if (entry.intersectionRatio === 1) {
+        mostVisibleElement = entry.target as HTMLElement
+        break // 找到完全可见的就直接跳出循环
       }
     }
-  }, 300)
+
+    // 如果没有完全可见的元素,再检查部分可见的元素
+    if (!mostVisibleElement) {
+      entries.forEach((entry) => {
+        const rect = entry.boundingClientRect
+        const containerRect = entry.rootBounds
+
+        if (!containerRect) return
+
+        // 检查元素顶部是否过了容器中点
+        const isPastMidpoint = rect.top < containerRect.top + containerRect.height / 2
+
+        // 计算元素在容器内的可见面积比例
+        const visibleHeight =
+          Math.min(rect.bottom, containerRect.bottom) - Math.max(rect.top, containerRect.top)
+        const visibleRatio = visibleHeight / rect.height
+
+        // 只有当元素顶部过了容器中点,且可见比例大于当前最大可见比例时才更新
+        if (isPastMidpoint && visibleRatio > maxVisibility) {
+          maxVisibility = visibleRatio
+          mostVisibleElement = entry.target as HTMLElement
+        }
+      })
+    }
+
+    // 如果找到了需要播放的元素
+    if (mostVisibleElement) {
+      const videoIdStr = mostVisibleElement.getAttribute('data-id')
+      if (videoIdStr) {
+        const currentId = parseInt(videoIdStr, 10)
+
+        // 更新状态
+        setCacheVideoIndex(currentId)
+        updateCache(videos)
+
+        // 找到对应的视频数据并播放
+        const videoCard = videos.find((item) => item.id === currentId)
+        if (videoCard) {
+          videoHls(videoCard, mostVisibleElement)
+        }
+      }
+    }
+  }
+
+  useEffect(() => {
+    console.log(333333, '========jacob')
+    // 初始化 Intersection Observer
+    observerRef.current = new IntersectionObserver(handleIntersection, {
+      root: document.getElementById(domId),
+      threshold: [0.5, 0.75, 1.0],
+      rootMargin: '0px',
+    })
+
+    // 使用定时器等待元素渲染
+    const checkElements = () => {
+      const container = document.getElementById(domId)
+      const elements = container?.querySelectorAll(`.${cardClass}`)
+
+      console.log(elements, 'elements========jacob')
+
+      if (container && elements && elements.length > 0) {
+        elements.forEach((element) => {
+          observerRef.current?.observe(element)
+        })
+      } else {
+        // 如果元素还没渲染完，100ms后重试
+        setTimeout(checkElements, 100)
+      }
+    }
+
+    checkElements()
+
+    return () => {
+      observerRef.current?.disconnect()
+    }
+  }, [domId, cardClass, list])
 
   useEffect(() => {
     if (page === 1 && list.length) {
@@ -345,9 +409,7 @@ const useCacheVideo = (
       try {
         setCacheVideoIndex(videos[0]?.id) // 初始时设置缓存视频索引
         updateCache(videos) // 初始时更新缓存
-      } catch (error) {
-
-      }
+      } catch (error) {}
     }
   }, [page, list])
 
@@ -357,16 +419,6 @@ const useCacheVideo = (
       updateCache(videos) // 当 `list` 或 `getCacheVideoindex` 改变时更新缓存
     }
   }, [list, getCacheVideoindex, page])
-
-  useEffect(() => {
-    const scrollableDiv = document.getElementById(`${domId}`)
-    if (scrollableDiv) {
-      scrollableDiv.addEventListener('scroll', handleScroll) // 监听滚动事件
-    }
-    return () => {
-      if (scrollableDiv) scrollableDiv.removeEventListener('scroll', handleScroll) // 移除滚动监听
-    }
-  }, [])
 }
 
 export default useCacheVideo

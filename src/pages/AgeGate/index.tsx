@@ -12,6 +12,7 @@ const AgeGate = () => {
   const toast = useToast()
   const navigate = useNavigate()
   const [isChecked, setIsChecked] = useState<boolean>(false)
+  const [isShowTime, setIsShowTime] = useState<boolean>(false)
 
   const handleChange = () => {
     setIsChecked(!isChecked)
@@ -40,13 +41,15 @@ const AgeGate = () => {
           <a className="text-[#6254FF] text-[14px] underline">Terms of Service</a>
         </p>
       </div>
-      <div className="mt-[88px] text-center">
+      <div className="mt-16 text-center">
         <div className="flex justify-center gap-[8px] flex-col items-center">
-          <Checkbox type="checkbox" checked={isChecked} onChange={handleChange}>
-            <p className="text-[#999] text-[12px] whitespace-nowrap">
-              I have read and accept the
-              <a className="underline ml-[4px] ]">Terms of Service</a>
-            </p>
+          <Checkbox type="checkbox" checked={isChecked} onChange={handleChange} alignItems="flex-start">
+          <p className="align-left text-[#999] text-[12px] whitespace-normal">
+            I have read and accept the
+            <a className="underline ml-[4px]">Terms of Service</a>
+            and
+            <a className="underline ml-[4px]">Privacy Policy</a>.
+          </p>
           </Checkbox>
         </div>
         <BaseButton
@@ -56,7 +59,9 @@ const AgeGate = () => {
           className="m-[auto] mt-[16px]"
           handler={() => {
             if (isChecked) {
-              localStorage.setItem('ageGate', '1')
+              if(isShowTime){
+                localStorage.setItem('ageGate', '1')
+              }
               navigate('/home')
             } else {
               toast({
@@ -68,6 +73,13 @@ const AgeGate = () => {
             }
           }}
         />
+        <div className='mt-4'>
+          <Checkbox type="checkbox" checked={isShowTime} onChange={()=>setIsShowTime((pev)=>!pev)}>
+            <p className="text-[#999] text-[12px] whitespace-nowrap">
+              Do not show again next time.
+            </p>
+          </Checkbox>
+        </div>
       </div>
     </div>
   )

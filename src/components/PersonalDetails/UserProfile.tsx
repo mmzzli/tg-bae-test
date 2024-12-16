@@ -33,7 +33,7 @@ const UserProfile: FC = () => {
             10
           ) !== 0
             ? '8px'
-            : '30px'
+            : '46px'
         })`,
       }}
     >

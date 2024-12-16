@@ -122,7 +122,7 @@ const UserInfo = memo(
             )}
           </div>
         </div>
-        <MoreText moreColor={'#fff'} bgColor={"#56554e"} moreLine={true} text={content || ''} />
+        <MoreText moreColor={'#fff'} bgColor={'#56554e'} moreLine={true} text={content || ''} />
       </div>
     )
   }
@@ -197,8 +197,12 @@ const VideoDialog = () => {
       hls.attachMedia(video)
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        video.play().catch(() => {
+        video.muted = false
+        video.play().catch((error) => {
+          console.log(error, 'error====jacob')
           console.log('自动播放失败')
+          video.muted = true
+          video.play()
         })
       })
 
@@ -265,7 +269,7 @@ const VideoDialog = () => {
   return (
     <div
       style={{ display: url ? 'block' : 'none' }}
-      className="absolute w-screen h-screen bg-black  z-[999]"
+      className="absolute w-screen h-screen bg-black  z-[1000]"
     >
       <div className="fixed w-full h-full object-contain z-10 bg-black inset-0">
         <div ref={videoContainerRef} style={{ height: '89vh' }} className="relative bg-white ">

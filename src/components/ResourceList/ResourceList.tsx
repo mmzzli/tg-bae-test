@@ -1,6 +1,7 @@
 import { memo, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { Box, Flex, HStack, IconButton, useBoolean, Text, Heading } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
+import {DrawSkeletonItem} from '@/components/Skeketon/ChatSkeleton'
 
 import { favDel, favPost, postLike } from '@/api'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
@@ -41,7 +42,9 @@ interface ShareModalProps {
   isBaseModalOpen: boolean
   off: () => void
   currentShareData: ShareDataProps | null
-  links: ShreLinkProps
+  links: ShreLinkProps,
+  isLoading: boolean,
+  setIsLoading: (value: boolean) => void
 }
 
 export const ShareModal: React.FC<ShareModalProps> = ({
@@ -49,6 +52,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   off,
   currentShareData,
   links,
+  isLoading,
+  setIsLoading
 }) => {
   const { launchParams, getCurrentUid } = useTMAUtils()
   const { copy } = useCopy()
@@ -99,40 +104,49 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       closeOnBackdropClick={true}
       showHandle={false}
     >
-      <div className="mt-4 w-full">
-        <h3 className="font-bold text-2xl mb-[10px] text-[24px] text-[#333] dark:text-white">
-          Share from Bae
-        </h3>
-        <div className="text-[15px] dark:text-[#808080] text-[#999999]">
-          Earn $Bae every time you share from Bae
-        </div>
+      {
+        isLoading ?
+          <div className="mt-4 w-full">
+            <h3 className="font-bold text-2xl mb-[10px] text-[24px] text-[#333] dark:text-white">
+              Share from Bae
+            </h3>
+            <div className="text-[15px] dark:text-[#808080] text-[#999999]">
+              Earn $Bae every time you share from Bae
+            </div>
 
-        <div className="mt-12 mb-[18px] mx-4">
-          <BaseButton
-            text="Share via Telegram"
-            height="48px"
-            loading={getInlineMessageIdLoading}
-            icon={<Image src={TelegramIcon} />}
-            handler={() => {
-              // shareLink(links.shareLink ?? '')
-              handShareWithTelegram()
-              // off()
-            }}
-          />
-        </div>
+            <div className="mt-12 mb-[18px] mx-4">
+              <BaseButton
+                text="Share via Telegram"
+                height="48px"
+                loading={getInlineMessageIdLoading}
+                icon={<Image src={TelegramIcon} />}
+                handler={() => {
+                  // shareLink(links.shareLink ?? '')
+                  handShareWithTelegram()
+                  // off()
+                }}
+              />
+            </div>
 
-        <div className="mx-4">
-          <BaseButton
-            text="Copy link"
-            height="48px"
-            icon={<Image src={LinkIcon} />}
-            handler={() => {
-              copy(links.copyLink)
-              off()
-            }}
-          />
-        </div>
-      </div>
+            <div className="mx-4">
+              <BaseButton
+                text="Copy link"
+                height="48px"
+                icon={<Image src={LinkIcon} />}
+                handler={() => {
+                  copy(links.copyLink)
+                  off()
+                }}
+              />
+            </div>
+          </div>
+        :
+          <div className='mt-4 w-full'>
+            <DrawSkeletonItem className="w-full h-[32px] mb-[12px]"></DrawSkeletonItem>
+            <DrawSkeletonItem className="w-full h-[32px] mb-[12px]"></DrawSkeletonItem>
+            <DrawSkeletonItem className="w-full h-[100px]"></DrawSkeletonItem>
+          </div>
+      }
     </BaseModal>
   )
 }
@@ -166,6 +180,7 @@ const ResourceList = ({
   const likes = useStore((state) => state.like)
   const setLikes = useStore((state) => state.setPatchLike)
   const initPatchLikes = useStore((state) => state.initPatchLike)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const saveds = useStore((state) => state.save)
 
@@ -300,9 +315,11 @@ const ResourceList = ({
     favRun(data)
   }
   const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
+    toggle()
+    setIsLoading(false)
     const { shareLink, copyLink } = await genShareLinkFn(title, pid, uid, getLinkHandlerAsync)
     setLinks({ shareLink, copyLink: decodeURIComponent(copyLink) })
-    toggle()
+    setIsLoading(true)
   })
 
   const resourcesEve = (post_id: number, url: string, is_pay?: boolean) => {
@@ -391,6 +408,8 @@ const ResourceList = ({
           off={off}
           currentShareData={currentShareData}
           links={links}
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
         ></ShareModal>
       </div>
     </>

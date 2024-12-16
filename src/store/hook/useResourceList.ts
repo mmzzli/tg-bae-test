@@ -4,6 +4,7 @@ import { useStore } from '../store'
 import { debounce, throttle } from '@/utils/utils'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import { videoHls } from '@/utils/video/videoHls'
+import video from '@/assets/video/a.mp4'
 
 export const useRecommendList = () => {
   const { recommendList, setRecommendPage, loadRecommendList, resetRecommendList, token } =
@@ -312,15 +313,14 @@ const useCacheVideo = (
   cardClass: string = 'video-card'
 ) => {
   const observerRef = useRef<IntersectionObserver | null>(null)
+  const videos = list.filter((item) => item.type === 0)
 
   const handleIntersection = (entries: IntersectionObserverEntry[]) => {
-    const videos = list.filter((item) => item.type === 0)
     let maxVisibility = 0
     let mostVisibleElement: HTMLElement | null = null
 
     // 首先检查完全在视图内的元素
     for (const entry of entries) {
-      console.log(entry.intersectionRatio, '----jacob=======-')
       if (entry.intersectionRatio === 1) {
         mostVisibleElement = entry.target as HTMLElement
         break // 找到完全可见的就直接跳出循环
@@ -371,6 +371,7 @@ const useCacheVideo = (
   }
 
   useEffect(() => {
+    if (!list.length) return
     console.log(333333, '========jacob')
     // 初始化 Intersection Observer
     observerRef.current = new IntersectionObserver(handleIntersection, {
@@ -384,9 +385,8 @@ const useCacheVideo = (
       const container = document.getElementById(domId)
       const elements = container?.querySelectorAll(`.${cardClass}`)
 
-      console.log(elements, list.length, 'elements========jacob')
-
-      if (container && elements && elements.length > 0) {
+      console.log(444444, '========jacob')
+      if (container && elements && elements.length > 0 && videos.length === elements.length) {
         elements.forEach((element) => {
           observerRef.current?.observe(element)
         })

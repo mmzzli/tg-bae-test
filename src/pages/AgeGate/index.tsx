@@ -41,7 +41,7 @@ const AgeGate = () => {
           <a className="text-[#6254FF] text-[14px] underline">Terms of Service</a>
         </p>
       </div>
-      <div className="mt-[88px] text-center">
+      <div className="mt-16 text-center">
         <div className="flex justify-center gap-[8px] flex-col items-center">
           <Checkbox type="checkbox" checked={isChecked} onChange={handleChange} alignItems="flex-start">
           <p className="align-left text-[#999] text-[12px] whitespace-normal">

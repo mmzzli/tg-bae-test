@@ -183,25 +183,15 @@ const TaskItem: React.FC<{
 
 const Tasks: FC = () => {
   const navigate = useNavigate()
-  const {
-    dailyTaskList,
-    totalTaskPoints,
-    token,
-    updateDailyTask,
-    paidStars,
-    paidStarsPoints,
-    setPaidStars,
-    setPaidStarsPoints,
-  } = useStore((state) => ({
-    dailyTaskList: state.dailyTaskList,
-    totalTaskPoints: state.totalTaskPoints,
-    paidStars: state.paidStars,
-    paidStarsPoints: state.paidStarsPoints,
-    updateDailyTask: state.updateDailyTask,
-    setPaidStars: state.setPaidStars,
-    setPaidStarsPoints: state.setPaidStarsPoints,
-    token: state.token,
-  }))
+  const { dailyTaskList, totalTaskPoints, token, updateDailyTask, paidStars, paidStarsPoints } =
+    useStore((state) => ({
+      dailyTaskList: state.dailyTaskList,
+      totalTaskPoints: state.totalTaskPoints,
+      paidStars: state.paidStars,
+      paidStarsPoints: state.paidStarsPoints,
+      updateDailyTask: state.updateDailyTask,
+      token: state.token,
+    }))
   const [isTooltipOpen, setIsTooltipOpen] = useState(false)
   const { runGetDailyTask, loading } = useGetDailyTask()
   const toast = useToast()
@@ -284,8 +274,10 @@ const Tasks: FC = () => {
             Points earned
             <Tooltip
               label={
-                <div className="text-sm text-[#666666] w-[203px] p-3">
-                  <p>For every Telegram star you spend to unlock a post, you earn 10 points.</p>
+                <div className="w-[203px] h-[72px] px-2.5 flex items-center">
+                  <p className="text-sm text-[#666666] font-normal">
+                    For every Telegram star you spend to unlock a post, you earn 10 points.
+                  </p>
                 </div>
               }
               bg="white"

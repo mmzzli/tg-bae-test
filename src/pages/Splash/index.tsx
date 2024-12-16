@@ -38,7 +38,7 @@ const Splash: FC = () => {
 
       if (resources.length) {
         setCacheVideoIndex(resources[0].id)
-        updateCacheVideo(resources)
+        updateCacheVideo(resources, true)
       }
       // setCacheVideo()
       setTimeout(() => {

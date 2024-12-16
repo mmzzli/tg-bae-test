@@ -1,7 +1,7 @@
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import { Box, HStack, Text } from '@chakra-ui/react'
 import { formatTime } from '@/utils/utils'
-import React, { useCallback, useContext, useMemo } from 'react'
+import React, { useCallback, useContext, useMemo, useRef } from 'react'
 import FrostedGlass from '@/components/ResourceList/FrostedGlass'
 import Image from '../Image/Image'
 import { PlayButton } from '@/components/ResourceList/ResourceList'
@@ -12,18 +12,25 @@ import { useDailyTaskActions } from '@/hooks/useDailyTask'
 
 interface VideoCardProps {
   data: FormatterListItem
-  resourcesEve: (post_id: number, url: string) => void
+  resourcesEve: (post_id: number, url: string, is_pay?: boolean) => void
 }
 const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
+  const videoCardContainer = useRef<HTMLDivElement>(null)
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const setVideoResource = useStore((state) => state.setVideoResource)
   const { runDailyWatch } = useDailyTaskActions()
 
   const handleVideoClick = useCallback((video: FormatterListItem) => {
+    const videoDom = videoCardContainer?.current?.querySelector('video')
     runDailyWatch(video.id)
     setCacheVideoIndex(video.id)
     setVideoResource(video)
+    if (videoDom) {
+      videoDom.pause()
+      videoDom.muted = false
+    }
   }, [])
+
   const { getCurrentUid } = useTMAUtils()
 
   const cardValue = useContext(CardRecommendProvider)
@@ -36,7 +43,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
   }, [data])
   return (
     <>
-      <Box className="video-card" data-id={data.id}>
+      <Box className="video-card" data-id={data.id} ref={videoCardContainer}>
         <div className="relative ">
           <Box position="relative">
             <Box>
@@ -45,12 +52,14 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
                   height: firImageHeight ? firImageHeight + 'px' : 'calc(1.5*100vw)',
                   maxHeight: 'calc(1.5*100vw)',
                 }}
-                className={'flex items-center overflow-hidden object-contain overflow-hidden'}
+                className={
+                  'flex items-center overflow-hidden relative object-contain video-container z-[1]'
+                }
               >
                 <Image
                   src={data.mediaCover}
                   alt={data.title}
-                  wrapperClassName=" overflow-hidden"
+                  wrapperClassName=" overflow-hidden z-[3]"
                   errorClassName="rounded-[0px] h-[150px]"
                   className="object-left w-[100%] m-[auto]"
                   onClick={() => handleVideoClick(data)}
@@ -66,6 +75,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
                 p="4px 10px"
                 gap="4px"
                 rounded="20px"
+                zIndex={2}
               >
                 <i className="iconfont icon-a-Frame2085661742 text-[12px] text-white"></i>
                 <Text color="white" fontSize="14px">

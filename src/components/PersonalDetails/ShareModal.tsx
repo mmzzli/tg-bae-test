@@ -1,5 +1,7 @@
-import { forwardRef, useImperativeHandle } from 'react'
+import { forwardRef, useImperativeHandle, useState } from 'react'
 import { Image, useBoolean } from '@chakra-ui/react'
+import {DrawSkeletonItem} from '@/components/Skeketon/ChatSkeleton'
+
 
 import { BaseModal } from '@/components/Modal/BaseModal'
 import BaseButton from '@/components/BaseButton/BaseButton'
@@ -23,6 +25,7 @@ const ShareModal = forwardRef<ChildMethods>(({}, ref) => {
     hello: '',
   })
   const [isBaseModalOpen, { toggle, off }] = useBoolean(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [links, setLinks] = useSetState<{ shareLink: string; copyLink: string }>({
     shareLink: '',
     copyLink: '',
@@ -48,8 +51,10 @@ const ShareModal = forwardRef<ChildMethods>(({}, ref) => {
   const getShareLink = useMemoizedFn(async (title: string, uid: number) => {
     const shareText = encodeURIComponent(title)
 
-    const { ref } = await getLinkHandlerAsync({ pid: uid, uid })
     toggle()
+    setIsLoading(false)
+    const { ref } = await getLinkHandlerAsync({ pid: uid, uid })
+    setIsLoading(true)
 
     const copyLink = encodeURIComponent(`${import.meta.env.VITE_API_URL}link/${ref}`)
     console.log('copyLink', decodeURIComponent(copyLink))
@@ -156,6 +161,7 @@ const ShareModal = forwardRef<ChildMethods>(({}, ref) => {
         closeOnBackdropClick={true}
         showHandle={false}
       >
+        {isLoading ?
         <div className="mt-4 w-full">
           <h3 className="font-bold text-2xl mb-[10px] text-[24px] text-[#333]">Share from Bae</h3>
           <div className="text-[15px] text-[#999]">Earn $Bae every time you share from Bae</div>
@@ -185,6 +191,14 @@ const ShareModal = forwardRef<ChildMethods>(({}, ref) => {
             />
           </div>
         </div>
+        :
+        <div className='mt-4 w-full'>
+          <DrawSkeletonItem className="w-full h-[32px] mb-[12px]"></DrawSkeletonItem>
+          <DrawSkeletonItem className="w-full h-[32px] mb-[12px]"></DrawSkeletonItem>
+          <DrawSkeletonItem className="w-full h-[100px]"></DrawSkeletonItem>
+        </div>
+
+        }
       </BaseModal>
     </>
   )

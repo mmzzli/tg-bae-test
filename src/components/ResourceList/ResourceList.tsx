@@ -1,6 +1,7 @@
 import { memo, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { Box, Flex, HStack, IconButton, useBoolean, Text, Heading } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
+import {DrawSkeletonItem} from '@/components/Skeketon/ChatSkeleton'
 
 import { favDel, favPost, postLike } from '@/api'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
@@ -41,15 +42,19 @@ interface ShareModalProps {
   isBaseModalOpen: boolean
   off: () => void
   currentShareData: ShareDataProps | null
-  links: ShreLinkProps
+  links: ShreLinkProps,
+  isLoading: boolean,
+  setIsLoading: (value: boolean) => void
 }
 
 export const ShareModal: React.FC<ShareModalProps> = ({
-                                                        isBaseModalOpen,
-                                                        off,
-                                                        currentShareData,
-                                                        links,
-                                                      }) => {
+  isBaseModalOpen,
+  off,
+  currentShareData,
+  links,
+  isLoading,
+  setIsLoading
+}) => {
   const { launchParams, getCurrentUid } = useTMAUtils()
   const { copy } = useCopy()
 
@@ -99,40 +104,49 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       closeOnBackdropClick={true}
       showHandle={false}
     >
-      <div className="mt-4 w-full">
-        <h3 className="font-bold text-2xl mb-[10px] text-[24px] text-[#333] dark:text-white">
-          Share from Bae
-        </h3>
-        <div className="text-[15px] dark:text-[#808080] text-[#999999]">
-          Earn $Bae every time you share from Bae
-        </div>
+      {
+        isLoading ?
+          <div className="mt-4 w-full">
+            <h3 className="font-bold text-2xl mb-[10px] text-[24px] text-[#333] dark:text-white">
+              Share from Bae
+            </h3>
+            <div className="text-[15px] dark:text-[#808080] text-[#999999]">
+              Earn $Bae every time you share from Bae
+            </div>
 
-        <div className="mt-12 mb-[18px] mx-4">
-          <BaseButton
-            text="Share via Telegram"
-            height="48px"
-            loading={getInlineMessageIdLoading}
-            icon={<Image src={TelegramIcon} />}
-            handler={() => {
-              // shareLink(links.shareLink ?? '')
-              handShareWithTelegram()
-              // off()
-            }}
-          />
-        </div>
+            <div className="mt-12 mb-[18px] mx-4">
+              <BaseButton
+                text="Share via Telegram"
+                height="48px"
+                loading={getInlineMessageIdLoading}
+                icon={<Image src={TelegramIcon} />}
+                handler={() => {
+                  // shareLink(links.shareLink ?? '')
+                  handShareWithTelegram()
+                  // off()
+                }}
+              />
+            </div>
 
-        <div className="mx-4">
-          <BaseButton
-            text="Copy link"
-            height="48px"
-            icon={<Image src={LinkIcon} />}
-            handler={() => {
-              copy(links.copyLink)
-              off()
-            }}
-          />
-        </div>
-      </div>
+            <div className="mx-4">
+              <BaseButton
+                text="Copy link"
+                height="48px"
+                icon={<Image src={LinkIcon} />}
+                handler={() => {
+                  copy(links.copyLink)
+                  off()
+                }}
+              />
+            </div>
+          </div>
+        :
+          <div className='mt-4 w-full'>
+            <DrawSkeletonItem className="w-full h-[32px] mb-[12px]"></DrawSkeletonItem>
+            <DrawSkeletonItem className="w-full h-[32px] mb-[12px]"></DrawSkeletonItem>
+            <DrawSkeletonItem className="w-full h-[100px]"></DrawSkeletonItem>
+          </div>
+      }
     </BaseModal>
   )
 }
@@ -151,10 +165,10 @@ const POST_TYPE_IMAGE = 1
 const POST_TYPE_VIDEO = 0
 
 const ResourceList = ({
-                        resources: initialResources,
-                        type,
-                        hasMore,
-                      }: {
+  resources: initialResources,
+  type,
+  hasMore,
+}: {
   resources: FormatterListItem[]
   type?: string
   hasMore?: boolean
@@ -166,6 +180,7 @@ const ResourceList = ({
   const likes = useStore((state) => state.like)
   const setLikes = useStore((state) => state.setPatchLike)
   const initPatchLikes = useStore((state) => state.initPatchLike)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const saveds = useStore((state) => state.save)
 
@@ -246,25 +261,25 @@ const ResourceList = ({
   useEffect(() => {
     if (resources.length > 0) {
       // 每次接口更新数据，根据之前接口保存的点赞，和收藏的状态更新到新数据里面
-      const likesMap = new Map(likes.map(item => [item.id, item]));
-      const savedsMap = new Map(saveds.map(item => [item.id, item]));
-      resources.forEach(itemA => {
-        const likeMatch = likesMap.get(itemA.id);
+      const likesMap = new Map(likes.map((item) => [item.id, item]))
+      const savedsMap = new Map(saveds.map((item) => [item.id, item]))
+      resources.forEach((itemA) => {
+        const likeMatch = likesMap.get(itemA.id)
         if (likeMatch) {
-          itemA.like = likeMatch.like;
-          itemA.is_liked = likeMatch.liked;
+          itemA.like = likeMatch.like
+          itemA.is_liked = likeMatch.liked
         }
-        const savedMatch = savedsMap.get(itemA.id);
+        const savedMatch = savedsMap.get(itemA.id)
         if (savedMatch) {
-          itemA.is_collected = savedMatch.saveds;
+          itemA.is_collected = savedMatch.saveds
         }
-      });
+      })
       initPatchLikes(resources)
       initPatchSaves(resources)
     }
   }, [resources])
 
-  const { run:linkRun } = useDebounceFn(
+  const { run: linkRun } = useDebounceFn(
     async (data: FormatterListItem) => {
       const curLiked = likes.find((item) => item.id === data.id)?.liked
       await postLike({
@@ -273,13 +288,13 @@ const ResourceList = ({
       })
     },
     { wait: 500 }
-  );
+  )
 
   const linkEve = async (data: FormatterListItem) => {
     setLikes(data)
     linkRun(data)
   }
-  const { run:favRun } = useDebounceFn(
+  const { run: favRun } = useDebounceFn(
     async (data: FormatterListItem) => {
       const isSaved = saveds.find((item) => item.id === data.id)?.saveds
       if (isSaved) {
@@ -293,23 +308,26 @@ const ResourceList = ({
       }
     },
     { wait: 500 }
-  );
+  )
 
   const savedEve = async (data: FormatterListItem) => {
     setSaveds(data)
     favRun(data)
   }
   const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
+    toggle()
+    setIsLoading(false)
     const { shareLink, copyLink } = await genShareLinkFn(title, pid, uid, getLinkHandlerAsync)
     setLinks({ shareLink, copyLink: decodeURIComponent(copyLink) })
-    toggle()
+    setIsLoading(true)
   })
 
-  const resourcesEve = (post_id: number, url: string) => {
+  const resourcesEve = (post_id: number, url: string, is_pay?: boolean) => {
     setPostId(post_id)
     const updatedUsers = resources.map((item) => {
       if (item.id === post_id) {
-        return { ...item, media: url.split(',') }
+        const options = is_pay ? { is_pay } : {}
+        return { ...item, media: url.split(','), ...options }
       }
       return item
     })
@@ -390,6 +408,8 @@ const ResourceList = ({
           off={off}
           currentShareData={currentShareData}
           links={links}
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
         ></ShareModal>
       </div>
     </>
@@ -547,7 +567,7 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
 export const PlayButton = memo(({ onClick }: { onClick: (e: React.MouseEvent) => void }) => (
   <div
     onClick={onClick}
-    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 no-tap z-1"
+    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 no-tap z-[5] video-card-switch"
   >
     <Image src={playIcon} alt="play" className="w-[72px] h-[72px] no-tap" />
   </div>

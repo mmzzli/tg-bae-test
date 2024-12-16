@@ -6,7 +6,6 @@ import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import { useMemoizedFn, useRequest, useSetState } from 'ahooks'
 import { genShareLinkFn } from '@/utils/utils'
 import { getLink, getShareInlineMessageId } from '@/api/list'
-import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { ShareModal } from '@/components/ResourceList/ResourceList'
 import { useStore } from '@/store'
 import { favDel, favPost, postLike } from '@/api'
@@ -25,6 +24,7 @@ const ResourceFooter: React.FC<ResourceFooterProps> = ({ data }) => {
       console.log(res)
     },
   })
+  const [isLoading, setIsLoading] = useState(false)
 
   const [currentShareData, setCurrentShareData] = useState<{ pid: number; uid: number } | null>(
     null
@@ -131,6 +131,8 @@ const ResourceFooter: React.FC<ResourceFooterProps> = ({ data }) => {
         off={off}
         currentShareData={currentShareData}
         links={links}
+        isLoading={isLoading}
+        setIsLoading={setIsLoading}
       ></ShareModal>
     </div>
   )

@@ -315,7 +315,7 @@ const useCacheVideo = (
   const observerRef = useRef<IntersectionObserver | null>(null)
   const videos = list.filter((item) => item.type === 0)
 
-  const handleIntersection = (entries: IntersectionObserverEntry[]) => {
+  const handleIntersection = debounce((entries: IntersectionObserverEntry[]) => {
     let maxVisibility = 0
     let mostVisibleElement: HTMLElement | null = null
 
@@ -368,8 +368,7 @@ const useCacheVideo = (
         }
       }
     }
-  }
-
+  }, 100)
   useEffect(() => {
     if (!list.length) return
     console.log(333333, '========jacob')

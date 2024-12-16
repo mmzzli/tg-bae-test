@@ -439,6 +439,8 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     // 加载新的视频
     newCache.forEach((video) => {
       if (!cacheVideo.some((v) => v.id === video.id)) {
+        ;(get().loadVideoForce as any).clear()
+        ;(get().loadVideo as any).clear()
         if (force) {
           get().loadVideoForce(video)
         } else {
@@ -463,6 +465,13 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     let isLoading = false
 
     const tempVideo = document.createElement('video')
+
+    // 添加清空队列的方法
+    const clearQueue = () => {
+      videoLoadQueue.length = 0
+      isLoading = false
+    }
+
     const processQueue = () => {
       if (isLoading || videoLoadQueue.length === 0) return
       isLoading = true
@@ -548,16 +557,24 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       })
     }
 
-    return (video: FormatterListItem) => {
-      videoLoadQueue.push(video)
-      processQueue()
-    }
+    return Object.assign(
+      (video: FormatterListItem) => {
+        videoLoadQueue.push(video)
+        processQueue()
+      },
+      { clear: clearQueue } // 添加 clear 方法
+    )
   })(),
   // cache lasy pool加载视频
   loadVideo: (() => {
     const videoLoadQueue: FormatterListItem[] = [] // 视频加载队列
     let isLoading = false // 是否正在加载
     const videoElement = document.createElement('video') // 复用一个 video 元素
+
+    const clearQueue = () => {
+      videoLoadQueue.length = 0
+      isLoading = false
+    }
 
     const processQueue = () => {
       if (isLoading || videoLoadQueue.length === 0) return
@@ -642,10 +659,13 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       })
     }
 
-    return (video: FormatterListItem) => {
-      videoLoadQueue.push(video)
-      scheduleCallback(NormalPriority, processQueue)
-    }
+    return Object.assign(
+      (video: FormatterListItem) => {
+        videoLoadQueue.push(video)
+        scheduleCallback(NormalPriority, processQueue)
+      },
+      { clear: clearQueue }
+    )
   })(),
   // 卸载视频
   unloadVideo: (video) => {

@@ -60,7 +60,14 @@ const NotificationItem: FC<{
   }
 
   const handleDrag = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    if (Math.abs(info.offset.y) > Math.abs(info.offset.x) && info.offset.x < 10) {
+    const horizontalMovement = Math.abs(info.offset.x)
+    const verticalMovement = Math.abs(info.offset.y)
+
+    const ANGLE_THRESHOLD = 20
+
+    const angle = (Math.atan2(verticalMovement, horizontalMovement) * 180) / Math.PI
+
+    if (angle > ANGLE_THRESHOLD || horizontalMovement < 5) {
       itemControls.start({ x: 0 })
     }
   }

@@ -64,6 +64,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
           onSlideChange={(swiper: SwiperType) => {
             SetCurrentIndex(swiper.activeIndex)
           }}
+          allowTouchMove={true}
         >
           {data.media.map((image, index) => {
             return (
@@ -74,7 +75,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
                   maxHeight:
                     'calc(100vh - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top) - 85px - 64px - 50px - 26px)',
                 }}
-                className={'flex items-center overflow-hidden object-contain overflow-hidden'}
+                className={'flex items-center object-contain overflow-hidden'}
               >
                 <Image
                   src={formatImage(image, false)}

@@ -32,7 +32,6 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
     updateConversation,
     deleteConversation,
   } = useStore((state) => ({
-    chatList: state.chatList,
     connection: state.connection,
     isChatListLoaded: state.isChatListLoaded,
     setConnection: state.setConnection,

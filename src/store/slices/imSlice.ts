@@ -8,11 +8,6 @@ export interface IMSlice {
   resetConnection: () => void
   isChatListLoaded: boolean
   setIsChatListLoaded: (loaded: boolean) => void
-  chatList: Conversation[]
-  setChatList: (item: Conversation[]) => void
-  addChatListItem: (item: Conversation) => void
-  updateChatListItem: (item: Conversation) => void
-  deleteChatListItem: (channel: string) => void
   messageWindowList: MessageWindowListItem[]
   setMessageWindowList: (messageList: MessageWindowListItem[]) => void
   addMessageWindowListItem: (item: MessageWindowListItem) => void
@@ -39,30 +34,6 @@ export const createIMSlice: StateCreator<IMSlice> = (set) => ({
   resetConnection: () => set({ connection: null }),
   isChatListLoaded: false,
   setIsChatListLoaded: (loaded) => set({ isChatListLoaded: loaded }),
-  chatList: [],
-  setChatList: (chatList) => set({ chatList }),
-  addChatListItem: (item) => set((state) => ({ chatList: [...state.chatList, item] })),
-  updateChatListItem: (chatListItem) =>
-    set((state) => {
-      const index = state.chatList.findIndex(
-        (item) => item.channel.channelID === chatListItem.channel.channelID
-      )
-      if (index === -1) return state
-
-      state.chatList[index] = chatListItem
-      return { chatList: state.chatList }
-    }),
-  deleteChatListItem: (channel) =>
-    set((state) => {
-      // delete message window and message items
-      const messageWindowList = state.messageWindowList.filter(
-        (item) => item.channel.channelID !== channel
-      )
-      return {
-        chatList: state.chatList.filter((item) => item.channel.channelID !== channel),
-        messageWindowList,
-      }
-    }),
   messageWindowList: [],
   setMessageWindowList: (messageList) => set({ messageWindowList: messageList }),
   addMessageWindowListItem: (item) =>
@@ -73,20 +44,6 @@ export const createIMSlice: StateCreator<IMSlice> = (set) => ({
         item.channel.channelID === messageWindow.channel.channelID ? messageWindow : item
       ),
     })),
-
-  // set((state) => {
-  //   const index = state.messageWindowList.findIndex(
-  //     (window) => window.channel.channelID === messageWindow.channel.channelID
-  //   )
-  //   if (index === -1) return state
-
-  //   const newList = [...state.messageWindowList]
-  //   newList[index] = {
-  //     ...newList[index],
-  //     messages: [...newList[index].messages, ...messageWindow.messages],
-  //   }
-  //   return { messageWindowList: newList }
-  // }),
   deleteMessageWindowListItem: (id) =>
     set((state) => ({
       messageWindowList: state.messageWindowList.filter((item) => item.channel.channelID !== id),

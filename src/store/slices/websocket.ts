@@ -78,7 +78,7 @@ export const createWebSocketSlice: StateCreator<WebSocketSlice> = (set, get) => 
         }
 
         ws.onmessage = (event) => {
-          let data
+          let data: any
           try {
             data = JSON.parse(event.data)
           } catch (e) {

@@ -217,12 +217,12 @@ export const MainLayout: React.FC = () => {
       const tgApp = window.Telegram.WebApp
       if (videoResource || imageResource || virtualRoutePage) {
         tgApp.BackButton.show()
-        window.Telegram.WebApp.setHeaderColor('#ffffff')
+        window.Telegram.WebApp.setHeaderColor('#000')
       } else if (HIDE_BACK_BUTTON_PATHS.includes(location.pathname)) {
         tgApp.BackButton.hide()
       }
       if (!videoResource && !imageResource && !virtualRoutePage) {
-        window.Telegram.WebApp.setHeaderColor('#000')
+        window.Telegram.WebApp.setHeaderColor('#fff')
       }
     }
   }, [videoResource, imageResource, virtualRoutePage])

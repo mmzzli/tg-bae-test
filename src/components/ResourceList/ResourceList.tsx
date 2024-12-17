@@ -79,7 +79,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           const WebApp = window.Telegram?.WebApp
           setTimeout(() => {
             WebApp.shareMessage(result.id,(e:any)=>{
-              console.log(e)
+              console.log(e,1111)
+              return true
             })
           }, 100)
         }

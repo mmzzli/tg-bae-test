@@ -4,27 +4,18 @@ import { follow, getSomeoneProfile } from '@/api'
 import { useRequest } from 'ahooks'
 import { useStore } from '@/store'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
-// Object is Follow, I Follow Someone, so fansid is current user id
 const FollowButton: FC<{
-  fansid?: number
-  // tg_id username avatar is other user info
+  // tg_id username avatar is others user info
   tgid: number
   avatar: string
   username: string
   className?: string
   followButtonClassName?: string
   followingButtonClassName?: string
-}> = ({
-  fansid,
-  tgid,
-  avatar,
-  username,
-  className,
-  followButtonClassName,
-  followingButtonClassName,
-}) => {
+}> = ({ tgid, avatar, username, className, followButtonClassName, followingButtonClassName }) => {
   const { getCurrentUid } = useTMAUtils()
   const currentUid = getCurrentUid()
+
   const { userInfo, myFollow, setMyFollow, setUserInfo, othersUserInfo, setOthersUserInfo } =
     useStore((state) => ({
       userInfo: state.userInfo,
@@ -34,6 +25,7 @@ const FollowButton: FC<{
       othersUserInfo: state.othersUserInfo,
       setOthersUserInfo: state.setOthersUserInfo,
     }))
+
   const isFollowing = useMemo(() => {
     return myFollow.some((item) => item.tg_id === tgid)
   }, [myFollow, tgid])
@@ -46,7 +38,9 @@ const FollowButton: FC<{
       } else {
         setMyFollow([...myFollow, { avatar, tg_id: tgid, tgname: username }])
       }
-      updateUserFollowInfo()
+      setTimeout(() => {
+        updateUserFollowInfo()
+      }, 500)
     },
   })
 

@@ -4,7 +4,7 @@ import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import { useGetDailyTask, useDailyTaskStatus } from '@/hooks/useDailyTask'
 import { useStore } from '@/store'
 import { DailyTaskItem, DailyTaskStatusEnum } from '@/store/slices/systemSlice'
-import { useToast, Tooltip } from '@chakra-ui/react'
+import { useToast } from '@chakra-ui/react'
 import { postEvent } from '@telegram-apps/sdk'
 import { useRequest } from 'ahooks'
 import { FC, useEffect, useRef, useState } from 'react'
@@ -183,15 +183,16 @@ const TaskItem: React.FC<{
 
 const Tasks: FC = () => {
   const navigate = useNavigate()
-  const { dailyTaskList, totalTaskPoints, token, updateDailyTask, paidStars, paidStarsPoints } =
-    useStore((state) => ({
+  const { dailyTaskList, totalTaskPoints, token, paidStars, paidStarsPoints } = useStore(
+    (state) => ({
       dailyTaskList: state.dailyTaskList,
       totalTaskPoints: state.totalTaskPoints,
       paidStars: state.paidStars,
       paidStarsPoints: state.paidStarsPoints,
       updateDailyTask: state.updateDailyTask,
       token: state.token,
-    }))
+    })
+  )
   const [isTooltipOpen, setIsTooltipOpen] = useState(false)
   const { runGetDailyTask, loading } = useGetDailyTask()
   const toast = useToast()
@@ -265,36 +266,30 @@ const Tasks: FC = () => {
             {paidStars}
             <i className="iconfont icon-stars text-[22px] text-[#FFC700] ml-1"></i>
           </div>
-          <span className="text-[#666666] text-xs">Stars paid</span>
+          <span className="text-[#666666] text-xs h-[20px]">Stars paid</span>
         </div>
         <div className="absolute top-[34px] bottom-[34px] left-1/2 w-[1px] bg-[#EBEBF4]"></div>
-        <div className="flex flex-col items-center justify-center flex-1">
+        <div className="relative flex flex-col items-center justify-center flex-1">
           <div className="h-[38px] text-[28px] font-bold flex items-center">{paidStarsPoints}</div>
-          <div className="flex items-center text-[#666666] text-xs">
+          <div className="flex items-center text-[#666666] text-xs h-[20px]">
             Points earned
-            <Tooltip
-              label={
-                <div className="w-[203px] h-[72px] px-2.5 flex items-center">
-                  <p className="text-sm text-[#666666] font-normal">
-                    For every Telegram star you spend to unlock a post, you earn 10 points.
-                  </p>
-                </div>
-              }
-              bg="white"
-              color="black"
-              placement="bottom-end"
-              borderRadius="md"
-              boxShadow="md"
-              isOpen={isTooltipOpen}
+            <i
+              ref={tooltipRef}
+              onClick={() => setIsTooltipOpen(!isTooltipOpen)}
+              className="iconfont icon-info text-[18px] text-[#999] ml-1 mb-[1px]"
+            ></i>
+            <div
+              className="absolute right-0 top-[62px] w-[203px] h-[72px] p-3 flex items-center bg-white rounded-lg z-[999]"
+              style={{
+                boxShadow: 'rgba(0, 0, 0, 0.1) 0px 2px 16px 0px',
+                opacity: isTooltipOpen ? 1 : 0,
+                transition: 'opacity 0.3s ease-in-out',
+              }}
             >
-              <div
-                ref={tooltipRef}
-                onClick={() => setIsTooltipOpen(!isTooltipOpen)}
-                className="pt-[1px]"
-              >
-                <i className="iconfont icon-info text-[18px] text-[#999] ml-1"></i>
-              </div>
-            </Tooltip>
+              <p className="text-sm text-[#666666] font-normal">
+                For every Telegram star you spend to unlock a post, you earn 10 points.
+              </p>
+            </div>
           </div>
         </div>
       </div>

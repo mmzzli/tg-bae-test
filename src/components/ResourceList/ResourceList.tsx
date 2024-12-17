@@ -80,7 +80,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           setTimeout(() => {
             WebApp.shareMessage(result.id,(e:any)=>{
               console.log(e,1111)
-              return true
+              return false
             })
           }, 100)
         }

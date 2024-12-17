@@ -117,7 +117,8 @@ const MessagePageIOS = () => {
         containerRef.current!.style.height = `${tg.viewportStableHeight}px`
       } else {
         console.log('keyboard down')
-        containerRef.current!.style.height = `${initVisualViewportHeightRef.current - 84}px`
+        // containerRef.current!.style.height = `${initVisualViewportHeightRef.current - 84}px`
+        containerRef.current!.style.height = `100vh`
         document.body.scrollIntoView()
       }
     }
@@ -139,7 +140,8 @@ const MessagePageIOS = () => {
         setShowInput(true)
       } else {
         console.log('keyboard down 2')
-        containerRef.current!.style.height = `${currentHeight - 84}px`
+        // containerRef.current!.style.height = `${currentHeight - 84}px`
+        containerRef.current!.style.height = `100vh`
         setShowInput(false)
         document.body.scrollIntoView()
       }
@@ -164,6 +166,9 @@ const MessagePageIOS = () => {
     <div
       ref={containerRef}
       className="absolute top-0 left-0 right-0 flex flex-col dark:bg-[#000000] bg-white z-[999] overflow-hidden slide-in-from-right"
+      onTouchMove={(e) => {
+        e.preventDefault()
+      }}
       style={{
         WebkitOverflowScrolling: 'touch',
         transition: isIOS() ? 'height 0.3s ease-in-out' : '',

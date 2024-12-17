@@ -52,7 +52,7 @@ const Menu: FC = () => {
       <div className="flex justify-around items-center">
         {navList.map((item, index) => (
           <div
-            className="flex flex-col items-center w-[65px] h-[51px] no-tap"
+            className="flex flex-col items-center w-[65px] no-tap"
             onClick={() => {
               navigate(item.url)
             }}
@@ -66,7 +66,7 @@ const Menu: FC = () => {
             >
               <i
                 className={cn(
-                  'iconfont text-[24px]',
+                  'iconfont text-[28px]',
                   pathname === item.url ? item.iconActive : item.icon,
                   item.name === 'POST' && 'text-[#fff] text-[18px]'
                 )}

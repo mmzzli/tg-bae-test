@@ -6,14 +6,14 @@ import { useSafeArea } from '@/hooks/useSafeArea'
 import { useStore } from '@/store'
 import Hls from 'hls.js'
 import MoreText from '@/components/More/MoreText'
-import { useBoolean } from '@chakra-ui/react'
 import ResourceFooter from '@/components/ResourceList/ResourceFooter'
 import { videoScale } from '@/utils/video'
-import video from '@/assets/video/a.mp4'
 import { getTimeStringAutoShort } from '@/utils/utils'
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { follow, getSomeoneProfile } from '@/api'
 import { useSafeState } from 'ahooks'
+import { useProfileNavigation } from '@/hooks/useProfileNavigation'
+import { UserItem } from '@/types'
 
 const PlayButton = memo(({ onClick }: { onClick: () => void }) => (
   <div
@@ -68,10 +68,10 @@ const UserInfo = memo(
     const followResource = useStore((state) => state.followResource)
     const setFollowResource = useStore((state) => state.setFollowResource)
     const [isFollowLoading, setIsFollowLoading] = useState<boolean>(false)
-    const [visible, setVisible] = useSafeState(false)
+    const jumpToProfilePage = useProfileNavigation()
+    const setVideoResource = useStore((state) => state.setVideoResource)
     const doFollow = async () => {
       if (!uid || !id) return
-      setVisible(false)
       setIsFollowLoading(true)
       await getSomeoneProfile(uid)
       await follow({
@@ -84,6 +84,12 @@ const UserInfo = memo(
       )
       setFollowResource(res)
     }
+
+    const handleToProfilePage = useCallback(() => {
+      jumpToProfilePage({ uid } as UserItem)
+      setVideoResource(null)
+    }, [uid])
+
     return (
       <div
         className="absolute left-4 right-4 z-[14] flex flex-col cursor-pointer no-tap pb-3"
@@ -92,9 +98,18 @@ const UserInfo = memo(
         }}
       >
         <div className="flex items-center">
-          <Image type="avatar" src={avatar} alt="avatar" className="w-12 h-12 rounded-full" />
+          <Image
+            rect={true}
+            type="avatar"
+            src={avatar}
+            alt="avatar"
+            className="w-12 h-12 rounded-full"
+            onClick={handleToProfilePage}
+          />
           <div className=" flex-col pl-2">
-            <span className="text-white text-[16px]">{username}</span>
+            <span className="text-white text-[16px]" onClick={handleToProfilePage}>
+              {username}
+            </span>
             <div className="text-white text-[12px] flex">
               {created_at && (
                 <span>{getTimeStringAutoShort(new Date(created_at).getTime(), true)}</span>

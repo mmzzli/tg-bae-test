@@ -92,6 +92,32 @@ const MessagePageIOS = () => {
     handleSendText()
   }
 
+  const stopMove = (e: any) => {
+    const messageList = document.querySelector('.message-list-scroll-trigger')
+    if (messageList && messageList.contains(e.target)) {
+      return
+    }
+    e.preventDefault()
+    window.scrollTo(0, 0)
+  }
+
+  const scroll = () => {
+    window.scrollTo(0, 0)
+  }
+
+  const keyboardUp = () => {
+    window.scrollTo(0, 0)
+    document.body.addEventListener('touchmove', stopMove, {
+      passive: false,
+    })
+    document.addEventListener('touchend', scroll)
+  }
+
+  const keyboardDown = () => {
+    document.body.removeEventListener('touchmove', stopMove)
+    document.addEventListener('touchend', scroll)
+  }
+
   const initTgViewportHeightRef = useRef(0)
   const initVisualViewportHeightRef = useRef(0)
 
@@ -115,10 +141,12 @@ const MessagePageIOS = () => {
       if (tg.viewportStableHeight < initTgViewportHeightRef.current) {
         console.log('keyboard up')
         containerRef.current!.style.height = `${tg.viewportStableHeight}px`
+        keyboardUp()
       } else {
         console.log('keyboard down')
-        containerRef.current!.style.height = `${initVisualViewportHeightRef.current - 84}px`
-        document.body.scrollIntoView()
+        // containerRef.current!.style.height = `${initVisualViewportHeightRef.current - 84}px`
+        containerRef.current!.style.height = `100vh`
+        keyboardDown()
       }
     }
 
@@ -139,9 +167,12 @@ const MessagePageIOS = () => {
         setShowInput(true)
       } else {
         console.log('keyboard down 2')
-        containerRef.current!.style.height = `${currentHeight - 84}px`
+        // containerRef.current!.style.height = `${currentHeight - 84}px`
+        containerRef.current!.style.height = `100vh`
         setShowInput(false)
-        document.body.scrollIntoView()
+        setTimeout(() => {
+          document.body.scrollIntoView()
+        }, 100)
       }
     }
 
@@ -156,6 +187,7 @@ const MessagePageIOS = () => {
       tg?.offEvent('viewportChanged', handleViewportChange)
       window.visualViewport?.removeEventListener('resize', handleVisualViewportResize)
       window.visualViewport?.removeEventListener('scroll', handleVisualViewportResize)
+      keyboardDown()
     }
   }, [])
 
@@ -167,37 +199,13 @@ const MessagePageIOS = () => {
       style={{
         WebkitOverflowScrolling: 'touch',
         transition: isIOS() ? 'height 0.3s ease-in-out' : '',
-        paddingTop: `calc(${
-          window
-            .getComputedStyle(document.documentElement)
-            .getPropertyValue('--tg-safe-area-inset-top') &&
-          parseInt(
-            window
-              .getComputedStyle(document.documentElement)
-              .getPropertyValue('--tg-safe-area-inset-top'),
-            10
-          ) !== 0
-            ? 'var(--tg-safe-area-inset-top) + 100px'
-            : '76px'
-        })`,
+        paddingTop: `calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 66px)`,
       }}
     >
       <div
-        className="fixed flex items-center left-0 right-0 top-[10px] px-[16px]"
+        className="absolute flex items-center left-0 right-0 top-0 px-[16px]"
         style={{
-          paddingTop: `calc(${
-            window
-              .getComputedStyle(document.documentElement)
-              .getPropertyValue('--tg-safe-area-inset-top') &&
-            parseInt(
-              window
-                .getComputedStyle(document.documentElement)
-                .getPropertyValue('--tg-safe-area-inset-top'),
-              10
-            ) !== 0
-              ? 'var(--tg-safe-area-inset-top) + 54px'
-              : '24px'
-          })`,
+          paddingTop: `calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 24px)`,
         }}
       >
         <div className="w-[32px] h-[32px]">
@@ -229,7 +237,7 @@ const MessagePageIOS = () => {
       <MemoizedMessageList
         messages={messages}
         channelInfo={chatPeople}
-        className="flex-1 mb-[68px]"
+        className="flex-1 mb-[68px] message-list-scroll-trigger"
       />
 
       {/* FAKE INPUT */}

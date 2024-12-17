@@ -1,7 +1,7 @@
 import { memo, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { Box, Flex, HStack, IconButton, useBoolean, Text, Heading } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
-import {DrawSkeletonItem} from '@/components/Skeketon/ChatSkeleton'
+import { DrawSkeletonItem } from '@/components/Skeketon/ChatSkeleton'
 
 import { favDel, favPost, postLike } from '@/api'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
@@ -42,8 +42,8 @@ interface ShareModalProps {
   isBaseModalOpen: boolean
   off: () => void
   currentShareData: ShareDataProps | null
-  links: ShreLinkProps,
-  isLoading: boolean,
+  links: ShreLinkProps
+  isLoading: boolean
   setIsLoading: (value: boolean) => void
 }
 
@@ -53,7 +53,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   currentShareData,
   links,
   isLoading,
-  setIsLoading
+  setIsLoading,
 }) => {
   const { launchParams, getCurrentUid } = useTMAUtils()
   const { copy } = useCopy()
@@ -78,7 +78,9 @@ export const ShareModal: React.FC<ShareModalProps> = ({
         if (window.Telegram?.WebApp) {
           const WebApp = window.Telegram?.WebApp
           setTimeout(() => {
-            WebApp.shareMessage(result.id)
+            WebApp.shareMessage(result.id,(e:any)=>{
+              console.log(e)
+            })
           }, 100)
         }
         off()
@@ -104,49 +106,48 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       closeOnBackdropClick={true}
       showHandle={false}
     >
-      {
-        isLoading ?
-          <div className="mt-4 w-full">
-            <h3 className="font-bold text-2xl mb-[10px] text-[24px] text-[#333] dark:text-white">
-              Share from Bae
-            </h3>
-            <div className="text-[15px] dark:text-[#808080] text-[#999999]">
-              Earn $Bae every time you share from Bae
-            </div>
-
-            <div className="mt-12 mb-[18px] mx-4">
-              <BaseButton
-                text="Share via Telegram"
-                height="48px"
-                loading={getInlineMessageIdLoading}
-                icon={<Image src={TelegramIcon} />}
-                handler={() => {
-                  // shareLink(links.shareLink ?? '')
-                  handShareWithTelegram()
-                  // off()
-                }}
-              />
-            </div>
-
-            <div className="mx-4">
-              <BaseButton
-                text="Copy link"
-                height="48px"
-                icon={<Image src={LinkIcon} />}
-                handler={() => {
-                  copy(links.copyLink)
-                  off()
-                }}
-              />
-            </div>
+      {isLoading ? (
+        <div className="mt-4 w-full">
+          <h3 className="font-bold text-2xl mb-[10px] text-[24px] text-[#333] dark:text-white">
+            Share from Bae
+          </h3>
+          <div className="text-[15px] dark:text-[#808080] text-[#999999]">
+            Earn $Bae every time you share from Bae
           </div>
-        :
-          <div className='mt-4 w-full'>
-            <DrawSkeletonItem className="w-full h-[32px] mb-[12px]"></DrawSkeletonItem>
-            <DrawSkeletonItem className="w-full h-[32px] mb-[12px]"></DrawSkeletonItem>
-            <DrawSkeletonItem className="w-full h-[100px]"></DrawSkeletonItem>
+
+          <div className="mt-12 mb-[18px] mx-4">
+            <BaseButton
+              text="Share via Telegram"
+              height="48px"
+              loading={getInlineMessageIdLoading}
+              icon={<Image src={TelegramIcon} />}
+              handler={() => {
+                // shareLink(links.shareLink ?? '')
+                handShareWithTelegram()
+                // off()
+              }}
+            />
           </div>
-      }
+
+          <div className="mx-4">
+            <BaseButton
+              text="Copy link"
+              height="48px"
+              icon={<Image src={LinkIcon} />}
+              handler={() => {
+                copy(links.copyLink)
+                off()
+              }}
+            />
+          </div>
+        </div>
+      ) : (
+        <div className="mt-4 w-full">
+          <DrawSkeletonItem className="w-full h-[32px] mb-[12px]"></DrawSkeletonItem>
+          <DrawSkeletonItem className="w-full h-[32px] mb-[12px]"></DrawSkeletonItem>
+          <DrawSkeletonItem className="w-full h-[100px]"></DrawSkeletonItem>
+        </div>
+      )}
     </BaseModal>
   )
 }
@@ -350,7 +351,7 @@ const ResourceList = ({
       <div className="pt-[24px]">
         {resources.map((data, index: number) => {
           return (
-            <Box key={data.id} pb={10}>
+            <Box key={`resource-${data.id}-${index}`} pb={10}>
               <ResourceHeader
                 data={data}
                 currentUid={launchParams.initData?.user?.id ?? 0}

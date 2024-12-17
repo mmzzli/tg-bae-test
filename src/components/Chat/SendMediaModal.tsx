@@ -195,19 +195,19 @@ const SendMediaModal = ({
           style={sheetStyle}
         >
           <div className="relative px-[14px] pb-[14px] overflow-y-auto dark:bg-[#1C1C1C] bg-white text-[#E0E2F6] rounded-t-2xl rounded-b-none border-[#1c1c1c] max-h-[70vh]">
-            <div className="sticky top-0 flex items-center h-11 dark:bg-[#1C1C1C] bg-white z-10">
+            <div className="sticky top-0 flex items-center justify-end dark:bg-[#1C1C1C] bg-white z-10 h-[70px]">
               <button
                 onClick={() => off()}
                 className="dark:text-white text-black w-9 h-9 flex items-center justify-center bg-[#F5F5FA] rounded-full"
               >
                 <i className="iconfont icon-icon_close text-[#12122A] dark:text-[#E0E2F6] text-[20px]"></i>
               </button>
-              <span className="dark:text-white text-black flex-1 text-center text-ellipsis overflow-hidden whitespace-nowrap pr-4">
-                {validFileList.length} media selected
-              </span>
+            </div>
+            <div className="text-[24px] h-8 font-bold text-[#333] mb-3">
+              {validFileList.length} media selected
             </div>
             <div className="flex justify-center">
-              <div className="mt-4 w-full">
+              <div className="w-full">
                 <div className="grid grid-cols-2 gap-3">
                   {validFileList.map((metadata, index) => (
                     <div
@@ -240,7 +240,7 @@ const SendMediaModal = ({
             </div>
             <BaseButton
               text="Send"
-              className="w-full mt-4 h-[48px] mb-7 text-[15px]"
+              className="w-full mt-7 h-[48px] mb-4 text-[15px]"
               handler={handleSubmit}
             />
           </div>

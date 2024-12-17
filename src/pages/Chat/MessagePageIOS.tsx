@@ -195,7 +195,7 @@ const MessagePageIOS = () => {
   return (
     <div
       ref={containerRef}
-      className="absolute top-0 left-0 right-0 flex flex-col dark:bg-[#000000] bg-slate-200 z-[999] overflow-hidden slide-in-from-right"
+      className="absolute top-0 left-0 right-0 flex flex-col dark:bg-[#000000] bg-white z-[999] overflow-hidden slide-in-from-right"
       style={{
         WebkitOverflowScrolling: 'touch',
         transition: isIOS() ? 'height 0.3s ease-in-out' : '',
@@ -203,7 +203,7 @@ const MessagePageIOS = () => {
       }}
     >
       <div
-        className="absolute flex items-center left-0 right-0 top-0 px-[16px] bg-amber-200"
+        className="absolute flex items-center left-0 right-0 top-0 px-[16px]"
         style={{
           paddingTop: `calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 24px)`,
         }}

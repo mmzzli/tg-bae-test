@@ -51,6 +51,7 @@ export const MainLayout: React.FC = () => {
   const setUnreadNotificationCount = useStore((state) => state.setUnreadNotificationCount)
   const myFollow = useStore((state) => state.myFollow)
   const setMyFollow = useStore((state) => state.setMyFollow)
+  const connect = useStore((state) => state.connect)
   const { getCurrentUid } = useTMAUtils()
   const current_uid = getCurrentUid()
   const { runInitDailyTask } = useInitDailyTask()
@@ -65,12 +66,6 @@ export const MainLayout: React.FC = () => {
   })
 
   const updateMyFollow = () => {
-    if (!useStore.getState().token) {
-      setTimeout(() => {
-        updateMyFollow()
-      }, 150)
-      return
-    }
     if (myFollow.length === 0) {
       getFollowingList(current_uid).then((res) => setMyFollow(res))
     }
@@ -85,6 +80,8 @@ export const MainLayout: React.FC = () => {
       updateMyFollow()
       // Daily Task [Daily Login + Init Daily Task Store]
       runInitDailyTask()
+      // connect to system ws
+      connect()
       if (window.loading) {
         setTimeout(() => {
           window.loading = false
@@ -220,14 +217,18 @@ export const MainLayout: React.FC = () => {
       const tgApp = window.Telegram.WebApp
       if (videoResource || imageResource || virtualRoutePage) {
         tgApp.BackButton.show()
+        window.Telegram.WebApp.setHeaderColor('#ffffff')
       } else if (HIDE_BACK_BUTTON_PATHS.includes(location.pathname)) {
         tgApp.BackButton.hide()
+      }
+      if (!videoResource && !imageResource && !virtualRoutePage) {
+        window.Telegram.WebApp.setHeaderColor('#000')
       }
     }
   }, [videoResource, imageResource, virtualRoutePage])
 
   return (
-    <div className="absolute inset-0 top-0 right-0 bottom-0 left-0overflow-hidden flex pb-[84px] transition-all duration-300 bg-white dark:bg-black no-tap">
+    <div className="absolute inset-0 top-0 right-0 bottom-0 left-0 overflow-hidden flex pb-[84px] transition-all duration-300 bg-white dark:bg-black no-tap">
       <div
         className="absolute left-0 right-0 top-0 bottom-[84px] flex-col bg-white dark:bg-[#0D0D0D] overflow-hidden"
         style={{

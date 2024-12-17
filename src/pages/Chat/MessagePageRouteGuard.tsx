@@ -1,6 +1,5 @@
 import { useStore } from '@/store'
 import { useIM } from '@/store/hook/userIM'
-import { Spinner } from '@chakra-ui/react'
 import { FC, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import MessagePage from './MessagePage'
@@ -12,9 +11,9 @@ const MessagePageRouteGuard: FC = () => {
   const { getMessageWindow } = useIM()
   const connection = useStore((state) => state.connection)
 
-  const { addChatListItem, addMessageWindowListItem } = useStore((state) => ({
-    addChatListItem: state.addChatListItem,
+  const { addMessageWindowListItem, addConversation } = useStore((state) => ({
     addMessageWindowListItem: state.addMessageWindowListItem,
+    addConversation: state.addConversation,
   }))
 
   const isChatListLoaded = useStore((state) => state.isChatListLoaded)
@@ -33,9 +32,9 @@ const MessagePageRouteGuard: FC = () => {
               console.log('createEmptyConversation', res)
               const repeat = useStore
                 .getState()
-                .chatList.some((item) => item.channel.channelID === res.channel.channelID)
+                .conversationIds.some((id) => id === res.channel.channelID)
               if (!repeat) {
-                addChatListItem(res)
+                addConversation(res)
                 addMessageWindowListItem({
                   channel: res.channel,
                   messages: [],

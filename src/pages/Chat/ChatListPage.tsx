@@ -1,7 +1,5 @@
-import { FC, memo, useCallback, useEffect, useState } from 'react'
-import ChatList from '@/components/Chat/ChatList'
-import InfiniteScroll from 'react-infinite-scroll-component'
-import { Spinner } from '@chakra-ui/react'
+import { FC, memo, useCallback, useEffect, useRef, useState } from 'react'
+import ConversationList from '@/components/Chat/ChatList'
 import { cn, getWrappedMessage } from '@/utils/utils'
 import { useStore } from '@/store'
 import { useIM } from '@/store/hook/userIM'
@@ -12,7 +10,7 @@ import BaeimSDK, {
   Channel,
   FormattedMessage,
 } from '@/components/SDK/BaeimSDK'
-import { getConversationSync, getMessagesSync } from '@/api'
+import { deleteChannel, getConversationSync, getMessagesSync } from '@/api'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { log, error as logError } from 'console'
 import ChatSkeleton from '@/components/Skeketon/ChatSkeleton'
@@ -21,29 +19,30 @@ import Icon from '@/components/comm/Icon'
 
 const ChatListPage: FC<{ className?: string }> = ({ className }) => {
   const {
-    chatList,
     connection,
     isChatListLoaded,
     setConnection,
     setIsChatListLoaded,
-    setChatList,
-    addChatListItem,
     addMessageWindowListItem,
-    deleteChatListItem,
-    updateChatListItem,
     userInfo,
     token,
+    conversationIds,
+    setConversation,
+    addConversation,
+    updateConversation,
+    deleteConversation,
   } = useStore((state) => ({
     chatList: state.chatList,
     connection: state.connection,
     isChatListLoaded: state.isChatListLoaded,
     setConnection: state.setConnection,
     setIsChatListLoaded: state.setIsChatListLoaded,
-    setChatList: state.setChatList,
-    addChatListItem: state.addChatListItem,
     addMessageWindowListItem: state.addMessageWindowListItem,
-    deleteChatListItem: state.deleteChatListItem,
-    updateChatListItem: state.updateChatListItem,
+    conversationIds: state.conversationIds,
+    setConversation: state.setConversation,
+    addConversation: state.addConversation,
+    updateConversation: state.updateConversation,
+    deleteConversation: state.deleteConversation,
     userInfo: state.userInfo,
     token: state.token,
   }))
@@ -52,7 +51,7 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
   const currentUid = getCurrentUid()
   const [resetTrigger, setResetTrigger] = useState(0)
   const handleContainerClick = () => {
-    setResetTrigger((prev) => prev + 1)
+    setResetTrigger(resetTrigger + 1)
   }
   const [status, setStatus] = useState<ConnectStatus>(ConnectStatus.Disconnect)
   const getStatusText = () => {
@@ -110,7 +109,7 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
           syncConversationsCallback: async () => {
             const resp = await getConversationSync({
               uid: String(currentUid),
-              msg_count: 30,
+              msg_count: 20,
             })
             return resp
           },
@@ -123,7 +122,7 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
               start_message_seq: opts.startMessageSeq,
               end_message_seq: opts.endMessageSeq,
               pull_mode: opts.pullMode,
-              limit: 10,
+              limit: 20,
             })
             return resp.messages || []
           },
@@ -139,7 +138,7 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
             try {
               const res = await sdk.getAllConversation()
               setIsChatListLoaded(true)
-              setChatList(res)
+              setConversation(res)
               res.forEach((conversation) => {
                 addMessageWindowListItem({
                   channel: conversation.channel,
@@ -151,13 +150,11 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
                 (conversation, action) => {
                   if (action === ConversationAction.add) {
                     console.warn('addConversationListener add conversation', conversation)
-                    const repeat = useStore
-                      .getState()
-                      .chatList.some(
-                        (item) => item.channel.channelID === conversation.channel.channelID
-                      )
+                    const repeat = conversationIds.some(
+                      (id) => id === conversation.channel.channelID
+                    )
                     if (!repeat) {
-                      addChatListItem(conversation)
+                      addConversation(conversation)
                       addMessageWindowListItem({
                         channel: conversation.channel,
                         messages: conversation.recents?.map(getWrappedMessage) ?? [],
@@ -165,10 +162,14 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
                     }
                   } else if (action === ConversationAction.update) {
                     console.warn('addConversationListener update conversation', conversation)
-                    updateChatListItem(conversation)
+                    updateConversation(conversation)
                   } else if (action === ConversationAction.remove) {
                     console.warn('addConversationListener remove conversation', conversation)
-                    deleteChatListItem(conversation.channel.channelID)
+                    deleteConversation(conversation.channel.channelID)
+                    deleteChannel({
+                      channel_id: conversation.channel.channelID,
+                      channel_type: conversation.channel.channelType,
+                    })
                   }
                 }
               )
@@ -189,10 +190,14 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
       removeConnectionStatusListener?.()
     }
   }, [userInfo, token])
-  console.log('chatListPage render')
+  console.warn('chatListPage render')
   return (
     <div
-      className={cn('dark:bg-black bg-white overflow-auto min-h-full', 'scrollbar-hide', className)}
+      className={cn(
+        'absolute top-0 left-0 right-0 bottom-0 dark:bg-black bg-white overflow-auto',
+        'flex scrollbar-hide',
+        className
+      )}
       onClick={handleContainerClick}
       style={{
         paddingTop:
@@ -202,25 +207,21 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
       <div className="absolute top-0 left-0 right-0 h-[32px] pl-6 text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-black flex items-center justify-center">
         {getStatusText()}
       </div>
-      {isChatListLoaded && chatList.length > 0 && (
-        <InfiniteScroll
-          dataLength={chatList.length}
-          next={() => {}}
-          hasMore={false}
-          loader={
-            <div className="flex items-center justify-center">
-              <Spinner color="#4A3AFF" />
-            </div>
-          }
-        >
-          <ChatList chats={chatList} resetTrigger={resetTrigger} />
-        </InfiniteScroll>
+      {isChatListLoaded && conversationIds.length > 0 && (
+        <div className="flex-1 overflow-auto scrollbar-hide">
+          <ConversationList ids={conversationIds} resetTrigger={resetTrigger} />
+          <div className="h-[40px]"></div>
+        </div>
       )}
-      {isChatListLoaded && chatList.length === 0 && (
-        <Empty
-          icon={<Icon name="icon-none_chat" style={{ width: '164px', height: '164px' }}></Icon>}
-          title="No Chat History"
-        ></Empty>
+      {isChatListLoaded && conversationIds.length === 0 && (
+        <div className="flex-1 flex items-center justify-center">
+          <Empty
+            icon={
+              <Icon name="icon-Empty_white_chat" style={{ width: '164px', height: '164px' }}></Icon>
+            }
+            title="No Chat History"
+          ></Empty>
+        </div>
       )}
       {!isChatListLoaded && (
         <div className="flex-1 pb-[80px]">

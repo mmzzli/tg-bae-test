@@ -58,23 +58,7 @@ const FollowPage: FC = () => {
     }
   }, [uid, token])
 
-  const updateMyFollow = () => {
-    if (!useStore.getState().token) {
-      setTimeout(() => {
-        updateMyFollow()
-      }, 150)
-      return
-    }
-    console.log('myFollow', myFollow)
-    if (myFollow.length === 0) {
-      const current_uid = launchParams.initData?.user?.id ?? 0
-      getFollowingList(current_uid).then((res) => setMyFollow(res))
-    }
-  }
-
   useEffect(() => {
-    // fix reload page
-    updateMyFollow()
     return () => {
       resetFollowerList()
       resetFollowingList()

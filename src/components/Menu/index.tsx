@@ -66,7 +66,7 @@ const Menu: FC = () => {
             >
               <i
                 className={cn(
-                  'iconfont text-[28px]',
+                  'iconfont text-[26px]',
                   pathname === item.url ? item.iconActive : item.icon,
                   item.name === 'POST' && 'text-[#fff] text-[18px]'
                 )}

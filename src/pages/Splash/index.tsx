@@ -42,9 +42,10 @@ const Splash: FC = () => {
       }
       // setCacheVideo()
     }
-    setTimeout(() => {
-      setIsCached(true)
-    }, 2000)
+    const timer = setTimeout(() => {
+      setIsCached(true);
+    }, 2000);
+    return () => clearTimeout(timer);
   }, [list])
 
   useEffect(() => {

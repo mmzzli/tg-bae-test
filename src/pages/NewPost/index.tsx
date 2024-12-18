@@ -25,6 +25,7 @@ import { TaskStatus, UploadThread } from '@/store/slices/taskSlice'
 import { generateUUID, isMobileDevice } from '@/utils/utils'
 import { error } from 'console'
 import { useGetDailyTask } from '@/hooks/useDailyTask'
+import { useViewList } from '@/store/hook/useResourceList'
 
 export const NewPost: FC = () => {
   const navigate = useNavigate()
@@ -49,9 +50,10 @@ export const NewPost: FC = () => {
 
   const [widths, setWidths] = useState<number[]>([])
   const [heights, setHeights] = useState<number[]>([])
-  const [isFocused, setIsFocused] = useState<boolean>(false);
+  const [isFocused, setIsFocused] = useState<boolean>(false)
 
   const { runGetDailyTask } = useGetDailyTask()
+  const { refresh } = useViewList()
 
   useEffect(() => {
     imgAttr.forEach((imgitem) => {
@@ -115,6 +117,9 @@ export const NewPost: FC = () => {
         })
         // when sent page will back to task page,so we need to update the task list
         runGetDailyTask()
+        setTimeout(() => {
+          refresh()
+        }, 400)
         toast({
           render: () => {
             return <CustomToast title="Your post was sent." type={typeOptions.success} />
@@ -228,6 +233,9 @@ export const NewPost: FC = () => {
           })
           // when sent page will back to task page,so we need to update the task list
           runGetDailyTask()
+          setTimeout(() => {
+            refresh()
+          }, 400)
           toast({
             render: () => {
               return <CustomToast title="Your post was sent." type={typeOptions.success} />
@@ -457,17 +465,16 @@ export const NewPost: FC = () => {
     }
   }, [imgAttr])
 
-
   useEffect(() => {
     const handleKeyboardHide = () => {
-      window.scrollTo(0, 0);
-    };
-    window.addEventListener('focusout', handleKeyboardHide);
+      window.scrollTo(0, 0)
+    }
+    window.addEventListener('focusout', handleKeyboardHide)
 
     return () => {
-      window.removeEventListener('focusout', handleKeyboardHide);
-    };
-  }, []);
+      window.removeEventListener('focusout', handleKeyboardHide)
+    }
+  }, [])
   useEffect(() => {
     if (isFocused) {
       const scrollable: any = document.getElementById('scrollable')
@@ -594,8 +601,12 @@ export const NewPost: FC = () => {
           <Textarea
             className="placeholder-[#999] mt-6"
             value={title}
-            onFocus={() => { isMobileDevice() && setIsFocused(true) }}
-            onBlur={() => { isMobileDevice() && setIsFocused(false) }}
+            onFocus={() => {
+              isMobileDevice() && setIsFocused(true)
+            }}
+            onBlur={() => {
+              isMobileDevice() && setIsFocused(false)
+            }}
             onChange={(event) => setTitle(event.target.value)}
             mt="10px"
             color="#333"
@@ -609,7 +620,7 @@ export const NewPost: FC = () => {
         </Box>
         <StarsPage setPrice={setPrice} price={price || 0} />
       </Box>
-      <Box h={`${isFocused ? "600px" : ""}`}></Box>
+      <Box h={`${isFocused ? '600px' : ''}`}></Box>
     </Box>
   )
 }

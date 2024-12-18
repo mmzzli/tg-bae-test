@@ -80,7 +80,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           // WebAppShareMessageOpened
           console.log(WebApp)
 
-          // WebApp.postEvent('prepared_message_sent');
+          WebApp.postEvent('prepared_message_sent');
 
 
 

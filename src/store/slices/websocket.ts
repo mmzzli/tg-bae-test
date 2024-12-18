@@ -54,14 +54,14 @@ export const createWebSocketSlice: StateCreator<WebSocketSlice> = (set, get) => 
         ws.onopen = () => {
           set({ isConnected: true, isConnecting: false })
           reconnectCount = 0
-          startHeartbeat()
+          // startHeartbeat()
           resolve()
         }
 
         ws.onclose = () => {
           console.warn('ws close')
           set({ isConnected: false, isConnecting: false })
-          stopHeartbeat()
+          // stopHeartbeat()
 
           if (reconnectCount < MAX_RECONNECT_ATTEMPTS) {
             reconnectCount++
@@ -108,7 +108,7 @@ export const createWebSocketSlice: StateCreator<WebSocketSlice> = (set, get) => 
       ws.close()
       ws = null
     }
-    stopHeartbeat()
+    // stopHeartbeat()
     set({ isConnected: false })
   }
 

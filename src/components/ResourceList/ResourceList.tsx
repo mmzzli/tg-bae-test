@@ -77,10 +77,15 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       if (result.id) {
         if (window.Telegram?.WebApp) {
           const WebApp = window.Telegram?.WebApp
+          // WebAppShareMessageOpened
+          console.log(WebApp)
+          WebApp.onEvent('prepared_message_sent', (eventData:any) => {
+              console.log('prepared_message_sent event triggered with data:', eventData);
+              // 在这里处理事件逻辑
+          });
+
           setTimeout(() => {
-            WebApp.shareMessage(result.id,(e:any)=>{
-              console.log(e)
-            })
+            WebApp.shareMessage(result.id)
           }, 100)
         }
         off()

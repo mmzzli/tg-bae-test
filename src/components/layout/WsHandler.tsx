@@ -22,7 +22,7 @@ const WsHandler = memo(() => {
   const handleMessage = (data: any) => {
     console.warn('ws msg', data)
     if (data.startsWith('unread')) {
-      const amount = data.split(':')[1]
+      const amount = parseInt(data.split(':')[1], 10) || 0
       setUnreadNotificationCount(amount)
     } else if (data.startsWith('fan')) {
       const following = JSON.parse(data.split(':')[1])

@@ -26,6 +26,8 @@ import NiceModal from '@ebay/nice-modal-react'
 
 import { mockTelegramEnv, parseInitData } from '@tma.js/sdk'
 import { DEV_INIT_DATA_RAW } from './utils/constants'
+import { AliveScope, KeepAlive } from 'react-activation'
+
 const Task = lazy(() => import('./pages/Task'))
 
 // mockTelegramEnv({
@@ -74,61 +76,73 @@ function App() {
     <>
       <NiceModal.Provider>
         <ChakraProvider resetCSS theme={theme}>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<MainLayout />}>
-                <Route index element={<Splash />} />
-                <Route path="home">
-                  <Route index element={<HomePage />} />
-                  <Route path="searching" element={<Searching />} />
-                  <Route path="christmas" element={<Christmas />} />
-                </Route>
-                <Route path="post" element={<NewPost />} />
-                <Route path="shares" element={<Shares />} />
+          <AliveScope>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<MainLayout />}>
+                  <Route index element={<Splash />} />
+                  <Route path="home">
+                    <Route index element={
+                      <KeepAlive name="home">
+                        <HomePage />
+                      </KeepAlive>
+                    } />
+                    <Route path="searching" element={<Searching />} />
+                    <Route path="christmas" element={<Christmas />} />
+                  </Route>
+                  <Route path="post" element={<NewPost />} />
+                  <Route path="shares" element={<Shares />} />
 
-                <Route
-                  path="task"
-                  element={
-                    <Suspense
-                      fallback={
-                        <div className="flex items-center justify-center h-full pb-10">
-                          <i
-                            className="iconfont icon-loading animate-spin text-[#6254FF]"
-                            style={{ fontSize: '40px' }}
-                          />
-                        </div>
-                      }
-                    >
-                      <Task />
-                    </Suspense>
-                  }
-                />
-
-                {/* Profile  */}
-                <Route path="profile">
-                  <Route index element={<Profile />} />
-                  <Route path="edit" element={<ProfileEdit />} />
-                  <Route path="earningsHistory" element={<EarningsHistory />} />
                   <Route
-                    path=":uid"
+                    path="task"
                     element={
-                      <ProfileGuard>
-                        <OthersProfile />
-                      </ProfileGuard>
+                      <Suspense
+                        fallback={
+                          <div className="flex items-center justify-center h-full pb-10">
+                            <i
+                              className="iconfont icon-loading animate-spin text-[#6254FF]"
+                              style={{ fontSize: '40px' }}
+                            />
+                          </div>
+                        }
+                      >
+                        <Task />
+                      </Suspense>
                     }
                   />
+
+                  {/* Profile  */}
+                  <Route path="profile">
+                    <Route index element={
+                      <Suspense fallback={null}>
+                        <KeepAlive name="profile">
+                          <Profile />
+                        </KeepAlive>
+                      </Suspense>
+                    } />
+                    <Route path="edit" element={<ProfileEdit />} />
+                    <Route path="earningsHistory" element={<EarningsHistory />} />
+                    <Route
+                      path=":uid"
+                      element={
+                        <ProfileGuard>
+                          <OthersProfile />
+                        </ProfileGuard>
+                      }
+                    />
+                  </Route>
+
+                  {/* Follow */}
+                  <Route path="follow/:uid" element={<Follow />} />
+
+                  {/* Chat */}
+                  <Route path="chat" element={<></>} />
+                  <Route path="chat/:uid" element={<MessagePageRouteGuard />} />
+                  <Route path="ageGate" element={<AgeGate />} />
                 </Route>
-
-                {/* Follow */}
-                <Route path="follow/:uid" element={<Follow />} />
-
-                {/* Chat */}
-                <Route path="chat" element={<></>} />
-                <Route path="chat/:uid" element={<MessagePageRouteGuard />} />
-                <Route path="ageGate" element={<AgeGate />} />
-              </Route>
-            </Routes>
-          </BrowserRouter>
+              </Routes>
+            </BrowserRouter>
+          </AliveScope>
         </ChakraProvider>
       </NiceModal.Provider>
     </>

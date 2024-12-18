@@ -4,8 +4,9 @@ import ResourceList from '../ResourceList/ResourceList'
 import { cn } from '@/utils/utils'
 import useCacheVideo, { useRecommendList } from '@/store/hook/useResourceList'
 import PostSkeleton from '../Skeketon/PostSkeleton'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useStore } from '@/store'
+import { useActivate } from 'react-activation'
 
 interface PostListProps {
   className?: string
@@ -16,6 +17,7 @@ const RecommendList = ({ className }: PostListProps) => {
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
   const updateCacheVideo = useStore((state) => state.updateCacheVideo)
+  const [random, setRandom] = useState(0)
 
   useCacheVideo(
     list,
@@ -24,8 +26,17 @@ const RecommendList = ({ className }: PostListProps) => {
     getCacheVideoindex,
     updateCacheVideo,
     'recommendScrollableDiv',
-    'video-card'
+    'video-card',
+    random
   )
+
+  useActivate(() => {
+    const defaultVideo = document.getElementById('default-video-player')
+    if (defaultVideo) {
+      defaultVideo.parentNode?.removeChild(defaultVideo)
+    }
+    setRandom(Date.now())
+  })
 
   return (
     <div className={cn(className, '')}>

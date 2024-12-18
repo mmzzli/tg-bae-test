@@ -23,8 +23,9 @@ const Profile: FC = () => {
 
   return (
     <div
-      className="relative w-full h-full overflow-auto bg-white dark:bg-black scrollbar-hide"
+      className="relative w-full overflow-auto bg-white dark:bg-black scrollbar-hide"
       id="profileScrollableDiv"
+      style={{ height: "calc(100vh - 84px)" }}
     >
       <UserProfile />
       <ViewList />

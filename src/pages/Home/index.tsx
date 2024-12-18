@@ -85,8 +85,9 @@ const HomePage: FC = () => {
 
   return (
     <div
-      className="relative w-full h-full overflow-auto scrollbar-hide"
+      className="relative w-full overflow-auto scrollbar-hide"
       id="recommendScrollableDiv"
+      style={{ height: "calc(100vh - 84px)" }}
     >
       <div
         className="flex p-[10px_16px] w-full z-[111]"
@@ -160,7 +161,6 @@ const HomePage: FC = () => {
           </div>
         </div>
       </div>
-
       <div className="overflow-hidden" style={{ height: '0px', opacity: 0, ...animation }}>
         <FollowingList />
       </div>

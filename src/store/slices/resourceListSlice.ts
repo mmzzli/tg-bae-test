@@ -1,6 +1,6 @@
 import { StateCreator } from 'zustand'
 import { ListItem, UserItem } from '../../types'
-import { getRecommendMedia } from '../../api/list'
+import { getRecommendMedia, recommendFeatured } from '../../api/list'
 import { favList, getUsersPosts, ordersList, viewList, allFeatured } from '@/api'
 import { useStore } from '../store'
 import Hls from 'hls.js'
@@ -291,10 +291,15 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       get().setRecommendLoading(true)
       get().setRecommendError(null)
 
-      const { posts } = await getRecommendMedia({
+      const {featured} = await recommendFeatured(1)
+      const { posts: postsRes } = await getRecommendMedia({
         page_num: page,
         records: recordsNum,
       })
+      const posts = [
+        ...featured,
+        ...postsRes,
+      ]
 
       const hasMore = posts.length === recordsNum
       const updatedPosts = posts.map(({ post, user }: ListItem) => ({

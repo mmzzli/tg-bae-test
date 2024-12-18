@@ -1,4 +1,4 @@
-import { RecommendListReq, ListRes, ShareInfo } from '@/types'
+import { RecommendListReq, ListRes, ShareInfo, FeaturedListRes } from '@/types'
 import { get, post } from './base'
 import { DailyTask } from '@/store/slices/systemSlice'
 
@@ -21,6 +21,9 @@ export const getSingleMedia = (ref: string) => {
 
 export const getRecommendMedia = (params: RecommendListReq) => {
   return post<ListRes>(`/api/v1/recommend`, params)
+}
+export const recommendFeatured = (type:number) => {
+  return get<FeaturedListRes>(`/api/v1/recommend_featured/${type}`)
 }
 
 export const getDailyTask = () => {

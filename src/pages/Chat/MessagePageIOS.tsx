@@ -195,7 +195,7 @@ const MessagePageIOS = () => {
   return (
     <div
       ref={containerRef}
-      className="absolute top-0 left-0 right-0 flex flex-col dark:bg-[#000000] bg-white z-[999] overflow-hidden slide-in-from-right"
+      className="absolute top-0 left-0 right-0 flex flex-col dark:bg-[#000000] bg-white z-[8888] overflow-hidden slide-in-from-right"
       style={{
         WebkitOverflowScrolling: 'touch',
         transition: isIOS() ? 'height 0.3s ease-in-out' : '',

@@ -203,7 +203,12 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
           'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 32px)',
       }}
     >
-      <div className="absolute top-0 left-0 right-0 h-[32px] pl-6 text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-black flex items-center justify-center">
+      <div
+        className="absolute left-0 right-0 h-[32px] pl-6 text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-black flex items-center justify-center"
+        style={{
+          top: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
+        }}
+      >
         {getStatusText()}
       </div>
       {isChatListLoaded && conversationIds.length > 0 && (

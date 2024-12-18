@@ -2,6 +2,7 @@ import { memo, useCallback, useContext, useEffect, useMemo, useState } from 'rea
 import { Box, Flex, HStack, IconButton, useBoolean, Text, Heading } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { DrawSkeletonItem } from '@/components/Skeketon/ChatSkeleton'
+import { postEvent } from '@telegram-apps/sdk'
 
 import { favDel, favPost, postLike } from '@/api'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
@@ -80,13 +81,28 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           // WebAppShareMessageOpened
           console.log(WebApp)
 
-          WebApp.postEvent('prepared_message_sent');
-
+          // postEvent('prepared_message_sent', {
+          //   type: 'impact',
+          //   impact_style: 'heavy',
+          // })
+          // onEvent('prepared_message_sent');
 
 
 
           setTimeout(() => {
             WebApp.shareMessage(result.id)
+
+            WebApp.onEvent('prepared_message_sent', function(eventType:any, eventData:any) {
+              // 在分享成功后，重置标志
+              console.log("Message shared successfully!", eventType, eventData);
+            });
+
+            // 监听分享取消的事件
+            WebApp.onEvent('shareMessageClosed', function(eventType:any, eventData:any) {
+              // 在用户关闭分享窗口时重置标志
+              console.log("User closed the share message window.", eventType, eventData);
+            });
+
           }, 100)
         }
         off()

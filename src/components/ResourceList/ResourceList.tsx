@@ -2,6 +2,7 @@ import { memo, useCallback, useContext, useEffect, useMemo, useState } from 'rea
 import { Box, Flex, HStack, IconButton, useBoolean, Text, Heading } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { DrawSkeletonItem } from '@/components/Skeketon/ChatSkeleton'
+import { postEvent } from '@telegram-apps/sdk'
 
 import { favDel, favPost, postLike } from '@/api'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
@@ -80,8 +81,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           // WebAppShareMessageOpened
           console.log(WebApp)
 
-          WebApp.postEvent('prepared_message_sent');
-
+          postEvent('shareMessageSent');
 
 
 

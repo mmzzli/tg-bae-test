@@ -84,7 +84,7 @@ const HomePage: FC = () => {
   }
 
   const checkIfAtTop = () => {
-    const element = document.getElementById('featuredList');
+    const element = document.getElementById('view-container');
     if (element) {
       const rect = element.getBoundingClientRect();
       if(rect.top > 0){

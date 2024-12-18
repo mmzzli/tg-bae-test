@@ -96,7 +96,7 @@ export const NewPost: FC = () => {
         render: () => {
           return <CustomToast title="Your post failed to send." type={typeOptions.error} />
         },
-        position: 'top',
+        position: 'bottom',
       })
       resetUploadTask()
     }
@@ -118,7 +118,7 @@ export const NewPost: FC = () => {
           render: () => {
             return <CustomToast title="Your post was sent." type={typeOptions.success} />
           },
-          position: 'top',
+          position: 'bottom',
         })
         resetUploadTask()
       } catch (error) {
@@ -193,7 +193,7 @@ export const NewPost: FC = () => {
           render: () => {
             return <CustomToast title="Your post failed to send." type={typeOptions.error} />
           },
-          position: 'top',
+          position: 'bottom',
         })
       }
       return
@@ -208,7 +208,7 @@ export const NewPost: FC = () => {
           render: () => {
             return <CustomToast title="Your post failed to send." type={typeOptions.error} />
           },
-          position: 'top',
+          position: 'bottom',
         })
         resetUploadTask()
       }
@@ -231,7 +231,7 @@ export const NewPost: FC = () => {
             render: () => {
               return <CustomToast title="Your post was sent." type={typeOptions.success} />
             },
-            position: 'top',
+            position: 'bottom',
           })
           resetUploadTask()
         } catch (error) {
@@ -373,7 +373,7 @@ export const NewPost: FC = () => {
         render: () => {
           return <CustomToast title="Your post failed to send." type={typeOptions.error} />
         },
-        position: 'top',
+        position: 'bottom',
       })
     }
   }
@@ -398,7 +398,7 @@ export const NewPost: FC = () => {
             />
           )
         },
-        position: 'top',
+        position: 'bottom',
       })
       return
     }
@@ -409,7 +409,7 @@ export const NewPost: FC = () => {
           render: () => {
             return <CustomToast title="Please select only one video." type={typeOptions.warning} />
           },
-          position: 'top',
+          position: 'bottom',
         })
         return
       }
@@ -423,7 +423,7 @@ export const NewPost: FC = () => {
           render: () => {
             return <CustomToast title="Maximum 9 images allowed" type={typeOptions.warning} />
           },
-          position: 'top',
+          position: 'bottom',
         })
         return
       }

@@ -41,7 +41,7 @@ class HttpClient {
     return this.toastInstance.toast({
       title,
       status,
-      position: 'top',
+      position: 'bottom',
       duration: 3000,
       isClosable: true,
     })

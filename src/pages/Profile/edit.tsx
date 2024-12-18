@@ -150,7 +150,7 @@ const ProfileEdit: FC = () => {
     setIsLoading(true)
     await putProfile(profileData)
     toast({
-      position: 'top',
+      position: 'bottom',
       onCloseComplete: () => {
         console.log(profileData.avatar, '=======')
         setUserInfo(profileData)

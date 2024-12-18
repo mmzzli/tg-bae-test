@@ -103,7 +103,7 @@ const Earnings = () => {
                   render: () => {
                     return <CustomToast title="coming soon" type={typeOptions.warning} />
                   },
-                  position: 'top',
+                  position: 'bottom',
                 })
                 // shareLink(link ?? '')
               }}

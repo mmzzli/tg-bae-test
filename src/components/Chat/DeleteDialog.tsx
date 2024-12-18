@@ -99,7 +99,7 @@ export const DeleteDialogWarp = NiceModal.create(
           render: () => {
             return <CustomToast title="Delete post success" type={typeOptions.success} />
           },
-          position: 'top',
+          position: 'bottom',
         })
       } catch (e: any) {
         let message = ''
@@ -112,7 +112,7 @@ export const DeleteDialogWarp = NiceModal.create(
           render: () => {
             return <CustomToast title={`${message}`} type={typeOptions.error} />
           },
-          position: 'top',
+          position: 'bottom',
         })
       } finally {
         setLoading(false)

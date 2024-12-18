@@ -43,13 +43,18 @@ const AgeGate = () => {
       </div>
       <div className="mt-16 text-center">
         <div className="flex justify-center gap-[8px] flex-col items-center">
-          <Checkbox type="checkbox" checked={isChecked} onChange={handleChange} alignItems="flex-start">
-          <p className="align-left text-[#999] text-[12px] whitespace-normal">
-            I have read and accept the
-            <a className="underline ml-[4px]">Terms of Service</a>
-            and
-            <a className="underline ml-[4px]">Privacy Policy</a>.
-          </p>
+          <Checkbox
+            type="checkbox"
+            checked={isChecked}
+            onChange={handleChange}
+            alignItems="flex-start"
+          >
+            <p className="align-left text-[#999] text-[12px] whitespace-normal">
+              I have read and accept the
+              <a className="underline ml-[4px]">Terms of Service</a>
+              and
+              <a className="underline ml-[4px]">Privacy Policy</a>.
+            </p>
           </Checkbox>
         </div>
         <BaseButton
@@ -59,7 +64,7 @@ const AgeGate = () => {
           className="m-[auto] mt-[16px]"
           handler={() => {
             if (isChecked) {
-              if(isShowTime){
+              if (isShowTime) {
                 localStorage.setItem('ageGate', '1')
               }
               navigate('/home')
@@ -68,13 +73,17 @@ const AgeGate = () => {
                 render: () => {
                   return <CustomToast title={`Please check terms.`} type={typeOptions.error} />
                 },
-                position: 'top',
+                position: 'bottom',
               })
             }
           }}
         />
-        <div className='mt-4'>
-          <Checkbox type="checkbox" checked={isShowTime} onChange={()=>setIsShowTime((pev)=>!pev)}>
+        <div className="mt-4">
+          <Checkbox
+            type="checkbox"
+            checked={isShowTime}
+            onChange={() => setIsShowTime((pev) => !pev)}
+          >
             <p className="text-[#999] text-[12px] whitespace-nowrap">
               Do not show again next time.
             </p>

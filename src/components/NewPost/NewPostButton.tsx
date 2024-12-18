@@ -22,7 +22,7 @@ const CreateButton = React.memo(
             />
           )
         },
-        position: 'top',
+        position: 'bottom',
       })
     }
 

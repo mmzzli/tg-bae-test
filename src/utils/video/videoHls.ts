@@ -9,6 +9,7 @@ video.setAttribute('x5-video-player-type', 'h5')
 video.setAttribute('x5-video-player-fullscreen', 'false')
 video.setAttribute('preload', 'auto')
 video.setAttribute('x-webkit-airplay', 'allow')
+video.id = 'default-video-player'
 
 export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLElement) => {
   const url = videoCard.media[0]

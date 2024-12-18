@@ -468,12 +468,22 @@ export const NewPost: FC = () => {
       window.removeEventListener('focusout', handleKeyboardHide);
     };
   }, []);
+  useEffect(() => {
+    if (isFocused) {
+      const scrollable: any = document.getElementById('scrollable')
+      scrollable.scrollTo({
+        top: 100000,
+        behavior: 'smooth',
+      })
+    }
+  }, [isFocused])
 
   return (
     <Box
       h="100vh"
       overflow="hidden"
       className="fixed w-screen h-screen bg-[#fff] z-10 overflow-auto scrollbar-hide"
+      id="scrollable"
     >
       <Box p="0 16px">
         <HStack justifyContent="space-between" pt="16px">
@@ -584,8 +594,8 @@ export const NewPost: FC = () => {
           <Textarea
             className="placeholder-[#999] mt-6"
             value={title}
-            onFocus={() => {  setIsFocused(true) }}
-            onBlur={() => { setIsFocused(false) }}
+            onFocus={() => { isMobileDevice() && setIsFocused(true) }}
+            onBlur={() => { isMobileDevice() && setIsFocused(false) }}
             onChange={(event) => setTitle(event.target.value)}
             mt="10px"
             color="#333"

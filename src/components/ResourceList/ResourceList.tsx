@@ -381,7 +381,7 @@ const ResourceList = ({
                 type={type}
               />
               <Box position="relative">
-                {data.act_type === 1 && (
+                {(data.act_type === 1 && type === 'recommend') &&  (
                   <Box
                     position="absolute"
                     bottom="0px"

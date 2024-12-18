@@ -11,7 +11,7 @@ const SCROLL_THRESHOLD = 35
 
 const HomePage: FC = () => {
   const navigate = useNavigate()
-  const [title, setTitle] = useState('Following')
+  const [title, setTitle] = useState('Featured') // Following
   const [fadeClass, setFadeClass] = useState('fade-in')
   const [fullscreen, setFullscreen] = useState(false)
   const userInfo = useStore((state) => state.userInfo)
@@ -82,6 +82,30 @@ const HomePage: FC = () => {
   const handleDoubleClick = (): void => {
     handleDoubleTap()
   }
+
+  const checkIfAtTop = () => {
+    const element = document.getElementById('featuredList');
+    if (element) {
+      const rect = element.getBoundingClientRect();
+      if(rect.top > 0){
+        setTitle("Featured")
+      }else{
+        setTitle("Following")
+      }
+    }
+  };
+  useEffect(() => {
+    const container = document.getElementById('recommendScrollableDiv');
+    if (container) {
+      container.addEventListener('scroll', checkIfAtTop);
+    }
+    return () => {
+      const container = document.getElementById('recommendScrollableDiv');
+      if (container) {
+        container.removeEventListener('scroll', checkIfAtTop);
+      }
+    };
+  }, []);
 
   return (
     <div

@@ -62,7 +62,7 @@ const ChatListItem: FC<{
   const { getChatPeopleInfo, initChatPeopleInfo } = useIM()
   const { connection } = useStore((state) => ({
     connection: state.connection,
-    updateChatListItem: state.updateChatListItem,
+    // updateChatListItem: state.updateChatListItem,
   }))
   const [chatPeople, setChatPeople] = useState<OthersUserInfo | null>(null)
 

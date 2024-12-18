@@ -22,7 +22,7 @@ import VideoFrameSelector from '@/components/NewPost/VideoFrameSelector'
 import VideoPlayer from '@/components/comm/VideoPlayer'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import { TaskStatus, UploadThread } from '@/store/slices/taskSlice'
-import { generateUUID } from '@/utils/utils'
+import { generateUUID, isMobileDevice } from '@/utils/utils'
 import { error } from 'console'
 import { useGetDailyTask } from '@/hooks/useDailyTask'
 
@@ -49,6 +49,7 @@ export const NewPost: FC = () => {
 
   const [widths, setWidths] = useState<number[]>([])
   const [heights, setHeights] = useState<number[]>([])
+  const [isFocused, setIsFocused] = useState<boolean>(false);
 
   const { runGetDailyTask } = useGetDailyTask()
 
@@ -96,7 +97,7 @@ export const NewPost: FC = () => {
         render: () => {
           return <CustomToast title="Your post failed to send." type={typeOptions.error} />
         },
-        position: 'top',
+        position: 'bottom',
       })
       resetUploadTask()
     }
@@ -118,7 +119,7 @@ export const NewPost: FC = () => {
           render: () => {
             return <CustomToast title="Your post was sent." type={typeOptions.success} />
           },
-          position: 'top',
+          position: 'bottom',
         })
         resetUploadTask()
       } catch (error) {
@@ -193,7 +194,7 @@ export const NewPost: FC = () => {
           render: () => {
             return <CustomToast title="Your post failed to send." type={typeOptions.error} />
           },
-          position: 'top',
+          position: 'bottom',
         })
       }
       return
@@ -208,7 +209,7 @@ export const NewPost: FC = () => {
           render: () => {
             return <CustomToast title="Your post failed to send." type={typeOptions.error} />
           },
-          position: 'top',
+          position: 'bottom',
         })
         resetUploadTask()
       }
@@ -231,7 +232,7 @@ export const NewPost: FC = () => {
             render: () => {
               return <CustomToast title="Your post was sent." type={typeOptions.success} />
             },
-            position: 'top',
+            position: 'bottom',
           })
           resetUploadTask()
         } catch (error) {
@@ -373,7 +374,7 @@ export const NewPost: FC = () => {
         render: () => {
           return <CustomToast title="Your post failed to send." type={typeOptions.error} />
         },
-        position: 'top',
+        position: 'bottom',
       })
     }
   }
@@ -398,7 +399,7 @@ export const NewPost: FC = () => {
             />
           )
         },
-        position: 'top',
+        position: 'bottom',
       })
       return
     }
@@ -409,7 +410,7 @@ export const NewPost: FC = () => {
           render: () => {
             return <CustomToast title="Please select only one video." type={typeOptions.warning} />
           },
-          position: 'top',
+          position: 'bottom',
         })
         return
       }
@@ -423,7 +424,7 @@ export const NewPost: FC = () => {
           render: () => {
             return <CustomToast title="Maximum 9 images allowed" type={typeOptions.warning} />
           },
-          position: 'top',
+          position: 'bottom',
         })
         return
       }
@@ -456,11 +457,33 @@ export const NewPost: FC = () => {
     }
   }, [imgAttr])
 
+
+  useEffect(() => {
+    const handleKeyboardHide = () => {
+      window.scrollTo(0, 0);
+    };
+    window.addEventListener('focusout', handleKeyboardHide);
+
+    return () => {
+      window.removeEventListener('focusout', handleKeyboardHide);
+    };
+  }, []);
+  useEffect(() => {
+    if (isFocused) {
+      const scrollable: any = document.getElementById('scrollable')
+      scrollable.scrollTo({
+        top: 100000,
+        behavior: 'smooth',
+      })
+    }
+  }, [isFocused])
+
   return (
     <Box
       h="100vh"
       overflow="hidden"
       className="fixed w-screen h-screen bg-[#fff] z-10 overflow-auto scrollbar-hide"
+      id="scrollable"
     >
       <Box p="0 16px">
         <HStack justifyContent="space-between" pt="16px">
@@ -571,6 +594,8 @@ export const NewPost: FC = () => {
           <Textarea
             className="placeholder-[#999] mt-6"
             value={title}
+            onFocus={() => { isMobileDevice() && setIsFocused(true) }}
+            onBlur={() => { isMobileDevice() && setIsFocused(false) }}
             onChange={(event) => setTitle(event.target.value)}
             mt="10px"
             color="#333"
@@ -584,6 +609,7 @@ export const NewPost: FC = () => {
         </Box>
         <StarsPage setPrice={setPrice} price={price || 0} />
       </Box>
+      <Box h={`${isFocused ? "600px" : ""}`}></Box>
     </Box>
   )
 }

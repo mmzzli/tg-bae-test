@@ -5,6 +5,7 @@ import { debounce, throttle } from '@/utils/utils'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import { videoHls } from '@/utils/video/videoHls'
 import video from '@/assets/video/a.mp4'
+import { useActivate, useUnactivate } from 'react-activation'
 
 export const useRecommendList = () => {
   const { recommendList, setRecommendPage, loadRecommendList, resetRecommendList, token } =
@@ -310,14 +311,14 @@ const useCacheVideo = (
   getCacheVideoindex: number | string, // 当前缓存视频索引
   updateCache: (videos: FormatterListItem[]) => void, // 更新缓存的函数
   domId: string,
-  cardClass: string = 'video-card'
+  cardClass: string = 'video-card',
+  random=0
 ) => {
   const observerRef = useRef<IntersectionObserver | null>(null)
   const videos = list.filter((item) => item.type === 0)
-
+  let mostVisibleElement: HTMLElement | null = null
   const handleIntersection = (entries: IntersectionObserverEntry[]) => {
     let maxVisibility = 0
-    let mostVisibleElement: HTMLElement | null = null
 
     // 首先检查完全在视图内的元素
     for (const entry of entries) {
@@ -369,6 +370,59 @@ const useCacheVideo = (
       }
     }
   }
+
+  const findMostVisibleElement = () => {
+    const container = document.getElementById(domId)
+    console.log('****', container)
+    const elements = container?.querySelectorAll(`.${cardClass}`)
+    if (!elements) return null
+
+    let maxVisibility = 0
+    let mostVisible: HTMLElement | null = null
+
+    elements.forEach((element) => {
+      const rect = element.getBoundingClientRect()
+      const containerRect = container?.getBoundingClientRect()
+
+      if (!containerRect) return
+
+      // 计算元素在容器内的可见面积比例
+      const visibleHeight = Math.min(rect.bottom, containerRect.bottom) -
+                           Math.max(rect.top, containerRect.top)
+      const visibleRatio = visibleHeight / rect.height
+
+      if (visibleRatio > maxVisibility) {
+        maxVisibility = visibleRatio
+        mostVisible = element as HTMLElement
+      }
+    })
+
+    return mostVisible
+  }
+
+  useActivate(() => {
+    const visibleElement = findMostVisibleElement() as any
+    console.log('active----->', visibleElement)
+    if (!visibleElement) return
+    const videoIdStr = visibleElement.getAttribute('data-id')
+    if (videoIdStr) {
+      const currentId = parseInt(videoIdStr, 10)
+      // 更新状态
+      setCacheVideoIndex(currentId)
+
+      // 找到对应的视频数据并播放
+      const videoCard = videos.find((item) => item.id === currentId)
+      console.log('uncle--->', videoCard)
+      if (videoCard) {
+        videoHls(videoCard, visibleElement)
+      }
+    }
+  })
+
+  useUnactivate(() => {
+    console.log('unactive----->', 222)
+  })
+
   useEffect(() => {
     if (!list.length) return
     console.log(333333, '========jacob')
@@ -400,13 +454,13 @@ const useCacheVideo = (
     return () => {
       observerRef.current?.disconnect()
     }
-  }, [domId, cardClass, list])
+  }, [domId, cardClass, list, random])
 
   useEffect(() => {
     if (page === 1 && list.length) {
       const videos = list.filter((item) => item.type === 0)
       try {
-        setCacheVideoIndex(videos[0]?.id) // 初始时设置缓存视频索引
+        setCacheVideoIndex(videos[0]?.id) // 初始���设置缓存视频索引
         updateCache(videos) // 初始时更新缓存
       } catch (error) {}
     }

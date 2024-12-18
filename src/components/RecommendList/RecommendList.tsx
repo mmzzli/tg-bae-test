@@ -4,18 +4,24 @@ import ResourceList from '../ResourceList/ResourceList'
 import { cn } from '@/utils/utils'
 import useCacheVideo, { useRecommendList } from '@/store/hook/useResourceList'
 import PostSkeleton from '../Skeketon/PostSkeleton'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useStore } from '@/store'
+import { useActivate } from 'react-activation'
+import { recommendFeatured } from '@/api/list'
+import {ListItem} from '@/types'
 
 interface PostListProps {
   className?: string
 }
 
 const RecommendList = ({ className }: PostListProps) => {
+  const token = useStore((state) => state.token)
   const { list, hasMore, fetchMoreData, page } = useRecommendList()
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
   const updateCacheVideo = useStore((state) => state.updateCacheVideo)
+  const [random, setRandom] = useState(0)
+  const [featuredList, setFeaturedList]:any = useState([])
 
   useCacheVideo(
     list,
@@ -24,8 +30,32 @@ const RecommendList = ({ className }: PostListProps) => {
     getCacheVideoindex,
     updateCacheVideo,
     'recommendScrollableDiv',
-    'video-card'
+    'video-card',
+    random
   )
+
+  useActivate(() => {
+    const defaultVideo = document.getElementById('default-video-player')
+    if (defaultVideo) {
+      defaultVideo.parentNode?.removeChild(defaultVideo)
+    }
+    setRandom(Date.now())
+  })
+  useEffect(()=>{
+    const load = async()=>{
+      const {featured} = await recommendFeatured(1)
+      const updatedPosts = featured.map(({ post, user }: ListItem) => ({
+        ...user,
+        ...post,
+        media:
+          post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
+      }))
+      setFeaturedList(updatedPosts)
+    }
+    if(token){
+      load()
+    }
+  },[token])
 
   return (
     <div className={cn(className, '')}>
@@ -42,6 +72,9 @@ const RecommendList = ({ className }: PostListProps) => {
         scrollThreshold={0.1}
         style={{ overflow: 'visible' }}
       >
+        <div id="featuredList">
+          {featuredList.length > 0 && <ResourceList resources={featuredList} type="recommend" />}
+        </div>
         <div id="view-container">
           <ResourceList resources={list} type="recommend" />
         </div>

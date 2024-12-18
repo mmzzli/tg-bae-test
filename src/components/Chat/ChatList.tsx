@@ -1,6 +1,5 @@
-import { FC, useEffect, useState } from 'react'
-import { ChatListProps } from './types'
-import ChatListItem from './ChatListItem'
+import { FC, memo, useEffect, useState } from 'react'
+import Conversation from './ChatListItem'
 import { AnimationControls } from 'framer-motion'
 
 const useDragControls = (resetTrigger: number) => {
@@ -30,24 +29,32 @@ const useDragControls = (resetTrigger: number) => {
   }
 }
 
-const ChatList: FC<ChatListProps & { resetTrigger: number }> = ({ chats, resetTrigger }) => {
-  const { hasAnyItemDragged, controlsMap, handleDragStateChange } = useDragControls(resetTrigger)
-  return (
-    <>
-      {chats.map((chat) => (
-        <ChatListItem
-          key={chat.channel.channelID}
-          chat={chat}
-          className="mb-[12px]"
-          hasAnyItemDragged={hasAnyItemDragged}
-          onDragStateChange={(isDragging: boolean) =>
-            handleDragStateChange(chat.channel.channelID, isDragging)
-          }
-          controlsMap={controlsMap}
-        />
-      ))}
-    </>
-  )
-}
+const ConversationList: FC<{ ids: string[]; resetTrigger: number }> = memo(
+  ({ ids, resetTrigger }) => {
+    const { hasAnyItemDragged, controlsMap, handleDragStateChange } = useDragControls(resetTrigger)
+    console.warn('ConversationList Render', ids)
+    return (
+      <>
+        {ids.map((id) => (
+          <Conversation
+            key={id}
+            conversationId={id}
+            className="mb-[12px]"
+            hasAnyItemDragged={hasAnyItemDragged}
+            onDragStateChange={(isDragging: boolean) => handleDragStateChange(id, isDragging)}
+            controlsMap={controlsMap}
+          />
+        ))}
+      </>
+    )
+  },
+  (prevProps, nextProps) => {
+    return (
+      prevProps.resetTrigger === nextProps.resetTrigger &&
+      prevProps.ids.length === nextProps.ids.length &&
+      prevProps.ids.every((id, index) => id === nextProps.ids[index])
+    )
+  }
+)
 
-export default ChatList
+export default ConversationList

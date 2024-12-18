@@ -1,5 +1,5 @@
 import { AnimationControls, motion, PanInfo, useAnimation } from 'framer-motion'
-import { FC, useEffect, useState } from 'react'
+import { FC, memo, useEffect, useState } from 'react'
 import Image from '@/components/Image/Image'
 import { cn, getTimeStringAutoShort } from '@/utils/utils'
 import { useIM } from '@/store/hook/userIM'
@@ -50,21 +50,25 @@ const ChatContent: FC<{ user: OthersUserInfo | null; chat: Conversation }> = ({ 
 )
 
 const ChatListItem: FC<{
-  chat: Conversation
+  conversationId: string
   className?: string
   onDragStateChange?: (isDragging: boolean) => void
   hasAnyItemDragged: boolean
   controlsMap: Map<string, AnimationControls>
-}> = ({ chat, className, onDragStateChange, hasAnyItemDragged, controlsMap }) => {
+}> = ({ conversationId, className, onDragStateChange, hasAnyItemDragged, controlsMap }) => {
   const controls = useAnimation()
   const [isDragging, setIsDragging] = useState(false)
   const navigate = useNavigate()
   const { getChatPeopleInfo, initChatPeopleInfo } = useIM()
   const { connection } = useStore((state) => ({
     connection: state.connection,
-    updateChatListItem: state.updateChatListItem,
+    // updateChatListItem: state.updateChatListItem,
   }))
   const [chatPeople, setChatPeople] = useState<OthersUserInfo | null>(null)
+
+  const chat = useStore((state) => ({
+    ...state.conversationMap[conversationId],
+  })) as Conversation
 
   useEffect(() => {
     const loadChatPeople = () => {
@@ -122,7 +126,7 @@ const ChatListItem: FC<{
     }
   }
 
-  console.log('ChatListItem Render', chat.channel.channelID)
+  // console.warn('ChatListItem Render chat change', chat)
 
   return (
     <div className={cn('relative h-[64px] w-full overflow-hidden', className)}>
@@ -143,9 +147,17 @@ const ChatListItem: FC<{
           <ChatContent user={chatPeople} chat={chat} />
         </div>
       </motion.div>
-      <DeleteDialog onDelete={() => connection?.removeConversation(chat.channel.channelID)} />
+      <DeleteDialog
+        onDelete={() => {
+          connection?.removeConversation(chat.channel.channelID)
+          controls.start({ x: 0 })
+        }}
+        onCancel={() => {
+          controls.start({ x: 0 })
+        }}
+      />
     </div>
   )
 }
 
-export default ChatListItem
+export default memo(ChatListItem)

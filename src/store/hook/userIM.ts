@@ -15,26 +15,6 @@ export const useIM = () => {
     return useStore.getState().messageWindowList.find((msg) => msg.channel.channelID === channelId)
   }
 
-  // const getChatListItemByReceiveId = (receiver: number) => {
-  //   const chatId = getChatId(receiver, current_uid)
-  //   return useStore.getState().chatList.find((item) => item.id === chatId)
-  // }
-
-  // const initChatListItem = (receiver: number, message?: Message) => {
-  //   const chatId = getChatId(receiver, current_uid)
-  //   const chatItem = useStore.getState().chatList.find((item) => item.id === chatId)
-  //   if (!chatItem) {
-  //     initChatPeopleInfo(receiver)
-  //     addChatListItem({
-  //       id: chatId,
-  //       users: [receiver, current_uid],
-  //       title: '',
-  //       unreadCount: 0,
-  //       lastMessage: message,
-  //     })
-  //   }
-  // }
-
   const initChatPeopleInfo = (user: number, cb?: (user: OthersUserInfo) => void) => {
     getSomeoneProfile(user).then((res) => {
       addChatPeopleInfo(res)

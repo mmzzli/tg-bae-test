@@ -15,6 +15,7 @@ import VideoDialog from '@/components/ResourceList/VideoDialog'
 import ImageDialog from '@/components/ResourceList/ImageDialog'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useInitDailyTask } from '@/hooks/useDailyTask'
+import WsHandler from './WsHandler'
 
 const ChatListPageLoader = {
   preload: () =>
@@ -48,22 +49,11 @@ export const MainLayout: React.FC = () => {
   const imageResource = useStore((state) => state.imageResource)
   const setImageResource = useStore((state) => state.setImageResource)
   const virtualRoutePage = useStore((state) => state.virtualRoutePage)
-  const setUnreadNotificationCount = useStore((state) => state.setUnreadNotificationCount)
   const myFollow = useStore((state) => state.myFollow)
   const setMyFollow = useStore((state) => state.setMyFollow)
-  const connect = useStore((state) => state.connect)
   const { getCurrentUid } = useTMAUtils()
   const current_uid = getCurrentUid()
   const { runInitDailyTask } = useInitDailyTask()
-  const { run: runGetUnreadNotificationCount } = useRequest(getUnreadNotificationCount, {
-    pollingInterval: 6000,
-    manual: true,
-    pollingWhenHidden: false,
-    pollingErrorRetryCount: 6,
-    onSuccess({ amount }) {
-      setUnreadNotificationCount(amount)
-    },
-  })
 
   const updateMyFollow = () => {
     if (myFollow.length === 0) {
@@ -76,12 +66,9 @@ export const MainLayout: React.FC = () => {
     onSuccess({ token, api_token, user_info }) {
       setToken(token)
       setUserInfo({ ...user_info, api_token })
-      runGetUnreadNotificationCount(current_uid)
       updateMyFollow()
       // Daily Task [Daily Login + Init Daily Task Store]
       runInitDailyTask()
-      // connect to system ws
-      connect()
       if (window.loading) {
         setTimeout(() => {
           window.loading = false
@@ -262,6 +249,7 @@ export const MainLayout: React.FC = () => {
       <Menu />
       <VideoDialog></VideoDialog>
       <ImageDialog></ImageDialog>
+      <WsHandler />
     </div>
   )
 }

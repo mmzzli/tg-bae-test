@@ -11,7 +11,7 @@ const SCROLL_THRESHOLD = 35
 
 const HomePage: FC = () => {
   const navigate = useNavigate()
-  const [title, setTitle] = useState('Following')
+  const [title, setTitle] = useState('Featured') // Following
   const [fadeClass, setFadeClass] = useState('fade-in')
   const [fullscreen, setFullscreen] = useState(false)
   const userInfo = useStore((state) => state.userInfo)
@@ -83,10 +83,35 @@ const HomePage: FC = () => {
     handleDoubleTap()
   }
 
+  const checkIfAtTop = () => {
+    const element = document.getElementById('view-container');
+    if (element) {
+      const rect = element.getBoundingClientRect();
+      if(rect.top > 0){
+        setTitle("Featured")
+      }else{
+        setTitle("Following")
+      }
+    }
+  };
+  useEffect(() => {
+    const container = document.getElementById('recommendScrollableDiv');
+    if (container) {
+      container.addEventListener('scroll', checkIfAtTop);
+    }
+    return () => {
+      const container = document.getElementById('recommendScrollableDiv');
+      if (container) {
+        container.removeEventListener('scroll', checkIfAtTop);
+      }
+    };
+  }, []);
+
   return (
     <div
-      className="relative w-full h-full overflow-auto scrollbar-hide"
+      className="relative w-full overflow-auto scrollbar-hide"
       id="recommendScrollableDiv"
+      style={{ height: "calc(100vh - 84px)" }}
     >
       <div
         className="flex p-[10px_16px] w-full z-[111]"
@@ -160,7 +185,6 @@ const HomePage: FC = () => {
           </div>
         </div>
       </div>
-
       <div className="overflow-hidden" style={{ height: '0px', opacity: 0, ...animation }}>
         <FollowingList />
       </div>

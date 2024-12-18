@@ -51,7 +51,7 @@ const NotificationItem: FC<{
         render: () => {
           return <CustomToast title="Delete notification failed" type={typeOptions.error} />
         },
-        position: 'top',
+        position: 'bottom',
       })
     } finally {
       resetAllControls()

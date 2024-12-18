@@ -11,7 +11,7 @@ import {
   ViewListReq,
   LinkMetadata,
   totalAvailable,
-  AccountdetailRes
+  AccountdetailRes,
 } from '@/types'
 
 export const postResources = (params: PostResourceReq) => {
@@ -87,20 +87,22 @@ export const setUnread = (params: {
   })
 }
 
+export const deleteChannel = (params: { channel_id: string; channel_type: number }) => {
+  return post<Message[]>(`${import.meta.env.VITE_APP_IM_URL}channel/delete`, params, {
+    headers: { token: import.meta.env.VITE_APP_IM_TOKEN },
+  })
+}
+
 export const totalAvailableInvoice = () => {
   return get<totalAvailable>(`/api/v1/order/total_available_invoice`)
 }
-export const accountdetailList = (params:any) => {
-  return post<AccountdetailRes>(`/api/v1/order/accountdetail`,params)
+export const accountdetailList = (params: any) => {
+  return post<AccountdetailRes>(`/api/v1/order/accountdetail`, params)
 }
 
-export const featured = (params:any) => {
-  return post(`/api/v1/featured`,params)
+export const featured = (params: any) => {
+  return post(`/api/v1/featured`, params)
 }
-export const allFeatured = (params:{
-  page_num: number,
-  records: number,
-  type: number
-}) => {
-  return post<FeaturedListRes>(`/api/v1/all_featured`,params)
+export const allFeatured = (params: { page_num: number; records: number; type: number }) => {
+  return post<FeaturedListRes>(`/api/v1/all_featured`, params)
 }

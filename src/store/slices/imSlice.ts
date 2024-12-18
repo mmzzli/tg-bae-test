@@ -8,11 +8,6 @@ export interface IMSlice {
   resetConnection: () => void
   isChatListLoaded: boolean
   setIsChatListLoaded: (loaded: boolean) => void
-  chatList: Conversation[]
-  setChatList: (item: Conversation[]) => void
-  addChatListItem: (item: Conversation) => void
-  updateChatListItem: (item: Conversation) => void
-  deleteChatListItem: (channel: string) => void
   messageWindowList: MessageWindowListItem[]
   setMessageWindowList: (messageList: MessageWindowListItem[]) => void
   addMessageWindowListItem: (item: MessageWindowListItem) => void
@@ -21,6 +16,16 @@ export interface IMSlice {
   chatPeopleInfoList: OthersUserInfo[]
   setChatPeopleInfoList: (info: OthersUserInfo[]) => void
   addChatPeopleInfo: (info: OthersUserInfo) => void
+
+  // USE NEW DATA STRUCTURE START
+  conversationIds: string[]
+  conversationMap: Record<string, Conversation>
+  setConversation: (conversation: Conversation[]) => void
+  addConversation: (conversation: Conversation) => void
+  updateConversation: (conversation: Conversation) => void
+  deleteConversation: (conversationId: string) => void
+  setConversationIds: (ids: string[]) => void
+  // USE NEW DATA STRUCTURE END
 }
 
 export const createIMSlice: StateCreator<IMSlice> = (set) => ({
@@ -29,26 +34,6 @@ export const createIMSlice: StateCreator<IMSlice> = (set) => ({
   resetConnection: () => set({ connection: null }),
   isChatListLoaded: false,
   setIsChatListLoaded: (loaded) => set({ isChatListLoaded: loaded }),
-  chatList: [],
-  setChatList: (chatList) => set({ chatList }),
-  addChatListItem: (item) => set((state) => ({ chatList: [...state.chatList, item] })),
-  updateChatListItem: (chatListItem) =>
-    set((state) => ({
-      chatList: state.chatList.map((item) =>
-        item.channel.channelID === chatListItem.channel.channelID ? chatListItem : item
-      ),
-    })),
-  deleteChatListItem: (channel) =>
-    set((state) => {
-      // delete message window and message items
-      const messageWindowList = state.messageWindowList.filter(
-        (item) => item.channel.channelID !== channel
-      )
-      return {
-        chatList: state.chatList.filter((item) => item.channel.channelID !== channel),
-        messageWindowList,
-      }
-    }),
   messageWindowList: [],
   setMessageWindowList: (messageList) => set({ messageWindowList: messageList }),
   addMessageWindowListItem: (item) =>
@@ -59,20 +44,6 @@ export const createIMSlice: StateCreator<IMSlice> = (set) => ({
         item.channel.channelID === messageWindow.channel.channelID ? messageWindow : item
       ),
     })),
-
-  // set((state) => {
-  //   const index = state.messageWindowList.findIndex(
-  //     (window) => window.channel.channelID === messageWindow.channel.channelID
-  //   )
-  //   if (index === -1) return state
-
-  //   const newList = [...state.messageWindowList]
-  //   newList[index] = {
-  //     ...newList[index],
-  //     messages: [...newList[index].messages, ...messageWindow.messages],
-  //   }
-  //   return { messageWindowList: newList }
-  // }),
   deleteMessageWindowListItem: (id) =>
     set((state) => ({
       messageWindowList: state.messageWindowList.filter((item) => item.channel.channelID !== id),
@@ -81,4 +52,56 @@ export const createIMSlice: StateCreator<IMSlice> = (set) => ({
   setChatPeopleInfoList: (info) => set({ chatPeopleInfoList: info }),
   addChatPeopleInfo: (info) =>
     set((state) => ({ chatPeopleInfoList: [...state.chatPeopleInfoList, info] })),
+
+  // USE NEW DATA STRUCTURE START
+  conversationIds: [],
+  conversationMap: {},
+  setConversationIds: (ids: string[]) => set({ conversationIds: [...ids] }),
+  setConversation: (conversation) =>
+    set({
+      conversationIds: conversation.map((item) => item.channel.channelID),
+      conversationMap: conversation.reduce(
+        (acc, item) => ({ ...acc, [item.channel.channelID]: item }),
+        {}
+      ),
+    }),
+  addConversation: (conversation) =>
+    set((state) => {
+      if (state.conversationMap[conversation.channel.channelID]) {
+        return state
+      }
+      return {
+        conversationIds: [conversation.channel.channelID, ...state.conversationIds],
+        conversationMap: {
+          ...state.conversationMap,
+          [conversation.channel.channelID]: { ...conversation } as Conversation,
+        },
+      }
+    }),
+  updateConversation: (conversation) =>
+    set((state) => {
+      if (!state.conversationMap[conversation.channel.channelID]) {
+        return state
+      }
+      return {
+        conversationIds: [
+          conversation.channel.channelID,
+          ...state.conversationIds.filter((id) => id !== conversation.channel.channelID),
+        ],
+        conversationMap: {
+          ...state.conversationMap,
+          [conversation.channel.channelID]: { ...conversation } as Conversation,
+        },
+      }
+    }),
+  deleteConversation: (conversationId) =>
+    set((state) => {
+      const newConversationIds = state.conversationIds.filter((id) => id !== conversationId)
+      const newConversationMap = newConversationIds.reduce(
+        (acc, id) => ({ ...acc, [id]: state.conversationMap[id] }),
+        {}
+      )
+      return { conversationIds: newConversationIds, conversationMap: newConversationMap }
+    }),
+  // USE NEW DATA STRUCTURE END
 })

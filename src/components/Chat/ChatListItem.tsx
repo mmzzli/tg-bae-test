@@ -8,6 +8,7 @@ import { Conversation } from '../SDK/BaeimSDK'
 import { OthersUserInfo } from '@/types'
 import { DeleteDialog } from './DeleteDialog'
 import { useStore } from '@/store'
+import { setUnread } from '@/api'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 
 const ChatAvatar: FC<{ user: OthersUserInfo | null }> = ({ user }) => (
@@ -66,11 +67,11 @@ const ChatListItem: FC<{
     // updateChatListItem: state.updateChatListItem,
   }))
   const [chatPeople, setChatPeople] = useState<OthersUserInfo | null>(null)
-  const { getCurrentUid } = useTMAUtils()
-  const current_uid = getCurrentUid()
   const chat = useStore((state) => ({
     ...state.conversationMap[conversationId],
   })) as Conversation
+  const { getCurrentUid } = useTMAUtils()
+  const current_uid = getCurrentUid()
 
   useEffect(() => {
     const loadChatPeople = () => {
@@ -123,7 +124,14 @@ const ChatListItem: FC<{
     }
 
     if (chatPeople?.uid) {
-      connection?.clearConversationUnread(current_uid + '')
+      // connection?.clearConversationUnread(chat.channel.channelID)
+      setUnread({
+        uid: current_uid + '',
+        channel_id: chat.channel.channelID,
+        channel_type: chat.channel.channelType,
+        unread: 0,
+      })
+      connection?.clearConversationUnread(chat.channel.channelID)
       navigate(`/chat/${chatPeople?.uid}`)
     }
   }

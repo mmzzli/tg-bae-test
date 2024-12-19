@@ -67,6 +67,7 @@ const ChatListItem: FC<{
     // updateChatListItem: state.updateChatListItem,
   }))
   const [chatPeople, setChatPeople] = useState<OthersUserInfo | null>(null)
+
   const chat = useStore((state) => ({
     ...state.conversationMap[conversationId],
   })) as Conversation

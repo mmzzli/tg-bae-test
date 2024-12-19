@@ -11,7 +11,7 @@ const SCROLL_THRESHOLD = 35
 
 const HomePage: FC = () => {
   const navigate = useNavigate()
-  const [title, setTitle] = useState('Following') // Following
+  const [title, setTitle] = useState('Featured') // Following
   const [fadeClass, setFadeClass] = useState('fade-in')
   const [fullscreen, setFullscreen] = useState(false)
   const userInfo = useStore((state) => state.userInfo)
@@ -88,7 +88,7 @@ const HomePage: FC = () => {
     if (element) {
       const rect = element.getBoundingClientRect();
       if(rect.top > 0){
-        setTitle("Following")
+        setTitle("Featured")
       }else{
         setTitle("Following")
       }
@@ -176,7 +176,7 @@ const HomePage: FC = () => {
           </div>
         </div>
 
-        <div className="ml-auto flex gap-[13px] z-[111] relative">
+        <div className="ml-auto flex gap-[13px] z-[1111] relative">
           <div
             className="w-[48px] h-[48px] p-[12px] bg-[#F5F3F3] rounded-[50px] flex items-center justify-center cursor-pointer"
             onClick={() => navigate('/home/searching')}

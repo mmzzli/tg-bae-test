@@ -8,6 +8,8 @@ import Icon from '@/components/comm/Icon'
 import { useSafeState } from 'ahooks'
 import { useRecommendList } from '@/store/hook/useResourceList'
 import { CacheVideo, FormatterListItem } from '@/store/slices/resourceListSlice'
+import { useBoolean, useToast } from '@chakra-ui/react'
+import { CustomToast, typeOptions } from '@/components/comm/Toast'
 
 const SHARE_POST = 1
 const SHARE_PROFILE = 2
@@ -18,6 +20,7 @@ const Splash: FC = () => {
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const updateCacheVideo = useStore((state) => state.updateCacheVideo)
   const loadVideo = useStore((state) => state.loadVideo)
+  const toast = useToast()
 
   const setBackToHome = useStore((state) => state.setBackToHome)
   const { token, setSharedPostList, setOthersUserInfo } = useStore((state) => ({
@@ -96,8 +99,13 @@ const Splash: FC = () => {
         navigate(`/profile/${data.userInfo.uid || data.userInfo.user_id}`)
       }
     } catch (error) {
+      toast({
+        render: () => {
+          return <CustomToast title="Work deleted" type={typeOptions.warning} />
+        },
+        position: 'top',
+      })
       navigate(`/home`)
-      console.warn('API ERROR', error)
     }
   }
 

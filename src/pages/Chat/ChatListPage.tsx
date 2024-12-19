@@ -188,7 +188,7 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
       sdk?.stop()
       removeConnectionStatusListener?.()
     }
-  }, [userInfo, token])
+  }, [token])
   console.warn('chatListPage render')
   return (
     <div

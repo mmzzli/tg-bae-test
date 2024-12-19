@@ -77,26 +77,48 @@ const Image = React.memo(
       )
     }
 
-    if (hasError && type === 'avatar') {
-      return (
-        <div className={cn('w-full h-full bg-gray-200 rounded-full', errorClassName)}>
-          <div
-            className="rounded-[2px] overflow-hidden"
-            style={{
-              width: props.width ? props.width : '',
-              height: props.height ? props.height : '',
-            }}
-          >
-            <img
-              ref={imageRef}
-              src={DefaultAvatarIcon}
-              alt={alt}
-              onClick={() => onClick && onClick()}
-              className={cn('w-full h-full object-cover', imageClassNames)}
-              {...props}
-            />
+    if (hasError) {
+      if (type === 'avatar') {
+        return (
+          <div className={cn('w-full h-full bg-gray-200 rounded-full', errorClassName)}>
+            <div
+              className="rounded-[2px] overflow-hidden"
+              style={{
+                width: props.width ? props.width : '',
+                height: props.height ? props.height : '',
+              }}
+            >
+              <img
+                ref={imageRef}
+                src={DefaultAvatarIcon}
+                alt={alt}
+                onClick={() => onClick && onClick()}
+                className={cn('w-full h-full object-cover', imageClassNames)}
+                {...props}
+              />
+            </div>
           </div>
-        </div>
+        )
+      }
+      return (
+          <div
+            className={cn(
+              'flex items-center justify-center bg-gray-100 text-gray-400 w-full h-full',
+              wrapperClassName
+            )}
+            style={{ aspectRatio: rect ? 1 : '' }}
+          >
+              <div
+                className={cn(
+                  errorClassName
+                )}
+              >
+                <div className="flex flex-col items-center justify-center">
+                  <i className="iconfont icon-image text-[#ccc] text-[42px]"></i>
+                  <p className="mt-2">Failed to load image</p>
+                </div>
+              </div>
+          </div>
       )
     }
 
@@ -105,8 +127,7 @@ const Image = React.memo(
         <div
           className={cn(
             'relative flex overflow-hidden',
-            wrapperClassName,
-            hasError && errorClassName
+            wrapperClassName
           )}
           style={{ aspectRatio: rect ? 1 : '' }}
         >
@@ -156,21 +177,6 @@ const Image = React.memo(
                 loaderClassName
               )}
             />
-          )}
-
-          {hasError && (
-            <div
-              className={cn(
-                'absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-400 w-full h-full',
-                errorClassName,
-                className
-              )}
-            >
-              <div className="text-center">
-                <i className="iconfont icon-image text-[#ccc] text-[42px]"></i>
-                <p className="mt-2">Failed to load image</p>
-              </div>
-            </div>
           )}
         </div>
       </>

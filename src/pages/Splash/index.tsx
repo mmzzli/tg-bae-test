@@ -96,6 +96,7 @@ const Splash: FC = () => {
         navigate(`/profile/${data.userInfo.uid || data.userInfo.user_id}`)
       }
     } catch (error) {
+      navigate(`/home`)
       console.warn('API ERROR', error)
     }
   }

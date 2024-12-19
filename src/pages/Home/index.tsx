@@ -11,7 +11,7 @@ const SCROLL_THRESHOLD = 35
 
 const HomePage: FC = () => {
   const navigate = useNavigate()
-  const [title, setTitle] = useState('Featured') // Following
+  const [title, setTitle] = useState('Following') // Following
   const [fadeClass, setFadeClass] = useState('fade-in')
   const [fullscreen, setFullscreen] = useState(false)
   const userInfo = useStore((state) => state.userInfo)
@@ -88,7 +88,7 @@ const HomePage: FC = () => {
     if (element) {
       const rect = element.getBoundingClientRect();
       if(rect.top > 0){
-        setTitle("Featured")
+        setTitle("Following")
       }else{
         setTitle("Following")
       }

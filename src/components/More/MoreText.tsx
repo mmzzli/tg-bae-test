@@ -42,11 +42,11 @@ const MoreText: React.FC<MoreTextProps> = ({
   }, [text]);
 
   return (
-    <div className="relative">
+    <div className="relative mt-[8px]">
       {/* 内容部分 */}
       <p
         ref={textRef}
-        className={`text-sm leading-relaxed overflow-hidden transition-all duration-300 ${
+        className={`text-sm leading-relaxed overflow-hidden transition-all duration-300 text-[#CCCCCC] font-weight-500 ${
           isExpanded ? "line-clamp-none" : "line-clamp-2"
         } ${ bgColor === 'white' ? 'text-[#0F1419] dark:text-[#ccc]': '' }`}
         style={{
@@ -59,8 +59,8 @@ const MoreText: React.FC<MoreTextProps> = ({
       {/* 切换按钮 */}
       {isTextClipped && (
       <button
-        className="mt-2 text-blue-500 underline text-sm absolute bottom-0 right-0 px-1"
-        style={{ background: bgColor, borderRadius: "5px"  }}
+        className="mt-2 text-blue-500 underline text-sm absolute bottom-0 right-0 px-1 text-[#5D6BFF]"
+        style={{ background: bgColor, borderRadius: "5px" }}
         onClick={() => setIsExpanded(!isExpanded)}
       >
         {isExpanded ? "Less" : "More"}

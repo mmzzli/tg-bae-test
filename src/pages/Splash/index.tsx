@@ -85,6 +85,7 @@ const Splash: FC = () => {
 
   const handleNavigate = async (ref: string) => {
     console.log('token ready, navigating...')
+    if(!token) return
     try {
       const data = await getSingleMedia(ref)
       console.log('getSingleMedia', data)

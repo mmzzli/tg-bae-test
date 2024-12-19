@@ -5,7 +5,6 @@ import {
   ChannelTypePerson,
   ConnectStatus,
   Message,
-  MessageListener,
   Conversation as WKConversation,
   ConversationAction,
   PullMode,
@@ -62,6 +61,7 @@ class BaeimSDK {
     config.uid = String(this.userUid)
     config.token = this.token
     config.addr = this.serverAddr
+    // config. =
     if (this.syncConversationsCallback) {
       const cb = async () => {
         let resultConversations = new Array<Conversation>()
@@ -90,6 +90,7 @@ class BaeimSDK {
       }
       config.provider.syncMessagesCallback = cb
     }
+    config.heartbeatInterval = 10000
     WKSDK.shared().config = config
 
     this.connect()
@@ -97,7 +98,9 @@ class BaeimSDK {
 
   private async connect() {
     try {
-      await WKSDK.shared().connect()
+      console.log('SDK connect manager------', WKSDK.shared().connectManager)
+      console.log('SDK connect config------', WKSDK.shared().config)
+      await WKSDK.shared().connectManager.connect()
       console.log('SDK connected successfully.')
     } catch (error) {
       console.error('Failed to connect SDK:', error)

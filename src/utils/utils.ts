@@ -1,7 +1,22 @@
 import { WrappedMessage } from '@/components/Chat/types'
-import { FormattedMessage, Message } from '@/components/SDK/BaeimSDK'
+import { FormattedMessage } from '@/components/SDK/BaeimSDK'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+
+const monthNames = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+]
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -103,7 +118,8 @@ export const getTimeStringAutoShort = (timestamp: number, mustIncludeTime: boole
         //   ret = weedayDesc + timeExtraStr
         // } else ret = dateFormat(srcDate, 'yyyy/M/d') + timeExtraStr
 
-        ret = dateFormat(srcDate, 'M/d')
+        // ret = dateFormat(srcDate, 'M/d')
+        ret = `${monthNames[srcDate.getMonth()]} ${srcDate.getDate()}`
       }
     }
   }

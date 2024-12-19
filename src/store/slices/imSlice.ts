@@ -2,6 +2,7 @@ import { StateCreator } from 'zustand'
 import BaeimSDK, { Conversation } from '@/components/SDK/BaeimSDK'
 import { MessageWindowListItem } from '@/components/Chat/types'
 import { OthersUserInfo } from '@/types'
+import { sortConversations } from '@/utils/chat/util'
 export interface IMSlice {
   connection: BaeimSDK | null
   setConnection: (connection: BaeimSDK) => void
@@ -83,15 +84,15 @@ export const createIMSlice: StateCreator<IMSlice> = (set) => ({
       if (!state.conversationMap[conversation.channel.channelID]) {
         return state
       }
+      const newConversationMap = {
+        ...state.conversationMap,
+        [conversation.channel.channelID]: { ...conversation } as Conversation,
+      }
       return {
-        conversationIds: [
-          conversation.channel.channelID,
-          ...state.conversationIds.filter((id) => id !== conversation.channel.channelID),
-        ],
-        conversationMap: {
-          ...state.conversationMap,
-          [conversation.channel.channelID]: { ...conversation } as Conversation,
-        },
+        conversationIds: sortConversations(Object.values(newConversationMap)).map(
+          (item) => item.channel.channelID
+        ),
+        conversationMap: newConversationMap,
       }
     }),
   deleteConversation: (conversationId) =>

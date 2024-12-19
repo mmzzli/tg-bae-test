@@ -82,9 +82,23 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
                   {formatTime(Number(data.duration))}
                 </Text>
               </HStack>
-
-              {data.uid !== getCurrentUid() && !data.media?.[0] && data.price > 0 && (
-                <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} />
+              {data.uid !== getCurrentUid() && data.price > 0 && !data.is_pay && (
+                <>
+                  <Box position="absolute" top="0" left="0" w="100%" zIndex={3}
+                    style={{
+                      height: firImageHeight ? firImageHeight + 'px' : 'calc(1.5*100vw)',
+                      maxHeight: 'calc(1.5*100vw)',
+                    }}
+                  >
+                    <Image className='h-[100%] w-[100%]'
+                      style={{
+                        height: firImageHeight ? firImageHeight + 'px' : 'calc(1.5*100vw)',
+                        maxHeight: 'calc(1.5*100vw)',
+                      }}
+                    src={data.media[0]}/>
+                  </Box>
+                  <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} />
+                </>
               )}
             </Box>
           </Box>

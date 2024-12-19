@@ -16,6 +16,7 @@ import { log, error as logError } from 'console'
 import ChatSkeleton from '@/components/Skeketon/ChatSkeleton'
 import Empty from '@/components/comm/Empty'
 import Icon from '@/components/comm/Icon'
+import { sortConversations } from '@/utils/chat/util'
 
 const ChatListPage: FC<{ className?: string }> = ({ className }) => {
   const {
@@ -137,7 +138,8 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
             try {
               const res = await sdk.getAllConversation()
               setIsChatListLoaded(true)
-              setConversation(res)
+              setConversation(sortConversations(res))
+              console.warn('res', res)
               res.forEach((conversation) => {
                 addMessageWindowListItem({
                   channel: conversation.channel,
@@ -188,7 +190,7 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
       sdk?.stop()
       removeConnectionStatusListener?.()
     }
-  }, [userInfo, token])
+  }, [token])
   console.warn('chatListPage render')
   return (
     <div
@@ -200,7 +202,7 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
       onClick={handleContainerClick}
       style={{
         paddingTop:
-          'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 32px)',
+          'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 36px)',
       }}
     >
       <div

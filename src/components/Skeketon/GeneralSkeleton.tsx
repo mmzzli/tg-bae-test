@@ -1,7 +1,7 @@
 import { DrawSkeletonItem, SkeletonShine } from './ChatSkeleton'
 import PostSkeleton from './PostSkeleton'
 
-const ProfileSkeleton = () => {
+const GeneralSkeleton = () => {
   return (
     <div className='w-full'>
       <DrawSkeletonItem className="w-full h-[56px] mb-[24px]"></DrawSkeletonItem>
@@ -11,4 +11,4 @@ const ProfileSkeleton = () => {
   )
 }
 
-export default ProfileSkeleton
+export default GeneralSkeleton

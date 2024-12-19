@@ -37,21 +37,21 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
         post_id: String(post_id),
         user_id: String(initData?.user?.id),
       })
+      const items = setInterval(async () => {
+        try {
+          const viewUrl = await viewPid(post_id)
+          resourcesEve(post_id, viewUrl, true)
+          clearInterval(items)
+          setIsPay(false)
+        } catch (error) {
+          console.log(error, 'payment')
+        }
+      }, 3000)
       if (window.Telegram?.WebApp) {
         const tgApp = window.Telegram.WebApp
         tgApp.openInvoice(url, (status: string) => {
           console.log(status, 123)
           if (status === 'paid') {
-            const items = setInterval(async () => {
-              try {
-                const viewUrl = await viewPid(post_id)
-                resourcesEve(post_id, viewUrl, true)
-                clearInterval(items)
-                setIsPay(false)
-              } catch (error) {
-                console.log(error, 'payment')
-              }
-            }, 3000)
           } else {
             setLoading(false)
           }

@@ -101,7 +101,7 @@ const Splash: FC = () => {
     } catch (error) {
       toast({
         render: () => {
-          return <CustomToast title="Work deleted" type={typeOptions.warning} />
+          return <CustomToast title="This content has been deleted by the creator and cannot be accessed." type={typeOptions.warning} />
         },
         position: 'top',
       })

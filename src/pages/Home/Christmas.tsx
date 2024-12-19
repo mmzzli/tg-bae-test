@@ -6,7 +6,6 @@ import ChristmasList from '@/components/ChristmasList/index'
 import { useStore } from '@/store'
 import { CardRecommendProvider } from '@/utils/constants'
 import { throttle } from '@/utils/chat/schedulers'
-import {featured, allFeatured} from '@/api'
 
 const SCROLL_THRESHOLD = 35
 
@@ -38,26 +37,6 @@ const Christmas: FC = () => {
     }
     return {}
   }, [userInfo.user_id, userInfo.fans])
-
-  const christma = async()=>{
-    // await allFeatured({
-    //   type: 1,
-    //   page_num: 1,
-    //   records: 10
-    // })
-    // await featured({
-    //   type: 1,
-    //   acttype: 1,
-    //   title: "321",
-    //   media: "https://imgdev.bae.boo/1733024672609-0-IMG_1055.jpeg",
-    //   // sortorder: "",
-    //   width: "4284",
-    //   height: "5712",
-    //   currency: 0,
-    //   price: 0
-    // })
-  }
-
 
   useEffect(() => {
     const scrollDiv = document.getElementById('recommendScrollableDiv')
@@ -142,7 +121,7 @@ const Christmas: FC = () => {
               'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
           }}
         >
-          <div className="pl-[16px] pt-[18px]" onClick={()=>christma()}>
+          <div className="pl-[16px] pt-[18px]">
             <h3
               ref={titleRef}
               className="absolute text-black dark:text-[#E0E2F6] text-[20px] flex items-center duration-100 ease-out"
@@ -171,7 +150,7 @@ const Christmas: FC = () => {
           </div>
         </div>
 
-        <div className="ml-auto flex gap-[13px] z-[111] relative w-[48px] h-[48px] p-[12px]">
+        <div className="ml-auto flex gap-[13px] z-[1111] relative w-[48px] h-[48px] p-[12px]">
           {/* <div
             className="w-[48px] h-[48px] p-[12px] bg-[#F5F3F3] rounded-[50px] flex items-center justify-center cursor-pointer"
             onClick={() => navigate('/home/searching')}

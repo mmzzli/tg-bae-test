@@ -31,7 +31,7 @@ const Shares: FC = () => {
         }}
       >
         <div className="font-bold text-xl dark:text-[#E0E2F6] text-black">Shared</div>
-        <div className="ml-auto flex gap-[13px] z-[1111] relative">
+        <div className="ml-auto flex gap-[13px] z-[111] relative">
           <div
             className="w-[48px] h-[48px] p-[12px] bg-[#F5F3F3] rounded-[50px] flex items-center justify-center cursor-pointer"
             onClick={() => navigate('/home/searching')}

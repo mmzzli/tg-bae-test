@@ -188,7 +188,7 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
       sdk?.stop()
       removeConnectionStatusListener?.()
     }
-  }, [userInfo, token])
+  }, [token])
   console.warn('chatListPage render')
   return (
     <div
@@ -200,7 +200,7 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
       onClick={handleContainerClick}
       style={{
         paddingTop:
-          'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 32px)',
+          'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 42px)',
       }}
     >
       <div

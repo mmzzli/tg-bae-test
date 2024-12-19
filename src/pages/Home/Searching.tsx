@@ -113,8 +113,10 @@ const Searching = () => {
       </div>
 
       <div className="pt-[28px]">
-        {(!isLoading && debouncedField.length) ? <GeneralSkeleton /> :
-          (data?.users.map((item, key) => (
+        {!isLoading && debouncedField.length ? (
+          <GeneralSkeleton />
+        ) : (
+          data?.users.map((item, key) => (
             <div className="flex items-center justify-between py-[12px] mb-[12px]" key={key}>
               <div
                 className="flex gap-[12px] items-center"
@@ -122,6 +124,7 @@ const Searching = () => {
               >
                 <div className="flex-shrink-0">
                   <Image
+                    rect
                     width={56}
                     height={56}
                     type="avatar"
@@ -139,7 +142,8 @@ const Searching = () => {
                 <FollowButton tgid={item.tg_id} avatar={item.avatar} username={item.tgname} />
               )}
             </div>
-          )))}
+          ))
+        )}
       </div>
       {data?.users.length === 0 && debouncedField.length > 0 && isLoading && (
         <div>

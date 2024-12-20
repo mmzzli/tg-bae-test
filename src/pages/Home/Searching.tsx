@@ -120,6 +120,7 @@ const Searching = () => {
             >
               <div className="flex-shrink-0">
                 <Image
+                  rect
                   width={56}
                   height={56}
                   type="avatar"

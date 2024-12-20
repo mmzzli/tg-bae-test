@@ -4,8 +4,9 @@ on:
     branches:
       - main
       - dev
+      - test
   pull_request:
-    branches: [ "main","dev"]
+    branches: [ "main","dev","test"]
     
 jobs:
   dev-build:
@@ -22,7 +23,7 @@ jobs:
         with:
           node-version: '${{ matrix.node-version }}'
       - run: 'npm install'
-      - run: 'npm run build:test'
+      - run: 'npm run build:dev'
       - name: Deploying application to Amazon S3
         uses: jakejarvis/s3-sync-action@master
         with:
@@ -41,7 +42,41 @@ jobs:
           PATHS: "/*"
           AWS_REGION: "us-west-1"
           AWS_ACCESS_KEY_ID: ${{ secrets.TOMO_AWS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.TOMO_AWS_SECRET_ACCESS_KEY }}          
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.TOMO_AWS_SECRET_ACCESS_KEY }}    
+  test-build:
+    if: 'contains( github.ref, ''test'')'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version:
+          - v20.12.2
+    steps:
+      - uses: actions/checkout@v4
+      - name: 'Use Node.js ${{ matrix.node-version }}'
+        uses: actions/setup-node@v3
+        with:
+          node-version: '${{ matrix.node-version }}'
+      - run: 'npm install'
+      - run: 'npm run build:test'
+      - name: Deploying application to Amazon S3
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: '--follow-symlinks'
+        env:
+          AWS_S3_BUCKET: test.ditto-app
+          AWS_ACCESS_KEY_ID: '${{ secrets.TOMO_AWS_KEY_ID }}'
+          AWS_SECRET_ACCESS_KEY: '${{ secrets.TOMO_AWS_SECRET_ACCESS_KEY }}'
+          AWS_REGION: us-west-1
+          SOURCE_DIR: ./dist
+      - name: dev Invalidate CloudFront
+        if: github.ref == 'refs/heads/dev'
+        uses: chetan/invalidate-cloudfront-action@v2
+        env:
+          DISTRIBUTION: EXHZTXSHC1WJH
+          PATHS: "/*"
+          AWS_REGION: "us-west-1"
+          AWS_ACCESS_KEY_ID: ${{ secrets.TOMO_AWS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.TOMO_AWS_SECRET_ACCESS_KEY }}   
   main-build:
     if: 'contains( github.ref, ''main'')'
     runs-on: ubuntu-latest

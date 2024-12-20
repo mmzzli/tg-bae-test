@@ -50,7 +50,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
               <div
                 style={{
                   height: firImageHeight ? firImageHeight + 'px' : 'calc(1.5*100vw)',
-                  maxHeight: 'calc(1.5*100vw)',
+                  maxHeight: 'calc(62.8vh)',
                 }}
                 className={
                   'flex items-center overflow-hidden relative object-contain video-container z-[1]'
@@ -84,18 +84,26 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
               </HStack>
               {data.uid !== getCurrentUid() && data.price > 0 && !data.is_pay && (
                 <>
-                  <Box position="absolute" top="0" left="0" w="100%" zIndex={3}
+                  <Box
+                    position="absolute"
+                    top="0"
+                    left="0"
+                    w="100%"
+                    zIndex={3}
                     style={{
                       height: firImageHeight ? firImageHeight + 'px' : 'calc(1.5*100vw)',
-                      maxHeight: 'calc(1.5*100vw)',
+                      maxHeight: 'calc(62.8vh)',
                     }}
+                    overflow="hidden"
                   >
-                    <Image className='h-[100%] w-[100%]'
+                    <Image
+                      className="h-[100%] w-[100%]"
                       style={{
                         height: firImageHeight ? firImageHeight + 'px' : 'calc(1.5*100vw)',
-                        maxHeight: 'calc(1.5*100vw)',
+                        maxHeight: 'calc(62.8vh)',
                       }}
-                    src={data.media[0]}/>
+                      src={data.media[0]}
+                    />
                   </Box>
                   <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} />
                 </>

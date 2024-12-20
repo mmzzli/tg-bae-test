@@ -15,6 +15,7 @@ import { useSafeState } from 'ahooks'
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import { UserItem } from '@/types'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
+import { useDrag } from 'react-use-gesture'
 
 const PlayButton = memo(({ onClick }: { onClick: () => void }) => (
   <div
@@ -288,13 +289,28 @@ const VideoDialog = () => {
     return 'object-cover'
   }, [info, videoContainerRef])
 
+  const bind = useDrag(({ down, movement: [mx], direction: [xDir], velocity }) => {
+    console.log('333333')
+    console.log(xDir)
+    console.log(mx)
+    console.log(velocity)
+    if (down && xDir > 0 && mx > 100 && velocity > 0.2) {
+      onClose()
+    }
+  })
+
   return (
     <div
       style={{ display: url ? 'block' : 'none' }}
       className="absolute w-screen h-screen bg-black  z-[1000]"
     >
       <div className="fixed w-full h-full object-contain z-10 bg-black inset-0">
-        <div ref={videoContainerRef} style={{ height: '89vh' }} className="relative bg-white ">
+        <div
+          {...bind()}
+          ref={videoContainerRef}
+          style={{ height: '89vh' }}
+          className="relative bg-white "
+        >
           <div
             className=" z-[12] absolute w-full h-full bg-video-gradient"
             onClick={togglePlay}
@@ -323,7 +339,6 @@ const VideoDialog = () => {
             onPlaying={() => setIsLoading(false)}
             controls={false}
             playsInline
-            onClick={togglePlay}
             webkit-playsinline="true"
             x5-playsinline="true"
             x5-video-player-type="h5"

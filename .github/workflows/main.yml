@@ -4,8 +4,9 @@ on:
     branches:
       - main
       - dev
+      - test
   pull_request:
-    branches: [ "main","dev"]
+    branches: [ "main","dev","test"]
     
 jobs:
   dev-build:
@@ -22,7 +23,7 @@ jobs:
         with:
           node-version: '${{ matrix.node-version }}'
       - run: 'npm install'
-      - run: 'npm run build:test'
+      - run: 'npm run build:dev'
       - name: Deploying application to Amazon S3
         uses: jakejarvis/s3-sync-action@master
         with:

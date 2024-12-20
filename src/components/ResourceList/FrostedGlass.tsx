@@ -64,26 +64,28 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
   return (
     <>
       {isPay && (
-        <Box
-          position="absolute"
-          bottom="7"
-          left="50%"
-          transform=" translate(-50%, -50%)"
-          w="220px"
-          zIndex={3}
-        >
-          {loading ? (
-            <BaseButton height="40px" text={`loading ...`} handler={() => console.log(1)} />
-          ) : (
-            <BaseButton
-              height="40px"
-              text={`Unlock Post for ${price}`}
-              icon={<i className="iconfont icon-lock text-white"></i>}
-              iconRight={<i className="iconfont icon-stars text-[#FFC700]"></i>}
-              handler={() => invoiceEve()}
-            />
-          )}
-        </Box>
+        <div className={'bg-[rgba(0,0,0,0.2)] absolute inset-0 z-[3]'}>
+          <Box
+            position="absolute"
+            bottom="7"
+            left="50%"
+            transform=" translate(-50%, -50%)"
+            w="220px"
+            zIndex={3}
+          >
+            {loading ? (
+              <BaseButton height="40px" text={`loading ...`} handler={() => console.log(1)} />
+            ) : (
+              <BaseButton
+                height="40px"
+                text={`Unlock Post for ${price}`}
+                icon={<i className="iconfont icon-lock text-white"></i>}
+                iconRight={<i className="iconfont icon-stars text-[#FFC700]"></i>}
+                handler={() => invoiceEve()}
+              />
+            )}
+          </Box>
+        </div>
       )}
     </>
   )

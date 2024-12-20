@@ -7,7 +7,6 @@ import PostSkeleton from '../Skeketon/PostSkeleton'
 import { useEffect, useState } from 'react'
 import { useStore } from '@/store'
 import { useActivate } from 'react-activation'
-import { recommendFeatured } from '@/api/list'
 import {ListItem} from '@/types'
 
 interface PostListProps {
@@ -21,7 +20,6 @@ const RecommendList = ({ className }: PostListProps) => {
   const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
   const updateCacheVideo = useStore((state) => state.updateCacheVideo)
   const [random, setRandom] = useState(0)
-  const [featuredList, setFeaturedList]:any = useState([])
 
   useCacheVideo(
     list,
@@ -41,21 +39,6 @@ const RecommendList = ({ className }: PostListProps) => {
     }
     setRandom(Date.now())
   })
-  useEffect(()=>{
-    const load = async()=>{
-      const {featured} = await recommendFeatured(1)
-      const updatedPosts = featured.map(({ post, user }: ListItem) => ({
-        ...user,
-        ...post,
-        media:
-          post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
-      }))
-      setFeaturedList(updatedPosts)
-    }
-    if(token){
-      load()
-    }
-  },[token])
 
   return (
     <div className={cn(className, '')}>
@@ -72,9 +55,6 @@ const RecommendList = ({ className }: PostListProps) => {
         scrollThreshold={0.1}
         style={{ overflow: 'visible' }}
       >
-        <div id="featuredList">
-          {featuredList.length > 0 && <ResourceList resources={featuredList} type="recommend" />}
-        </div>
         <div id="view-container">
           <ResourceList resources={list} type="recommend" />
         </div>

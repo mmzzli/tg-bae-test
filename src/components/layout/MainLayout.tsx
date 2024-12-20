@@ -83,9 +83,7 @@ export const MainLayout: React.FC = () => {
     let userInfo
     try {
       const { initDataRaw } = retrieveLaunchParams()
-      log('userInfo retrieveLaunchParams', initDataRaw)
-      log('userInfo DEV_INIT_DATA_RAW', initDataRaw)
-      userInfo = isLocalEnv ? DEV_INIT_DATA_RAW : initDataRaw
+      userInfo = initDataRaw
       log('userInfo finally', userInfo)
     } catch (error) {
       userInfo = DEV_INIT_DATA_RAW

@@ -87,22 +87,19 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           // })
           // onEvent('prepared_message_sent');
 
-
-
           setTimeout(() => {
             WebApp.shareMessage(result.id)
 
-            WebApp.onEvent('prepared_message_sent', function(eventType:any, eventData:any) {
+            WebApp.onEvent('prepared_message_sent', function (eventType: any, eventData: any) {
               // 在分享成功后，重置标志
-              console.log("Message shared successfully!", eventType, eventData);
-            });
+              console.log('Message shared successfully!', eventType, eventData)
+            })
 
             // 监听分享取消的事件
-            WebApp.onEvent('shareMessageClosed', function(eventType:any, eventData:any) {
+            WebApp.onEvent('shareMessageClosed', function (eventType: any, eventData: any) {
               // 在用户关闭分享窗口时重置标志
-              console.log("User closed the share message window.", eventType, eventData);
-            });
-
+              console.log('User closed the share message window.', eventType, eventData)
+            })
           }, 100)
         }
         off()
@@ -381,7 +378,7 @@ const ResourceList = ({
                 type={type}
               />
               <Box position="relative">
-                {(data.act_type === 1 && type === 'recommend') &&  (
+                {data.act_type === 1 && type === 'recommend' && (
                   <Box
                     position="absolute"
                     bottom="0px"
@@ -481,9 +478,13 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
             <p className="text-[#868686] dark:text-[#424048] text-xs">
               {getTimeStringAutoShort(new Date(data.created_at).getTime(), true)}
             </p>
-            {cardValue?.recommend && !data.is_follow && (
-              <div className="text-[#333333] text-[12px]">Bae selected</div>
-            )}
+            {
+              (data.act_type === 1 && type === 'recommend') ? <div className="text-[#333333] text-[12px]">Featured</div>
+              :
+              (cardValue?.recommend && !data.is_follow && (
+                <div className="text-[#333333] text-[12px]">Bae selected</div>
+              ))
+            }
           </div>
         </div>
       </div>
@@ -565,7 +566,6 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
           }
         />
       </div>
-
       {(data.title || data.is_pay) && (
         <div className="px-4 pt-[10px]">
           <div className="text-[#0F1419] dark:text-[#ccc] font-normal text-sm leading-4">

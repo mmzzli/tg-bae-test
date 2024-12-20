@@ -108,7 +108,7 @@ const SecondaryMenu = ({ mediaData, currentUid, className, type }: Props) => {
               }
               height="34px"
               handler={doFollow}
-              className={`border-[0.5px] bg-transparent text-[#333333] border-[#CDCDD4] ${className}`}
+              className={`border-[1px] border-1 bg-transparent text-[#333333] border-[#CDCDD4] ${className}`}
             />
           )}
         <button className="rounded-full" onClick={() => setVisible(!visible)}>

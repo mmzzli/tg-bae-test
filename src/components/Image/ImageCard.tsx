@@ -53,13 +53,24 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
             rounded="20px"
           >
             <Text color="white" fontSize="14px">
-              {currentIndex + 1}&nbsp;/&nbsp;{data.pic_num}
+              {data.uid !== getCurrentUid() && !data.is_pay && data.price > 0 ? (
+                <>
+                  <div className="flex items-center gap-1">
+                    <i className="iconfont icon-image"></i> {data.pic_num}
+                  </div>
+                </>
+              ) : (
+                <>
+                  {currentIndex + 1}&nbsp;/&nbsp;{data.pic_num}
+                </>
+              )}
             </Text>
           </HStack>
         ) : (
           ''
         )}
         <Swiper
+          className={'z-[1]'}
           onSwiper={setSwiper}
           onSlideChange={(swiper: SwiperType) => {
             SetCurrentIndex(swiper.activeIndex)

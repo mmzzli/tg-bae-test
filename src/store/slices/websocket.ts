@@ -39,16 +39,13 @@ export const createWebSocketSlice: StateCreator<WebSocketSlice> = (set, get) => 
     if (get().isConnecting || ws?.readyState === WebSocket.OPEN) {
       return
     }
-    console.warn(get().isConnecting, ws?.readyState)
 
     set({ isConnecting: true })
-
-    console.warn('ws connecting')
 
     return new Promise((resolve, reject) => {
       try {
         ws = new WebSocket(
-          `wss://${import.meta.env.VITE_APP_ENV === 'production' ? 'ditto-dev.anyconn.org' : 'ditto-dev.anyconn.org'}/ws?auth=${useStore.getState().token}`
+          `${import.meta.env.VITE_APP_SYSTEM_WS}/ws?auth=${useStore.getState().token}`
         )
 
         ws.onopen = () => {

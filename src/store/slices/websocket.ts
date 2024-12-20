@@ -45,7 +45,7 @@ export const createWebSocketSlice: StateCreator<WebSocketSlice> = (set, get) => 
     return new Promise((resolve, reject) => {
       try {
         ws = new WebSocket(
-          `wss://${import.meta.env.VITE_APP_ENV === 'production' ? 'b.bae.boo' : 'ditto-dev.anyconn.org'}/ws?auth=${useStore.getState().token}`
+          `${import.meta.env.VITE_APP_SYSTEM_WS}/ws?auth=${useStore.getState().token}`
         )
 
         ws.onopen = () => {

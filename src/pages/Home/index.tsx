@@ -87,7 +87,10 @@ const HomePage: FC = () => {
     <div
       className="relative w-full overflow-auto scrollbar-hide"
       id="recommendScrollableDiv"
-      style={{ height: "calc(100vh - 84px)" }}
+      style={{
+        height:
+          'calc(100vh - 84px - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top))',
+      }}
     >
       <div
         className="flex p-[10px_16px] w-full z-[111]"

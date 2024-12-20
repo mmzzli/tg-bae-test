@@ -69,7 +69,7 @@ jobs:
           AWS_REGION: us-west-1
           SOURCE_DIR: ./dist
       - name: dev Invalidate CloudFront
-        if: github.ref == 'refs/heads/dev'
+        if: github.ref == 'refs/heads/test'
         uses: chetan/invalidate-cloudfront-action@v2
         env:
           DISTRIBUTION: EXHZTXSHC1WJH

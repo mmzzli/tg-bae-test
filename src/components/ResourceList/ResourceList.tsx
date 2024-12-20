@@ -29,6 +29,7 @@ import ImageCard from '@/components/Image/ImageCard'
 import { genShareLinkFn, getTimeStringAutoShort } from '@/utils/utils'
 import MoreText from '@/components/More/MoreText'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
+import { videoHls } from '@/utils/video/videoHls'
 
 interface ShareDataProps {
   pid: number
@@ -347,6 +348,29 @@ const ResourceList = ({
     const updatedUsers = resources.map((item) => {
       if (item.id === post_id) {
         const options = is_pay ? { is_pay } : {}
+
+        if (item.act_type === 0) {
+          const medias = url.split(',')
+          const picUrl = medias.find((item) => !item.endsWith('.m3u8'))
+          const media = medias.find((item) => item.endsWith('.m3u8'))
+          setCacheVideoIndex(item.id)
+          const videos = document.querySelectorAll('.video-card')
+          const mostVisibleElement = Array.prototype.slice
+            .call(videos)
+            .find((video) => parseInt(video.getAttribute('data-id')) === item.id)
+          if (media) {
+            videoHls(
+              {
+                ...item,
+                media: [media],
+                mediaCover: picUrl,
+                ...options,
+              },
+              mostVisibleElement
+            )
+            return { ...item, media: [media], mediaCover: picUrl, ...options }
+          }
+        }
         return { ...item, media: url.split(','), ...options }
       }
       return item
@@ -478,13 +502,12 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
             <p className="text-[#868686] dark:text-[#424048] text-xs">
               {getTimeStringAutoShort(new Date(data.created_at).getTime(), true)}
             </p>
-            {
-              (data.act_type === 1 && type === 'recommend') ? <div className="text-[#333333] text-[12px]">Featured</div>
-              :
-              (cardValue?.recommend && !data.is_follow && (
-                <div className="text-[#333333] text-[12px]">Bae selected</div>
-              ))
-            }
+            {data.act_type === 1 && type === 'recommend' ? (
+              <div className="text-[#333333] text-[12px]">Featured</div>
+            ) : (
+              cardValue?.recommend &&
+              !data.is_follow && <div className="text-[#333333] text-[12px]">Bae selected</div>
+            )}
           </div>
         </div>
       </div>

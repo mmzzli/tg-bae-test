@@ -75,7 +75,6 @@ const UserInfo = memo(
     const { getCurrentUid } = useTMAUtils()
     const current_uid = getCurrentUid()
 
-
     const doFollow = async () => {
       if (!uid || !id) return
       setIsFollowLoading(true)
@@ -120,7 +119,9 @@ const UserInfo = memo(
               {created_at && (
                 <span>{getTimeStringAutoShort(new Date(created_at).getTime(), true)}</span>
               )}
-              {(!is_follow && current_uid !== uid) && <div className="pl-1.5 text-white text-[12px]">Bae selected</div>}
+              {!is_follow && current_uid !== uid && (
+                <div className="pl-1.5 text-white text-[12px]">Bae selected</div>
+              )}
             </div>
           </div>
           <div className="pl-4">
@@ -143,7 +144,7 @@ const UserInfo = memo(
             )}
           </div>
         </div>
-        <MoreText moreColor={'#fff'} bgColor={'#56554e'} moreLine={true} text={content || ''} />
+        <MoreText moreColor={'#ccc'} bgColor={'#56554e'} moreLine={true} text={content || ''} />
       </div>
     )
   }

@@ -54,18 +54,18 @@ const MoreText: React.FC<MoreTextProps> = ({
         }}
       >
         {text}
-      </p>
 
-      {/* 切换按钮 */}
-      {isTextClipped && (
-        <button
-          className="mt-2 text-blue-500 underline text-sm absolute bottom-0 right-0 px-1 text-[#5D6BFF]"
-          style={{ background: bgColor, borderRadius: '5px' }}
-          onClick={() => setIsExpanded(!isExpanded)}
-        >
-          {isExpanded ? 'Less' : 'More'}
-        </button>
-      )}
+        {/* 切换按钮 */}
+        {isTextClipped && (
+          <button
+            className={`mt-1 text-blue-500 text-sm ${isExpanded ? 'relative inline-block' : 'absolute'} bottom-0 right-0 px-1 text-[#5D6BFF]`}
+            style={{ background: bgColor, borderRadius: '5px' }}
+            onClick={() => setIsExpanded(!isExpanded)}
+          >
+            {isExpanded ? 'Less' : '... More'}
+          </button>
+        )}
+      </p>
     </div>
   )
 }

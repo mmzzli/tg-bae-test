@@ -14,6 +14,7 @@ import { follow, getSomeoneProfile } from '@/api'
 import { useSafeState } from 'ahooks'
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import { UserItem } from '@/types'
+import { useTMAUtils } from '@/hooks/useTMAUtils'
 
 const PlayButton = memo(({ onClick }: { onClick: () => void }) => (
   <div
@@ -70,6 +71,11 @@ const UserInfo = memo(
     const [isFollowLoading, setIsFollowLoading] = useState<boolean>(false)
     const jumpToProfilePage = useProfileNavigation()
     const setVideoResource = useStore((state) => state.setVideoResource)
+    const userInfo = useStore((state) => state.userInfo)
+    const { getCurrentUid } = useTMAUtils()
+    const current_uid = getCurrentUid()
+
+
     const doFollow = async () => {
       if (!uid || !id) return
       setIsFollowLoading(true)
@@ -114,7 +120,7 @@ const UserInfo = memo(
               {created_at && (
                 <span>{getTimeStringAutoShort(new Date(created_at).getTime(), true)}</span>
               )}
-              {!is_follow && <div className="pl-1.5 text-white text-[12px]">Bae selected</div>}
+              {(!is_follow && current_uid !== uid) && <div className="pl-1.5 text-white text-[12px]">Bae selected</div>}
             </div>
           </div>
           <div className="pl-4">

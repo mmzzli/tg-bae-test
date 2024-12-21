@@ -166,9 +166,6 @@ export const MainLayout: React.FC = () => {
 
         navigate(-1)
       })
-      tgApp.CloseButton.onClick(() => {
-        navigate('/home')
-      })
       setExpanded(window.Telegram.WebApp.isExpanded)
       console.log(window.Telegram.WebApp.isExpanded, 'window.Telegram.WebApp.isExpanded')
     }

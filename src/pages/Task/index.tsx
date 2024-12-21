@@ -300,12 +300,11 @@ const Tasks: FC = () => {
         <div className="flex items-center text-[#333333]">
           <i className="iconfont icon-icon_daily text-[20px] mr-1 mb-[2px]"></i>
           <span>
-            {new Date()
-              .toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-              })
-              .toUpperCase()}
+            {new Date().toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              formatMatcher: 'best fit',
+            })}
           </span>
         </div>
       </div>

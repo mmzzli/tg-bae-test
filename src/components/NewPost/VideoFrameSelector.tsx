@@ -16,9 +16,10 @@ interface Frame {
 interface VideoPlayerProps {
   videoRef: RefObject<HTMLVideoElement>
   setCover: Dispatch<SetStateAction<string | null>>
+  videoSrc: string
 }
 
-const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover }) => {
+const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc }) => {
   const [frames, setFrames] = useState<Frame[]>([])
   const [selectedFrame, setSelectedFrame] = useState<Frame | null>(null)
   const [isBaseModalOpen, { toggle, on, off }] = useBoolean(false)
@@ -100,11 +101,14 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover }) 
   }
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      extractFramesFromVideo()
-    }, 1000)
-    return () => clearTimeout(timer);
-  }, [videoRef])
+    console.log(videoSrc,'123321')
+    if(videoRef){
+      const timer = setTimeout(() => {
+        extractFramesFromVideo()
+      }, 1000)
+      return () => clearTimeout(timer);
+    }
+  }, [videoRef, videoSrc])
   useEffect(() => {
     console.log(frames)
     if (frames.length === 3) {

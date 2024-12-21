@@ -547,7 +547,7 @@ export const NewPost: FC = () => {
                       src={videoSrc}
                       style={{ borderRadius: '4px', maxHeight: '380px' }}
                     />
-                    <VideoFrameSelector videoRef={videoRefCover} setCover={setCover} />
+                    <VideoFrameSelector videoRef={videoRefCover} setCover={setCover} videoSrc={videoSrc} />
                     <Image
                       onClick={() => {
                         setVideoSrc('')

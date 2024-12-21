@@ -1,7 +1,6 @@
 import { forwardRef, useImperativeHandle, useState } from 'react'
 import { Image, useBoolean } from '@chakra-ui/react'
-import {DrawSkeletonItem} from '@/components/Skeketon/ChatSkeleton'
-
+import { DrawSkeletonItem } from '@/components/Skeketon/ChatSkeleton'
 
 import { BaseModal } from '@/components/Modal/BaseModal'
 import BaseButton from '@/components/BaseButton/BaseButton'
@@ -161,44 +160,46 @@ const ShareModal = forwardRef<ChildMethods>(({}, ref) => {
         closeOnBackdropClick={true}
         showHandle={false}
       >
-        {isLoading ?
-        <div className="mt-4 w-full">
-          <h3 className="font-bold text-2xl mb-[10px] text-[24px] text-[#333]">Share from Bae</h3>
-          <div className="text-[15px] text-[#999]">Earn $Bae every time you share from Bae</div>
-          <div className="mt-12 mb-[18px] mx-4">
-            <BaseButton
-              text="Share via Telegram"
-              height="48px"
-              loading={getInlineMessageIdLoading}
-              icon={<Image src={TelegramIcon} />}
-              handler={() => {
-                // shareLink(links.shareLink ?? '')
-                handShareWithTelegram()
-                // off()
-              }}
-            />
-          </div>
+        {isLoading ? (
+          <div className="mt-4 w-full">
+            <h3 className="font-bold text-2xl mb-[10px] text-[24px] text-[#333]">Share from Bae</h3>
+            <div className="text-[15px] text-[#999]">Earn $Bae every time you share from Bae</div>
+            <div className="mt-12 mb-[18px] mx-4">
+              <BaseButton
+                text="Share via Telegram"
+                height="48px"
+                loading={getInlineMessageIdLoading}
+                icon={<Image src={TelegramIcon} />}
+                handler={() => {
+                  // shareLink(links.shareLink ?? '')
+                  setTimeout(() => {
+                    window.Telegram?.WebView?.postEvent('prepared_message_failed')
+                    handShareWithTelegram()
+                  }, 0)
+                  // off()
+                }}
+              />
+            </div>
 
-          <div className={'mx-4'}>
-            <BaseButton
-              text="Copy link"
-              height="48px"
-              icon={<Image src={LinkIcon} />}
-              handler={() => {
-                copy(links.copyLink)
-                off()
-              }}
-            />
+            <div className={'mx-4'}>
+              <BaseButton
+                text="Copy link"
+                height="48px"
+                icon={<Image src={LinkIcon} />}
+                handler={() => {
+                  copy(links.copyLink)
+                  off()
+                }}
+              />
+            </div>
           </div>
-        </div>
-        :
-        <div className='mt-4 w-full'>
-          <DrawSkeletonItem className="w-full h-[32px] mb-[12px]"></DrawSkeletonItem>
-          <DrawSkeletonItem className="w-full h-[32px] mb-[12px]"></DrawSkeletonItem>
-          <DrawSkeletonItem className="w-full h-[100px]"></DrawSkeletonItem>
-        </div>
-
-        }
+        ) : (
+          <div className="mt-4 w-full">
+            <DrawSkeletonItem className="w-full h-[32px] mb-[12px]"></DrawSkeletonItem>
+            <DrawSkeletonItem className="w-full h-[32px] mb-[12px]"></DrawSkeletonItem>
+            <DrawSkeletonItem className="w-full h-[100px]"></DrawSkeletonItem>
+          </div>
+        )}
       </BaseModal>
     </>
   )

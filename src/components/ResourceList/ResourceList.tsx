@@ -142,7 +142,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               icon={<Image src={TelegramIcon} />}
               handler={() => {
                 // shareLink(links.shareLink ?? '')
-                handShareWithTelegram()
+                setTimeout(() => {
+                  window.Telegram?.WebView?.postEvent('prepared_message_failed')
+                  handShareWithTelegram()
+                }, 0)
                 // off()
               }}
             />
@@ -478,13 +481,12 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
             <p className="text-[#868686] dark:text-[#424048] text-xs">
               {getTimeStringAutoShort(new Date(data.created_at).getTime(), true)}
             </p>
-            {
-              (data.act_type === 1 && type === 'recommend') ? <div className="text-[#333333] text-[12px]">Featured</div>
-              :
-              (cardValue?.recommend && !data.is_follow && (
-                <div className="text-[#333333] text-[12px]">Bae selected</div>
-              ))
-            }
+            {data.act_type === 1 && type === 'recommend' ? (
+              <div className="text-[#333333] text-[12px]">Featured</div>
+            ) : (
+              cardValue?.recommend &&
+              !data.is_follow && <div className="text-[#333333] text-[12px]">Bae selected</div>
+            )}
           </div>
         </div>
       </div>

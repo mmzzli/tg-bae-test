@@ -10,15 +10,14 @@ export const videoScale = (data: FormatterListItem, containerDom: HTMLDivElement
   const aspect = Number(videoOriginWidth) / Number(videoOriginHeight)
   const containerAspect = containerWidth / containerHeight
 
-  console.log(aspect, aspect > containerAspect, 'jacob===== 1111')
   if (aspect === containerAspect) {
     // 如果宽高比相等，直接返回 scale 为 1
     return 'object-cover'
   } else if (aspect > containerAspect) {
-    console.log(containerAspect, 'jacob==slice top end==')
+    // 横屏视频，使用 object-contain 以确保视频完整显示
     return 'object-contain'
   } else {
-    // 视频宽高比更小（纵向撑满，裁切左右）
-    return 'object-cover'
+    // 竖屏视频，使用 object-cover 以确保视频覆盖整个容器
+    return ''
   }
 }

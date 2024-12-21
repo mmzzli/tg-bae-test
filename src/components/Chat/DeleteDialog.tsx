@@ -138,8 +138,7 @@ export const DeleteDialogWarp = NiceModal.create(
                 className={`cursor-pointer flex items-center justify-center w-[120px] h-[40px] bg-[#EB4B6D] rounded-[20px] text-sm ${loading ? 'opacity-50' : ''}`}
                 onClick={handleDelete}
               >
-                Delete
-                {loading && <i className="iconfont icon-loading ml-1 text-[14px]"></i>}
+                {loading ? <i className="iconfont icon-loading ml-1 text-[14px]"></i> : 'Delete'}
               </div>
             </div>
           </div>

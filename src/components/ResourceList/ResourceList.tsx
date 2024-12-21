@@ -29,6 +29,7 @@ import ImageCard from '@/components/Image/ImageCard'
 import { genShareLinkFn, getTimeStringAutoShort } from '@/utils/utils'
 import MoreText from '@/components/More/MoreText'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
+import { videoHls } from '@/utils/video/videoHls'
 
 interface ShareDataProps {
   pid: number
@@ -350,6 +351,29 @@ const ResourceList = ({
     const updatedUsers = resources.map((item) => {
       if (item.id === post_id) {
         const options = is_pay ? { is_pay } : {}
+
+        if (item.act_type === 0) {
+          const medias = url.split(',')
+          const picUrl = medias.find((item) => !item.endsWith('.m3u8'))
+          const media = medias.find((item) => item.endsWith('.m3u8'))
+          setCacheVideoIndex(item.id)
+          const videos = document.querySelectorAll('.video-card')
+          const mostVisibleElement = Array.prototype.slice
+            .call(videos)
+            .find((video) => parseInt(video.getAttribute('data-id')) === item.id)
+          if (media) {
+            videoHls(
+              {
+                ...item,
+                media: [media],
+                mediaCover: picUrl,
+                ...options,
+              },
+              mostVisibleElement
+            )
+            return { ...item, media: [media], mediaCover: picUrl, ...options }
+          }
+        }
         return { ...item, media: url.split(','), ...options }
       }
       return item
@@ -571,7 +595,7 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
       {(data.title || data.is_pay) && (
         <div className="px-4 pt-[10px]">
           <div className="text-[#0F1419] dark:text-[#ccc] font-normal text-sm leading-4">
-            <MoreText text={data.title} />
+            <MoreText text={data.title} bgColor={'#fff'} textColor={'#0F1419'} />
           </div>
           <div className="flex items-center justify-between">
             {data.is_pay && (

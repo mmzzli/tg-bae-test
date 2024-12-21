@@ -112,6 +112,10 @@ export const MainLayout: React.FC = () => {
       postEvent('web_app_setup_swipe_behavior', {
         allow_vertical_swipe: false,
       })
+
+      postEvent('web_app_setup_closing_behavior', {
+        need_confirmation: true,
+      })
       tgApp.expand()
       tgApp.headerColor = '#ffffff'
       tgApp.MainButton.hide()
@@ -161,6 +165,9 @@ export const MainLayout: React.FC = () => {
         }
 
         navigate(-1)
+      })
+      tgApp.CloseButton.onClick(() => {
+        navigate('/home')
       })
       setExpanded(window.Telegram.WebApp.isExpanded)
       console.log(window.Telegram.WebApp.isExpanded, 'window.Telegram.WebApp.isExpanded')

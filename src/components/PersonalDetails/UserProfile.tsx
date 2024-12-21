@@ -10,6 +10,7 @@ import { profileImg } from '@/assets/image'
 import More from './More'
 import ProfileSkeleton from '../Skeketon/ProfileSkeleton'
 import Notification from './Notification/Notification'
+import MoreText from '@/components/More/MoreText'
 const UserProfile: FC = () => {
   const { launchParams } = useTMAUtils()
   const userId = launchParams.initData?.user?.id ?? 0
@@ -66,7 +67,7 @@ const UserProfile: FC = () => {
         </Link>
       </HStack>
 
-      <More bio={userInfo.bio} />
+      <MoreText text={userInfo.bio} className={'leading-4'}></MoreText>
 
       <HStack p="24px 0" gap="56px">
         <Box textAlign="center">

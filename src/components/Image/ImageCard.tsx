@@ -56,12 +56,12 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
                   maxHeight:
                     'calc(100vh - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top) - 85px - 64px - 50px - 26px)',
                 }}
-                className={'flex items-center object-contain overflow-hidden'}
+                className={'flex items-center  overflow-hidden'}
               >
                 <Image
                   src={formatImage(image, false)}
                   alt={data.title}
-                  width={'100%'}
+                  style={{ maxWidth: '100%', maxHeight: '100%' }}
                   onClick={() => {
                     console.log(data.is_pay)
                     console.log(data.price)

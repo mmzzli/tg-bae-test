@@ -7,14 +7,15 @@ interface MoreTextProps {
   moreColor?: string
   bgColor?: string
   moreLine?: boolean
+  textColor?: string
+  className?: string
 }
 const MoreText: React.FC<MoreTextProps> = ({
   text,
-  maxLines = 3,
-  scroll = false,
   moreColor = '#5D6BFF',
-  bgColor = 'white',
-  moreLine = false,
+  bgColor = '#fff',
+  textColor = '#666',
+  className = '',
 }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const [isTextClipped, setIsTextClipped] = useState(false)
@@ -48,7 +49,7 @@ const MoreText: React.FC<MoreTextProps> = ({
         ref={textRef}
         className={`text-sm leading-relaxed overflow-hidden transition-all duration-300 dark:text-[#333333] font-weight-500 ${
           isExpanded ? 'line-clamp-none' : 'line-clamp-2'
-        } ${bgColor === 'white' ? 'text-[#0F1419] dark:text-[#333333]' : ''}`}
+        }  text-[${textColor}] dark:text-[${textColor}] ${className}`}
         style={{
           color: moreColor,
         }}
@@ -57,13 +58,13 @@ const MoreText: React.FC<MoreTextProps> = ({
 
         {/* 切换按钮 */}
         {isTextClipped && (
-          <button
-            className={`mt-1 text-blue-500 text-sm ${isExpanded ? 'relative inline-block' : 'absolute'} bottom-0 right-0 px-1 text-[#5D6BFF]`}
-            style={{ background: bgColor, borderRadius: '5px' }}
+          <div
+            className={`mt-1 text-[${moreColor}] text-sm ${isExpanded ? 'relative inline-block' : 'absolute'} bottom-0 right-0 px-1 text-[#5D6BFF] bg-[${bgColor}]`}
+            style={{ borderRadius: '5px', background: bgColor }}
             onClick={() => setIsExpanded(!isExpanded)}
           >
-            {isExpanded ? 'Less' : '... More'}
-          </button>
+            {isExpanded ? 'Less' : 'More'}
+          </div>
         )}
       </p>
     </div>

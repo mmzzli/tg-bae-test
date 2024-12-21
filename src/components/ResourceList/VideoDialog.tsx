@@ -145,7 +145,7 @@ const UserInfo = memo(
             )}
           </div>
         </div>
-        <MoreText moreColor={'#ccc'} bgColor={'#56554e'} moreLine={true} text={content || ''} />
+        <MoreText textWhite={true} text={content || ''} bgColor={'#000'} />
       </div>
     )
   }

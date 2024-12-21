@@ -106,7 +106,8 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover }) 
     return () => clearTimeout(timer);
   }, [videoRef])
   useEffect(() => {
-    if (frames.length === 1) {
+    console.log(frames)
+    if (frames.length === 3) {
       console.log(frames)
       setSelectedFrame(frames[0])
       handler(frames[0]?.url)

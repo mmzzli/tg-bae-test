@@ -166,7 +166,6 @@ const SendMediaModal = ({
         type="file"
         accept="image/*,video/mp4,video/x-m4v,video/ogg,video/webm"
         onClick={(e) => {
-          e.preventDefault()
           ;(e.target as HTMLInputElement).value = ''
         }}
         multiple

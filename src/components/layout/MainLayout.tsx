@@ -29,7 +29,7 @@ const ChatListPageLoader = {
   ),
 }
 
-const HIDE_BACK_BUTTON_PATHS = ['/home', '/chat', '/profile', '/', '/ageGate']
+const HIDE_BACK_BUTTON_PATHS = ['/home', '/chat', '/profile', '/', '/ageGate', '/task']
 
 export const MainLayout: React.FC = () => {
   const location = useLocation()

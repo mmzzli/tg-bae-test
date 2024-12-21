@@ -144,7 +144,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               handler={() => {
                 // shareLink(links.shareLink ?? '')
                 setTimeout(() => {
-                  window.Telegram?.WebView?.postEvent('prepared_message_failed')
+                  window.Telegram?.WebApp?.resetShareCallback()
                   handShareWithTelegram()
                 }, 0)
                 // off()

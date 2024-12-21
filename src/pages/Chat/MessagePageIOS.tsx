@@ -13,6 +13,7 @@ import { cn } from '@/utils/utils'
 import SendMediaModal from '@/components/Chat/SendMediaModal'
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
+import { debounce } from '@/utils/chat/schedulers'
 // const PAGE_SIZE = 20
 const isIOS = () => {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
@@ -132,7 +133,7 @@ const MessagePageIOS = () => {
     setInitTgViewportHeight(tg.viewportStableHeight)
     // 这个函数在视口变化时立即执行 可以提前确定布局
 
-    const handleViewportChange = () => {
+    const handleViewportChange = debounce(() => {
       console.log('###### TG viewportChanged ######')
       console.log('tg.viewportStableHeight', tg.viewportStableHeight)
       console.log('initTgViewportHeightRef', initTgViewportHeightRef.current)
@@ -148,10 +149,10 @@ const MessagePageIOS = () => {
         containerRef.current!.style.height = `100vh`
         keyboardDown()
       }
-    }
+    }, 100)
 
     // 这个函数在视口稳定后执行 可以在这个之后稳定real input位置
-    const handleVisualViewportResize = () => {
+    const handleVisualViewportResize = debounce(() => {
       if (!window.visualViewport) return
       const currentHeight = window.visualViewport.height
 
@@ -174,7 +175,7 @@ const MessagePageIOS = () => {
           document.body.scrollIntoView()
         }, 100)
       }
-    }
+    }, 100)
 
     tg?.onEvent('viewportChanged', handleViewportChange)
     handleVisualViewportResize()

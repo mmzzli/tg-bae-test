@@ -170,12 +170,15 @@ const SendMediaModal = ({
         }}
         multiple
         onChange={handleFileChange}
-        className="fixed -top-12"
+        className="absolute bottom-12 left-2"
         style={{ display: 'none' }}
         ref={attachRef}
       />
 
-      <div {...touchHandlers} className="w-[29px] h-[29px] cursor-pointer mr-[8px] mt-[3px] no-tap">
+      <div
+        {...touchHandlers}
+        className="relative w-[29px] h-[29px] cursor-pointer mr-[8px] mt-[3px] no-tap"
+      >
         <img src={AttachIcon} />
       </div>
 

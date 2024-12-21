@@ -78,7 +78,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
       console.log('post error')
       return
     }
-    setLoading(true)
+    off()
     const timestamp: number = new Date().getTime()
     const url = `${import.meta.env.VITE_APP_UPLOAD_URL}upload/${timestamp}`
     const file = base64ToFile(curl, 'image.png')
@@ -93,8 +93,6 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
         },
       })
       setCover(response.data)
-      setLoading(false)
-      off()
     } catch (error) {
       console.error(`Error uploading ${file.name}:`, error)
     }

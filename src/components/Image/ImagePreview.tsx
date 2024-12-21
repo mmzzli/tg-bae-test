@@ -158,7 +158,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
         onSwiper={setSwiper}
         onSlideChange={(swiper: SwiperType) => {
           // 加载当前大图
-          setLoading(true)
+          // setLoading(true)
           onIndexChange(swiper.activeIndex)
         }}
         spaceBetween={30}

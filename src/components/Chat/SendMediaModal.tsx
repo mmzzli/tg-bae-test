@@ -166,12 +166,18 @@ const SendMediaModal = ({
         type="file"
         accept="image/*,video/mp4,video/x-m4v,video/ogg,video/webm"
         onClick={(e) => {
+          e.preventDefault()
           ;(e.target as HTMLInputElement).value = ''
         }}
         multiple
         onChange={handleFileChange}
         className="absolute bottom-12 left-2"
-        style={{ display: 'none' }}
+        style={{
+          display: 'none',
+          opacity: 0,
+          pointerEvents: 'none',
+          zIndex: -1,
+        }}
         ref={attachRef}
       />
 

@@ -42,7 +42,6 @@ export const NewPost: FC = () => {
   const [imgAttr, setImgAttr] = useState<any[]>([])
   const [files, setFiles] = useState<File[]>([])
   const token = useStore((state) => state.token)
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   // const [frameSelectorBoll, setFrameSelectorBoll] = useState<boolean>(false)
   // start
@@ -470,69 +469,6 @@ export const NewPost: FC = () => {
     setFiles((prevItems) => prevItems.filter((_, index) => index !== key))
   }
 
-  function base64ToFile(base64String: any, filename: string) {
-    const arr = base64String.split(',')
-    const mime = arr[0].match(/:(.*?);/)[1]
-    const bstr = atob(arr[1])
-    let n = bstr.length
-    const u8arr = new Uint8Array(n)
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n)
-    }
-    return new File([u8arr], filename, { type: mime })
-  }
-
-  const load = async (url: string, formData: any) => {
-    try {
-      const response = await axios.put(url, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      setCover(response.data)
-    } catch (error) {
-      console.error(`Error uploading`, error)
-    }
-  }
-  useEffect(() => {
-    if (videoSrc) {
-      const video = videoRef.current;
-      const canvas = canvasRef.current;
-      const ctx = canvas?.getContext('2d');
-
-      if (video && canvas && ctx) {
-        video.src = videoSrc;
-        video.onloadeddata = () => {
-          // 当视频加载完成后
-          video.currentTime = 0; // 播放视频的第一帧
-        };
-        video.onseeked = () => {
-          // 视频定位到第一帧时，绘制到 canvas
-          if (video.videoWidth && video.videoHeight) {
-            // 设置 canvas 的尺寸为视频的原始尺寸，确保高清
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height); // 清空画布
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height); // 绘制视频的第一帧
-
-            // 将 canvas 转换为图片（Base64 格式）
-            const imageUrl = canvas.toDataURL('image/png');
-
-            const file = base64ToFile(imageUrl, 'image.png')
-            console.log(file)
-            const formData = new FormData()
-            formData.append('file', file)
-            const timestamp: number = new Date().getTime()
-            const url = `${import.meta.env.VITE_APP_UPLOAD_URL}upload/${timestamp}`
-            load(url, formData)
-
-          }
-        };
-      }
-    }
-  }, [videoSrc])
 
   useEffect(() => {
     return () => {
@@ -567,7 +503,6 @@ export const NewPost: FC = () => {
       className="fixed w-screen h-screen bg-[#fff] z-10 overflow-auto scrollbar-hide"
       id="scrollable"
     >
-      <canvas ref={canvasRef} width="300" height="200" style={{ display: 'none' }} />
       <Box p="0 16px">
         <HStack justifyContent="space-between" pt="16px">
           <Heading as="h3" fontSize="20px" color="#000">

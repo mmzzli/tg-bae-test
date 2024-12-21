@@ -72,14 +72,44 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover }) 
   const handleSelectFrame = (frame: Frame) => {
     setSelectedFrame(frame)
   }
-  useEffect(() => {
-    if (isBaseModalOpen) {
-      extractFramesFromVideo()
+  const handler = async (curl:string) => {
+    if(!curl){
+      console.log('post error')
+      return
     }
-  }, [videoRef, isBaseModalOpen])
+    setLoading(true)
+    const timestamp: number = new Date().getTime()
+    const url = `${import.meta.env.VITE_APP_UPLOAD_URL}upload/${timestamp}`
+    const file = base64ToFile(curl, 'image.png')
+
+    const formData = new FormData()
+    formData.append('file', file)
+    try {
+      const response = await axios.put(url, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      setCover(response.data)
+      setLoading(false)
+      off()
+    } catch (error) {
+      console.error(`Error uploading ${file.name}:`, error)
+    }
+  }
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      extractFramesFromVideo()
+    }, 500)
+    return () => clearTimeout(timer);
+  }, [videoRef])
   useEffect(() => {
     if (frames.length === 1) {
+      console.log(frames)
       setSelectedFrame(frames[0])
+      handler(frames[0]?.url)
     }
   }, [frames])
 
@@ -184,28 +214,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover }) 
                   width="100%"
                   loading={loading}
                   className="h-[48px]"
-                  handler={async () => {
-                    setLoading(true)
-                    const timestamp: number = new Date().getTime()
-                    const url = `${import.meta.env.VITE_APP_UPLOAD_URL}upload/${timestamp}`
-                    const file = base64ToFile(selectedFrame?.url, 'image.png')
-
-                    const formData = new FormData()
-                    formData.append('file', file)
-                    try {
-                      const response = await axios.put(url, formData, {
-                        headers: {
-                          'Content-Type': 'multipart/form-data',
-                          Authorization: `Bearer ${token}`,
-                        },
-                      })
-                      setCover(response.data)
-                      setLoading(false)
-                      off()
-                    } catch (error) {
-                      console.error(`Error uploading ${file.name}:`, error)
-                    }
-                  }}
+                  handler={()=>handler(selectedFrame?.url || '')}
                 />
               </div>
             </div>

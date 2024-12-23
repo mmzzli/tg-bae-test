@@ -45,6 +45,9 @@ const getTaskIcon = (task: DailyTaskItem) => {
   const unlockIcon = <i className="iconfont icon-icon_money  text-[20px]"></i>
   const claimAllIcon = <i className="iconfont icon-Frame1  text-[20px]"></i>
 
+  const xIcon = <i className="iconfont icon-icon_x text-[20px]"></i>
+  const insIcon = <i className="iconfont icon-ins text-[20px]"></i>
+
   switch (task.task_type) {
     case 1:
       return dateIcon
@@ -67,6 +70,10 @@ const getTaskIcon = (task: DailyTaskItem) => {
       return unlockIcon
     case 11:
       return claimAllIcon
+    case 13:
+      return xIcon
+    case 14:
+      return insIcon
     default:
       return null
   }

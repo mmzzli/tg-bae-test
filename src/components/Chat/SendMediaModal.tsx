@@ -29,7 +29,6 @@ type FileMetadata = {
   width: number
   height: number
   duration: number
-  thumbnail?: string
 }
 
 const SendMediaModal = ({
@@ -65,7 +64,6 @@ const SendMediaModal = ({
           height: 0,
           duration: 0,
           resolution: '',
-          thumbnail: '',
         }
 
         if (file.type.startsWith('image/')) {
@@ -86,82 +84,20 @@ const SendMediaModal = ({
           const reader = new FileReader()
 
           reader.onload = (event) => {
-            try {
-              video.src = event.target?.result as string
-
-              video.addEventListener('error', (e) => {
-                console.log('video load error:', e)
-                console.log('error code:', video.error?.code)
-                console.log('error message:', video.error?.message)
-              })
-
-              video.addEventListener('loadedmetadata', () => {
-                console.log('video loadedmetadata')
-              })
-
-              video.onloadeddata = () => {
-                console.log('video loadeddata')
-                const canvas = document.createElement('canvas')
-                canvas.width = video.videoWidth || 400 // 添加默认值
-                canvas.height = video.videoHeight || 300 // 添加默认值
-
-                try {
-                  const ctx = canvas.getContext('2d')
-                  if (!ctx) {
-                    throw new Error('无法获取 canvas context')
-                  }
-
-                  ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-
-                  canvas.toBlob(
-                    (blob) => {
-                      if (blob) {
-                        const thumbnailUrl = URL.createObjectURL(blob)
-                        console.log('thumbnail generated:', thumbnailUrl)
-                        metadata.thumbnail = thumbnailUrl
-                      }
-                      metadata.width = video.videoWidth || 0
-                      metadata.height = video.videoHeight || 0
-                      metadata.duration = video.duration || 0
-                      resolve(metadata)
-                    },
-                    'image/jpeg',
-                    0.5
-                  )
-                } catch (err) {
-                  console.error('generate thumbnail failed:', err)
-                  resolve({
-                    ...metadata,
-                    width: video.videoWidth || 0,
-                    height: video.videoHeight || 0,
-                    duration: video.duration || 0,
-                  })
-                }
-              }
-
-              setTimeout(() => {
-                if (!metadata.thumbnail) {
-                  console.log('generate thumbnail timeout')
-                  resolve(metadata)
-                }
-              }, 5000)
-            } catch (err) {
-              console.error('process video file error:', err)
+            video.src = event.target?.result as string
+            video.onloadedmetadata = () => {
+              metadata.resolution = `${video.videoWidth}x${video.videoHeight}`
+              metadata.width = video.videoWidth
+              metadata.height = video.videoHeight
+              metadata.duration = video.duration
               resolve(metadata)
             }
+            video.onerror = (e) => {
+              console.log(e)
+              resolve(null)
+            }
           }
-
-          reader.onerror = (err) => {
-            console.error('read file failed:', err)
-            resolve(metadata)
-          }
-
-          try {
-            reader.readAsDataURL(file)
-          } catch (err) {
-            console.error('read file error:', err)
-            resolve(metadata)
-          }
+          reader.readAsDataURL(file)
         } else {
           resolve(null)
         }
@@ -228,7 +164,7 @@ const SendMediaModal = ({
     <>
       <input
         type="file"
-        accept="image/*,video/mp4,video/x-m4v,video/ogg,video/webm,video/quicktime"
+        accept="image/*,video/mp4,video/x-m4v,video/ogg,video/webm"
         onClick={(e) => {
           ;(e.target as HTMLInputElement).value = ''
         }}
@@ -300,11 +236,8 @@ const SendMediaModal = ({
                             playsInline
                             preload="metadata"
                             className="w-full h-full object-cover"
-                            poster={metadata.thumbnail}
+                            poster={URL.createObjectURL(metadata.file)}
                             src={URL.createObjectURL(metadata.file)}
-                            controlsList="nodownload nofullscreen noremoteplayback"
-                            disablePictureInPicture
-                            webkit-playsinline
                           />
                           <div className="absolute top-0 left-0 bg-black bg-opacity-60 text-white text-xs p-1">
                             {formatDuration(metadata.duration)}

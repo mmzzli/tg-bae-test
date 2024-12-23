@@ -312,16 +312,20 @@ const ResourceList = ({
         act_type: curLiked ? 1 : 2,
         post_id: data.id,
       })
-      if(!res?.post_id){
+      if (!res?.post_id) {
         toast({
           render: () => {
-            return <CustomToast title="This content has been deleted by the creator and cannot be accessed." type={typeOptions.error} />
+            return (
+              <CustomToast
+                title="This content has been deleted by the creator and cannot be accessed."
+                type={typeOptions.error}
+              />
+            )
           },
           position: 'bottom',
         })
         setLikes(data)
       }
-
     },
     { wait: 500 }
   )
@@ -335,10 +339,15 @@ const ResourceList = ({
       const isSaved = saveds.find((item) => item.id === data.id)?.saveds
       if (isSaved) {
         const res = await favPost(data.id)
-        if(res !== 'OK'){
+        if (res !== 'OK') {
           toast({
             render: () => {
-              return <CustomToast title="This content has been deleted by the creator and cannot be accessed." type={typeOptions.error} />
+              return (
+                <CustomToast
+                  title="This content has been deleted by the creator and cannot be accessed."
+                  type={typeOptions.error}
+                />
+              )
             },
             position: 'bottom',
           })
@@ -524,7 +533,10 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
           </div>
           <div className="flex gap-1.5 items-center">
             <p className="text-[#868686] dark:text-[#424048] text-xs">
-              {getTimeStringAutoShort(new Date(data.created_at).getTime(), true)}
+              {getTimeStringAutoShort(
+                new Date(data.created_at).getTime() - new Date().getTimezoneOffset() * 60000,
+                true
+              )}
             </p>
             {data.act_type === 1 && type === 'recommend' ? (
               <div className="text-[#333333] text-[12px]">Featured</div>

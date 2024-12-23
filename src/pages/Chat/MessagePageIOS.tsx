@@ -164,7 +164,7 @@ const MessagePageIOS = () => {
       // 这个有时候会获取不到初始的高度
       if (tg.viewportStableHeight < initTgViewportHeightRef.current) {
         console.log('keyboard up 2')
-        containerRef.current!.style.height = `${currentHeight}px`
+        containerRef.current!.style.height = `${tg.viewportStableHeight}px`
         setShowInput(true)
       } else {
         console.log('keyboard down 2')

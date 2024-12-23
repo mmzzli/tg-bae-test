@@ -64,6 +64,9 @@ export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLE
       console.log(error, 'error====jacob')
       video.muted = true
       video.play()
+      setTimeout(() => {
+        video.muted = false
+      }, 1000)
     })
   })
 }

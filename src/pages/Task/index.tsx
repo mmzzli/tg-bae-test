@@ -1,7 +1,7 @@
-import { claimTask, claimAllTasks } from '@/api'
+import { claimTask, claimAllTasks, setFollowTaskToClaimed, claimFollowTask } from '@/api'
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
-import { useGetDailyTask, useDailyTaskStatus } from '@/hooks/useDailyTask'
+import { useGetDailyTask, useDailyTaskStatus, useGetFollowTask } from '@/hooks/useDailyTask'
 import { useStore } from '@/store'
 import { DailyTaskItem, DailyTaskStatusEnum } from '@/store/slices/systemSlice'
 import { useToast } from '@chakra-ui/react'
@@ -9,12 +9,16 @@ import { postEvent } from '@telegram-apps/sdk'
 import { useRequest } from 'ahooks'
 import { FC, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { initUtils } from '@telegram-apps/sdk'
+import { useTMAUtils } from '@/hooks/useTMAUtils'
 
 enum TaskType {
   ClaimAll = 11,
   Chat = 9,
   NewPost = 8,
 }
+
+const FOLLOW_X = 13
 
 const goToAction = (task: DailyTaskItem) => {
   switch (task.task_type) {
@@ -71,9 +75,10 @@ const getTaskIcon = (task: DailyTaskItem) => {
 const TaskButton: React.FC<{
   task: DailyTaskItem
   onClick: () => void
-  afterClaim: () => void
-}> = ({ task, onClick, afterClaim }) => {
-  const { runGetDailyTask, loading } = useGetDailyTask()
+  afterClaim?: () => void
+  claim?: (task: DailyTaskItem) => void
+}> = ({ task, onClick, afterClaim, claim }) => {
+  const { runGetDailyTask } = useGetDailyTask()
   const { updateDailyTask } = useStore((state) => ({
     updateDailyTask: state.updateDailyTask,
   }))
@@ -85,7 +90,7 @@ const TaskButton: React.FC<{
       status: DailyTaskStatusEnum.CLAIMED,
     } as DailyTaskItem)
     runGetDailyTask()
-    afterClaim()
+    afterClaim?.()
   }
 
   const { run: runClaimTask, loading: claimTaskLoading } = useRequest(claimTask, {
@@ -115,7 +120,11 @@ const TaskButton: React.FC<{
 
   const handleClaimTask = () => {
     haptic()
-    runClaimTask(task.task_type)
+    if (claim) {
+      claim(task)
+    } else {
+      runClaimTask(task.task_type)
+    }
   }
   const status = task.status
 
@@ -163,8 +172,9 @@ const TaskButton: React.FC<{
 const TaskItem: React.FC<{
   task: DailyTaskItem
   onTaskAction: (task: DailyTaskItem) => void
-  afterClaim: () => void
-}> = ({ task, onTaskAction, afterClaim }) => {
+  afterClaim?: () => void
+  claim?: (task: DailyTaskItem) => void
+}> = ({ task, onTaskAction, afterClaim, claim }) => {
   return (
     <div className="flex items-center justify-between bg-[#F7F9FC] p-4 rounded-lg transform transition-transform duration-500">
       <div className="flex items-center">
@@ -176,28 +186,46 @@ const TaskItem: React.FC<{
           <p className="text-xs text-[#999999]">+{task.points} points</p>
         </div>
       </div>
-      <TaskButton task={task} onClick={() => onTaskAction(task)} afterClaim={afterClaim} />
+      <TaskButton
+        task={task}
+        onClick={() => onTaskAction(task)}
+        afterClaim={afterClaim}
+        claim={claim}
+      />
     </div>
   )
 }
 
 const Tasks: FC = () => {
   const navigate = useNavigate()
-  const { dailyTaskList, totalTaskPoints, token, paidStars, paidStarsPoints } = useStore(
-    (state) => ({
-      dailyTaskList: state.dailyTaskList,
-      totalTaskPoints: state.totalTaskPoints,
-      paidStars: state.paidStars,
-      paidStarsPoints: state.paidStarsPoints,
-      updateDailyTask: state.updateDailyTask,
-      token: state.token,
-    })
-  )
+  const {
+    dailyTaskList,
+    totalTaskPoints,
+    token,
+    paidStars,
+    paidStarsPoints,
+    followTaskList,
+    totalFollowTaskPoints,
+  } = useStore((state) => ({
+    dailyTaskList: state.dailyTaskList,
+    totalTaskPoints: state.totalTaskPoints,
+    totalFollowTaskPoints: state.totalFollowTaskPoints,
+    paidStars: state.paidStars,
+    paidStarsPoints: state.paidStarsPoints,
+    updateDailyTask: state.updateDailyTask,
+    token: state.token,
+    followTaskList: state.followTaskList,
+  }))
   const [isTooltipOpen, setIsTooltipOpen] = useState(false)
-  const { runGetDailyTask, loading } = useGetDailyTask()
+  const { runGetDailyTask } = useGetDailyTask()
+  const { runGetFollowTask } = useGetFollowTask()
   const toast = useToast()
   const toastIdRef = useRef<string | number | undefined>()
   const tooltipRef = useRef<HTMLDivElement>(null)
+
+  const isAllFollowTasksClaimed = followTaskList.every(
+    (task) => task.status === DailyTaskStatusEnum.CLAIMED
+  )
 
   const successToast = () => {
     if (toastIdRef.current) {
@@ -233,6 +261,7 @@ const Tasks: FC = () => {
   useEffect(() => {
     if (token) {
       runGetDailyTask()
+      runGetFollowTask()
     }
   }, [token])
 
@@ -254,9 +283,9 @@ const Tasks: FC = () => {
       {/* title */}
       <div className="mb-4 flex flex-col items-center justify-center">
         <h1 className="text-[40px] leading-[42px] font-bold text-[#333333]">
-          <AnimatedNumber value={totalTaskPoints} />
+          <AnimatedNumber value={totalTaskPoints + totalFollowTaskPoints} />
         </h1>
-        <p className="text-[12px] leading-[16px] text-[#999999]">Points</p>
+        <p className="text-[12px] leading-[16px] text-[#999999]">My Bae Points</p>
       </div>
 
       {/* stars */}
@@ -294,6 +323,8 @@ const Tasks: FC = () => {
         </div>
       </div>
 
+      {!isAllFollowTasksClaimed && <FollowTask successToast={successToast} />}
+
       {/* date */}
       <div className="flex justify-between items-center mb-4 text-[16px] leading-[21px] h-[21px]">
         <h2 className="font-bold text-[#333333]">Daily Tasks</h2>
@@ -310,7 +341,7 @@ const Tasks: FC = () => {
       </div>
 
       {/* task list */}
-      <div className="space-y-3 transition-transform duration-500">
+      <div className="space-y-3 transition-transform duration-500 mb-8">
         {dailyTaskList.map((task) => (
           <TaskItem
             key={task.task_type}
@@ -320,7 +351,79 @@ const Tasks: FC = () => {
           />
         ))}
       </div>
+
+      {isAllFollowTasksClaimed && <FollowTask successToast={successToast} />}
     </div>
+  )
+}
+
+const FollowTask: React.FC<{ successToast: () => void }> = ({ successToast }) => {
+  const { openLink } = useTMAUtils()
+
+  const { runGetFollowTask } = useGetFollowTask()
+  const { followTaskList, updateFollowTask } = useStore((state) => ({
+    followTaskList: state.followTaskList,
+    updateFollowTask: state.updateFollowTask,
+  }))
+  const followX = () => {
+    openLink('https://x.com/onlyonbae?s=21&t=Nq0aVtqsD7dXOxaUwmbPKA')
+  }
+  const followInstagram = () => {
+    openLink('https://www.instagram.com/onlyon.bae?igsh=MW50d2Fram54a2M3aw==')
+  }
+
+  const handleTaskAction = (task: DailyTaskItem) => {
+    if (task.task_type === 13) {
+      followX()
+    } else if (task.task_type === 14) {
+      followInstagram()
+    }
+  }
+
+  const onClaimSuccess = () => {
+    runGetFollowTask()
+    successToast()
+  }
+
+  const { run: runFollowTaskToClaimed } = useRequest(setFollowTaskToClaimed, {
+    manual: true,
+    onSuccess() {
+      runGetFollowTask()
+    },
+  })
+
+  const { run: runClaimFollowTask } = useRequest(claimFollowTask, {
+    manual: true,
+    onSuccess() {
+      onClaimSuccess()
+    },
+  })
+
+  const handleTaskToClaimed = (task: DailyTaskItem) => {
+    handleTaskAction(task)
+    runFollowTaskToClaimed(task.task_type === FOLLOW_X ? 'x' : 'ins')
+  }
+
+  const handleClaimTask = (task: DailyTaskItem) => {
+    runClaimFollowTask(task.task_type)
+  }
+
+  return (
+    <>
+      <div className="flex justify-between items-center mb-4 text-[16px] leading-[21px] h-[21px]">
+        <h2 className="font-bold text-[#333333]">Follow community</h2>
+      </div>
+      <div className="space-y-3 transition-transform duration-500 mb-8">
+        {followTaskList.map((task) => (
+          <TaskItem
+            key={task.task_type}
+            task={task}
+            onTaskAction={handleTaskToClaimed}
+            claim={handleClaimTask}
+          />
+        ))}
+      </div>
+    </>
   )
 }
 

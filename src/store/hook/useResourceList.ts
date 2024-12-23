@@ -312,7 +312,7 @@ const useCacheVideo = (
   updateCache: (videos: FormatterListItem[]) => void, // 更新缓存的函数
   domId: string,
   cardClass: string = 'video-card',
-  random=0
+  random = 0
 ) => {
   const observerRef = useRef<IntersectionObserver | null>(null)
   const videos = list.filter((item) => item.type === 0)
@@ -387,8 +387,8 @@ const useCacheVideo = (
       if (!containerRect) return
 
       // 计算元素在容器内的可见面积比例
-      const visibleHeight = Math.min(rect.bottom, containerRect.bottom) -
-                           Math.max(rect.top, containerRect.top)
+      const visibleHeight =
+        Math.min(rect.bottom, containerRect.bottom) - Math.max(rect.top, containerRect.top)
       const visibleRatio = visibleHeight / rect.height
 
       if (visibleRatio > maxVisibility) {
@@ -438,7 +438,6 @@ const useCacheVideo = (
       const container = document.getElementById(domId)
       const elements = container?.querySelectorAll(`.${cardClass}`)
 
-      console.log(444444, '========jacob')
       if (container && elements && elements.length > 0 && videos.length === elements.length) {
         elements.forEach((element) => {
           observerRef.current?.observe(element)

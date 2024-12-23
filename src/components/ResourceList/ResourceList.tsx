@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { DrawSkeletonItem } from '@/components/Skeketon/ChatSkeleton'
 import { postEvent } from '@telegram-apps/sdk'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
+import { useSharedList } from '@/store/hook/useResourceList'
 
 import { favDel, favPost, postLike } from '@/api'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
@@ -207,6 +208,7 @@ const ResourceList = ({
   const initPatchLikes = useStore((state) => state.initPatchLike)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const toast = useToast()
+  const { sharedPostList } = useSharedList()
 
   const saveds = useStore((state) => state.save)
 
@@ -300,8 +302,8 @@ const ResourceList = ({
           itemA.is_collected = savedMatch.saveds
         }
       })
-      initPatchLikes(resources)
-      initPatchSaves(resources)
+      initPatchLikes([...resources, ...sharedPostList])
+      initPatchSaves([...resources, ...sharedPostList])
     }
   }, [resources])
 
@@ -382,6 +384,8 @@ const ResourceList = ({
       if (item.id === post_id) {
         const options = is_pay ? { is_pay } : {}
 
+        console.log(item.act_type, '=======jacob')
+        console.log(url, '=======jacob')
         if (item.act_type === 0) {
           const medias = url.split(',')
           const picUrl = medias.find((item) => !item.endsWith('.m3u8'))
@@ -392,6 +396,12 @@ const ResourceList = ({
             .call(videos)
             .find((video) => parseInt(video.getAttribute('data-id')) === item.id)
           if (media) {
+            console.log('play', '=======jacob', {
+              ...item,
+              media: [media],
+              mediaCover: picUrl,
+              ...options,
+            })
             videoHls(
               {
                 ...item,

@@ -312,15 +312,15 @@ const ResourceList = ({
         act_type: curLiked ? 1 : 2,
         post_id: data.id,
       })
-      // if(res !== 'OK'){
-      //   toast({
-      //     render: () => {
-      //       return <CustomToast title="This content has been deleted by the creator and cannot be accessed." type={typeOptions.error} />
-      //     },
-      //     position: 'bottom',
-      //   })
-      //   setLikes(data)
-      // }
+      if(!res?.post_id){
+        toast({
+          render: () => {
+            return <CustomToast title="This content has been deleted by the creator and cannot be accessed." type={typeOptions.error} />
+          },
+          position: 'bottom',
+        })
+        setLikes(data)
+      }
 
     },
     { wait: 500 }

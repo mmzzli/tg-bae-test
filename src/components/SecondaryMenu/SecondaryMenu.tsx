@@ -121,7 +121,11 @@ const SecondaryMenu = ({ mediaData, currentUid, className, type }: Props) => {
           {currentUid === uid && (
             <button
               onClick={() => {
-                deleteDialogWrap.show({ data: mediaData, title: 'Delete this post?' })
+                deleteDialogWrap.show({
+                  data: mediaData,
+                  title: 'Delete this post?',
+                  value: mediaData.price > 0 ? `Users who unlocked it can still view it, but won't be able to engage with it.`: ''
+                })
                 setVisible(false)
               }}
               className="w-[83px] h-[40px] rounded-[4px] flex items-center justify-center gap-1 text-[#FF684A]"

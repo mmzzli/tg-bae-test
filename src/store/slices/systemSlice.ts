@@ -29,6 +29,8 @@ export interface DailyTaskItem {
   points: number
 }
 
+const followTaskId = [13, 14]
+
 export interface SystemSlice {
   virtualRoutePage: RoutePage | null
   setVirtualRoutePage: (page: RoutePage) => void
@@ -43,11 +45,18 @@ export interface SystemSlice {
 
   // Daily Task
   totalTaskPoints: number
+  totalFollowTaskPoints: number
   setTotalTaskPoints: (points: number) => void
+  setTotalFollowTaskPoints: (points: number) => void
   dailyTaskList: DailyTaskItem[]
   setDailyTaskList: (list: DailyTaskItem[]) => void
   resetDailyTaskList: () => void
   updateDailyTask: (task: DailyTaskItem) => void
+  // Follow Task
+  followTaskList: DailyTaskItem[]
+  setFollowTaskList: (list: DailyTaskItem[]) => void
+  resetFollowTaskList: () => void
+  updateFollowTask: (task: DailyTaskItem) => void
   // Paid Stars
   paidStars: number
   setPaidStars: (stars: number) => void
@@ -80,6 +89,7 @@ export const createSystemSlice: StateCreator<SystemSlice> = (set) => ({
   },
   dailyTaskList: [],
   setDailyTaskList: (list) => {
+    list = list.filter((task) => !followTaskId.includes(task.task_type))
     const claimedTasks = list.filter((task) => task.status === DailyTaskStatusEnum.CLAIMED)
     const inProgressTasks = list.filter((task) => task.status !== DailyTaskStatusEnum.CLAIMED)
     set({
@@ -110,5 +120,22 @@ export const createSystemSlice: StateCreator<SystemSlice> = (set) => ({
   paidStarsPoints: 0,
   setPaidStarsPoints: (points) => {
     set({ paidStarsPoints: points })
+  },
+  followTaskList: [],
+  setFollowTaskList: (list) => {
+    list = list.filter((task) => followTaskId.includes(task.task_type))
+    set({ followTaskList: [...list.sort((a, b) => a.task_type - b.task_type)] })
+  },
+  resetFollowTaskList: () => {
+    set({ followTaskList: [] })
+  },
+  updateFollowTask: (task) => {
+    set((state) => ({
+      followTaskList: state.followTaskList.map((t) => (t.id === task.id ? { ...t, ...task } : t)),
+    }))
+  },
+  totalFollowTaskPoints: 0,
+  setTotalFollowTaskPoints: (points) => {
+    set({ totalFollowTaskPoints: points })
   },
 })

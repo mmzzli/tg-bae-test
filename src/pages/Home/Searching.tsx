@@ -10,6 +10,7 @@ import Icon from '@/components/comm/Icon'
 import Image from '@/components/Image/Image'
 import FollowButton from '@/components/PersonalDetails/FollowButton'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
+import GeneralSkeleton from '@/components/Skeketon/GeneralSkeleton'
 const Searching = () => {
   const navigate = useNavigate()
   const inputRef = useRef<HTMLInputElement>(null)
@@ -112,33 +113,37 @@ const Searching = () => {
       </div>
 
       <div className="pt-[28px]">
-        {data?.users.map((item, key) => (
-          <div className="flex items-center justify-between py-[12px] mb-[12px]" key={key}>
-            <div
-              className="flex gap-[12px] items-center"
-              onClick={() => navigate(`/profile/${item.tg_id}`)}
-            >
-              <div className="flex-shrink-0">
-                <Image
-                  rect
-                  width={56}
-                  height={56}
-                  type="avatar"
-                  src={item.avatar}
-                  alt="Avatar"
-                  className="w-[56px] h-[56px] rounded-full"
-                  loaderClassName="rounded-full"
-                />
+        {!isLoading && debouncedField.length ? (
+          <GeneralSkeleton />
+        ) : (
+          data?.users.map((item, key) => (
+            <div className="flex items-center justify-between py-[12px] mb-[12px]" key={key}>
+              <div
+                className="flex gap-[12px] items-center"
+                onClick={() => navigate(`/profile/${item.tg_id}`)}
+              >
+                <div className="flex-shrink-0">
+                  <Image
+                    rect
+                    width={56}
+                    height={56}
+                    type="avatar"
+                    src={item.avatar}
+                    alt="Avatar"
+                    className="w-[56px] h-[56px] rounded-full"
+                    loaderClassName="rounded-full"
+                  />
+                </div>
+                <h3 className="text-[#333] text-[16px] w-[16ch] whitespace-nowrap overflow-hidden text-ellipsis">
+                  {item.tgname}
+                </h3>
               </div>
-              <h3 className="text-[#333] text-[16px] w-[16ch] whitespace-nowrap overflow-hidden text-ellipsis">
-                {item.tgname}
-              </h3>
+              {item.tg_id !== currentUid && (
+                <FollowButton tgid={item.tg_id} avatar={item.avatar} username={item.tgname} />
+              )}
             </div>
-            {item.tg_id !== currentUid && (
-              <FollowButton tgid={item.tg_id} avatar={item.avatar} username={item.tgname} />
-            )}
-          </div>
-        ))}
+          ))
+        )}
       </div>
       {data?.users.length === 0 && debouncedField.length > 0 && isLoading && (
         <div>

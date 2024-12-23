@@ -104,6 +104,18 @@ export const getPaidStarPoints = () => {
   return get<any>(`/api/v1/points/earnpoints`)
 }
 
+export const getFollowTask = () => {
+  return post<any>(`/api/v1/points/once_points`)
+}
+
+export const claimFollowTask = (task_id: number) => {
+  return post<any>(`/api/v1/points/claim_once/${task_id}`)
+}
+
+export const setFollowTaskToClaimed = (task_name: string) => {
+  return post<any>(`/api/v1/points/follow_x_ins/${task_name}`)
+}
+
 // Daily Task END
 
 export const searchByUsername = (params: { field: string; page_num: number; records: number }) => {

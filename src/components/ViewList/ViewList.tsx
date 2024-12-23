@@ -127,7 +127,7 @@ const MyPosts = () => {
       scrollThreshold={0.8}
       style={{ overflow: 'visible' }}
     >
-      <ResourceList resources={list} />
+      <ResourceList resources={list} type='view' />
     </InfiniteScroll>
   )
 }

@@ -170,12 +170,20 @@ const SendMediaModal = ({
         }}
         multiple
         onChange={handleFileChange}
-        className="fixed -top-12"
-        style={{ display: 'none' }}
+        className="absolute bottom-12 left-2"
+        style={{
+          display: 'none',
+          opacity: 0,
+          pointerEvents: 'none',
+          zIndex: -1,
+        }}
         ref={attachRef}
       />
 
-      <div {...touchHandlers} className="w-[29px] h-[29px] cursor-pointer mr-[8px] mt-[3px] no-tap">
+      <div
+        {...touchHandlers}
+        className="relative w-[29px] h-[29px] cursor-pointer mr-[8px] mt-[3px] no-tap"
+      >
         <img src={AttachIcon} />
       </div>
 
@@ -225,8 +233,11 @@ const SendMediaModal = ({
                         <div className="relative w-full h-full">
                           <video
                             controls
+                            playsInline
+                            preload="metadata"
                             className="w-full h-full object-cover"
-                            src={URL.createObjectURL(new Blob([metadata.file]))}
+                            poster={URL.createObjectURL(metadata.file)}
+                            src={URL.createObjectURL(metadata.file)}
                           />
                           <div className="absolute top-0 left-0 bg-black bg-opacity-60 text-white text-xs p-1">
                             {formatDuration(metadata.duration)}

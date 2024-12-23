@@ -15,6 +15,7 @@ import { useSafeState } from 'ahooks'
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import { UserItem } from '@/types'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
+import { useDrag } from 'react-use-gesture'
 
 const PlayButton = memo(({ onClick }: { onClick: () => void }) => (
   <div
@@ -75,7 +76,6 @@ const UserInfo = memo(
     const { getCurrentUid } = useTMAUtils()
     const current_uid = getCurrentUid()
 
-
     const doFollow = async () => {
       if (!uid || !id) return
       setIsFollowLoading(true)
@@ -98,7 +98,7 @@ const UserInfo = memo(
 
     return (
       <div
-        className="absolute left-4 right-4 z-[14] flex flex-col cursor-pointer no-tap pb-3"
+        className="absolute left-4 right-4 z-[14] flex flex-col cursor-pointer no-tap pb-4"
         style={{
           bottom: `${bottom}px`,
         }}
@@ -120,7 +120,9 @@ const UserInfo = memo(
               {created_at && (
                 <span>{getTimeStringAutoShort(new Date(created_at).getTime(), true)}</span>
               )}
-              {(!is_follow && current_uid !== uid) && <div className="pl-1.5 text-white text-[12px]">Bae selected</div>}
+              {!is_follow && current_uid !== uid && (
+                <div className="pl-1.5 text-white text-[12px]">Bae selected</div>
+              )}
             </div>
           </div>
           <div className="pl-4">
@@ -143,7 +145,7 @@ const UserInfo = memo(
             )}
           </div>
         </div>
-        <MoreText moreColor={'#fff'} bgColor={'#56554e'} moreLine={true} text={content || ''} />
+        <MoreText textColor={'#fff'} text={content || ''} bgColor={'#000'} />
       </div>
     )
   }
@@ -287,13 +289,28 @@ const VideoDialog = () => {
     return 'object-cover'
   }, [info, videoContainerRef])
 
+  const bind = useDrag(({ down, movement: [mx], direction: [xDir], velocity }) => {
+    console.log('333333')
+    console.log(xDir)
+    console.log(mx)
+    console.log(velocity)
+    if (down && xDir > 0 && mx > 100 && velocity > 0.2) {
+      onClose()
+    }
+  })
+
   return (
     <div
       style={{ display: url ? 'block' : 'none' }}
       className="absolute w-screen h-screen bg-black  z-[1000]"
     >
       <div className="fixed w-full h-full object-contain z-10 bg-black inset-0">
-        <div ref={videoContainerRef} style={{ height: '89vh' }} className="relative bg-white ">
+        <div
+          {...bind()}
+          ref={videoContainerRef}
+          style={{ height: '89vh' }}
+          className="relative bg-white "
+        >
           <div
             className=" z-[12] absolute w-full h-full bg-video-gradient"
             onClick={togglePlay}
@@ -322,7 +339,6 @@ const VideoDialog = () => {
             onPlaying={() => setIsLoading(false)}
             controls={false}
             playsInline
-            onClick={togglePlay}
             webkit-playsinline="true"
             x5-playsinline="true"
             x5-video-player-type="h5"

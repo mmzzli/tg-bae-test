@@ -1,8 +1,10 @@
 import { memo, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { Box, Flex, HStack, IconButton, useBoolean, Text, Heading } from '@chakra-ui/react'
+import { Box, Flex, HStack, IconButton, useBoolean, Text, useToast } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { DrawSkeletonItem } from '@/components/Skeketon/ChatSkeleton'
 import { postEvent } from '@telegram-apps/sdk'
+import { CustomToast, typeOptions } from '@/components/comm/Toast'
+import { useSharedList } from '@/store/hook/useResourceList'
 
 import { favDel, favPost, postLike } from '@/api'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
@@ -29,6 +31,7 @@ import ImageCard from '@/components/Image/ImageCard'
 import { genShareLinkFn, getTimeStringAutoShort } from '@/utils/utils'
 import MoreText from '@/components/More/MoreText'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
+import { videoHls } from '@/utils/video/videoHls'
 
 interface ShareDataProps {
   pid: number
@@ -142,7 +145,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               icon={<Image src={TelegramIcon} />}
               handler={() => {
                 // shareLink(links.shareLink ?? '')
-                handShareWithTelegram()
+                setTimeout(() => {
+                  window.Telegram?.WebApp?.resetShareCallback()
+                  handShareWithTelegram()
+                }, 0)
                 // off()
               }}
             />
@@ -201,6 +207,8 @@ const ResourceList = ({
   const setLikes = useStore((state) => state.setPatchLike)
   const initPatchLikes = useStore((state) => state.initPatchLike)
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const toast = useToast()
+  const { sharedPostList } = useSharedList()
 
   const saveds = useStore((state) => state.save)
 
@@ -294,18 +302,32 @@ const ResourceList = ({
           itemA.is_collected = savedMatch.saveds
         }
       })
-      initPatchLikes(resources)
-      initPatchSaves(resources)
+      initPatchLikes([...resources, ...sharedPostList])
+      initPatchSaves([...resources, ...sharedPostList])
     }
   }, [resources])
 
   const { run: linkRun } = useDebounceFn(
     async (data: FormatterListItem) => {
       const curLiked = likes.find((item) => item.id === data.id)?.liked
-      await postLike({
+      const res = await postLike({
         act_type: curLiked ? 1 : 2,
         post_id: data.id,
       })
+      if (!res?.post_id) {
+        toast({
+          render: () => {
+            return (
+              <CustomToast
+                title="This content has been deleted by the creator and cannot be accessed."
+                type={typeOptions.error}
+              />
+            )
+          },
+          position: 'bottom',
+        })
+        setLikes(data)
+      }
     },
     { wait: 500 }
   )
@@ -318,7 +340,21 @@ const ResourceList = ({
     async (data: FormatterListItem) => {
       const isSaved = saveds.find((item) => item.id === data.id)?.saveds
       if (isSaved) {
-        await favPost(data.id)
+        const res = await favPost(data.id)
+        if (res !== 'OK') {
+          toast({
+            render: () => {
+              return (
+                <CustomToast
+                  title="This content has been deleted by the creator and cannot be accessed."
+                  type={typeOptions.error}
+                />
+              )
+            },
+            position: 'bottom',
+          })
+          setSaveds(data)
+        }
       } else {
         await favDel(data.id)
       }
@@ -347,6 +383,37 @@ const ResourceList = ({
     const updatedUsers = resources.map((item) => {
       if (item.id === post_id) {
         const options = is_pay ? { is_pay } : {}
+
+        console.log(item.act_type, '=======jacob')
+        console.log(url, '=======jacob')
+        if (item.act_type === 0) {
+          const medias = url.split(',')
+          const picUrl = medias.find((item) => !item.endsWith('.m3u8'))
+          const media = medias.find((item) => item.endsWith('.m3u8'))
+          setCacheVideoIndex(item.id)
+          const videos = document.querySelectorAll('.video-card')
+          const mostVisibleElement = Array.prototype.slice
+            .call(videos)
+            .find((video) => parseInt(video.getAttribute('data-id')) === item.id)
+          if (media) {
+            console.log('play', '=======jacob', {
+              ...item,
+              media: [media],
+              mediaCover: picUrl,
+              ...options,
+            })
+            videoHls(
+              {
+                ...item,
+                media: [media],
+                mediaCover: picUrl,
+                ...options,
+              },
+              mostVisibleElement
+            )
+            return { ...item, media: [media], mediaCover: picUrl, ...options }
+          }
+        }
         return { ...item, media: url.split(','), ...options }
       }
       return item
@@ -476,15 +543,17 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
           </div>
           <div className="flex gap-1.5 items-center">
             <p className="text-[#868686] dark:text-[#424048] text-xs">
-              {getTimeStringAutoShort(new Date(data.created_at).getTime(), true)}
+              {getTimeStringAutoShort(
+                new Date(data.created_at).getTime() - new Date().getTimezoneOffset() * 60000,
+                true
+              )}
             </p>
-            {
-              (data.act_type === 1 && type === 'recommend') ? <div className="text-[#333333] text-[12px]">Featured</div>
-              :
-              (cardValue?.recommend && !data.is_follow && (
-                <div className="text-[#333333] text-[12px]">Bae selected</div>
-              ))
-            }
+            {data.act_type === 1 && type === 'recommend' ? (
+              <div className="text-[#333333] text-[12px]">Featured</div>
+            ) : (
+              cardValue?.recommend &&
+              !data.is_follow && <div className="text-[#333333] text-[12px]">Bae selected</div>
+            )}
           </div>
         </div>
       </div>
@@ -569,10 +638,10 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
       {(data.title || data.is_pay) && (
         <div className="px-4 pt-[10px]">
           <div className="text-[#0F1419] dark:text-[#ccc] font-normal text-sm leading-4">
-            <MoreText text={data.title} />
+            <MoreText text={data.title} bgColor={'#fff'} textColor={'#0F1419'} />
           </div>
           <div className="flex items-center justify-between">
-            {data.is_pay && (
+            {((type === 'view' && data.price > 0) || data.is_pay) && (
               <div className="flex items-center gap-2 mt-1">
                 <p className="text-[#666666] dark:text-[#424048] text-[12px]">
                   Purchased for {data.price}

@@ -39,36 +39,6 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
   return (
     <>
       <div className="border-t-[0.5px] border-[rgba(0,0,0,0.1)] relative z-[1]">
-        {data && data.pic_num && data.pic_num > 1 ? (
-          <HStack
-            borderRadius="4px"
-            bg="rgba(0, 0, 0, 0.40)"
-            zIndex={2}
-            position="absolute"
-            top="12px"
-            right="12px"
-            p="4px 10px"
-            gap="4px"
-            height="29px"
-            rounded="20px"
-          >
-            <Text color="white" fontSize="14px">
-              {data.uid !== getCurrentUid() && !data.is_pay && data.price > 0 ? (
-                <>
-                  <div className="flex items-center gap-1">
-                    <i className="iconfont icon-image"></i> {data.pic_num}
-                  </div>
-                </>
-              ) : (
-                <>
-                  {currentIndex + 1}&nbsp;/&nbsp;{data.pic_num}
-                </>
-              )}
-            </Text>
-          </HStack>
-        ) : (
-          ''
-        )}
         <Swiper
           className={'z-[1]'}
           onSwiper={setSwiper}
@@ -86,12 +56,12 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
                   maxHeight:
                     'calc(100vh - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top) - 85px - 64px - 50px - 26px)',
                 }}
-                className={'flex items-center object-contain overflow-hidden'}
+                className={'flex items-center  overflow-hidden'}
               >
                 <Image
                   src={formatImage(image, false)}
                   alt={data.title}
-                  width={'100%'}
+                  style={{ maxWidth: '100%', maxHeight: '100%' }}
                   onClick={() => {
                     console.log(data.is_pay)
                     console.log(data.price)
@@ -108,6 +78,38 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
         </Swiper>
         {data.uid !== getCurrentUid() && !data.is_pay && data.price > 0 && (
           <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} />
+        )}
+        {data && data.pic_num && data.pic_num > 1 ? (
+          <div className={'absolute z-10 top-0 right-0'}>
+            <HStack
+              borderRadius="4px"
+              bg="rgba(0, 0, 0, 0.40)"
+              zIndex={2}
+              position="absolute"
+              top="12px"
+              right="12px"
+              p="4px 10px"
+              gap="4px"
+              height="29px"
+              rounded="20px"
+            >
+              <Text color="white" fontSize="14px">
+                {data.uid !== getCurrentUid() && !data.is_pay && data.price > 0 ? (
+                  <>
+                    <div className="flex items-center gap-1">
+                      <i className="iconfont icon-image"></i> {data.pic_num}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {currentIndex + 1}&nbsp;/&nbsp;{data.pic_num}
+                  </>
+                )}
+              </Text>
+            </HStack>
+          </div>
+        ) : (
+          ''
         )}
       </div>
     </>

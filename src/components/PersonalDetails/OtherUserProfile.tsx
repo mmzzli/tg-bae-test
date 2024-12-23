@@ -10,6 +10,7 @@ import { profileImg } from '@/assets/image'
 import Report from '@/components/SecondaryMenu/Report'
 import More from './More'
 import ShareModal from '@/components/PersonalDetails/ShareModal'
+import MoreText from '@/components/More/MoreText'
 interface ChildMethods {
   someMethod: (username: string, uid: number) => void
 }
@@ -118,7 +119,7 @@ const OtherUserProfile: FC = () => {
       <Heading as="h3" color="#0F1233" fontWeight="500" className="mt-4" fontSize="20px">
         {userInfo.username}
       </Heading>
-      <More bio={userInfo.bio} />
+      <MoreText text={userInfo.bio} className={'leading-4'}></MoreText>
       <HStack p="24px 0" gap="56px">
         <Box>
           <Heading

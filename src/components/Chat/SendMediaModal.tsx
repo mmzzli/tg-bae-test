@@ -236,8 +236,8 @@ const SendMediaModal = ({
                             playsInline
                             preload="metadata"
                             className="w-full h-full object-cover"
-                            poster={URL.createObjectURL(new Blob([metadata.file]))}
-                            src={URL.createObjectURL(new Blob([metadata.file]))}
+                            poster={URL.createObjectURL(metadata.file)}
+                            src={URL.createObjectURL(metadata.file)}
                           />
                           <div className="absolute top-0 left-0 bg-black bg-opacity-60 text-white text-xs p-1">
                             {formatDuration(metadata.duration)}

@@ -1,8 +1,9 @@
 import { memo, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { Box, Flex, HStack, IconButton, useBoolean, Text, Heading } from '@chakra-ui/react'
+import { Box, Flex, HStack, IconButton, useBoolean, Text, useToast } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { DrawSkeletonItem } from '@/components/Skeketon/ChatSkeleton'
 import { postEvent } from '@telegram-apps/sdk'
+import { CustomToast, typeOptions } from '@/components/comm/Toast'
 
 import { favDel, favPost, postLike } from '@/api'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
@@ -205,6 +206,7 @@ const ResourceList = ({
   const setLikes = useStore((state) => state.setPatchLike)
   const initPatchLikes = useStore((state) => state.initPatchLike)
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const toast = useToast()
 
   const saveds = useStore((state) => state.save)
 
@@ -306,10 +308,20 @@ const ResourceList = ({
   const { run: linkRun } = useDebounceFn(
     async (data: FormatterListItem) => {
       const curLiked = likes.find((item) => item.id === data.id)?.liked
-      await postLike({
+      const res = await postLike({
         act_type: curLiked ? 1 : 2,
         post_id: data.id,
       })
+      if(res !== 'OK'){
+        toast({
+          render: () => {
+            return <CustomToast title="This content has been deleted by the creator and cannot be accessed." type={typeOptions.error} />
+          },
+          position: 'bottom',
+        })
+        setLikes(data)
+      }
+
     },
     { wait: 500 }
   )
@@ -322,7 +334,16 @@ const ResourceList = ({
     async (data: FormatterListItem) => {
       const isSaved = saveds.find((item) => item.id === data.id)?.saveds
       if (isSaved) {
-        await favPost(data.id)
+        const res = await favPost(data.id)
+        if(res !== 'OK'){
+          toast({
+            render: () => {
+              return <CustomToast title="This content has been deleted by the creator and cannot be accessed." type={typeOptions.error} />
+            },
+            position: 'bottom',
+          })
+          setSaveds(data)
+        }
       } else {
         await favDel(data.id)
       }

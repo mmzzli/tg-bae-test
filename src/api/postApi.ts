@@ -33,7 +33,7 @@ export const ordersList = (params: ViewListReq) => {
   return post<ListRes>(`/api/v1/orders`, params)
 }
 export const postLike = (params: LikeReq) => {
-  return post<LikeRes>(`/api/v1/like`, params)
+  return post(`/api/v1/like`, params)
 }
 export const postReq = () => {
   return get(`/api/v1/postreq`)

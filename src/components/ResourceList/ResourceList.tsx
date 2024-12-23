@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { DrawSkeletonItem } from '@/components/Skeketon/ChatSkeleton'
 import { postEvent } from '@telegram-apps/sdk'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
+import { useSharedList } from '@/store/hook/useResourceList'
 
 import { favDel, favPost, postLike } from '@/api'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
@@ -207,6 +208,7 @@ const ResourceList = ({
   const initPatchLikes = useStore((state) => state.initPatchLike)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const toast = useToast()
+  const { sharedPostList } = useSharedList()
 
   const saveds = useStore((state) => state.save)
 
@@ -300,8 +302,8 @@ const ResourceList = ({
           itemA.is_collected = savedMatch.saveds
         }
       })
-      initPatchLikes(resources)
-      initPatchSaves(resources)
+      initPatchLikes([...resources, ...sharedPostList])
+      initPatchSaves([...resources, ...sharedPostList])
     }
   }, [resources])
 

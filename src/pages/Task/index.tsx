@@ -9,7 +9,6 @@ import { postEvent } from '@telegram-apps/sdk'
 import { useRequest } from 'ahooks'
 import { FC, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { initUtils } from '@telegram-apps/sdk'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 
 enum TaskType {

@@ -7,7 +7,7 @@ import PostSkeleton from '../Skeketon/PostSkeleton'
 import { useEffect, useState } from 'react'
 import { useStore } from '@/store'
 import { useActivate } from 'react-activation'
-import {ListItem} from '@/types'
+import { ListItem } from '@/types'
 
 interface PostListProps {
   className?: string
@@ -40,11 +40,73 @@ const RecommendList = ({ className }: PostListProps) => {
     setRandom(Date.now())
   })
 
+  const throttledFetchMoreData = (() => {
+    let lastCall = 0
+    return () => {
+      const now = Date.now()
+      if (now - lastCall >= 1000) {
+        fetchMoreData()
+        lastCall = now
+      }
+    }
+  })()
+
+  useEffect(() => {
+    const scrollableDiv = document.getElementById('recommendScrollableDiv')
+    if (!scrollableDiv) return
+
+    let lastScrollTop = 0
+    let lastTouchY = 0
+    const maxScrollSpeed = 50
+
+    const handleWheel = (e: WheelEvent) => {
+      const currentScrollTop = scrollableDiv.scrollTop
+      const scrollDelta = Math.abs(currentScrollTop - lastScrollTop)
+
+      if (scrollDelta > maxScrollSpeed) {
+        e.preventDefault()
+        scrollableDiv.scrollTop =
+          lastScrollTop + (currentScrollTop > lastScrollTop ? maxScrollSpeed : -maxScrollSpeed)
+      }
+
+      lastScrollTop = scrollableDiv.scrollTop
+    }
+
+    const handleTouchMove = (e: TouchEvent) => {
+      const currentY = e.touches[0].clientY
+      const deltaY = lastTouchY - currentY
+
+      if (Math.abs(deltaY) > maxScrollSpeed) {
+        e.preventDefault()
+        scrollableDiv.scrollTop += deltaY > 0 ? maxScrollSpeed : -maxScrollSpeed
+      } else {
+        scrollableDiv.scrollTop += deltaY
+      }
+
+      lastTouchY = currentY
+    }
+
+    const handleTouchStart = (e: TouchEvent) => {
+      lastTouchY = e.touches[0].clientY
+    }
+
+    scrollableDiv.addEventListener('wheel', handleWheel, { passive: false })
+    scrollableDiv.addEventListener('touchstart', handleTouchStart, { passive: false })
+    scrollableDiv.addEventListener('touchmove', handleTouchMove, { passive: false })
+
+    return () => {
+      scrollableDiv.removeEventListener('wheel', handleWheel)
+      scrollableDiv.removeEventListener('touchstart', handleTouchStart)
+      scrollableDiv.removeEventListener('touchmove', handleTouchMove)
+    }
+  }, [])
+
   return (
     <div className={cn(className, '')}>
       <InfiniteScroll
         dataLength={list.length}
-        next={fetchMoreData}
+        // next={fetchMoreData}
+        next={throttledFetchMoreData}
         hasMore={hasMore}
         loader={
           <Box textAlign="center" m="20px 0" className="p-4">

@@ -384,6 +384,8 @@ const ResourceList = ({
       if (item.id === post_id) {
         const options = is_pay ? { is_pay } : {}
 
+        console.log(item.act_type, '=======jacob')
+        console.log(url, '=======jacob')
         if (item.act_type === 0) {
           const medias = url.split(',')
           const picUrl = medias.find((item) => !item.endsWith('.m3u8'))
@@ -394,6 +396,7 @@ const ResourceList = ({
             .call(videos)
             .find((video) => parseInt(video.getAttribute('data-id')) === item.id)
           if (media) {
+            console.log('play', '=======jacob')
             videoHls(
               {
                 ...item,

@@ -57,7 +57,22 @@ const RecommendList = ({ className }: PostListProps) => {
 
     let lastScrollTop = 0
     let lastTouchY = 0
-    const maxScrollSpeed = 50
+    let lastTouchTime = 0
+    let velocity = 0
+    let animationFrameId: number
+    const maxScrollSpeed = 20
+    const maxMoveSpeed = 10
+    const friction = 0.01
+
+    const animate = () => {
+      if (Math.abs(velocity) > 0.1) {
+        velocity *= friction
+        scrollableDiv.scrollTop += velocity
+        animationFrameId = requestAnimationFrame(animate)
+      } else {
+        velocity = 0
+      }
+    }
 
     const handleWheel = (e: WheelEvent) => {
       const currentScrollTop = scrollableDiv.scrollTop
@@ -72,32 +87,54 @@ const RecommendList = ({ className }: PostListProps) => {
       lastScrollTop = scrollableDiv.scrollTop
     }
 
+    const handleTouchStart = (e: TouchEvent) => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId)
+      }
+      velocity = 0
+      lastTouchY = e.touches[0].clientY
+      lastScrollTop = scrollableDiv.scrollTop
+      lastTouchTime = Date.now()
+    }
+
     const handleTouchMove = (e: TouchEvent) => {
       const currentY = e.touches[0].clientY
       const deltaY = lastTouchY - currentY
+      const currentTime = Date.now()
 
-      if (Math.abs(deltaY) > maxScrollSpeed) {
-        e.preventDefault()
-        scrollableDiv.scrollTop += deltaY > 0 ? maxScrollSpeed : -maxScrollSpeed
-      } else {
-        scrollableDiv.scrollTop += deltaY
-      }
+      const timeDiff = currentTime - lastTouchTime
+      velocity = (deltaY / (timeDiff || 1)) * 16
+
+      velocity = Math.min(Math.max(velocity, -maxMoveSpeed), maxMoveSpeed)
+
+      const currentScrollTop = scrollableDiv.scrollTop
+      scrollableDiv.scrollTop = lastScrollTop + velocity
 
       lastTouchY = currentY
+      lastScrollTop = scrollableDiv.scrollTop
+      lastTouchTime = currentTime
     }
 
-    const handleTouchStart = (e: TouchEvent) => {
-      lastTouchY = e.touches[0].clientY
+    const handleTouchEnd = () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId)
+      }
+      animationFrameId = requestAnimationFrame(animate)
     }
 
     scrollableDiv.addEventListener('wheel', handleWheel, { passive: false })
     scrollableDiv.addEventListener('touchstart', handleTouchStart, { passive: false })
     scrollableDiv.addEventListener('touchmove', handleTouchMove, { passive: false })
+    scrollableDiv.addEventListener('touchend', handleTouchEnd)
 
     return () => {
       scrollableDiv.removeEventListener('wheel', handleWheel)
       scrollableDiv.removeEventListener('touchstart', handleTouchStart)
       scrollableDiv.removeEventListener('touchmove', handleTouchMove)
+      scrollableDiv.removeEventListener('touchend', handleTouchEnd)
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId)
+      }
     }
   }, [])
 

@@ -84,16 +84,16 @@ export const useGetDailyTask = () => {
 }
 
 export const useGetFollowTask = () => {
-  const { setFollowTaskList, setTotalFollowTaskPoints } = useStore((state) => ({
+  const { setFollowTaskList, setTotalTaskPoints } = useStore((state) => ({
     setFollowTaskList: state.setFollowTaskList,
-    setTotalFollowTaskPoints: state.setTotalFollowTaskPoints,
+    setTotalTaskPoints: state.setTotalTaskPoints,
   }))
 
   const { run: runGetFollowTask, loading } = useRequest(getFollowTask, {
     manual: true,
     onSuccess(data) {
       setFollowTaskList(data.details)
-      setTotalFollowTaskPoints(data.points)
+      setTotalTaskPoints(data.points)
     },
   })
   return {
@@ -109,14 +109,12 @@ export const useInitDailyTask = () => {
     setPaidStars,
     setPaidStarsPoints,
     setFollowTaskList,
-    setTotalFollowTaskPoints,
   } = useStore((state) => ({
     setDailyTaskList: state.setDailyTaskList,
     setTotalTaskPoints: state.setTotalTaskPoints,
     setPaidStars: state.setPaidStars,
     setPaidStarsPoints: state.setPaidStarsPoints,
     setFollowTaskList: state.setFollowTaskList,
-    setTotalFollowTaskPoints: state.setTotalFollowTaskPoints,
   }))
 
   const { run: runGetDailyTask } = useRequest(getDailyTask, {
@@ -133,7 +131,7 @@ export const useInitDailyTask = () => {
     manual: true,
     onSuccess(data) {
       setFollowTaskList(data.details)
-      setTotalFollowTaskPoints(data.points)
+      setTotalTaskPoints(data.points)
     },
   })
 

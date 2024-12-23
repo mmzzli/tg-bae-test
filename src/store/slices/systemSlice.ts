@@ -111,7 +111,12 @@ export const createSystemSlice: StateCreator<SystemSlice> = (set) => ({
   },
   totalTaskPoints: 0,
   setTotalTaskPoints: (points) => {
-    set({ totalTaskPoints: points })
+    set((state) => {
+      if (points > state.totalTaskPoints) {
+        return { totalTaskPoints: points }
+      }
+      return state
+    })
   },
   paidStars: 0,
   setPaidStars: (stars) => {

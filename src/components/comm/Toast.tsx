@@ -53,7 +53,7 @@ export const CustomToast: React.FC<ToastProps> = ({ title, type, className }) =>
       style={{ background: theme.background }}
     >
       {<ToastBeforeIcon type={type}></ToastBeforeIcon>}
-      <span className="text-[var(--Dark-T1)] relative top-[-2px]">{title}</span>
+      <span className="text-[#fff] relative top-[-2px]">{title}</span>
     </div>
   )
 }

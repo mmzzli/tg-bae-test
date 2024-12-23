@@ -69,7 +69,7 @@ export function DeleteDialog({
 }
 
 export const DeleteDialogWarp = NiceModal.create(
-  ({ title = 'Delete this chat?', data }: { title?: string; data: FormatterListItem }) => {
+  ({ title = 'Delete this chat?', data, value }: { title?: string; data: FormatterListItem, value?:string }) => {
     const { visible, hide, remove } = useModal()
     const [loading, setLoading] = useSafeState(false)
     const { id } = data
@@ -125,8 +125,9 @@ export const DeleteDialogWarp = NiceModal.create(
     return (
       <Dialog open={visible}>
         <DialogContent>
-          <div className="w-[312px] h-[172px] bg-[#fff] text-white text-center rounded-[16px]">
+          <div className="w-[312px] pb-4 bg-[#fff] text-white text-center rounded-[16px]">
             <div className="mt-[40px] text-[#333] ">{title}</div>
+            {value && <div className='text-[#333] mt-2'>{value}</div>}
             <div className="flex justify-center gap-4 mt-[44px]">
               <div
                 className="cursor-pointer flex items-center justify-center w-[120px] h-[40px] border-[#CCC] border rounded-[20px] text-[#333] text-sm"
@@ -138,8 +139,7 @@ export const DeleteDialogWarp = NiceModal.create(
                 className={`cursor-pointer flex items-center justify-center w-[120px] h-[40px] bg-[#EB4B6D] rounded-[20px] text-sm ${loading ? 'opacity-50' : ''}`}
                 onClick={handleDelete}
               >
-                Delete
-                {loading && <i className="iconfont icon-loading ml-1 text-[14px]"></i>}
+                {loading ? <i className="iconfont icon-loading ml-1 text-[14px]"></i> : 'Delete'}
               </div>
             </div>
           </div>

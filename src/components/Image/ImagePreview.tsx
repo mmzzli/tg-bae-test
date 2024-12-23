@@ -10,6 +10,7 @@ import 'swiper/css'
 import { useSafeState } from 'ahooks'
 import { useStore } from '@/store'
 import { expand } from '@telegram-apps/sdk/dist/dts/scopes/components/viewport/methods'
+import { useDrag } from 'react-use-gesture'
 
 interface ImagePreviewProps {
   isOpen: boolean
@@ -44,24 +45,22 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
   // load the current image
   const loadImage = (index: number) => {
     try {
-      console.log(images)
       setLoading(true)
       const img = new Image()
       img.src = images[index]
       console.log(images[index])
 
       img.onload = () => {
-        console.log('3333')
         setLoading(false)
       }
 
       img.onerror = () => {
         console.log('444')
-        setLoading(true)
+        setLoading(false)
       }
     } catch (e) {
       console.log(e)
-      setLoading(true)
+      setLoading(false)
     } finally {
       // setLoading(false)
     }
@@ -93,11 +92,19 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
     onClose()
   }
 
+  const bind = useDrag(({ down, movement: [mx, my], direction: [xDir, yDir], velocity }) => {
+    if (down && yDir > 0 && my > 100 && velocity > 0.2) {
+      // 向下滑动超过 100px 且速度大于 0.2 时执行关闭操作
+      handlerClose()
+    }
+  })
+
   if (!isOpen) return null
 
   return (
     <div
       className="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-sm"
+      {...bind()}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose()
       }}
@@ -149,7 +156,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
         onSwiper={setSwiper}
         onSlideChange={(swiper: SwiperType) => {
           // 加载当前大图
-          setLoading(true)
+          // setLoading(true)
           onIndexChange(swiper.activeIndex)
         }}
         spaceBetween={30}

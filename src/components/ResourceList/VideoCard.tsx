@@ -1,6 +1,6 @@
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import { Box, HStack, Text } from '@chakra-ui/react'
-import { formatTime } from '@/utils/utils'
+import { formatImage, formatTime } from '@/utils/utils'
 import React, { useCallback, useContext, useMemo, useRef } from 'react'
 import FrostedGlass from '@/components/ResourceList/FrostedGlass'
 import Image from '../Image/Image'
@@ -57,7 +57,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
                 }
               >
                 <Image
-                  src={data.mediaCover}
+                  src={data.mediaCover ? formatImage(data.mediaCover, false) : ''}
                   alt={data.title}
                   wrapperClassName=" overflow-hidden z-[3]"
                   errorClassName="rounded-[0px] h-[150px]"

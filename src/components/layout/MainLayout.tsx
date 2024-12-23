@@ -29,7 +29,7 @@ const ChatListPageLoader = {
   ),
 }
 
-const HIDE_BACK_BUTTON_PATHS = ['/home', '/chat', '/profile', '/', '/ageGate']
+const HIDE_BACK_BUTTON_PATHS = ['/home', '/chat', '/profile', '/', '/ageGate', '/task']
 
 export const MainLayout: React.FC = () => {
   const location = useLocation()
@@ -111,6 +111,10 @@ export const MainLayout: React.FC = () => {
 
       postEvent('web_app_setup_swipe_behavior', {
         allow_vertical_swipe: false,
+      })
+
+      postEvent('web_app_setup_closing_behavior', {
+        need_confirmation: true,
       })
       tgApp.expand()
       tgApp.headerColor = '#ffffff'

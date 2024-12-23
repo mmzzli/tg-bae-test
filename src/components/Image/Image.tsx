@@ -1,7 +1,6 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react'
-import { cn, formatImage } from '@/utils/utils'
+import { cn } from '@/utils/utils'
 import { DefaultAvatarIcon } from '@/assets/icons'
-import Icon from '@/components/comm/Icon'
 
 interface ImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'onClick'> {
   wrapperClassName?: string
@@ -48,6 +47,41 @@ const Image = React.memo(
         ),
       [isLoading, hasError, className, isFirstRender]
     )
+
+    const [retryCount, setRetryCount] = useState(0)
+    const maxRetries = 1
+
+    const reloadImage = () => {
+      setHasError(false)
+      setIsLoading(true)
+      setTimeout(() => {
+        if (imageRef.current) {
+          imageRef.current.src = src as string
+        } else {
+          setIsLoading(false)
+          setHasError(true)
+        }
+      }, 100)
+    }
+
+    const handleImageError = (error: any) => {
+      console.error('Image load failed:', { src, error })
+
+      if (retryCount < maxRetries) {
+        console.log(`Retrying image load (${retryCount + 1}/${maxRetries})...`)
+        setRetryCount((prev) => prev + 1)
+
+        setTimeout(() => {
+          if (imageRef.current) {
+            imageRef.current.src = src as string
+            setIsLoading(true)
+          }
+        }, 500)
+      } else {
+        setIsLoading(false)
+        setHasError(true)
+      }
+    }
 
     useEffect(() => {
       if (src) setHasError(false)
@@ -101,34 +135,30 @@ const Image = React.memo(
         )
       }
       return (
-          <div
-            className={cn(
-              'flex items-center justify-center bg-gray-100 text-gray-400 w-full h-full',
-              wrapperClassName
-            )}
-            style={{ aspectRatio: rect ? 1 : '' }}
-          >
-              <div
-                className={cn(
-                  errorClassName
-                )}
-              >
-                <div className="flex flex-col items-center justify-center">
-                  <i className="iconfont icon-image text-[#ccc] text-[42px]"></i>
-                  <p className="mt-2">Failed to load image</p>
-                </div>
-              </div>
+        <div
+          className={cn(
+            'flex items-center justify-center bg-gray-100 text-gray-400 w-full h-full',
+            wrapperClassName
+          )}
+          style={{ aspectRatio: rect ? 1 : '' }}
+        >
+          <div className={cn(errorClassName)}>
+            <div className="flex flex-col items-center justify-center">
+              <i
+                className="iconfont icon-reset-left-line text-[#ccc] text-[42px]"
+                onClick={reloadImage}
+              ></i>
+              <p className="mt-2">Failed to load image</p>
+            </div>
           </div>
+        </div>
       )
     }
 
     return (
       <>
         <div
-          className={cn(
-            'relative flex overflow-hidden',
-            wrapperClassName
-          )}
+          className={cn('relative flex overflow-hidden', wrapperClassName)}
           style={{ aspectRatio: rect ? 1 : '' }}
         >
           {rect ? (
@@ -146,10 +176,7 @@ const Image = React.memo(
                 className={cn('w-full h-full object-cover', imageClassNames)}
                 onLoad={() => setIsLoading(false)}
                 onClick={() => onClick && onClick()}
-                onError={() => {
-                  setIsLoading(false)
-                  setHasError(true)
-                }}
+                onError={handleImageError}
                 {...props}
               />
             </div>
@@ -161,10 +188,7 @@ const Image = React.memo(
               className={imageClassNames}
               onLoad={() => setIsLoading(false)}
               onClick={() => onClick && onClick()}
-              onError={() => {
-                setIsLoading(false)
-                setHasError(true)
-              }}
+              onError={handleImageError}
               {...props}
             />
           )}

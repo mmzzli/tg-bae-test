@@ -45,7 +45,7 @@ const MoreText: React.FC<MoreTextProps> = ({
   return (
     <div className="relative mt-[8px]">
       {/* 内容部分 */}
-      <p
+      <div
         ref={textRef}
         className={`text-sm leading-relaxed overflow-hidden transition-all duration-300 dark:text-[#333333] font-weight-500 ${
           isExpanded ? 'line-clamp-none' : 'line-clamp-2'
@@ -66,7 +66,7 @@ const MoreText: React.FC<MoreTextProps> = ({
             {isExpanded ? 'Less' : 'More'}
           </div>
         )}
-      </p>
+      </div>
     </div>
   )
 }

@@ -120,7 +120,7 @@ const Searching = () => {
             <div className="flex items-center justify-between py-[12px] mb-[12px]" key={key}>
               <div
                 className="flex gap-[12px] items-center"
-                onClick={() => navigate(`/profile/${item.tg_id}`)}
+                onClick={() => item.tg_id !== currentUid ? navigate(`/profile/${item.tg_id}`) : navigate(`/profile`)}
               >
                 <div className="flex-shrink-0">
                   <Image

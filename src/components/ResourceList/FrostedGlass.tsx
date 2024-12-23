@@ -74,7 +74,12 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
             zIndex={3}
           >
             {loading ? (
-              <BaseButton height="40px" text={`loading ...`} handler={() => console.log(1)} />
+              <BaseButton
+                text=""
+                handler={()=>console.log(1)}
+                loading={true}
+                height="40px"
+              />
             ) : (
               <BaseButton
                 height="40px"

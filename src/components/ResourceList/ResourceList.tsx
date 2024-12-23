@@ -396,7 +396,12 @@ const ResourceList = ({
             .call(videos)
             .find((video) => parseInt(video.getAttribute('data-id')) === item.id)
           if (media) {
-            console.log('play', '=======jacob')
+            console.log('play', '=======jacob', {
+              ...item,
+              media: [media],
+              mediaCover: picUrl,
+              ...options,
+            })
             videoHls(
               {
                 ...item,

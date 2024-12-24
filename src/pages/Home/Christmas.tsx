@@ -159,9 +159,6 @@ const Christmas: FC = () => {
           </div> */}
         </div>
       </div>
-      <div className="overflow-hidden" style={{ height: '0px', opacity: 0, ...animation }}>
-        {/* <FollowingList /> */}
-      </div>
       <CardRecommendProvider.Provider value={{ recommend: true, setVideoOpen }}>
         <div
           className={`${userInfo.user_id !== -1 && userInfo.fans === 0 ? '' : ''}  relative ${videoOpen ? 'z-[112]' : ''}`}

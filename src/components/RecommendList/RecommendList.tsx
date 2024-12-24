@@ -1,3 +1,4 @@
+import { forwardRef, useImperativeHandle } from 'react'
 import { Box } from '@chakra-ui/react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import ResourceList from '../ResourceList/ResourceList'
@@ -13,10 +14,14 @@ import BScroll from 'better-scroll'
 interface PostListProps {
   className?: string
 }
+interface ChildRef {
+  refresh?: () => void;
+}
 
-const RecommendList = ({ className }: PostListProps) => {
+const RecommendList = forwardRef<ChildRef, PostListProps>((props, ref) => {
+  const { className } = props
   const token = useStore((state) => state.token)
-  const { list, hasMore, fetchMoreData, page } = useRecommendList()
+  const { list, hasMore, fetchMoreData, page, refresh } = useRecommendList()
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
   const updateCacheVideo = useStore((state) => state.updateCacheVideo)
@@ -40,6 +45,9 @@ const RecommendList = ({ className }: PostListProps) => {
     }
     setRandom(Date.now())
   })
+  useImperativeHandle(ref, () => ({
+    refresh: () => refresh()
+  }));
 
   const throttledFetchMoreData = (() => {
     let lastCall = 0
@@ -92,6 +100,6 @@ const RecommendList = ({ className }: PostListProps) => {
       </InfiniteScroll>
     </div>
   )
-}
+})
 
 export default RecommendList

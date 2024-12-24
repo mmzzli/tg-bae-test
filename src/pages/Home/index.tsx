@@ -3,13 +3,15 @@ import { useNavigate } from 'react-router-dom'
 import RecommendList from '@/components/RecommendList/RecommendList'
 import FollowingList from '@/components/RecommendList/FollowingList'
 
+import PostSkeleton from '@/components/Skeketon/PostSkeleton'
+
 import { useStore } from '@/store'
 import { CardRecommendProvider } from '@/utils/constants'
 import { throttle } from '@/utils/chat/schedulers'
-import { PullToRefresh } from 'antd-mobile';
-import useCacheVideo, { useRecommendList } from '@/store/hook/useResourceList'
+import { PullToRefresh } from 'antd-mobile'
+import { useRecommendList } from '@/store/hook/useResourceList'
 interface ChildRef {
-  refresh: () => void;
+  refresh: () => void
 }
 
 const SCROLL_THRESHOLD = 35
@@ -17,26 +19,16 @@ const SCROLL_THRESHOLD = 35
 const HomePage: FC = () => {
   const navigate = useNavigate()
   const [title, setTitle] = useState('Following') // Following
-  const [fadeClass, setFadeClass] = useState('fade-in')
-  const [fullscreen, setFullscreen] = useState(false)
   const userInfo = useStore((state) => state.userInfo)
+  const { hasMore } = useRecommendList()
 
   const [videoOpen, setVideoOpen] = useState(false)
   const [showTopTitle, setShowTopTitle] = useState(false)
   const titleRef = useRef<HTMLHeadingElement>(null)
 
-  const childRef = useRef<ChildRef>(null);
+  const childRef = useRef<ChildRef>(null)
 
-  const styles = {
-    fadeIn: {
-      opacity: 1,
-      transition: 'opacity 0.3s ease-in',
-    },
-    fadeOut: {
-      opacity: 0,
-      transition: 'opacity 0.3s ease-out',
-    },
-  }
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const animation = useMemo(() => {
     if (userInfo.user_id !== -1 && userInfo.fans === 0) {
@@ -90,7 +82,7 @@ const HomePage: FC = () => {
     handleDoubleTap()
   }
   const handleRefresh = async () => {
-    childRef.current?.refresh();
+    childRef.current?.refresh()
   }
 
   return (
@@ -100,7 +92,11 @@ const HomePage: FC = () => {
       style={{
         height:
           'calc(100vh - 84px - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top))',
+        scrollBehavior: 'smooth',
+        overscrollBehavior: 'contain',
+        WebkitOverflowScrolling: 'touch',
       }}
+      ref={containerRef}
     >
       <div
         className="flex p-[10px_16px] w-full z-[111]"
@@ -113,19 +109,20 @@ const HomePage: FC = () => {
         <div
           className="absolute top-0 left-0 right-0 bg-white dark:bg-black -z-1"
           style={{
-            height: `${parseInt(
-              getComputedStyle(document.documentElement).getPropertyValue(
-                '--tg-safe-area-inset-top'
-              )
-            ) > 0 ||
-                parseInt(
-                  getComputedStyle(document.documentElement).getPropertyValue(
-                    '--tg-content-safe-area-inset-top'
-                  )
-                ) > 0
+            height: `${
+              parseInt(
+                getComputedStyle(document.documentElement).getPropertyValue(
+                  '--tg-safe-area-inset-top'
+                )
+              ) > 0 ||
+              parseInt(
+                getComputedStyle(document.documentElement).getPropertyValue(
+                  '--tg-content-safe-area-inset-top'
+                )
+              ) > 0
                 ? '0'
                 : '68px'
-              }`,
+            }`,
           }}
         ></div>
         <div
@@ -152,10 +149,11 @@ const HomePage: FC = () => {
                 opacity: showTopTitle ? 1 : 0,
                 transform: `translateX(-50%)`,
                 left: '50%',
-                top: `${showTopTitle
+                top: `${
+                  showTopTitle
                     ? 'calc(var(--tg-safe-area-inset-top) + 10px)'
                     : 'calc(var(--tg-safe-area-inset-top) + 24px)'
-                  }`,
+                }`,
               }}
             >
               {title}
@@ -178,21 +176,37 @@ const HomePage: FC = () => {
         renderText={(status) => {
           switch (status) {
             case 'canRelease':
-              return <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-                <div className={`w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254FF]`}></div>
-              </div>;
+              return (
+                <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+                  <div
+                    className={`w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254FF]`}
+                  ></div>
+                </div>
+              )
             case 'refreshing':
-              return <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-                <div className={`w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254FF]`}></div>
-              </div>
+              return (
+                <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+                  <div
+                    className={`w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254FF]`}
+                  ></div>
+                </div>
+              )
             case 'complete':
-              return <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-                <div className={`w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254FF]`}></div>
-              </div>
+              return (
+                <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+                  <div
+                    className={`w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254FF]`}
+                  ></div>
+                </div>
+              )
             default:
-              return <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-                <div className={`w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254FF]`}></div>
-              </div>
+              return (
+                <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+                  <div
+                    className={`w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254FF]`}
+                  ></div>
+                </div>
+              )
           }
         }}
       >
@@ -205,6 +219,11 @@ const HomePage: FC = () => {
           >
             <RecommendList ref={childRef} />
           </div>
+          {hasMore && (
+            <div className="mt-12">
+              <PostSkeleton />
+            </div>
+          )}
         </CardRecommendProvider.Provider>
       </PullToRefresh>
     </div>

@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react'
 import { useStore } from '@/store'
 import { useActivate } from 'react-activation'
 import { ListItem } from '@/types'
+import BScroll from 'better-scroll'
 
 interface PostListProps {
   className?: string
@@ -50,6 +51,24 @@ const RecommendList = ({ className }: PostListProps) => {
       }
     }
   })()
+
+  // useEffect(() => {
+  //   const wrapper = document.getElementById('recommendScrollableDiv')
+  //   if (!wrapper) return
+
+  //   new BScroll(wrapper, {
+  //     scrollY: true,
+  //     momentum: true,
+  //     momentumLimitTime: 300,
+  //     momentumLimitDistance: 15,
+  //     swipeTime: 2000,
+  //     swipeBounceTime: 500,
+  //     deceleration: 0.002,
+  //     bounceTime: 800,
+  //     bounce: true,
+  //     probeType: 3,
+  //   })
+  // }, [])
 
   return (
     <div className={cn(className, '')}>

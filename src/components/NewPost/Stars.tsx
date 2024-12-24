@@ -73,7 +73,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
 
   return (
     <>
-      <Box position="fixed" bottom="0px" w="100%" left="0" p="0px 16px" bg="#fff">
+      <Box position="fixed" bottom="0px" w="100%" left="0" p="0px 16px" bg="#fff" zIndex="11">
         <Box pb="56px">
           <HStack
             border="0.5px solid #CDCDD4"

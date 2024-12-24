@@ -80,7 +80,9 @@ const ChatListItem: FC<{
       if (user) {
         setChatPeople(user)
       } else {
-        initChatPeopleInfo(Number(chat.channel.channelID), setChatPeople)
+        if(Number(chat.channel.channelID)){
+          initChatPeopleInfo(Number(chat.channel.channelID), setChatPeople)
+        }
       }
     }
     loadChatPeople()

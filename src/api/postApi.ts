@@ -93,6 +93,16 @@ export const deleteChannel = (params: { channel_id: string; channel_type: number
   })
 }
 
+export const deleteConversation = (params: {
+  uid: string
+  channel_id: string
+  channel_type: number
+}) => {
+  return post<Message[]>(`${import.meta.env.VITE_APP_IM_URL}conversations/delete`, params, {
+    headers: { token: import.meta.env.VITE_APP_IM_TOKEN },
+  })
+}
+
 export const totalAvailableInvoice = () => {
   return get<totalAvailable>(`/api/v1/order/total_available_invoice`)
 }

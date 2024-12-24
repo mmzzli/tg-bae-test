@@ -92,9 +92,6 @@ const HomePage: FC = () => {
       style={{
         height:
           'calc(100vh - 84px - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top))',
-        scrollBehavior: 'smooth',
-        overscrollBehavior: 'contain',
-        WebkitOverflowScrolling: 'touch',
       }}
       ref={containerRef}
     >

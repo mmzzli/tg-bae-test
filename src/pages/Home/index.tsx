@@ -217,7 +217,7 @@ const HomePage: FC = () => {
           <div
             className={`${userInfo.user_id !== -1 && userInfo.fans === 0 ? '' : ''}  relative ${videoOpen ? 'z-[112]' : ''}`}
           >
-            <RecommendList ref={childRef} containerRef={containerRef} />
+            <RecommendList ref={childRef} />
           </div>
           {hasMore && (
             <div className="mt-12">

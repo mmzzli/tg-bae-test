@@ -1,9 +1,8 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { retrieveLaunchParams } from '@telegram-apps/sdk'
-import { logIn, getUnreadNotificationCount, getFollowingList } from '@/api'
+import { logIn, getFollowingList } from '@/api'
 import { DEV_INIT_DATA_RAW } from '@/utils/constants'
-import { isLocalEnv } from '@/utils/env'
 import { useStore } from '@/store'
 import { useRequest } from 'ahooks'
 import { Outlet } from 'react-router-dom'
@@ -27,6 +26,28 @@ const ChatListPageLoader = {
       default: module.ChatListPage,
     }))
   ),
+}
+
+const waitForTelegramWebApp = () => {
+  return new Promise<typeof window.Telegram.WebApp>((resolve) => {
+    if (window.Telegram?.WebApp) {
+      resolve(window.Telegram.WebApp)
+      return
+    }
+
+    const maxAttempts = 50
+    let attempts = 0
+    const checkInterval = setInterval(() => {
+      attempts++
+      if (window.Telegram?.WebApp) {
+        clearInterval(checkInterval)
+        resolve(window.Telegram.WebApp)
+      } else if (attempts >= maxAttempts) {
+        clearInterval(checkInterval)
+        console.error('无法加载 Telegram WebApp')
+      }
+    }, 100)
+  })
 }
 
 const HIDE_BACK_BUTTON_PATHS = ['/home', '/chat', '/profile', '/', '/ageGate', '/task']
@@ -99,16 +120,17 @@ export const MainLayout: React.FC = () => {
   }
 
   useEffect(() => {
-    if (window.Telegram?.WebApp) {
+    const initTelegramApp = async () => {
+      const tgApp = await waitForTelegramWebApp()
+
       document.getElementById('root')?.classList.add('root-wrap')
-      const tgApp = window.Telegram.WebApp
       tgApp.ready()
       try {
         tgApp.requestFullscreen()
       } catch (err) {
         console.warn('######    web_app_request_fullscreen error    ######', err)
       }
-
+      // ... 其余 WebApp 相关代码 ...
       postEvent('web_app_setup_swipe_behavior', {
         allow_vertical_swipe: false,
       })
@@ -169,6 +191,7 @@ export const MainLayout: React.FC = () => {
       setExpanded(window.Telegram.WebApp.isExpanded)
       console.log(window.Telegram.WebApp.isExpanded, 'window.Telegram.WebApp.isExpanded')
     }
+    initTelegramApp()
     onLogin()
   }, [])
 

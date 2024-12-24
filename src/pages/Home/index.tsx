@@ -8,7 +8,9 @@ import { CardRecommendProvider } from '@/utils/constants'
 import { throttle } from '@/utils/chat/schedulers'
 import { PullToRefresh } from 'antd-mobile';
 import useCacheVideo, { useRecommendList } from '@/store/hook/useResourceList'
-
+interface ChildRef {
+  refresh: () => void;
+}
 
 const SCROLL_THRESHOLD = 35
 
@@ -23,7 +25,7 @@ const HomePage: FC = () => {
   const [showTopTitle, setShowTopTitle] = useState(false)
   const titleRef = useRef<HTMLHeadingElement>(null)
 
-  // const { list, hasMore, fetchMoreData, page, refresh } = useRecommendList()
+  const childRef = useRef<ChildRef>(null);
 
   const styles = {
     fadeIn: {
@@ -88,7 +90,7 @@ const HomePage: FC = () => {
     handleDoubleTap()
   }
   const handleRefresh = async () => {
-    // await refresh()
+    childRef.current?.refresh();
   }
 
   return (
@@ -201,7 +203,7 @@ const HomePage: FC = () => {
           <div
             className={`${userInfo.user_id !== -1 && userInfo.fans === 0 ? '' : ''}  relative ${videoOpen ? 'z-[112]' : ''}`}
           >
-            <RecommendList />
+            <RecommendList ref={childRef} />
           </div>
         </CardRecommendProvider.Provider>
       </PullToRefresh>

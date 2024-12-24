@@ -439,87 +439,90 @@ const ResourceList = ({
     )
   }
   return (
-    <div
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        paddingTop: '24px',
-        width: '100%',
-        transform: `translateY(${virtualList[0]?.start ?? 0}px)`,
-      }}
-    >
-      {resources.length > 0 &&
-        virtualList.map((virtualRow) => {
-          if (!resources[virtualRow.index]) {
-            return <PostSkeleton />
-          }
+    <>
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          paddingTop: '24px',
+          width: '100%',
+          transform: `translateY(${virtualList[0]?.start ?? 0}px)`,
+          zIndex: 9,
+        }}
+      >
+        {resources.length > 0 &&
+          virtualList.map((virtualRow) => {
+            if (!resources[virtualRow.index]) {
+              return <PostSkeleton />
+            }
 
-          return (
-            <Box
-              key={virtualRow.key}
-              data-index={virtualRow.index}
-              ref={virtualizer.measureElement}
-              pb={10}
-            >
-              <ResourceHeader
-                data={resources[virtualRow.index]}
-                currentUid={launchParams.initData?.user?.id ?? 0}
-                onProfileClick={jumpToProfilePage}
-                type={type}
-              />
-              <Box position="relative">
-                {resources[virtualRow.index].act_type === 1 && type === 'recommend' && (
-                  <Box
-                    position="absolute"
-                    bottom="0px"
-                    w="100%"
-                    zIndex={11}
-                    onClick={() => navigate('/home/christmas')}
-                  >
-                    <HStack p="3px 16px" justifyContent="space-between" bg="rgba(0, 0, 0, 0.5)">
-                      <Text fontSize={14} color="#fff">
-                        {' '}
-                        Explore more
-                      </Text>
-                      <i className="iconfont icon-icon_arrow_right text-[#fff] text-[20px]"></i>
-                    </HStack>
-                  </Box>
-                )}
-                {resources[virtualRow.index].type === POST_TYPE_IMAGE ? (
-                  <ImageCard
-                    data={resources[virtualRow.index]}
-                    handleImageClick={(images, index) =>
-                      handleImageClick(images, index, resources[virtualRow.index].id)
-                    }
-                    resourcesEve={resourcesEve}
-                  />
-                ) : (
-                  <VideoCard resourcesEve={resourcesEve} data={resources[virtualRow.index]} />
-                )}
+            return (
+              <Box
+                key={virtualRow.key}
+                data-index={virtualRow.index}
+                ref={virtualizer.measureElement}
+                pb={10}
+              >
+                <ResourceHeader
+                  data={resources[virtualRow.index]}
+                  currentUid={launchParams.initData?.user?.id ?? 0}
+                  onProfileClick={jumpToProfilePage}
+                  type={type}
+                />
+                <Box position="relative">
+                  {resources[virtualRow.index].act_type === 1 && type === 'recommend' && (
+                    <Box
+                      position="absolute"
+                      bottom="0px"
+                      w="100%"
+                      zIndex={11}
+                      onClick={() => navigate('/home/christmas')}
+                    >
+                      <HStack p="3px 16px" justifyContent="space-between" bg="rgba(0, 0, 0, 0.5)">
+                        <Text fontSize={14} color="#fff">
+                          {' '}
+                          Explore more
+                        </Text>
+                        <i className="iconfont icon-icon_arrow_right text-[#fff] text-[20px]"></i>
+                      </HStack>
+                    </Box>
+                  )}
+                  {resources[virtualRow.index].type === POST_TYPE_IMAGE ? (
+                    <ImageCard
+                      data={resources[virtualRow.index]}
+                      handleImageClick={(images, index) =>
+                        handleImageClick(images, index, resources[virtualRow.index].id)
+                      }
+                      resourcesEve={resourcesEve}
+                    />
+                  ) : (
+                    <VideoCard resourcesEve={resourcesEve} data={resources[virtualRow.index]} />
+                  )}
+                </Box>
+                <ResourceFooter
+                  data={resources[virtualRow.index]}
+                  likes={likes}
+                  saveds={saveds}
+                  linkEve={linkEve}
+                  savedEve={savedEve}
+                  type={type}
+                  onShare={() => {
+                    getShareLink(
+                      resources[virtualRow.index].title,
+                      resources[virtualRow.index].id,
+                      resources[virtualRow.index].uid
+                    )
+                    setCurrentShareData({
+                      pid: resources[virtualRow.index].id,
+                      uid: resources[virtualRow.index].uid,
+                    })
+                  }}
+                />
               </Box>
-              <ResourceFooter
-                data={resources[virtualRow.index]}
-                likes={likes}
-                saveds={saveds}
-                linkEve={linkEve}
-                savedEve={savedEve}
-                type={type}
-                onShare={() => {
-                  getShareLink(
-                    resources[virtualRow.index].title,
-                    resources[virtualRow.index].id,
-                    resources[virtualRow.index].uid
-                  )
-                  setCurrentShareData({
-                    pid: resources[virtualRow.index].id,
-                    uid: resources[virtualRow.index].uid,
-                  })
-                }}
-              />
-            </Box>
-          )
-        })}
+            )
+          })}
+      </div>
       <ShareModal
         isBaseModalOpen={isBaseModalOpen}
         off={off}
@@ -528,7 +531,7 @@ const ResourceList = ({
         isLoading={isLoading}
         setIsLoading={setIsLoading}
       ></ShareModal>
-    </div>
+    </>
   )
 }
 

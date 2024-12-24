@@ -303,10 +303,9 @@ const ResourceList = ({
         }
       })
 
-      setLikes([...resources,...sharedPostList])
 
-      // initPatchLikes([...resources, ...sharedPostList])
-      // initPatchSaves([...resources, ...sharedPostList])
+      initPatchLikes([...resources, ...sharedPostList])
+      initPatchSaves([...resources, ...sharedPostList])
     }
   }, [resources])
 

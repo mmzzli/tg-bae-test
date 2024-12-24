@@ -83,6 +83,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
             justifyContent="space-between"
             borderRadius="40px"
             onClick={onOpen}
+            bg="#fff"
           >
             <HStack gap="12px" w="100%" justifyContent="space-between">
               <Text color="#333" w="100%" fontSize="14px">Stars to unlock this post</Text>

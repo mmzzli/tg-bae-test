@@ -33,7 +33,7 @@ const MoreText: React.FC<MoreTextProps> = ({
           const clampHeight = textRef.current.getBoundingClientRect().height
           setIsTextClipped(fullHeight > clampHeight)
         }
-      }, 0)
+      }, 100)
     }
     checkTextClipping()
     // Resize 监听器，窗口大小变化时重新检查

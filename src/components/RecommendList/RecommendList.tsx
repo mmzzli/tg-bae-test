@@ -16,7 +16,7 @@ interface ChildRef {
 
 const RecommendList = forwardRef<ChildRef, PostListProps>((props, ref) => {
   const { className, containerRef } = props
-  const { list, hasMore, fetchMoreData, page, refresh, isLoading } = useRecommendList()
+  const { list, hasMore, fetchMoreData, page, refresh } = useRecommendList()
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
   const updateCacheVideo = useStore((state) => state.updateCacheVideo)

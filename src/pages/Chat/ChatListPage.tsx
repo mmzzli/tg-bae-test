@@ -167,10 +167,6 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
                   } else if (action === ConversationAction.remove) {
                     console.warn('addConversationListener remove conversation', conversation)
                     deleteConversation(conversation.channel.channelID)
-                    deleteChannel({
-                      channel_id: conversation.channel.channelID,
-                      channel_type: conversation.channel.channelType,
-                    })
                   }
                 }
               )

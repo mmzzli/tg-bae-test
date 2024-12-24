@@ -301,7 +301,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         ...postsRes,
       ]
 
-      const hasMore = posts.length === recordsNum
+      const hasMore = posts.length >= recordsNum
       const updatedPosts = posts.map(({ post, user }: ListItem) => ({
         ...user,
         ...post,

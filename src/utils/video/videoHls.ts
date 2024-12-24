@@ -60,6 +60,7 @@ export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLE
 
   hls.on(Hls.Events.MANIFEST_PARSED, () => {
     video.muted = true
+    console.log('loaded========')
     video.play().catch((error) => {
       console.log(error, 'error====jacob')
       video.muted = true

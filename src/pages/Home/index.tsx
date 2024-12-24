@@ -23,7 +23,7 @@ const HomePage: FC = () => {
   const [showTopTitle, setShowTopTitle] = useState(false)
   const titleRef = useRef<HTMLHeadingElement>(null)
 
-  const { list, hasMore, fetchMoreData, page, refresh } = useRecommendList()
+  // const { list, hasMore, fetchMoreData, page, refresh } = useRecommendList()
 
   const styles = {
     fadeIn: {
@@ -88,7 +88,7 @@ const HomePage: FC = () => {
     handleDoubleTap()
   }
   const handleRefresh = async () => {
-    await refresh()
+    // await refresh()
   }
 
   return (

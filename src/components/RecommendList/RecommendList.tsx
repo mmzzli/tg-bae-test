@@ -7,7 +7,7 @@ import PostSkeleton from '../Skeketon/PostSkeleton'
 import { useEffect, useState } from 'react'
 import { useStore } from '@/store'
 import { useActivate } from 'react-activation'
-import {ListItem} from '@/types'
+import { ListItem } from '@/types'
 
 interface PostListProps {
   className?: string
@@ -40,11 +40,23 @@ const RecommendList = ({ className }: PostListProps) => {
     setRandom(Date.now())
   })
 
+  const throttledFetchMoreData = (() => {
+    let lastCall = 0
+    return () => {
+      const now = Date.now()
+      if (now - lastCall >= 1000) {
+        fetchMoreData()
+        lastCall = now
+      }
+    }
+  })()
+
   return (
     <div className={cn(className, '')}>
       <InfiniteScroll
         dataLength={list.length}
-        next={fetchMoreData}
+        // next={fetchMoreData}
+        next={throttledFetchMoreData}
         hasMore={hasMore}
         loader={
           <Box textAlign="center" m="20px 0" className="p-4">

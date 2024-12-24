@@ -6,6 +6,7 @@ import {
   completeAllTasks,
   getPaidStars,
   getPaidStarPoints,
+  getFollowTask,
 } from '@/api'
 import { useStore } from '@/store'
 import { useMemo } from 'react'
@@ -63,6 +64,7 @@ export const useGetDailyTask = () => {
       setTotalTaskPoints: state.setTotalTaskPoints,
       setPaidStars: state.setPaidStars,
       setPaidStarsPoints: state.setPaidStarsPoints,
+      setFollowTaskList: state.setFollowTaskList,
     })
   )
 
@@ -81,10 +83,38 @@ export const useGetDailyTask = () => {
   }
 }
 
+export const useGetFollowTask = () => {
+  const { setFollowTaskList, setTotalTaskPoints } = useStore((state) => ({
+    setFollowTaskList: state.setFollowTaskList,
+    setTotalTaskPoints: state.setTotalTaskPoints,
+  }))
+
+  const { run: runGetFollowTask, loading } = useRequest(getFollowTask, {
+    manual: true,
+    onSuccess(data) {
+      setFollowTaskList(data.details)
+      setTotalTaskPoints(data.points)
+    },
+  })
+  return {
+    runGetFollowTask,
+    loading,
+  }
+}
+
 export const useInitDailyTask = () => {
-  const { setDailyTaskList, setTotalTaskPoints } = useStore((state) => ({
+  const {
+    setDailyTaskList,
+    setTotalTaskPoints,
+    setPaidStars,
+    setPaidStarsPoints,
+    setFollowTaskList,
+  } = useStore((state) => ({
     setDailyTaskList: state.setDailyTaskList,
     setTotalTaskPoints: state.setTotalTaskPoints,
+    setPaidStars: state.setPaidStars,
+    setPaidStarsPoints: state.setPaidStarsPoints,
+    setFollowTaskList: state.setFollowTaskList,
   }))
 
   const { run: runGetDailyTask } = useRequest(getDailyTask, {
@@ -92,13 +122,24 @@ export const useInitDailyTask = () => {
     onSuccess(data) {
       setDailyTaskList(data.details)
       setTotalTaskPoints(data.points)
+      setPaidStars(data.used_points)
+      setPaidStarsPoints(data.earn_points)
+    },
+  })
+
+  const { run: runGetFollowTask } = useRequest(getFollowTask, {
+    manual: true,
+    onSuccess(data) {
+      setFollowTaskList(data.details)
+      setTotalTaskPoints(data.points)
     },
   })
 
   const { run: runInitDailyTask } = useRequest(dailyLoginTask, {
     manual: true,
-    onSuccess: (res) => {
+    onSuccess: () => {
       runGetDailyTask()
+      runGetFollowTask()
     },
   })
 

@@ -73,7 +73,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
 
   return (
     <>
-      <Box position="fixed" bottom="0px" w="100%" left="0" p="0px 16px" bg="#fff">
+      <Box position="fixed" bottom="0px" w="100%" left="0" p="0px 16px" bg="#fff" zIndex="11">
         <Box pb="56px">
           <HStack
             border="0.5px solid #CDCDD4"
@@ -83,6 +83,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
             justifyContent="space-between"
             borderRadius="40px"
             onClick={onOpen}
+            bg="#fff"
           >
             <HStack gap="12px" w="100%" justifyContent="space-between">
               <Text color="#333" w="100%" fontSize="14px">Stars to unlock this post</Text>

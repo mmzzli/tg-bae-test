@@ -31,6 +31,10 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
   const [loading, setLoading] = useSafeState(true)
   const isExpanded = useStore((state) => state.expand)
 
+  const [translateY, setTranslateY] = useState(0)
+  const [opacity, setOpacity] = useState(1)
+  const [isDragging, setIsDragging] = useState(false)
+
   useEffect(() => {
     if (swiper && swiper.activeIndex !== currentIndex) {
       swiper.slideTo(currentIndex, 0)
@@ -90,21 +94,39 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
 
   const handlerClose = () => {
     onClose()
+    setTranslateY(0)
   }
 
   const bind = useDrag(({ down, movement: [mx, my], direction: [xDir, yDir], velocity }) => {
-    if (down && yDir > 0 && my > 100 && velocity > 0.2) {
-      // 向下滑动超过 100px 且速度大于 0.2 时执行关闭操作
-      handlerClose()
+    setIsDragging(down)
+    if (down) {
+      // 实时更新位置和透明度
+      setTranslateY(Math.max(0, my))
+      setOpacity(Math.max(0, 1 - my / 400))
+    } else if (yDir > 0 && my > 100 && velocity > 0.2) {
+      // 向下滑动超过阈值时，触发关闭动画
+      setTranslateY(window.innerHeight)
+      setOpacity(0)
+      setTimeout(handlerClose, 200)
+    } else {
+      // 未达到关闭阈值，回弹到原位
+      setTranslateY(0)
+      setOpacity(1)
     }
-  })
+  }, {
+      filterTaps: true,
+      from: () => [0, translateY],
+    }
+  )
+
+  const bindProps = bind()
 
   if (!isOpen) return null
 
   return (
     <div
       className="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-sm"
-      {...bind()}
+      {...bindProps}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose()
       }}
@@ -164,6 +186,10 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
         resistance
         resistanceRatio={0.65}
         speed={300}
+        style={{
+          transform: `translateY(${translateY}px)`,
+          transition: isDragging ? 'none' : 'transform 0.2s ease-out',
+        }}
       >
         {images.map((src, index) => (
           <SwiperSlide

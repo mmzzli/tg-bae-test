@@ -158,7 +158,7 @@ const HomePage: FC = () => {
           </div>
         </div>
 
-        <div className="ml-auto flex gap-[13px] z-[111] relative">
+        <div className="ml-auto flex gap-[13px] z-[111] sticky">
           <div
             className="w-[48px] h-[48px] p-[12px] bg-[#F5F3F3] rounded-[50px] flex items-center justify-center cursor-pointer"
             onClick={() => navigate('/home/searching')}

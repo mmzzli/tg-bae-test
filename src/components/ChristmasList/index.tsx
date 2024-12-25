@@ -23,7 +23,7 @@ const RecommendList = ({ className }: PostListProps) => {
     setCacheVideoIndex,
     getCacheVideoindex,
     updateCacheVideo,
-    'recommendScrollableDiv',
+    'featuredScrollableDiv',
     'video-card'
   )
 
@@ -38,7 +38,7 @@ const RecommendList = ({ className }: PostListProps) => {
             <PostSkeleton />
           </Box>
         }
-        scrollableTarget="recommendScrollableDiv"
+        scrollableTarget="featuredScrollableDiv"
         scrollThreshold={0.1}
         style={{ overflow: 'visible' }}
       >

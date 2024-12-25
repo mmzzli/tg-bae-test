@@ -317,7 +317,8 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       get().setRecommendLoading(true)
       get().setRecommendError(null)
 
-      const {featured} = await recommendFeatured(1)
+      const { featured = [] } = page === 1 ? await recommendFeatured(1) : {};
+      // const {featured} = await recommendFeatured(1)
       const { posts: postsRes } = await getRecommendMedia({
         page_num: page,
         records: recordsNum,

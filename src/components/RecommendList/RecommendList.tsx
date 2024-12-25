@@ -5,21 +5,19 @@ import ResourceList from '../ResourceList/ResourceList'
 import { cn } from '@/utils/utils'
 import useCacheVideo, { useRecommendList } from '@/store/hook/useResourceList'
 import PostSkeleton from '../Skeketon/PostSkeleton'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useStore } from '@/store'
 import { useActivate } from 'react-activation'
-import { ListItem } from '@/types'
 
 interface PostListProps {
   className?: string
 }
 interface ChildRef {
-  refresh?: () => void;
+  refresh?: () => void
 }
 
 const RecommendList = forwardRef<ChildRef, PostListProps>((props, ref) => {
   const { className } = props
-  const token = useStore((state) => state.token)
   const { list, hasMore, fetchMoreData, page, refresh } = useRecommendList()
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
@@ -45,8 +43,8 @@ const RecommendList = forwardRef<ChildRef, PostListProps>((props, ref) => {
     setRandom(Date.now())
   })
   useImperativeHandle(ref, () => ({
-    refresh: () => refresh()
-  }));
+    refresh: () => refresh(),
+  }))
 
   const throttledFetchMoreData = (() => {
     let lastCall = 0

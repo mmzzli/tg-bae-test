@@ -8,7 +8,7 @@ import { Conversation } from '../SDK/BaeimSDK'
 import { OthersUserInfo } from '@/types'
 import { DeleteDialog } from './DeleteDialog'
 import { useStore } from '@/store'
-import { setUnread } from '@/api'
+import { setUnread, deleteConversation } from '@/api'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 
 const ChatAvatar: FC<{ user: OthersUserInfo | null }> = ({ user }) => (
@@ -80,7 +80,7 @@ const ChatListItem: FC<{
       if (user) {
         setChatPeople(user)
       } else {
-        if(Number(chat.channel.channelID)){
+        if (Number(chat.channel.channelID)) {
           initChatPeopleInfo(Number(chat.channel.channelID), setChatPeople)
         }
       }
@@ -163,6 +163,11 @@ const ChatListItem: FC<{
       <DeleteDialog
         onDelete={() => {
           connection?.removeConversation(chat.channel.channelID)
+          deleteConversation({
+            uid: current_uid + '',
+            channel_id: chat.channel.channelID,
+            channel_type: chat.channel.channelType,
+          })
           controls.start({ x: 0 })
         }}
         onCancel={() => {

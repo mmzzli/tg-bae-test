@@ -21,6 +21,7 @@ const ProfileEdit: FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isFocused, setIsFocused] = useState<boolean>(false)
   const setUserInfo = useStore((state) => state.setUserInfo)
+  const [initLoading, setInitLoading] = useState<boolean>(false)
 
   const [profileData, setProfileData] = useState<UserInfoProfile>({
     username: '',
@@ -120,6 +121,7 @@ const ProfileEdit: FC = () => {
     const file = event.target.files?.[0]
     if (file) {
       try {
+        setInitLoading(true)
         const url = await compressImage(file)
 
         setProfileData((prevData) => ({
@@ -137,16 +139,21 @@ const ProfileEdit: FC = () => {
           },
         })
         console.log(response.data)
+        setInitLoading(false)
         setProfileData((prevData) => ({
           ...prevData,
           ['avatar']: response.data,
         }))
       } catch (error) {
+        setInitLoading(false)
         console.error(`Error uploading ${file.name}:`, error)
       }
     }
   }
   const doneEve = async () => {
+    if(initLoading){
+      return
+    }
     setIsLoading(true)
     await putProfile(profileData)
     toast({

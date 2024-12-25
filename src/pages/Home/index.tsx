@@ -85,6 +85,22 @@ const HomePage: FC = () => {
     childRef.current?.refresh()
   }
 
+  useEffect(() => {
+    // 使用 TypeScript 声明事件类型
+    const handleTouchStart = (event: TouchEvent) => {
+      const touchY = event.touches[0].clientY; // 获取触摸点的垂直坐标
+      console.log('距离顶部的距离:', touchY, 'px');
+    };
+
+    // 添加 touchstart 事件监听
+    document.addEventListener('touchstart', handleTouchStart, { passive: true });
+
+    // 清理事件监听器
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart);
+    };
+  }, []);
+
   return (
     <div
       className="relative w-full overflow-auto scrollbar-hide"

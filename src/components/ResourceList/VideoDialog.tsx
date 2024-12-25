@@ -290,10 +290,7 @@ const VideoDialog = () => {
   }, [info, videoContainerRef])
 
   const bind = useDrag(({ down, movement: [mx], direction: [xDir], velocity }) => {
-    console.log('333333')
-    console.log(xDir)
-    console.log(mx)
-    console.log(velocity)
+    if (isDragging) return
     if (down && xDir > 0 && mx > 100 && velocity > 0.2) {
       onClose()
     }

@@ -86,18 +86,24 @@ const HomePage: FC = () => {
   }
 
   useEffect(() => {
-    // 使用 TypeScript 声明事件类型
     const handleTouchStart = (event: TouchEvent) => {
       const touchY = event.touches[0].clientY; // 获取触摸点的垂直坐标
-      console.log('距离顶部的距离:', touchY, 'px');
+      console.log('touchstart - 距离顶部的距离:', touchY, 'px');
     };
 
-    // 添加 touchstart 事件监听
+    const handleTouchEnd = (event: TouchEvent) => {
+      const touchY = event.changedTouches[0].clientY; // 获取触摸结束点的垂直坐标
+      console.log('touchend - 距离顶部的距离:', touchY, 'px');
+    };
+
+    // 添加 touchstart 和 touchend 事件监听
     document.addEventListener('touchstart', handleTouchStart, { passive: true });
+    document.addEventListener('touchend', handleTouchEnd, { passive: true });
 
     // 清理事件监听器
     return () => {
       document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchend', handleTouchEnd);
     };
   }, []);
 

@@ -453,7 +453,8 @@ const ResourceList = ({
       >
         {resources.length > 0 &&
           virtualList.map((virtualRow) => {
-            if (!resources[virtualRow.index]) {
+            const data = { ...resources[virtualRow.index] }
+            if (!data) {
               return <PostSkeleton />
             }
 
@@ -465,13 +466,13 @@ const ResourceList = ({
                 pb={10}
               >
                 <ResourceHeader
-                  data={resources[virtualRow.index]}
+                  data={data}
                   currentUid={launchParams.initData?.user?.id ?? 0}
                   onProfileClick={jumpToProfilePage}
                   type={type}
                 />
                 <Box position="relative">
-                  {resources[virtualRow.index].act_type === 1 && type === 'recommend' && (
+                  {data.act_type === 1 && type === 'recommend' && (
                     <Box
                       position="absolute"
                       bottom="0px"
@@ -488,34 +489,28 @@ const ResourceList = ({
                       </HStack>
                     </Box>
                   )}
-                  {resources[virtualRow.index].type === POST_TYPE_IMAGE ? (
+                  {data.type === POST_TYPE_IMAGE ? (
                     <ImageCard
-                      data={resources[virtualRow.index]}
-                      handleImageClick={(images, index) =>
-                        handleImageClick(images, index, resources[virtualRow.index].id)
-                      }
+                      data={data}
+                      handleImageClick={(images, index) => handleImageClick(images, index, data.id)}
                       resourcesEve={resourcesEve}
                     />
                   ) : (
-                    <VideoCard resourcesEve={resourcesEve} data={resources[virtualRow.index]} />
+                    <VideoCard resourcesEve={resourcesEve} data={data} />
                   )}
                 </Box>
                 <ResourceFooter
-                  data={resources[virtualRow.index]}
+                  data={data}
                   likes={likes}
                   saveds={saveds}
                   linkEve={linkEve}
                   savedEve={savedEve}
                   type={type}
                   onShare={() => {
-                    getShareLink(
-                      resources[virtualRow.index].title,
-                      resources[virtualRow.index].id,
-                      resources[virtualRow.index].uid
-                    )
+                    getShareLink(data.title, data.id, data.uid)
                     setCurrentShareData({
-                      pid: resources[virtualRow.index].id,
-                      uid: resources[virtualRow.index].uid,
+                      pid: data.id,
+                      uid: data.uid,
                     })
                   }}
                 />

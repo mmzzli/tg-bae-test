@@ -16,7 +16,7 @@ export const createWebSocketSlice: StateCreator<WebSocketSlice> = (set, get) => 
   let reconnectCount = 0
   let heartbeatTimer: NodeJS.Timeout | null = null
   const MAX_RECONNECT_ATTEMPTS = 5
-  const HEARTBEAT_INTERVAL = 60000
+  const HEARTBEAT_INTERVAL = 30000
 
   const startHeartbeat = () => {
     stopHeartbeat()

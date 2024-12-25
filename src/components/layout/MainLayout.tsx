@@ -98,14 +98,11 @@ export const MainLayout: React.FC = () => {
     try {
       const { initDataRaw } = retrieveLaunchParams()
       userInfo = initDataRaw
+      userInfo = DEV_INIT_DATA_RAW
       log('userInfo finally', userInfo)
     } catch (error) {
       userInfo = DEV_INIT_DATA_RAW
     }
-
-    // userInfo =
-    //   'query_id=AAGPWGl0AgAAAI9YaXSTuFnH&user=%7B%22id%22%3A6248028303%2C%22first_name%22%3A%22GrayCookie%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22GrayJy1915%22%2C%22language_code%22%3A%22zh-hans%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2F57ZWh4A5hZVOSDDOkj2NveYI7y6C9ts22-QRBFI7Ktr9XNzy4t8AEZrZ1kasDwc9.svg%22%7D&auth_date=1733728918&signature=B6shMqyXHiV0Iszkaa1f6RimbN0U6Drcg1fJ4Y6p8TbQ1DswZ-rotej3KJd8DPouRWwONuELXPyFPJDaFsjiBQ&hash=25ada298133e32e6b1b95aeba7252e49db8ebbf256ab217f4ad8a66dba66736a'
-
     resetAllLists()
     resetUserInfo()
     resetToken()

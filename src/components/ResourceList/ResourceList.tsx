@@ -302,8 +302,11 @@ const ResourceList = ({
           itemA.is_collected = savedMatch.saveds
         }
       })
-      initPatchLikes([...resources, ...sharedPostList])
-      initPatchSaves([...resources, ...sharedPostList])
+
+      setLikes([...resources,...sharedPostList])
+
+      // initPatchLikes([...resources, ...sharedPostList])
+      // initPatchSaves([...resources, ...sharedPostList])
     }
   }, [resources])
 

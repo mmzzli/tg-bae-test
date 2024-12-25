@@ -59,7 +59,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
                 className={'flex items-center  overflow-hidden justify-center'}
               >
                 <Image
-                  src={formatImage(image, false)}
+                  src={data.act_type === 1 ? image : formatImage(image, false)}
                   alt={data.title}
                   // style={{ maxWidth: '100%', maxHeight: '100%' }}
                   style={{

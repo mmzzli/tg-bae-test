@@ -56,16 +56,26 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
                   maxHeight:
                     'calc(100vh - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top) - 85px - 64px - 50px - 26px)',
                 }}
-                className={'flex items-center  overflow-hidden'}
+                className={'flex items-center  overflow-hidden justify-center'}
               >
                 <Image
                   src={formatImage(image, false)}
                   alt={data.title}
-                  style={{ maxWidth: '100%', maxHeight: '100%' }}
+                  // style={{ maxWidth: '100%', maxHeight: '100%' }}
+                  style={{
+                    ...(index === 0
+                      ? {
+                          width: '100%',
+                          height: 'auto',
+                          objectFit: 'cover'
+                        }
+                      : {
+                          width: 'auto',
+                          height: firImageHeight ? firImageHeight + 'px' : 'calc(1.5*100vw)',
+                          objectFit: 'contain'
+                        })
+                  }}
                   onClick={() => {
-                    console.log(data.is_pay)
-                    console.log(data.price)
-
                     if (data.uid !== getCurrentUid() && !data.is_pay && data.price > 0) {
                       return
                     }

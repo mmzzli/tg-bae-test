@@ -49,8 +49,8 @@ const waitForTelegramWebApp = () => {
     }, 100)
   })
 }
-
-const HIDE_BACK_BUTTON_PATHS = ['/home', '/chat', '/profile', '/', '/ageGate', '/task']
+const BASE_PATHS = ['/home', '/chat', '/profile', '/ageGate', '/task']
+const HIDE_BACK_BUTTON_PATHS = ['/home', '/chat', '/profile', '/ageGate', '/task', '/']
 
 export const MainLayout: React.FC = () => {
   const location = useLocation()
@@ -90,13 +90,6 @@ export const MainLayout: React.FC = () => {
       updateMyFollow()
       // Daily Task [Daily Login + Init Daily Task Store]
       runInitDailyTask()
-      if (window.loading) {
-        setTimeout(() => {
-          window.loading = false
-          // window.canvasPlayerCleanup()
-          document.getElementById('splash_video')?.remove()
-        }, 4200)
-      }
     },
   })
 
@@ -193,17 +186,21 @@ export const MainLayout: React.FC = () => {
     }
     initTelegramApp()
     onLogin()
+    // remove page loading
+    setTimeout(() => {
+      window.loading = false
+      document.getElementById('splash_video')?.remove()
+    }, 4200)
   }, [])
 
   useEffect(() => {
-    console.log('pathname-------------------------------_>', location.pathname)
+    console.log('pathname------------------------------->', location.pathname)
     // handle page refresh or open app from share link
-    const BASE_PATHS = ['/home', '/chat', '/profile', '/ageGate']
     if (BASE_PATHS.includes(location.pathname)) {
       setBackToHome(false)
     }
 
-    // handle chat page
+    // handle chat page start
     if (location.pathname.startsWith('/chat') && !shouldLoadChat) {
       setShouldLoadChat(true)
     }
@@ -212,10 +209,10 @@ export const MainLayout: React.FC = () => {
     } else {
       setHiddenChatPage(true)
     }
+    // handle chat page end
 
     if (window.Telegram?.WebApp) {
       const tgApp = window.Telegram.WebApp
-
       if (HIDE_BACK_BUTTON_PATHS.includes(location.pathname)) {
         tgApp.BackButton.hide()
       } else {

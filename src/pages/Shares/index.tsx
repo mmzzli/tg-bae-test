@@ -43,6 +43,7 @@ const Shares: FC = () => {
       <div className="mb-12">
         <ResourceList
           resources={sharedPostList && sharedPostList.length > 0 ? sharedPostList : []}
+          type="recommend"
         />
       </div>
       <div className="font-bold text-xl dark:text-[#E0E2F6] text-black mt-4 mx-4">

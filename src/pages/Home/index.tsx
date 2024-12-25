@@ -20,7 +20,7 @@ const HomePage: FC = () => {
   const navigate = useNavigate()
   const [title, setTitle] = useState('Following') // Following
   const userInfo = useStore((state) => state.userInfo)
-  const { hasMore } = useRecommendList()
+  // const { hasMore } = useRecommendList()
 
   const [videoOpen, setVideoOpen] = useState(false)
   const [showTopTitle, setShowTopTitle] = useState(false)
@@ -239,11 +239,11 @@ const HomePage: FC = () => {
           >
             <RecommendList ref={childRef} />
           </div>
-          {hasMore && (
+          {/* {hasMore && (
             <div className="mt-12">
               <PostSkeleton />
             </div>
-          )}
+          )} */}
         </CardRecommendProvider.Provider>
       </PullToRefresh>
     </div>

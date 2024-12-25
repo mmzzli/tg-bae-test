@@ -3,13 +3,15 @@ import { useNavigate } from 'react-router-dom'
 import RecommendList from '@/components/RecommendList/RecommendList'
 import FollowingList from '@/components/RecommendList/FollowingList'
 
+import PostSkeleton from '@/components/Skeketon/PostSkeleton'
+
 import { useStore } from '@/store'
 import { CardRecommendProvider } from '@/utils/constants'
 import { throttle } from '@/utils/chat/schedulers'
-import { PullToRefresh } from 'antd-mobile';
-import useCacheVideo, { useRecommendList } from '@/store/hook/useResourceList'
+import { PullToRefresh } from 'antd-mobile'
+import { useRecommendList } from '@/store/hook/useResourceList'
 interface ChildRef {
-  refresh: () => void;
+  refresh: () => void
 }
 
 const SCROLL_THRESHOLD = 35
@@ -17,26 +19,16 @@ const SCROLL_THRESHOLD = 35
 const HomePage: FC = () => {
   const navigate = useNavigate()
   const [title, setTitle] = useState('Following') // Following
-  const [fadeClass, setFadeClass] = useState('fade-in')
-  const [fullscreen, setFullscreen] = useState(false)
   const userInfo = useStore((state) => state.userInfo)
+  const { hasMore } = useRecommendList()
 
   const [videoOpen, setVideoOpen] = useState(false)
   const [showTopTitle, setShowTopTitle] = useState(false)
   const titleRef = useRef<HTMLHeadingElement>(null)
 
-  const childRef = useRef<ChildRef>(null);
+  const childRef = useRef<ChildRef>(null)
 
-  const styles = {
-    fadeIn: {
-      opacity: 1,
-      transition: 'opacity 0.3s ease-in',
-    },
-    fadeOut: {
-      opacity: 0,
-      transition: 'opacity 0.3s ease-out',
-    },
-  }
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const animation = useMemo(() => {
     if (userInfo.user_id !== -1 && userInfo.fans === 0) {
@@ -90,8 +82,30 @@ const HomePage: FC = () => {
     handleDoubleTap()
   }
   const handleRefresh = async () => {
-    childRef.current?.refresh();
+    childRef.current?.refresh()
   }
+
+  useEffect(() => {
+    const handleTouchStart = (event: TouchEvent) => {
+      const touchY = event.touches[0].clientY; // 获取触摸点的垂直坐标
+      console.log('touchstart - 距离顶部的距离:', touchY, 'px');
+    };
+
+    const handleTouchEnd = (event: TouchEvent) => {
+      const touchY = event.changedTouches[0].clientY; // 获取触摸结束点的垂直坐标
+      console.log('touchend - 距离顶部的距离:', touchY, 'px');
+    };
+
+    // 添加 touchstart 和 touchend 事件监听
+    document.addEventListener('touchstart', handleTouchStart, { passive: true });
+    document.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+    // 清理事件监听器
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, []);
 
   return (
     <div
@@ -101,6 +115,7 @@ const HomePage: FC = () => {
         height:
           'calc(100vh - 84px - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top))',
       }}
+      ref={containerRef}
     >
       <div
         className="flex p-[10px_16px] w-full z-[111]"
@@ -113,23 +128,24 @@ const HomePage: FC = () => {
         <div
           className="absolute top-0 left-0 right-0 bg-white dark:bg-black -z-1"
           style={{
-            height: `${parseInt(
-              getComputedStyle(document.documentElement).getPropertyValue(
-                '--tg-safe-area-inset-top'
-              )
-            ) > 0 ||
-                parseInt(
-                  getComputedStyle(document.documentElement).getPropertyValue(
-                    '--tg-content-safe-area-inset-top'
-                  )
-                ) > 0
+            height: `${
+              parseInt(
+                getComputedStyle(document.documentElement).getPropertyValue(
+                  '--tg-safe-area-inset-top'
+                )
+              ) > 0 ||
+              parseInt(
+                getComputedStyle(document.documentElement).getPropertyValue(
+                  '--tg-content-safe-area-inset-top'
+                )
+              ) > 0
                 ? '0'
                 : '68px'
-              }`,
+            }`,
           }}
         ></div>
         <div
-          className="fixed bg-[#fff] z-[111] h-[40px] w-[100%] left-0 top-0"
+          className="fixed bg-[#fff] z-[111] h-[68px] w-[100%] left-0 top-0"
           style={{
             paddingTop:
               'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
@@ -152,23 +168,25 @@ const HomePage: FC = () => {
                 opacity: showTopTitle ? 1 : 0,
                 transform: `translateX(-50%)`,
                 left: '50%',
-                top: `${showTopTitle
+                top: `${
+                  showTopTitle
                     ? 'calc(var(--tg-safe-area-inset-top) + 10px)'
                     : 'calc(var(--tg-safe-area-inset-top) + 24px)'
-                  }`,
+                }`,
               }}
             >
               {title}
             </h3>
           </div>
         </div>
-
-        <div className="ml-auto flex gap-[13px] z-[111] relative">
-          <div
-            className="w-[48px] h-[48px] p-[12px] bg-[#F5F3F3] rounded-[50px] flex items-center justify-center cursor-pointer"
-            onClick={() => navigate('/home/searching')}
-          >
-            <i className="iconfont icon-search-line text-[#333333] text-[24px]"></i>
+        <div className='h-[48px] relative'>
+          <div className={`ml-auto flex gap-[13px] z-[111] ${showTopTitle?'absolute right-[16px]':'fixed right-[16px]'}`}>
+            <div
+              className="w-[48px] h-[48px] p-[12px] bg-[#F5F3F3] rounded-[50px] flex items-center justify-center cursor-pointer"
+              onClick={() => navigate('/home/searching')}
+            >
+              <i className="iconfont icon-search-line text-[#333333] text-[24px]"></i>
+            </div>
           </div>
         </div>
       </div>
@@ -178,21 +196,37 @@ const HomePage: FC = () => {
         renderText={(status) => {
           switch (status) {
             case 'canRelease':
-              return <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-                <div className={`w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254FF]`}></div>
-              </div>;
+              return (
+                <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+                  <div
+                    className={`w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254FF]`}
+                  ></div>
+                </div>
+              )
             case 'refreshing':
-              return <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-                <div className={`w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254FF]`}></div>
-              </div>
+              return (
+                <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+                  <div
+                    className={`w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254FF]`}
+                  ></div>
+                </div>
+              )
             case 'complete':
-              return <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-                <div className={`w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254FF]`}></div>
-              </div>
+              return (
+                <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+                  <div
+                    className={`w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254FF]`}
+                  ></div>
+                </div>
+              )
             default:
-              return <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-                <div className={`w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254FF]`}></div>
-              </div>
+              return (
+                <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+                  <div
+                    className={`w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254FF]`}
+                  ></div>
+                </div>
+              )
           }
         }}
       >
@@ -205,6 +239,11 @@ const HomePage: FC = () => {
           >
             <RecommendList ref={childRef} />
           </div>
+          {hasMore && (
+            <div className="mt-12">
+              <PostSkeleton />
+            </div>
+          )}
         </CardRecommendProvider.Provider>
       </PullToRefresh>
     </div>

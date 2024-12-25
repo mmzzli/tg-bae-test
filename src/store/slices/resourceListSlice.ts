@@ -79,7 +79,7 @@ const BUFFER_FRAGMENT_LIMIT = 8
 export interface ResourceListSlice {
   like: Like[]
   initPatchLike: (list: FormatterListItem[]) => void
-  setPatchLike: (list: FormatterListItem, flag?: boolean) => void
+  setPatchLike: (list: FormatterListItem|FormatterListItem[], flag?: boolean) => void
 
   // save
   save: Saveds[]
@@ -197,23 +197,56 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       }
     })
   },
-  setPatchLike: (data: FormatterListItem) => {
+  setPatchLike: (data: FormatterListItem | FormatterListItem[]) => {
     set(({ like }) => {
-      const updatedLike = like.map((likeItem) =>
-        likeItem.id === data.id
-          ? {
-              ...likeItem, // 创建一个新对象
-              liked: !likeItem.liked, // 切换 liked 状态
-              like: !likeItem.liked
-                ? likeItem.like + 1 // 切换为 true，like +1
-                : Math.max(likeItem.like - 1, 0), // 切换为 false，like -1，确保最小值为 0
+      if(!like.length){
+        const datas = Array.isArray(data)?data:[data]
+        return {
+          like: datas.map((item) => ({
+            id: item.id,
+            liked: item.is_liked,
+            like: item.like,
+          })),
+        }
+      }else{
+        if(Array.isArray(data)){
+          const updatedLike = like.map((likeItem) => {
+            const itemToUpdate = data.find((d) => d.id === likeItem.id);
+            if (itemToUpdate) {
+              return {
+                ...likeItem,
+                liked: !likeItem.liked,
+                like: !likeItem.liked
+                  ? likeItem.like + 1
+                  : Math.max(likeItem.like - 1, 0),
+              };
             }
-          : likeItem
-      )
+            return likeItem;
+          });
+          return {
+            like: updatedLike,
+          };
 
-      return {
-        like: updatedLike,
+        }else{
+          const updatedLike = like.map((likeItem) =>
+            likeItem.id === data.id
+              ? {
+                ...likeItem, // 创建一个新对象
+                liked: !likeItem.liked, // 切换 liked 状态
+                like: !likeItem.liked
+                  ? likeItem.like + 1 // 切换为 true，like +1
+                  : Math.max(likeItem.like - 1, 0), // 切换为 false，like -1，确保最小值为 0
+              }
+              : likeItem
+          )
+
+          return {
+            like: updatedLike,
+          }
+        }
       }
+
+
     })
   },
   // save
@@ -291,7 +324,8 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       get().setRecommendLoading(true)
       get().setRecommendError(null)
 
-      const {featured} = await recommendFeatured(1)
+      const { featured = [] } = page === 1 ? await recommendFeatured(1) : {};
+      // const {featured} = await recommendFeatured(1)
       const { posts: postsRes } = await getRecommendMedia({
         page_num: page,
         records: recordsNum,

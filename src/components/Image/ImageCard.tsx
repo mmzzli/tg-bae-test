@@ -50,7 +50,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
           {data.media.map((image, index) => {
             return (
               <SwiperSlide
-                key={`${data.id}-${image}`}
+                key={`${data.id}-${image}-${index}`}
                 style={{
                   height: firImageHeight ? firImageHeight + 'px' : 'calc(1.5*100vw)',
                   maxHeight:

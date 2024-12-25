@@ -2,7 +2,6 @@ import { type FC, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import ChristmasList from '@/components/ChristmasList/index'
 
-
 import { useStore } from '@/store'
 import { CardRecommendProvider } from '@/utils/constants'
 import { throttle } from '@/utils/chat/schedulers'
@@ -39,7 +38,7 @@ const Christmas: FC = () => {
   }, [userInfo.user_id, userInfo.fans])
 
   useEffect(() => {
-    const scrollDiv = document.getElementById('recommendScrollableDiv')
+    const scrollDiv = document.getElementById('featuredScrollableDiv')
     if (!titleRef.current) return
 
     const handleScroll = throttle(() => {
@@ -60,7 +59,7 @@ const Christmas: FC = () => {
   // 双击触发的逻辑
   const handleDoubleTap = (): void => {
     console.log('Double-tap detected!')
-    const element = document.getElementById('recommendScrollableDiv')
+    const element = document.getElementById('featuredScrollableDiv')
     if (element) {
       element.scrollTo({
         top: 0,
@@ -84,8 +83,8 @@ const Christmas: FC = () => {
   return (
     <div
       className="relative w-full overflow-auto scrollbar-hide"
-      id="recommendScrollableDiv"
-      style={{ height: "calc(100vh - 84px)" }}
+      id="featuredScrollableDiv"
+      style={{ height: 'calc(100vh - 84px)' }}
     >
       <div
         className="flex p-[10px_16px] w-full z-[111]"

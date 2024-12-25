@@ -1,8 +1,8 @@
-import { memo, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { Box, Flex, HStack, IconButton, useBoolean, Text, useToast } from '@chakra-ui/react'
+import { memo, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { Box, HStack, IconButton, useBoolean, Text, useToast } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { DrawSkeletonItem } from '@/components/Skeketon/ChatSkeleton'
-import { postEvent } from '@telegram-apps/sdk'
+import PostSkeleton from '../Skeketon/PostSkeleton'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import { useSharedList } from '@/store/hook/useResourceList'
 
@@ -32,6 +32,7 @@ import { genShareLinkFn, getTimeStringAutoShort } from '@/utils/utils'
 import MoreText from '@/components/More/MoreText'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { videoHls } from '@/utils/video/videoHls'
+import { VirtualItem, Virtualizer } from '@tanstack/react-virtual'
 
 interface ShareDataProps {
   pid: number
@@ -192,10 +193,14 @@ const POST_TYPE_VIDEO = 0
 
 const ResourceList = ({
   resources: initialResources,
+  virtualList,
+  virtualizer,
   type,
   hasMore,
 }: {
   resources: FormatterListItem[]
+  virtualList: VirtualItem[]
+  virtualizer: Virtualizer<HTMLDivElement, Element>
   type?: string
   hasMore?: boolean
 }) => {
@@ -209,6 +214,7 @@ const ResourceList = ({
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const toast = useToast()
   const { sharedPostList } = useSharedList()
+  const itemRefs = useRef<Map<number, HTMLDivElement>>(new Map())
 
   const saveds = useStore((state) => state.save)
 
@@ -302,11 +308,8 @@ const ResourceList = ({
           itemA.is_collected = savedMatch.saveds
         }
       })
-
-      setLikes([...resources,...sharedPostList])
-
-      // initPatchLikes([...resources, ...sharedPostList])
-      // initPatchSaves([...resources, ...sharedPostList])
+      initPatchLikes([...resources, ...sharedPostList])
+      initPatchSaves([...resources, ...sharedPostList])
     }
   }, [resources])
 
@@ -437,71 +440,97 @@ const ResourceList = ({
   }
   return (
     <>
-      <div className="pt-[24px]">
-        {resources.map((data, index: number) => {
-          return (
-            <Box key={`resource-${data.id}-${index}`} pb={10}>
-              <ResourceHeader
-                data={data}
-                currentUid={launchParams.initData?.user?.id ?? 0}
-                onProfileClick={jumpToProfilePage}
-                type={type}
-              />
-              <Box position="relative">
-                {data.act_type === 1 && type === 'recommend' && (
-                  <Box
-                    position="absolute"
-                    bottom="0px"
-                    w="100%"
-                    zIndex={11}
-                    onClick={() => navigate('/home/christmas')}
-                  >
-                    <HStack p="3px 16px" justifyContent="space-between" bg="rgba(0, 0, 0, 0.5)">
-                      <Text fontSize={14} color="#fff">
-                        {' '}
-                        Explore more
-                      </Text>
-                      <i className="iconfont icon-icon_arrow_right text-[#fff] text-[20px]"></i>
-                    </HStack>
-                  </Box>
-                )}
-                {data.type === POST_TYPE_IMAGE ? (
-                  <ImageCard
-                    data={data}
-                    handleImageClick={(images, index) => handleImageClick(images, index, data.id)}
-                    resourcesEve={resourcesEve}
-                  />
-                ) : (
-                  <VideoCard resourcesEve={resourcesEve} data={data} />
-                )}
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          paddingTop: '24px',
+          width: '100%',
+          transform: `translateY(${virtualList[0]?.start ?? 0}px)`,
+          zIndex: 9,
+        }}
+      >
+        {resources.length > 0 &&
+          virtualList.map((virtualRow) => {
+            if (!resources[virtualRow.index]) {
+              return <PostSkeleton />
+            }
+
+            return (
+              <Box
+                key={virtualRow.key}
+                data-index={virtualRow.index}
+                ref={virtualizer.measureElement}
+                pb={10}
+              >
+                <ResourceHeader
+                  data={resources[virtualRow.index]}
+                  currentUid={launchParams.initData?.user?.id ?? 0}
+                  onProfileClick={jumpToProfilePage}
+                  type={type}
+                />
+                <Box position="relative">
+                  {resources[virtualRow.index].act_type === 1 && type === 'recommend' && (
+                    <Box
+                      position="absolute"
+                      bottom="0px"
+                      w="100%"
+                      zIndex={11}
+                      onClick={() => navigate('/home/christmas')}
+                    >
+                      <HStack p="3px 16px" justifyContent="space-between" bg="rgba(0, 0, 0, 0.5)">
+                        <Text fontSize={14} color="#fff">
+                          {' '}
+                          Explore more
+                        </Text>
+                        <i className="iconfont icon-icon_arrow_right text-[#fff] text-[20px]"></i>
+                      </HStack>
+                    </Box>
+                  )}
+                  {resources[virtualRow.index].type === POST_TYPE_IMAGE ? (
+                    <ImageCard
+                      data={resources[virtualRow.index]}
+                      handleImageClick={(images, index) =>
+                        handleImageClick(images, index, resources[virtualRow.index].id)
+                      }
+                      resourcesEve={resourcesEve}
+                    />
+                  ) : (
+                    <VideoCard resourcesEve={resourcesEve} data={resources[virtualRow.index]} />
+                  )}
+                </Box>
+                <ResourceFooter
+                  data={resources[virtualRow.index]}
+                  likes={likes}
+                  saveds={saveds}
+                  linkEve={linkEve}
+                  savedEve={savedEve}
+                  type={type}
+                  onShare={() => {
+                    getShareLink(
+                      resources[virtualRow.index].title,
+                      resources[virtualRow.index].id,
+                      resources[virtualRow.index].uid
+                    )
+                    setCurrentShareData({
+                      pid: resources[virtualRow.index].id,
+                      uid: resources[virtualRow.index].uid,
+                    })
+                  }}
+                />
               </Box>
-              <ResourceFooter
-                data={data}
-                likes={likes}
-                saveds={saveds}
-                linkEve={linkEve}
-                savedEve={savedEve}
-                type={type}
-                onShare={() => {
-                  getShareLink(data.title, data.id, data.uid)
-                  setCurrentShareData({
-                    pid: data.id,
-                    uid: data.uid,
-                  })
-                }}
-              />
-            </Box>
-          )
-        })}
-        <ShareModal
-          isBaseModalOpen={isBaseModalOpen}
-          off={off}
-          currentShareData={currentShareData}
-          links={links}
-          isLoading={isLoading}
-          setIsLoading={setIsLoading}
-        ></ShareModal>
+            )
+          })}
       </div>
+      <ShareModal
+        isBaseModalOpen={isBaseModalOpen}
+        off={off}
+        currentShareData={currentShareData}
+        links={links}
+        isLoading={isLoading}
+        setIsLoading={setIsLoading}
+      ></ShareModal>
     </>
   )
 }

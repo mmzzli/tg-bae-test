@@ -79,7 +79,7 @@ const BUFFER_FRAGMENT_LIMIT = 8
 export interface ResourceListSlice {
   like: Like[]
   initPatchLike: (list: FormatterListItem[]) => void
-  setPatchLike: (list: FormatterListItem|FormatterListItem[], flag?: boolean) => void
+  setPatchLike: (list: FormatterListItem, flag?: boolean) => void
 
   // save
   save: Saveds[]
@@ -188,77 +188,70 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
   like: [],
   initPatchLike: (list: FormatterListItem[]) => {
     set(({ like }) => {
-      return {
-        like: list.map((item) => ({
+      console.log(list,'jacob=====list');
+      const existingIds = new Set(like.map(item => item.id));
+      const newItems = list.filter(item => !existingIds.has(item.id));
+      console.log(newItems);
+
+      const updatedLike = [
+        ...like,
+        ...newItems.map(item => ({
           id: item.id,
           liked: item.is_liked,
           like: item.like,
         })),
-      }
+      ];
+
+      return {
+        like: updatedLike,
+      };
     })
   },
-  setPatchLike: (data: FormatterListItem | FormatterListItem[]) => {
+  setPatchLike: (data: FormatterListItem) => {
     set(({ like }) => {
-      if(!like.length){
-        const datas = Array.isArray(data)?data:[data]
-        return {
-          like: datas.map((item) => ({
-            id: item.id,
-            liked: item.is_liked,
-            like: item.like,
-          })),
-        }
-      }else{
-        if(Array.isArray(data)){
-          const updatedLike = like.map((likeItem) => {
-            const itemToUpdate = data.find((d) => d.id === likeItem.id);
-            if (itemToUpdate) {
-              return {
-                ...likeItem,
-                liked: !likeItem.liked,
-                like: !likeItem.liked
-                  ? likeItem.like + 1
-                  : Math.max(likeItem.like - 1, 0),
-              };
+        const updatedLike = like.map((likeItem) =>
+          likeItem.id === data.id
+            ? {
+              ...likeItem, // 创建一个新对象
+              liked: !likeItem.liked, // 切换 liked 状态
+              like: !likeItem.liked
+                ? likeItem.like + 1 // 切换为 true，like +1
+                : Math.max(likeItem.like - 1, 0), // 切换为 false，like -1，确保最小值为 0
             }
-            return likeItem;
-          });
-          return {
-            like: updatedLike,
-          };
+            : likeItem
+        )
 
-        }else{
-          const updatedLike = like.map((likeItem) =>
-            likeItem.id === data.id
-              ? {
-                ...likeItem, // 创建一个新对象
-                liked: !likeItem.liked, // 切换 liked 状态
-                like: !likeItem.liked
-                  ? likeItem.like + 1 // 切换为 true，like +1
-                  : Math.max(likeItem.like - 1, 0), // 切换为 false，like -1，确保最小值为 0
-              }
-              : likeItem
-          )
-
-          return {
-            like: updatedLike,
-          }
+        return {
+          like: updatedLike,
         }
-      }
-
-
     })
   },
   // save
   save: [],
   initPatchSave: (list: FormatterListItem[]) => {
     set(({ save }) => {
+      // 创建一个Map来存储新的值
+      const newSaveMap = new Map(
+        list.map((item) => [
+          item.id,
+          {
+            id: item.id,
+            saveds: item.is_collected ?? false,
+          },
+        ])
+      )
+
+      // 保留那些不在新列表中的旧值
+      save.forEach((item) => {
+        if (!newSaveMap.has(item.id)) {
+          newSaveMap.set(item.id, item)
+        }
+      })
+
       return {
-        save: list.map((item) => ({
-          id: item.id,
-          saveds: item.is_collected ?? false,
-        })),
+        save: Array.from(newSaveMap.values()),
       }
+
     })
   },
   setPatchSave: (data) => {

@@ -123,7 +123,7 @@ const HomePage: FC = () => {
           }}
         ></div>
         <div
-          className="fixed bg-[#fff] z-[111] h-[40px] w-[100%] left-0 top-0"
+          className="fixed bg-[#fff] z-[111] h-[68px] w-[100%] left-0 top-0"
           style={{
             paddingTop:
               'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
@@ -157,13 +157,14 @@ const HomePage: FC = () => {
             </h3>
           </div>
         </div>
-
-        <div className="ml-auto flex gap-[13px] z-[111] sticky">
-          <div
-            className="w-[48px] h-[48px] p-[12px] bg-[#F5F3F3] rounded-[50px] flex items-center justify-center cursor-pointer"
-            onClick={() => navigate('/home/searching')}
-          >
-            <i className="iconfont icon-search-line text-[#333333] text-[24px]"></i>
+        <div className='h-[48px]'>
+          <div className={`ml-auto flex gap-[13px] z-[111] ${showTopTitle?'relative':'fixed right-[16px]'}`}>
+            <div
+              className="w-[48px] h-[48px] p-[12px] bg-[#F5F3F3] rounded-[50px] flex items-center justify-center cursor-pointer"
+              onClick={() => navigate('/home/searching')}
+            >
+              <i className="iconfont icon-search-line text-[#333333] text-[24px]"></i>
+            </div>
           </div>
         </div>
       </div>

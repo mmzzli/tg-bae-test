@@ -15,6 +15,7 @@ import ImageDialog from '@/components/ResourceList/ImageDialog'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useInitDailyTask } from '@/hooks/useDailyTask'
 import WsHandler from './WsHandler'
+const HomePage = lazy(() => import('@/pages/Home'))
 
 const ChatListPageLoader = {
   preload: () =>
@@ -62,6 +63,7 @@ export const MainLayout: React.FC = () => {
   const setBackToHome = useStore((state) => state.setBackToHome)
   const [shouldLoadChat, setShouldLoadChat] = useState(false)
   const [hiddenChatPage, setHiddenChatPage] = useState(false)
+  const [hiddenHomePage, setHiddenHomePage] = useState(false)
   const setExpanded = useStore((state) => state.setExpand)
   const isExpanded = useStore((state) => state.expand)
   const navigate = useNavigate()
@@ -206,6 +208,12 @@ export const MainLayout: React.FC = () => {
     } else {
       setHiddenChatPage(true)
     }
+
+    if (location.pathname === '/home') {
+      setHiddenHomePage(false)
+    } else {
+      setHiddenHomePage(true)
+    }
     // handle chat page end
 
     if (window.Telegram?.WebApp) {
@@ -253,6 +261,28 @@ export const MainLayout: React.FC = () => {
           }
         >
           <ChatListPageLoader.Component />
+        </Suspense>
+      </div>
+
+      <div
+        className="absolute left-0 right-0 top-0 bottom-[84px] flex-col bg-white dark:bg-[#0D0D0D] overflow-hidden"
+        style={{
+          opacity: hiddenHomePage ? 0 : 1,
+          zIndex: hiddenHomePage ? -1 : 200,
+          paddingTop: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
+        }}
+      >
+        <Suspense
+          fallback={
+            <div className="h-screen flex items-center justify-center">
+              <i
+                className="iconfont icon-loading animate-spin text-[#6254FF]"
+                style={{ fontSize: '40px' }}
+              />
+            </div>
+          }
+        >
+          <HomePage />
         </Suspense>
       </div>
 

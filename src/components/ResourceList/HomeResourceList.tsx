@@ -206,7 +206,6 @@ const ResourceList = ({
 }) => {
   const navigate = useNavigate()
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
-  const isMobile = useMobile()
   const [resources, setResources] = useState<FormatterListItem[]>([])
   const likes = useStore((state) => state.like)
   const setLikes = useStore((state) => state.setPatchLike)
@@ -214,7 +213,6 @@ const ResourceList = ({
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const toast = useToast()
   const { sharedPostList } = useSharedList()
-  const itemRefs = useRef<Map<number, HTMLDivElement>>(new Map())
 
   const saveds = useStore((state) => state.save)
 
@@ -478,15 +476,15 @@ const ResourceList = ({
                       bottom="0px"
                       w="100%"
                       zIndex={11}
-                      onClick={() => navigate('/home/christmas')}
+                      onClick={() => navigate('/christmas')}
                     >
-                      <HStack p="3px 16px" justifyContent="space-between" bg="rgba(0, 0, 0, 0.5)">
+                      {/* <HStack p="3px 16px" justifyContent="space-between" bg="rgba(0, 0, 0, 0.5)">
                         <Text fontSize={14} color="#fff">
                           {' '}
                           Explore more
                         </Text>
                         <i className="iconfont icon-icon_arrow_right text-[#fff] text-[20px]"></i>
-                      </HStack>
+                      </HStack> */}
                     </Box>
                   )}
                   {data.type === POST_TYPE_IMAGE ? (

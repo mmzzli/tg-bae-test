@@ -316,6 +316,7 @@ const useCacheVideo = (
 ) => {
   const observerRef = useRef<IntersectionObserver | null>(null)
   const videos = list.filter((item) => item.type === 0)
+  console.warn('cache video', videos)
   let mostVisibleElement: HTMLElement | null = null
   const handleIntersection = (entries: IntersectionObserverEntry[]) => {
     let maxVisibility = 0
@@ -327,6 +328,8 @@ const useCacheVideo = (
         break // 找到完全可见的就直接跳出循环
       }
     }
+
+    console.warn('mostVisibleElement', mostVisibleElement)
 
     // 如果没有完全可见的元素,再检查部分可见的元素
     if (!mostVisibleElement) {

@@ -3,7 +3,7 @@ import HomeResourceList from '../ResourceList/HomeResourceList'
 import useCacheVideo, { useRecommendList } from '@/store/hook/useResourceList'
 import { useEffect, useState } from 'react'
 import { useStore } from '@/store'
-import { useActivate } from 'react-activation'
+// import { useActivate } from 'react-activation'
 import { useVirtualizer } from '@tanstack/react-virtual'
 
 interface PostListProps {
@@ -16,13 +16,13 @@ interface ChildRef {
 
 const RecommendList = forwardRef<ChildRef, PostListProps>((props, ref) => {
   const { containerRef } = props
-  const { list, hasMore, fetchMoreData, page, refresh } = useRecommendList()
+  const { list: postList, hasMore, fetchMoreData, page, refresh } = useRecommendList()
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
   const updateCacheVideo = useStore((state) => state.updateCacheVideo)
   const [random, setRandom] = useState(0)
   useCacheVideo(
-    list,
+    postList,
     page,
     setCacheVideoIndex,
     getCacheVideoindex,
@@ -32,27 +32,29 @@ const RecommendList = forwardRef<ChildRef, PostListProps>((props, ref) => {
     random
   )
 
+  // useEffect(() => {
+  //   setRandom(Date.now())
+  // }, [])
+
   const parentRef = containerRef || useRef<HTMLDivElement>(null)
-
-  useActivate(() => {
-    const defaultVideo = document.getElementById('default-video-player')
-    if (defaultVideo) {
-      defaultVideo.parentNode?.removeChild(defaultVideo)
-    }
-    setRandom(Date.now())
-  })
-  useImperativeHandle(ref, () => ({
-    refresh: () => refresh(),
-  }))
-
   const virtualizer = useVirtualizer({
-    count: list.length,
+    count: postList.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 500,
     overscan: 5,
   })
+  let items = virtualizer.getVirtualItems()
+  // useActivate(() => {
+  //   const defaultVideo = document.getElementById('default-video-player')
+  //   if (defaultVideo) {
+  //     defaultVideo.parentNode?.removeChild(defaultVideo)
+  //   }
+  //   setRandom(Date.now())
+  // })
 
-  const items = virtualizer.getVirtualItems()
+  useImperativeHandle(ref, () => ({
+    refresh: () => refresh(),
+  }))
 
   useEffect(() => {
     const container = containerRef?.current
@@ -72,6 +74,7 @@ const RecommendList = forwardRef<ChildRef, PostListProps>((props, ref) => {
     }
   }, [containerRef])
 
+  console.warn('----recommend list render-----')
   return (
     <div
       id="view-container"
@@ -83,7 +86,7 @@ const RecommendList = forwardRef<ChildRef, PostListProps>((props, ref) => {
       }}
     >
       <HomeResourceList
-        resources={list}
+        resources={postList}
         virtualList={items}
         virtualizer={virtualizer}
         hasMore={hasMore}

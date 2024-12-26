@@ -15,7 +15,7 @@ const SCROLL_THRESHOLD = 35
 
 const HomePage: FC = () => {
   const navigate = useNavigate()
-  const [title, setTitle] = useState('Following') // Following
+  const [title, setTitle] = useState('Discover') // Following
   const userInfo = useStore((state) => state.userInfo)
 
   const [videoOpen, setVideoOpen] = useState(false)

@@ -478,13 +478,13 @@ const ResourceList = ({
                       zIndex={11}
                       onClick={() => navigate('/christmas')}
                     >
-                      {/* <HStack p="3px 16px" justifyContent="space-between" bg="rgba(0, 0, 0, 0.5)">
+                      <HStack p="3px 16px" justifyContent="space-between" bg="rgba(0, 0, 0, 0.5)">
                         <Text fontSize={14} color="#fff">
                           {' '}
                           Explore more
                         </Text>
                         <i className="iconfont icon-icon_arrow_right text-[#fff] text-[20px]"></i>
-                      </HStack> */}
+                      </HStack>
                     </Box>
                   )}
                   {data.type === POST_TYPE_IMAGE ? (
@@ -666,7 +666,7 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
             <MoreText text={data.title} bgColor={'#fff'} textColor={'#0F1419'} />
           </div>
           <div className="flex items-center justify-between">
-            {((type === 'view' && data.price > 0) || data.is_pay) && (
+            {(((type === 'view' || type === 'recommend') && data.price > 0) || data.is_pay) && (
               <div className="flex items-center gap-2 mt-1">
                 <p className="text-[#666666] dark:text-[#424048] text-[12px]">
                   Purchased for {data.price}

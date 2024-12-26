@@ -4,7 +4,6 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import path from 'path'
 import mkcert from 'vite-plugin-mkcert'
 import { createFilter } from '@rollup/pluginutils'
-
 const cacheBusterPlugin = () => {
   const filter = createFilter(['**/*.tsx', '**/*.ts', '**/*.js', '**/*.jsx'])
 
@@ -28,6 +27,7 @@ const cacheBusterPlugin = () => {
 }
 
 export default defineConfig(({ mode }) => {
+  console.log(mode);
   return {
     plugins: [react(), nodePolyfills(), mkcert(), cacheBusterPlugin()],
     build: {
@@ -44,7 +44,7 @@ export default defineConfig(({ mode }) => {
       minify: 'terser',
       terserOptions: {
         compress: {
-          drop_console: true,
+          drop_console: mode === 'production' ,
           drop_debugger: true,
         },
       },

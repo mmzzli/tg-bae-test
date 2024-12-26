@@ -18,7 +18,7 @@
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,css,md,json}\"",
     "postinstall": "echo 'please use npm run setup to finish the project configure' || true",
     "setup": "bash init-project.sh",
-    "dev": "vite --mode development",
+    "dev": "vite --mode dev",
     "dev:prod": "vite --mode production",
     "dev:test": "vite --mode staging",
     "build:dev": "tsc && vite build --mode development",

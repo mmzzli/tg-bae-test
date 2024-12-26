@@ -388,6 +388,11 @@ const useCacheVideo = (
           videoHls(videoCard, visibleElements[0])
         }
       }
+    } else {
+      const defaultVideo = document.getElementById('default-video-player')
+      if (defaultVideo) {
+        defaultVideo.parentNode?.removeChild(defaultVideo)
+      }
     }
   }, 100)
 

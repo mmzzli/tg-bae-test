@@ -57,7 +57,10 @@ const createStore = (fn: StateCreator<StoreState, [], MyMiddlewares>) => {
             token: state.token,
           }),
         }
-      )
+      ),
+      {
+        name: 'ditto-store',
+      }
     ),
     shallow
   )

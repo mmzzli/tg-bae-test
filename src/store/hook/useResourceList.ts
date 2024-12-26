@@ -20,19 +20,19 @@ export const useRecommendList = () => {
     )
 
   const { list, page, hasMore, isLoading, error } = recommendList
-  const [isInitialRender, setIsInitialRender] = useState(page == 1 ? -1 : page)
+  // const [isInitialRender, setIsInitialRender] = useState(page == 1 ? -1 : page)
 
   useEffect(() => {
     if (!token) return
-    if (isInitialRender === page) return
+    // console.log('fetchMoreData2 isInitialRender', isInitialRender)
+    // if (isInitialRender === page) return
     loadRecommendList(page)
-    setIsInitialRender(page)
-    console.log('fetchMoreData', page)
+    // setIsInitialRender(page)
   }, [page, token])
 
   const fetchMoreData = () => {
     if (!isLoading && hasMore) {
-      setRecommendPage(page + 1)
+      setRecommendPage(useStore.getState().recommendList.page + 1)
     }
   }
 

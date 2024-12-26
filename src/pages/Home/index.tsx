@@ -46,10 +46,12 @@ const HomePage: FC = () => {
     const handleScroll = throttle(() => {
       if (!scrollDiv) return
       const shouldShowTitle = scrollDiv.scrollTop >= SCROLL_THRESHOLD
-      if (shouldShowTitle !== showTopTitle) {
-        setShowTopTitle(shouldShowTitle)
-        console.log('Title visibility updated to:', shouldShowTitle) // 更新日志输出
-      }
+      setShowTopTitle(shouldShowTitle)
+      console.log('Title visibility updated to:', shouldShowTitle)
+      // if (shouldShowTitle !== showTopTitle) {
+      //   setShowTopTitle(shouldShowTitle)
+      //   console.log('Title visibility updated to:', shouldShowTitle) // 更新日志输出
+      // }
     }, 40)
 
     scrollDiv?.addEventListener('scroll', handleScroll)
@@ -85,27 +87,27 @@ const HomePage: FC = () => {
     childRef.current?.refresh()
   }
 
-  useEffect(() => {
-    const handleTouchStart = (event: TouchEvent) => {
-      const touchY = event.touches[0].clientY; // 获取触摸点的垂直坐标
-      console.log('touchstart - 距离顶部的距离:', touchY, 'px');
-    };
+  // useEffect(() => {
+  //   const handleTouchStart = (event: TouchEvent) => {
+  //     const touchY = event.touches[0].clientY; // 获取触摸点的垂直坐标
+  //     console.log('touchstart - 距离顶部的距离:', touchY, 'px');
+  //   };
 
-    const handleTouchEnd = (event: TouchEvent) => {
-      const touchY = event.changedTouches[0].clientY; // 获取触摸结束点的垂直坐标
-      console.log('touchend - 距离顶部的距离:', touchY, 'px');
-    };
+  //   const handleTouchEnd = (event: TouchEvent) => {
+  //     const touchY = event.changedTouches[0].clientY; // 获取触摸结束点的垂直坐标
+  //     console.log('touchend - 距离顶部的距离:', touchY, 'px');
+  //   };
 
-    // 添加 touchstart 和 touchend 事件监听
-    document.addEventListener('touchstart', handleTouchStart, { passive: true });
-    document.addEventListener('touchend', handleTouchEnd, { passive: true });
+  //   // 添加 touchstart 和 touchend 事件监听
+  //   document.addEventListener('touchstart', handleTouchStart, { passive: true });
+  //   document.addEventListener('touchend', handleTouchEnd, { passive: true });
 
-    // 清理事件监听器
-    return () => {
-      document.removeEventListener('touchstart', handleTouchStart);
-      document.removeEventListener('touchend', handleTouchEnd);
-    };
-  }, []);
+  //   // 清理事件监听器
+  //   return () => {
+  //     document.removeEventListener('touchstart', handleTouchStart);
+  //     document.removeEventListener('touchend', handleTouchEnd);
+  //   };
+  // }, []);
 
   return (
     <div

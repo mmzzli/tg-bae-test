@@ -206,7 +206,6 @@ const ResourceList = ({
 }) => {
   const navigate = useNavigate()
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
-  const isMobile = useMobile()
   const [resources, setResources] = useState<FormatterListItem[]>([])
   const likes = useStore((state) => state.like)
   const setLikes = useStore((state) => state.setPatchLike)
@@ -214,7 +213,6 @@ const ResourceList = ({
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const toast = useToast()
   const { sharedPostList } = useSharedList()
-  const itemRefs = useRef<Map<number, HTMLDivElement>>(new Map())
 
   const saveds = useStore((state) => state.save)
 
@@ -453,69 +451,64 @@ const ResourceList = ({
       >
         {resources.length > 0 &&
           virtualList.map((virtualRow) => {
-            if (!resources[virtualRow.index]) {
+            const data = { ...resources[virtualRow.index] }
+            if (!data) {
               return <PostSkeleton />
             }
 
             return (
               <Box
-                key={virtualRow.key}
+                key={`resource-${data.id}-${virtualRow.index}`}
                 data-index={virtualRow.index}
                 ref={virtualizer.measureElement}
                 pb={10}
               >
                 <ResourceHeader
-                  data={resources[virtualRow.index]}
+                  data={data}
                   currentUid={launchParams.initData?.user?.id ?? 0}
                   onProfileClick={jumpToProfilePage}
                   type={type}
                 />
                 <Box position="relative">
-                  {resources[virtualRow.index].act_type === 1 && type === 'recommend' && (
+                  {data.act_type === 1 && type === 'recommend' && (
                     <Box
                       position="absolute"
                       bottom="0px"
                       w="100%"
                       zIndex={11}
-                      onClick={() => navigate('/home/christmas')}
+                      onClick={() => navigate('/christmas')}
                     >
-                      <HStack p="3px 16px" justifyContent="space-between" bg="rgba(0, 0, 0, 0.5)">
+                      {/* <HStack p="3px 16px" justifyContent="space-between" bg="rgba(0, 0, 0, 0.5)">
                         <Text fontSize={14} color="#fff">
                           {' '}
                           Explore more
                         </Text>
                         <i className="iconfont icon-icon_arrow_right text-[#fff] text-[20px]"></i>
-                      </HStack>
+                      </HStack> */}
                     </Box>
                   )}
-                  {resources[virtualRow.index].type === POST_TYPE_IMAGE ? (
+                  {data.type === POST_TYPE_IMAGE ? (
                     <ImageCard
-                      data={resources[virtualRow.index]}
-                      handleImageClick={(images, index) =>
-                        handleImageClick(images, index, resources[virtualRow.index].id)
-                      }
+                      data={data}
+                      handleImageClick={(images, index) => handleImageClick(images, index, data.id)}
                       resourcesEve={resourcesEve}
                     />
                   ) : (
-                    <VideoCard resourcesEve={resourcesEve} data={resources[virtualRow.index]} />
+                    <VideoCard resourcesEve={resourcesEve} data={data} />
                   )}
                 </Box>
                 <ResourceFooter
-                  data={resources[virtualRow.index]}
+                  data={data}
                   likes={likes}
                   saveds={saveds}
                   linkEve={linkEve}
                   savedEve={savedEve}
                   type={type}
                   onShare={() => {
-                    getShareLink(
-                      resources[virtualRow.index].title,
-                      resources[virtualRow.index].id,
-                      resources[virtualRow.index].uid
-                    )
+                    getShareLink(data.title, data.id, data.uid)
                     setCurrentShareData({
-                      pid: resources[virtualRow.index].id,
-                      uid: resources[virtualRow.index].uid,
+                      pid: data.id,
+                      uid: data.uid,
                     })
                   }}
                 />
@@ -673,7 +666,7 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
             <MoreText text={data.title} bgColor={'#fff'} textColor={'#0F1419'} />
           </div>
           <div className="flex items-center justify-between">
-            {((type === 'view' && data.price > 0) || data.is_pay) && (
+            {(((type === 'view' || type === 'recommend') && data.price > 0) || data.is_pay) && (
               <div className="flex items-center gap-2 mt-1">
                 <p className="text-[#666666] dark:text-[#424048] text-[12px]">
                   Purchased for {data.price}

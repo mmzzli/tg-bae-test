@@ -1,29 +1,27 @@
-import { forwardRef, useImperativeHandle } from 'react'
-import { Box } from '@chakra-ui/react'
-import InfiniteScroll from 'react-infinite-scroll-component'
-import ResourceList from '../ResourceList/ResourceList'
-import { cn } from '@/utils/utils'
+import { forwardRef, useImperativeHandle, useRef } from 'react'
+import HomeResourceList from '../ResourceList/HomeResourceList'
 import useCacheVideo, { useRecommendList } from '@/store/hook/useResourceList'
-import PostSkeleton from '../Skeketon/PostSkeleton'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useStore } from '@/store'
-import { useActivate } from 'react-activation'
+// import { useActivate } from 'react-activation'
+import { useVirtualizer } from '@tanstack/react-virtual'
+import PostSkeleton from '../Skeketon/PostSkeleton'
 
 interface PostListProps {
   className?: string
+  containerRef?: React.RefObject<HTMLDivElement>
 }
 interface ChildRef {
   refresh?: () => void
 }
 
 const RecommendList = forwardRef<ChildRef, PostListProps>((props, ref) => {
-  const { className } = props
-  const { list, hasMore, fetchMoreData, page, refresh } = useRecommendList()
+  const { containerRef } = props
+  const { list, hasMore, fetchMoreData, page, refresh, isLoading } = useRecommendList()
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
   const updateCacheVideo = useStore((state) => state.updateCacheVideo)
-  const [random, setRandom] = useState(0)
-
+  const recommendList = useStore((state) => state.recommendList)
   useCacheVideo(
     list,
     page,
@@ -31,52 +29,71 @@ const RecommendList = forwardRef<ChildRef, PostListProps>((props, ref) => {
     getCacheVideoindex,
     updateCacheVideo,
     'recommendScrollableDiv',
-    'video-card',
-    random
+    'video-card'
   )
 
-  useActivate(() => {
-    const defaultVideo = document.getElementById('default-video-player')
-    if (defaultVideo) {
-      defaultVideo.parentNode?.removeChild(defaultVideo)
-    }
-    setRandom(Date.now())
+  const parentRef = containerRef || useRef<HTMLDivElement>(null)
+  const virtualizer = useVirtualizer({
+    count: list.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 500,
+    overscan: 5,
   })
+  let items = virtualizer.getVirtualItems()
+
   useImperativeHandle(ref, () => ({
     refresh: () => refresh(),
   }))
 
-  const throttledFetchMoreData = (() => {
-    let lastCall = 0
-    return () => {
-      const now = Date.now()
-      if (now - lastCall >= 1000) {
+  useEffect(() => {
+    const container = containerRef?.current
+    if (!container) return
+
+    const handleContainerScroll = (e: Event) => {
+      const target = e.target as HTMLDivElement
+      const { scrollTop, clientHeight, scrollHeight } = target
+      if (scrollHeight - scrollTop - clientHeight < 50 && hasMore) {
         fetchMoreData()
-        lastCall = now
       }
     }
-  })()
 
+    container.addEventListener('scroll', handleContainerScroll)
+    return () => {
+      container.removeEventListener('scroll', handleContainerScroll)
+    }
+  }, [containerRef])
+
+  if (isLoading && list.length === 0) {
+    return (
+      <div className="mt-12">
+        <PostSkeleton />
+      </div>
+    )
+  }
   return (
-    <div className={cn(className, '')}>
-      <InfiniteScroll
-        dataLength={list.length}
-        // next={fetchMoreData}
-        next={throttledFetchMoreData}
-        hasMore={hasMore}
-        loader={
-          <Box textAlign="center" m="20px 0" className="p-4">
-            <PostSkeleton />
-          </Box>
-        }
-        scrollableTarget="recommendScrollableDiv"
-        scrollThreshold={0.1}
-        style={{ overflow: 'visible' }}
+    <div>
+      <div
+        id="view-container"
+        style={{
+          height: virtualizer.getTotalSize(),
+          width: '100%',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
       >
-        <div id="view-container">
-          <ResourceList resources={list} type="recommend" />
+        <HomeResourceList
+          resources={list}
+          virtualList={items}
+          virtualizer={virtualizer}
+          hasMore={hasMore}
+          type="recommend"
+        />
+      </div>
+      {isLoading && hasMore && (
+        <div className="mt-12">
+          <PostSkeleton />
         </div>
-      </InfiniteScroll>
+      )}
     </div>
   )
 })

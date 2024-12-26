@@ -8,7 +8,7 @@ import './types/window.d.ts'
 
 import { MainLayout } from '@/components/layout'
 import Splash from '@/pages/Splash'
-import HomePage from '@/pages/Home'
+// import HomePage from '@/pages/Home'
 import Searching from '@/pages/Home/Searching'
 import Christmas from '@/pages/Home/Christmas'
 import { NewPost } from '@/pages/NewPost'
@@ -30,27 +30,29 @@ import { AliveScope, KeepAlive } from 'react-activation'
 
 const Task = lazy(() => import('./pages/Task'))
 
-// mockTelegramEnv({
-//   themeParams: {
-//     accentTextColor: '#6ab2f2',
-//     bgColor: '#17212b',
-//     buttonColor: '#5288c1',
-//     buttonTextColor: '#ffffff',
-//     destructiveTextColor: '#ec3942',
-//     headerBgColor: '#17212b',
-//     hintColor: '#708499',
-//     linkColor: '#6ab3f3',
-//     secondaryBgColor: '#232e3c',
-//     sectionBgColor: '#17212b',
-//     sectionHeaderTextColor: '#6ab3f3',
-//     subtitleTextColor: '#708499',
-//     textColor: '#f5f5f5',
-//   },
-//   initData: parseInitData(DEV_INIT_DATA_RAW),
-//   initDataRaw: DEV_INIT_DATA_RAW,
-//   version: '7.2',
-//   platform: 'tdesktop',
-// })
+if(import.meta.env.MODE === 'dev'){
+  mockTelegramEnv({
+    themeParams: {
+      accentTextColor: '#6ab2f2',
+      bgColor: '#17212b',
+      buttonColor: '#5288c1',
+      buttonTextColor: '#ffffff',
+      destructiveTextColor: '#ec3942',
+      headerBgColor: '#17212b',
+      hintColor: '#708499',
+      linkColor: '#6ab3f3',
+      secondaryBgColor: '#232e3c',
+      sectionBgColor: '#17212b',
+      sectionHeaderTextColor: '#6ab3f3',
+      subtitleTextColor: '#708499',
+      textColor: '#f5f5f5',
+    },
+    initData: parseInitData(DEV_INIT_DATA_RAW),
+    initDataRaw: DEV_INIT_DATA_RAW,
+    version: '7.2',
+    platform: 'tdesktop',
+  })
+}
 
 function App() {
   useEffect(() => {
@@ -81,15 +83,20 @@ function App() {
               <Routes>
                 <Route path="/" element={<MainLayout />}>
                   <Route index element={<Splash />} />
-                  <Route path="home">
-                    <Route index element={
-                      <KeepAlive name="home">
-                        <HomePage />
-                      </KeepAlive>
-                    } />
-                    <Route path="searching" element={<Searching />} />
-                    <Route path="christmas" element={<Christmas />} />
+                  <Route path="home" element={<div></div>}>
+                    {/* <Route
+                      index
+                      element={
+                        <KeepAlive name="home">
+                          <HomePage />
+                        </KeepAlive>
+                      }
+                    /> */}
                   </Route>
+
+                  <Route path="searching" element={<Searching />} />
+                  <Route path="christmas" element={<Christmas />} />
+
                   <Route path="post" element={<NewPost />} />
                   <Route path="shares" element={<Shares />} />
 
@@ -113,13 +120,16 @@ function App() {
 
                   {/* Profile  */}
                   <Route path="profile">
-                    <Route index element={
-                      <Suspense fallback={null}>
-                        <KeepAlive name="profile">
-                          <Profile />
-                        </KeepAlive>
-                      </Suspense>
-                    } />
+                    <Route
+                      index
+                      element={
+                        <Suspense fallback={null}>
+                          <KeepAlive name="profile">
+                            <Profile />
+                          </KeepAlive>
+                        </Suspense>
+                      }
+                    />
                     <Route path="edit" element={<ProfileEdit />} />
                     <Route path="earningsHistory" element={<EarningsHistory />} />
                     <Route

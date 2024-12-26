@@ -154,6 +154,15 @@ const ProfileEdit: FC = () => {
     if(initLoading){
       return
     }
+    if(!profileData.username){
+      toast({
+        position: 'bottom',
+        render: () => {
+          return <CustomToast title="The name cannot be empty" type={typeOptions.error} />
+        },
+      })
+      return
+    }
     setIsLoading(true)
     await putProfile(profileData)
     toast({

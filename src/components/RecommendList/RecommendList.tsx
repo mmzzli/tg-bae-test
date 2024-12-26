@@ -6,6 +6,7 @@ import { useStore } from '@/store'
 // import { useActivate } from 'react-activation'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import PostSkeleton from '../Skeketon/PostSkeleton'
+import { debounce } from '@/utils/chat/schedulers'
 
 interface PostListProps {
   className?: string
@@ -21,7 +22,6 @@ const RecommendList = forwardRef<ChildRef, PostListProps>((props, ref) => {
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
   const updateCacheVideo = useStore((state) => state.updateCacheVideo)
-  const recommendList = useStore((state) => state.recommendList)
   useCacheVideo(
     list,
     page,
@@ -49,13 +49,13 @@ const RecommendList = forwardRef<ChildRef, PostListProps>((props, ref) => {
     const container = containerRef?.current
     if (!container) return
 
-    const handleContainerScroll = (e: Event) => {
+    const handleContainerScroll = debounce((e: Event) => {
       const target = e.target as HTMLDivElement
       const { scrollTop, clientHeight, scrollHeight } = target
-      if (scrollHeight - scrollTop - clientHeight < 50 && hasMore) {
+      if (scrollHeight - scrollTop - clientHeight < 50) {
         fetchMoreData()
       }
-    }
+    }, 100)
 
     container.addEventListener('scroll', handleContainerScroll)
     return () => {

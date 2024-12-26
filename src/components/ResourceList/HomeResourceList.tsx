@@ -458,7 +458,7 @@ const ResourceList = ({
 
             return (
               <Box
-                key={virtualRow.key}
+                key={`resource-${data.id}-${virtualRow.index}`}
                 data-index={virtualRow.index}
                 ref={virtualizer.measureElement}
                 pb={10}

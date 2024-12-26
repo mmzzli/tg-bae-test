@@ -73,8 +73,6 @@ const RecommendList = forwardRef<ChildRef, PostListProps>((props, ref) => {
       container.removeEventListener('scroll', handleContainerScroll)
     }
   }, [containerRef])
-
-  console.warn('----recommend list render-----')
   return (
     <div
       id="view-container"

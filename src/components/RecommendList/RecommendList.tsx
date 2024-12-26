@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { useStore } from '@/store'
 // import { useActivate } from 'react-activation'
 import { useVirtualizer } from '@tanstack/react-virtual'
+import PostSkeleton from '../Skeketon/PostSkeleton'
 
 interface PostListProps {
   className?: string
@@ -16,41 +17,29 @@ interface ChildRef {
 
 const RecommendList = forwardRef<ChildRef, PostListProps>((props, ref) => {
   const { containerRef } = props
-  const { list: postList, hasMore, fetchMoreData, page, refresh } = useRecommendList()
+  const { list, hasMore, fetchMoreData, page, refresh, isLoading } = useRecommendList()
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
   const updateCacheVideo = useStore((state) => state.updateCacheVideo)
-  const [random, setRandom] = useState(0)
+  const recommendList = useStore((state) => state.recommendList)
   useCacheVideo(
-    postList,
+    list,
     page,
     setCacheVideoIndex,
     getCacheVideoindex,
     updateCacheVideo,
     'recommendScrollableDiv',
-    'video-card',
-    random
+    'video-card'
   )
-
-  // useEffect(() => {
-  //   setRandom(Date.now())
-  // }, [])
 
   const parentRef = containerRef || useRef<HTMLDivElement>(null)
   const virtualizer = useVirtualizer({
-    count: postList.length,
+    count: list.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 500,
     overscan: 5,
   })
   let items = virtualizer.getVirtualItems()
-  // useActivate(() => {
-  //   const defaultVideo = document.getElementById('default-video-player')
-  //   if (defaultVideo) {
-  //     defaultVideo.parentNode?.removeChild(defaultVideo)
-  //   }
-  //   setRandom(Date.now())
-  // })
 
   useImperativeHandle(ref, () => ({
     refresh: () => refresh(),
@@ -73,23 +62,38 @@ const RecommendList = forwardRef<ChildRef, PostListProps>((props, ref) => {
       container.removeEventListener('scroll', handleContainerScroll)
     }
   }, [containerRef])
+
+  if (isLoading && list.length === 0) {
+    return (
+      <div className="mt-12">
+        <PostSkeleton />
+      </div>
+    )
+  }
   return (
-    <div
-      id="view-container"
-      style={{
-        height: virtualizer.getTotalSize(),
-        width: '100%',
-        position: 'relative',
-        overflow: 'hidden',
-      }}
-    >
-      <HomeResourceList
-        resources={postList}
-        virtualList={items}
-        virtualizer={virtualizer}
-        hasMore={hasMore}
-        type="recommend"
-      />
+    <div>
+      <div
+        id="view-container"
+        style={{
+          height: virtualizer.getTotalSize(),
+          width: '100%',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        <HomeResourceList
+          resources={list}
+          virtualList={items}
+          virtualizer={virtualizer}
+          hasMore={hasMore}
+          type="recommend"
+        />
+      </div>
+      {isLoading && hasMore && (
+        <div className="mt-12">
+          <PostSkeleton />
+        </div>
+      )}
     </div>
   )
 })

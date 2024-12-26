@@ -345,7 +345,7 @@ const useCacheVideo = (
     return visibleElements
   }
 
-  const handleScroll = debounce(() => {
+  const handleScroll = throttle(() => {
     const visibleElements: HTMLElement[] = getVisibleElements()
     console.log('当前可见元素:', visibleElements)
     // 如果没有完全可见的元素,再检查部分可见的元素

@@ -28,7 +28,7 @@ import { CardRecommendProvider } from '@/utils/constants'
 import { useStore } from '@/store'
 import VideoCard from '@/components/ResourceList/VideoCard'
 import ImageCard from '@/components/Image/ImageCard'
-import { genShareLinkFn, getTimeStringAutoShort } from '@/utils/utils'
+import { genShareLinkFn, getTimeStringAutoShort, formatNumber } from '@/utils/utils'
 import MoreText from '@/components/More/MoreText'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { videoHls } from '@/utils/video/videoHls'
@@ -606,7 +606,7 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
             ) : (
               <i className="iconfont icon-like text-[#0D0D0D]" style={{ fontSize: '22px' }}></i>
             )}
-            <span className="pl-1 text-sm font-medium text-[##0D0D0D] mb-[1px]">{likeNum}</span>
+            <span className="pl-1 text-sm font-medium text-[##0D0D0D] mb-[1px]">{formatNumber(likeNum)}</span>
           </div>
           <div
             className="flex items-center justify-center"

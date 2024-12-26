@@ -274,3 +274,28 @@ export const genShareLinkFn = async (
     shareLink,
   }
 }
+
+
+export const formatNumber = (num: number): string => {
+  if (num < 10_000) {
+    return num.toLocaleString();
+  }
+
+  const units = [
+    { value: 1_000_000_000, symbol: "B" },
+    { value: 1_000_000, symbol: "M" },
+    { value: 1_000, symbol: "K" },
+  ];
+
+  for (const unit of units) {
+    if (num >= unit.value) {
+      const formatted = (num / unit.value).toFixed(1);
+      return formatted.endsWith(".0")
+        ? `${formatted.slice(0, -2)}${unit.symbol}`
+        : `${formatted}${unit.symbol}`;
+    }
+  }
+
+  return num.toString();
+};
+export default formatNumber;

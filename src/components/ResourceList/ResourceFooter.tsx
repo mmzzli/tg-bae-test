@@ -22,6 +22,7 @@ const ResourceFooter: React.FC<ResourceFooterProps> = ({ data }) => {
     manual: true,
     onSuccess(res) {
       console.log(res)
+      setIsLoading(true)
     },
   })
   const [isLoading, setIsLoading] = useState(false)

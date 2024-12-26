@@ -277,7 +277,11 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     })),
   setRecommendList: (newList, merge = false) => {
     const list = merge ? [...get().recommendList.list, ...newList] : newList
-    window.m3u8Worker.postMessage({ tasks: list })
+    try {
+      window.m3u8Worker.postMessage({ tasks: list })
+    } catch (error) {
+      console.error('m3u8Worker', error)
+    }
     set((state) => ({
       recommendList: {
         ...state.recommendList,

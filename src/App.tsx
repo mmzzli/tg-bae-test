@@ -54,7 +54,6 @@ if(import.meta.env.MODE === 'dev'){
   })
 }
 
-
 function App() {
   useEffect(() => {
     const root = document.querySelector('#root')

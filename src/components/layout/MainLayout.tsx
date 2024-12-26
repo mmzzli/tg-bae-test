@@ -100,7 +100,7 @@ export const MainLayout: React.FC = () => {
     try {
       const { initDataRaw } = retrieveLaunchParams()
       userInfo = initDataRaw
-      userInfo = DEV_INIT_DATA_RAW
+      // userInfo = DEV_INIT_DATA_RAW
       log('userInfo finally', userInfo)
     } catch (error) {
       userInfo = DEV_INIT_DATA_RAW

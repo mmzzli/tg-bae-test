@@ -1,8 +1,7 @@
 import { memo, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { Box, Flex, HStack, IconButton, useBoolean, Text, useToast } from '@chakra-ui/react'
+import { Box, HStack, IconButton, useBoolean, Text, useToast } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { DrawSkeletonItem } from '@/components/Skeketon/ChatSkeleton'
-import { postEvent } from '@telegram-apps/sdk'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import { useSharedList } from '@/store/hook/useResourceList'
 
@@ -18,7 +17,6 @@ import Image from '../Image/Image'
 import SecondaryMenu from '../SecondaryMenu/SecondaryMenu'
 import { getLink, getShareInlineMessageId } from '@/api/list'
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
-import useMobile from '@/hooks/useMobile'
 import playIcon from '@/assets/icons/videoSwitch.svg'
 import Empty from '../comm/Empty'
 import Icon from '../comm/Icon'
@@ -59,7 +57,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   isLoading,
   setIsLoading,
 }) => {
-  const { launchParams, getCurrentUid } = useTMAUtils()
+  const { launchParams } = useTMAUtils()
   const { copy } = useCopy()
 
   const { runAsync: getInlineMessageId, loading: getInlineMessageIdLoading } = useRequest(
@@ -81,14 +79,6 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       if (result.id) {
         if (window.Telegram?.WebApp) {
           const WebApp = window.Telegram?.WebApp
-          // WebAppShareMessageOpened
-          console.log(WebApp)
-
-          // postEvent('prepared_message_sent', {
-          //   type: 'impact',
-          //   impact_style: 'heavy',
-          // })
-          // onEvent('prepared_message_sent');
 
           setTimeout(() => {
             WebApp.shareMessage(result.id)
@@ -144,12 +134,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               loading={getInlineMessageIdLoading}
               icon={<Image src={TelegramIcon} />}
               handler={() => {
-                // shareLink(links.shareLink ?? '')
                 setTimeout(() => {
                   window.Telegram?.WebApp?.resetShareCallback()
                   handShareWithTelegram()
                 }, 0)
-                // off()
               }}
             />
           </div>
@@ -201,7 +189,6 @@ const ResourceList = ({
 }) => {
   const navigate = useNavigate()
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
-  const isMobile = useMobile()
   const [resources, setResources] = useState<FormatterListItem[]>([])
   const likes = useStore((state) => state.like)
   const setLikes = useStore((state) => state.setPatchLike)
@@ -220,16 +207,14 @@ const ResourceList = ({
   const setFollowResource = useStore((state) => state.setFollowResource)
   const followResource = useStore((state) => state.followResource)
 
-  const { launchParams, getCurrentUid } = useTMAUtils()
+  const { launchParams } = useTMAUtils()
   const [isBaseModalOpen, { toggle, off }] = useBoolean(false)
   const [links, setLinks] = useSetState<ShreLinkProps>({
     shareLink: '',
     copyLink: '',
   })
-  const [postId, setPostId] = useState<number | null>(null)
   const [currentShareData, setCurrentShareData] = useState<ShareDataProps | null>(null)
 
-  const currentUid = getCurrentUid()
   const jumpToProfilePage = useProfileNavigation()
   const { runDailyWatch } = useDailyTaskActions()
 
@@ -302,7 +287,6 @@ const ResourceList = ({
           itemA.is_collected = savedMatch.saveds
         }
       })
-
 
       initPatchLikes([...resources, ...sharedPostList])
       initPatchSaves([...resources, ...sharedPostList])
@@ -381,7 +365,6 @@ const ResourceList = ({
   })
 
   const resourcesEve = (post_id: number, url: string, is_pay?: boolean) => {
-    setPostId(post_id)
     const updatedUsers = resources.map((item) => {
       if (item.id === post_id) {
         const options = is_pay ? { is_pay } : {}
@@ -606,7 +589,9 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
             ) : (
               <i className="iconfont icon-like text-[#0D0D0D]" style={{ fontSize: '22px' }}></i>
             )}
-            <span className="pl-1 text-sm font-medium text-[##0D0D0D] mb-[1px]">{formatNumber(likeNum)}</span>
+            <span className="pl-1 text-sm font-medium text-[##0D0D0D] mb-[1px]">
+              {formatNumber(likeNum)}
+            </span>
           </div>
           <div
             className="flex items-center justify-center"

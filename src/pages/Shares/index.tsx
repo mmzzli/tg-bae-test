@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useRef } from 'react'
 import ResourceList from '@/components/ResourceList/ResourceList'
 import RecommendList from '@/components/RecommendList/RecommendList'
 import { useSharedList } from '@/store/hook/useResourceList'
@@ -7,10 +7,12 @@ import { useNavigate } from 'react-router-dom'
 const Shares: FC = () => {
   const { sharedPostList } = useSharedList()
   const navigate = useNavigate()
+  const containerRef = useRef<HTMLDivElement>(null)
   return (
     <div
       id="recommendScrollableDiv"
       className="relative w-full h-full overflow-auto scrollbar-hide"
+      ref={containerRef}
     >
       <div
         className="flex items-center justify-between mx-4"
@@ -49,7 +51,7 @@ const Shares: FC = () => {
       <div className="font-bold text-xl dark:text-[#E0E2F6] text-black mt-4 mx-4">
         Selected Posts
       </div>
-      <RecommendList className="mb-12" />
+      <RecommendList className="mb-12" containerRef={containerRef} />
     </div>
   )
 }

@@ -188,42 +188,41 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
   like: [],
   initPatchLike: (list: FormatterListItem[]) => {
     set(({ like }) => {
-      console.log(list,'jacob=====list');
-      const existingIds = new Set(like.map(item => item.id));
-      const newItems = list.filter(item => !existingIds.has(item.id));
-      console.log(newItems);
+      const existingIds = new Set(like.map((item) => item.id))
+      const newItems = list.filter((item) => !existingIds.has(item.id))
+      console.log(newItems)
 
       const updatedLike = [
         ...like,
-        ...newItems.map(item => ({
+        ...newItems.map((item) => ({
           id: item.id,
           liked: item.is_liked,
           like: item.like,
         })),
-      ];
+      ]
 
       return {
         like: updatedLike,
-      };
+      }
     })
   },
   setPatchLike: (data: FormatterListItem) => {
     set(({ like }) => {
-        const updatedLike = like.map((likeItem) =>
-          likeItem.id === data.id
-            ? {
+      const updatedLike = like.map((likeItem) =>
+        likeItem.id === data.id
+          ? {
               ...likeItem, // 创建一个新对象
               liked: !likeItem.liked, // 切换 liked 状态
               like: !likeItem.liked
                 ? likeItem.like + 1 // 切换为 true，like +1
                 : Math.max(likeItem.like - 1, 0), // 切换为 false，like -1，确保最小值为 0
             }
-            : likeItem
-        )
+          : likeItem
+      )
 
-        return {
-          like: updatedLike,
-        }
+      return {
+        like: updatedLike,
+      }
     })
   },
   // save
@@ -251,7 +250,6 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       return {
         save: Array.from(newSaveMap.values()),
       }
-
     })
   },
   setPatchSave: (data) => {
@@ -279,7 +277,11 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     })),
   setRecommendList: (newList, merge = false) => {
     const list = merge ? [...get().recommendList.list, ...newList] : newList
-    window.m3u8Worker.postMessage({ tasks: list })
+    try {
+      window.m3u8Worker.postMessage({ tasks: list })
+    } catch (error) {
+      console.error('m3u8Worker', error)
+    }
     set((state) => ({
       recommendList: {
         ...state.recommendList,
@@ -317,16 +319,13 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       get().setRecommendLoading(true)
       get().setRecommendError(null)
 
-      const { featured = [] } = page === 1 ? await recommendFeatured(1) : {};
+      const { featured = [] } = page === 1 ? await recommendFeatured(1) : {}
       // const {featured} = await recommendFeatured(1)
       const { posts: postsRes } = await getRecommendMedia({
         page_num: page,
         records: recordsNum,
       })
-      const posts = [
-        ...featured,
-        ...postsRes,
-      ]
+      const posts = [...featured, ...postsRes]
 
       const hasMore = posts.length >= recordsNum
       const updatedPosts = posts.map(({ post, user }: ListItem) => ({
@@ -446,7 +445,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
 
     newCache
       .map((video, index) => {
-        if (cacheVideoIndex <= 0) {
+        if (Number(cacheVideoIndex) <= 0) {
           return {
             video,
             priority: index,

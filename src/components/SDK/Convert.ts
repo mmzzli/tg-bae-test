@@ -50,7 +50,7 @@ export class Convert {
       }
       message.content = messageContent
     } catch (error) {
-      console.log(error)
+      // console.log(error)
       // if error, set to unknown
       const messageContent = WKSDK.shared().getMessageContent(MessageContentType.unknown)
       message.content = messageContent
@@ -60,7 +60,7 @@ export class Convert {
       try {
         message.content.entity = JSON.parse(message.content.text)
       } catch (error) {
-        console.log('message content entity parse error', error)
+        // console.log('message content entity parse error', error)
       }
     }
 

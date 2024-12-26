@@ -136,7 +136,10 @@ const NotificationItem: FC<{
                 </span>
               </div>
               <span className="text-[#999] text-[12px] ml-[10px]">
-                {getTimeStringAutoShort(new Date(notification.time).getTime(), true)}
+                {getTimeStringAutoShort(
+                  new Date(notification.time).getTime() - new Date().getTimezoneOffset() * 60000,
+                  true
+                )}
               </span>
             </div>
 

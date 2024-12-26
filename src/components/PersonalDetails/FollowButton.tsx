@@ -4,7 +4,6 @@ import { follow, getSomeoneProfile } from '@/api'
 import { useRequest } from 'ahooks'
 import { useStore } from '@/store'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
-import { useRecommendList } from '@/store/hook/useResourceList'
 const FollowButton: FC<{
   // tg_id username avatar is others user info
   tgid: number
@@ -17,17 +16,25 @@ const FollowButton: FC<{
   const { getCurrentUid } = useTMAUtils()
   const currentUid = getCurrentUid()
 
-  const { userInfo, myFollow, setMyFollow, setUserInfo, othersUserInfo, setOthersUserInfo } =
-    useStore((state) => ({
-      userInfo: state.userInfo,
-      myFollow: state.myFollow,
-      setMyFollow: state.setMyFollow,
-      setUserInfo: state.setUserInfo,
-      othersUserInfo: state.othersUserInfo,
-      setOthersUserInfo: state.setOthersUserInfo,
-    }))
-
-  const { refresh } = useRecommendList()
+  const {
+    userInfo,
+    myFollow,
+    setMyFollow,
+    setUserInfo,
+    othersUserInfo,
+    setOthersUserInfo,
+    loadRecommendList,
+    resetRecommendList,
+  } = useStore((state) => ({
+    userInfo: state.userInfo,
+    myFollow: state.myFollow,
+    setMyFollow: state.setMyFollow,
+    setUserInfo: state.setUserInfo,
+    othersUserInfo: state.othersUserInfo,
+    setOthersUserInfo: state.setOthersUserInfo,
+    loadRecommendList: state.loadRecommendList,
+    resetRecommendList: state.resetRecommendList,
+  }))
 
   const isFollowing = useMemo(() => {
     return myFollow.some((item) => item.tg_id === tgid)
@@ -43,7 +50,8 @@ const FollowButton: FC<{
       }
       setTimeout(() => {
         updateUserFollowInfo()
-        refresh()
+        resetRecommendList()
+        loadRecommendList(1)
       }, 500)
     },
   })

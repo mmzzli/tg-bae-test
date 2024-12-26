@@ -317,6 +317,85 @@ const useCacheVideo = (
   const observerRef = useRef<IntersectionObserver | null>(null)
   const videos = list.filter((item) => item.type === 0)
   let mostVisibleElement: HTMLElement | null = null
+
+  const getVisibleElements = () => {
+    const container = document.getElementById(domId)
+    const elements = container?.querySelectorAll(`.${cardClass}`)
+    if (!elements) return []
+
+    const visibleElements: HTMLElement[] = []
+
+    elements.forEach((element) => {
+      const rect = element.getBoundingClientRect()
+      const containerRect = container?.getBoundingClientRect()
+
+      if (!containerRect) return
+
+      // 计算元素在视口中的可见比例
+      const visibleHeight =
+        Math.min(rect.bottom, containerRect.bottom) - Math.max(rect.top, containerRect.top)
+      const visibleRatio = visibleHeight / rect.height
+
+      // 如果元素可见比例大于50%,认为它在视口中
+      if (visibleRatio > 0.5) {
+        visibleElements.push(element as HTMLElement)
+      }
+    })
+
+    return visibleElements
+  }
+
+  const handleScroll = throttle(() => {
+    const visibleElements: HTMLElement[] = getVisibleElements()
+    console.log('当前可见元素:', visibleElements)
+    // 如果没有完全可见的元素,再检查部分可见的元素
+    // if (!visibleElements) {
+    //   entries.forEach((entry) => {
+    //     const rect = entry.boundingClientRect
+    //     const containerRect = entry.rootBounds
+
+    //     if (!containerRect) return
+
+    //     // 检查元素顶部是否过了容器中点
+    //     const isPastMidpoint = rect.top < containerRect.top + containerRect.height / 2
+
+    //     // 计算元素在容器内的可见面积比例
+    //     const visibleHeight =
+    //       Math.min(rect.bottom, containerRect.bottom) - Math.max(rect.top, containerRect.top)
+    //     const visibleRatio = visibleHeight / rect.height
+
+    //     // 只有当元素顶部过了容器中点,且可见比例大于当前最大可见比例时才更新
+    //     if (isPastMidpoint && visibleRatio > maxVisibility) {
+    //       maxVisibility = visibleRatio
+    //       mostVisibleElement = entry.target as HTMLElement
+    //     }
+    //   })
+    // }
+
+    // 如果找到了需要播放的元素
+    if (visibleElements.length) {
+      const videoIdStr = visibleElements[0].getAttribute('data-id')
+      if (videoIdStr) {
+        const currentId = parseInt(videoIdStr, 10)
+
+        // 更新状态
+        setCacheVideoIndex(currentId)
+        updateCache(videos)
+
+        // 找到对应的视频数据并播放
+        const videoCard = videos.find((item) => item.id === currentId)
+        if (videoCard) {
+          videoHls(videoCard, visibleElements[0])
+        }
+      }
+    } else {
+      const defaultVideo = document.getElementById('default-video-player')
+      if (defaultVideo) {
+        defaultVideo.parentNode?.removeChild(defaultVideo)
+      }
+    }
+  }, 100)
+
   const handleIntersection = (entries: IntersectionObserverEntry[]) => {
     let maxVisibility = 0
 
@@ -327,6 +406,8 @@ const useCacheVideo = (
         break // 找到完全可见的就直接跳出循环
       }
     }
+
+    console.warn('handleIntersection mostVisibleElement', mostVisibleElement)
 
     // 如果没有完全可见的元素,再检查部分可见的元素
     if (!mostVisibleElement) {
@@ -427,16 +508,19 @@ const useCacheVideo = (
     if (!list.length) return
     console.log(333333, '========jacob')
     // 初始化 Intersection Observer
-    observerRef.current = new IntersectionObserver(handleIntersection, {
-      root: document.getElementById(domId),
-      threshold: [0.5, 0.75, 1.0],
-      rootMargin: '0px',
-    })
+    // observerRef.current = new IntersectionObserver(handleIntersection, {
+    //   root: document.getElementById(domId),
+    //   threshold: [0.5, 0.75, 1.0],
+    //   rootMargin: '0px',
+    // })
+    let container = document.getElementById(domId)
 
     // 使用定时器等待元素渲染
     const checkElements = () => {
-      const container = document.getElementById(domId)
+      container = document.getElementById(domId)
       const elements = container?.querySelectorAll(`.${cardClass}`)
+
+      container?.addEventListener('scroll', handleScroll)
 
       if (container && elements && elements.length > 0 && videos.length === elements.length) {
         elements.forEach((element) => {
@@ -452,6 +536,7 @@ const useCacheVideo = (
 
     return () => {
       observerRef.current?.disconnect()
+      container?.removeEventListener('scroll', handleScroll)
     }
   }, [domId, cardClass, list, random])
 

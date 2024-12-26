@@ -3,13 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import RecommendList from '@/components/RecommendList/RecommendList'
 import FollowingList from '@/components/RecommendList/FollowingList'
 
-import PostSkeleton from '@/components/Skeketon/PostSkeleton'
-
 import { useStore } from '@/store'
 import { CardRecommendProvider } from '@/utils/constants'
 import { throttle } from '@/utils/chat/schedulers'
 import { PullToRefresh } from 'antd-mobile'
-import { useRecommendList } from '@/store/hook/useResourceList'
 interface ChildRef {
   refresh: () => void
 }
@@ -20,7 +17,6 @@ const HomePage: FC = () => {
   const navigate = useNavigate()
   const [title, setTitle] = useState('Following') // Following
   const userInfo = useStore((state) => state.userInfo)
-  // const { hasMore } = useRecommendList()
 
   const [videoOpen, setVideoOpen] = useState(false)
   const [showTopTitle, setShowTopTitle] = useState(false)
@@ -47,7 +43,7 @@ const HomePage: FC = () => {
       if (!scrollDiv) return
       const shouldShowTitle = scrollDiv.scrollTop >= SCROLL_THRESHOLD
       setShowTopTitle(shouldShowTitle)
-      console.log('Title visibility updated to:', shouldShowTitle)
+      // console.log('Title visibility updated to:', shouldShowTitle)
       // if (shouldShowTitle !== showTopTitle) {
       //   setShowTopTitle(shouldShowTitle)
       //   console.log('Title visibility updated to:', shouldShowTitle) // 更新日志输出
@@ -86,28 +82,6 @@ const HomePage: FC = () => {
   const handleRefresh = async () => {
     childRef.current?.refresh()
   }
-
-  // useEffect(() => {
-  //   const handleTouchStart = (event: TouchEvent) => {
-  //     const touchY = event.touches[0].clientY; // 获取触摸点的垂直坐标
-  //     console.log('touchstart - 距离顶部的距离:', touchY, 'px');
-  //   };
-
-  //   const handleTouchEnd = (event: TouchEvent) => {
-  //     const touchY = event.changedTouches[0].clientY; // 获取触摸结束点的垂直坐标
-  //     console.log('touchend - 距离顶部的距离:', touchY, 'px');
-  //   };
-
-  //   // 添加 touchstart 和 touchend 事件监听
-  //   document.addEventListener('touchstart', handleTouchStart, { passive: true });
-  //   document.addEventListener('touchend', handleTouchEnd, { passive: true });
-
-  //   // 清理事件监听器
-  //   return () => {
-  //     document.removeEventListener('touchstart', handleTouchStart);
-  //     document.removeEventListener('touchend', handleTouchEnd);
-  //   };
-  // }, []);
 
   return (
     <div
@@ -181,11 +155,13 @@ const HomePage: FC = () => {
             </h3>
           </div>
         </div>
-        <div className='h-[48px] relative'>
-          <div className={`ml-auto flex gap-[13px] z-[111] ${showTopTitle?'absolute right-[16px]':'fixed right-[16px]'}`}>
+        <div className="h-[48px] relative">
+          <div
+            className={`ml-auto flex gap-[13px] z-[111] ${showTopTitle ? 'absolute right-[16px]' : 'fixed right-[16px]'}`}
+          >
             <div
               className="w-[48px] h-[48px] p-[12px] bg-[#F5F3F3] rounded-[50px] flex items-center justify-center cursor-pointer"
-              onClick={() => navigate('/home/searching')}
+              onClick={() => navigate('/searching')}
             >
               <i className="iconfont icon-search-line text-[#333333] text-[24px]"></i>
             </div>
@@ -239,13 +215,8 @@ const HomePage: FC = () => {
           <div
             className={`${userInfo.user_id !== -1 && userInfo.fans === 0 ? '' : ''}  relative ${videoOpen ? 'z-[112]' : ''}`}
           >
-            <RecommendList ref={childRef} />
+            <RecommendList ref={childRef} containerRef={containerRef} />
           </div>
-          {/* {hasMore && (
-            <div className="mt-12">
-              <PostSkeleton />
-            </div>
-          )} */}
         </CardRecommendProvider.Provider>
       </PullToRefresh>
     </div>

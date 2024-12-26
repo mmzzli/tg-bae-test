@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { shallow } from 'zustand/shallow'
 import { useStore } from '../store'
-import { debounce, throttle } from '@/utils/utils'
+import { throttle } from '@/utils/utils'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import { videoHls } from '@/utils/video/videoHls'
-import video from '@/assets/video/a.mp4'
 import { useActivate, useUnactivate } from 'react-activation'
 
 export const useRecommendList = () => {
@@ -28,6 +27,7 @@ export const useRecommendList = () => {
     if (isInitialRender === page) return
     loadRecommendList(page)
     setIsInitialRender(page)
+    console.log('fetchMoreData', page)
   }, [page, token])
 
   const fetchMoreData = () => {
@@ -347,7 +347,7 @@ const useCacheVideo = (
 
   const handleScroll = throttle(() => {
     const visibleElements: HTMLElement[] = getVisibleElements()
-    console.log('当前可见元素:', visibleElements)
+    // console.log('当前可见元素:', visibleElements)
     // 如果没有完全可见的元素,再检查部分可见的元素
     // if (!visibleElements) {
     //   entries.forEach((entry) => {

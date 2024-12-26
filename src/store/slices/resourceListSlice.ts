@@ -268,13 +268,15 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
   },
 
   recommendList: { ...initialListState },
-  setRecommendPage: (page) =>
-    set((state) => ({
+  setRecommendPage: (page) => {
+    console.log('setRecommendPage', page)
+    return set((state) => ({
       recommendList: {
         ...state.recommendList,
         page,
       },
-    })),
+    }))
+  },
   setRecommendList: (newList, merge = false) => {
     const list = merge ? [...get().recommendList.list, ...newList] : newList
     try {

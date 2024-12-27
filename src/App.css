@@ -118,6 +118,7 @@ video {
   border-radius: 100px;
   transform:  scale(0.5); /* 伪元素的大小是容器的两倍 */
   transform-origin: center; /* 缩放的原点设置为元素中心 */
+  box-sizing: border-box; /* 确保伪元素的尺寸包括边框 */
 }
 
 .border-1:hover::after {

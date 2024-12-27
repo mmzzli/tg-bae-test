@@ -37,14 +37,23 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
         post_id: String(post_id),
         user_id: String(initData?.user?.id),
       })
+
+      let retryCount = 0;
+      const MAX_RETRIES = 10;
+
       const items = setInterval(async () => {
         try {
+          retryCount++;
           const viewUrl = await viewPid(post_id)
           resourcesEve(post_id, viewUrl, true)
           clearInterval(items)
           setIsPay(false)
         } catch (error) {
           console.log(error, 'payment')
+          if (retryCount >= MAX_RETRIES) {
+            clearInterval(items)
+            setLoading(false)
+          }
         }
       }, 3000)
       if (window.Telegram?.WebApp) {

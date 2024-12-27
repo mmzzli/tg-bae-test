@@ -10,7 +10,7 @@ import BaeimSDK, {
   Channel,
   FormattedMessage,
 } from '@/components/SDK/BaeimSDK'
-import { deleteChannel, getConversationSync, getMessagesSync } from '@/api'
+import { getConversationSync, getMessagesSync } from '@/api'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { log, error as logError } from 'console'
 import ChatSkeleton from '@/components/Skeketon/ChatSkeleton'

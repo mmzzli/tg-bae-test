@@ -98,9 +98,13 @@ export const deleteConversation = (params: {
   channel_id: string
   channel_type: number
 }) => {
-  return post<Message[]>(`${import.meta.env.VITE_APP_IM_URL}conversations/delete`, params, {
-    headers: { token: import.meta.env.VITE_APP_IM_TOKEN },
-  })
+  return post<{ status: number }>(
+    `${import.meta.env.VITE_APP_IM_URL}conversations/delete`,
+    params,
+    {
+      headers: { token: import.meta.env.VITE_APP_IM_TOKEN },
+    }
+  )
 }
 
 export const totalAvailableInvoice = () => {

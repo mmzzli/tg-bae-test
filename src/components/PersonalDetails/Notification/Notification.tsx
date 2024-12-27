@@ -99,7 +99,7 @@ const Notification = () => {
 
   return (
     <>
-      <div onClick={() => setVirtualRoutePage({ name: 'Notification' })}>
+      <div onClick={() => setVirtualRoutePage({ name: 'Notification', enterFrom: '/profile' })}>
         <NotificationIcon unreadCount={unreadNotificationCount} />
       </div>
       {virtualRoutePage?.name === 'Notification' && (

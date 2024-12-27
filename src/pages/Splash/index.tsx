@@ -36,6 +36,15 @@ const Splash: FC = () => {
   const { startParam } = retrieveLaunchParams()
 
   useEffect(() => {
+    const timeoutTimer = setTimeout(() => {
+      const ageGateBoll = localStorage.getItem('ageGate')
+      if (ageGateBoll) {
+        navigate('/home')
+      } else {
+        navigate('/ageGate')
+      }
+    }, 10000)
+
     if (list && list.length > 0) {
       const resources = list.filter((item) => item.type === 0)
 
@@ -43,12 +52,15 @@ const Splash: FC = () => {
         setCacheVideoIndex(resources[0].id)
         updateCacheVideo(resources, true)
       }
-      // setCacheVideo()
     }
-    const timer = setTimeout(() => {
+    const cacheTimer = setTimeout(() => {
       setIsCached(true)
     }, 2000)
-    return () => clearTimeout(timer)
+
+    return () => {
+      clearTimeout(timeoutTimer)
+      clearTimeout(cacheTimer)
+    }
   }, [list])
 
   useEffect(() => {

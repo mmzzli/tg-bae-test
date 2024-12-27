@@ -3,6 +3,7 @@ import { Notification } from '@/types'
 export type RoutePage = {
   name: string
   params?: Record<string, string>
+  enterFrom?: string
 }
 
 export interface DailyTask {

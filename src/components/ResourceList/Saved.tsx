@@ -14,7 +14,7 @@ import { genShareLinkFn, getTimeStringAutoShort, formatNumber } from '@/utils/ut
 
 interface ResourceFooterProps {
   data: FormatterListItem
-  setResources?: React.Dispatch<React.SetStateAction<FormatterListItem[]>>
+  setResources?: (data: FormatterListItem) => void
   type?: string
   iconClassName?: string
 }
@@ -61,7 +61,7 @@ const Saved = memo<ResourceFooterProps>(({ data, setResources, type, iconClassNa
         await favDel(data.id)
       }
       if (type === 'fav' && setResources) {
-        setResources((favResources) => favResources.filter((item) => item.id !== data.id))
+        // setResources((favResources) => favResources.filter((item) => item.id !== data.id))
       }
     },
     { wait: 500 }

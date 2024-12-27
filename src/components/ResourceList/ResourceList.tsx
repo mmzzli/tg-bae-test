@@ -31,6 +31,8 @@ import MoreText from '@/components/More/MoreText'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { videoHls } from '@/utils/video/videoHls'
 
+import Links from '@/components/ResourceList/Links'
+
 interface ShareDataProps {
   pid: number
   uid: number
@@ -124,7 +126,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             Share from Bae
           </h3>
           <div className="text-[15px] dark:text-[#808080] text-[#999999]">
-            Earn $Bae every time you share from Bae
+            Earn Bae points when you share from Bae
           </div>
 
           <div className="mt-12 mb-[18px] mx-4">

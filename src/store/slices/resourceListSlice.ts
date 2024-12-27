@@ -125,8 +125,8 @@ export interface ResourceListSlice {
   setImageResourceIndex: (index: number) => void
 
   // Follow
-  followResource: followPreview[] | null
-  setFollowResource: (resource: followPreview[] | null) => void
+  followResource: followPreview[]
+  setFollowResource: (resource: followPreview[]) => void
 
   // view
   viewList: BaseListState
@@ -716,7 +716,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     set({ imageResource: resource })
   },
 
-  followResource: null,
+  followResource: [],
   setFollowResource: (resource) => {
     set({ followResource: resource })
   },

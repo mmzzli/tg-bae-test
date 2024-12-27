@@ -44,7 +44,7 @@ const ViewList = ({ className }: PostListProps) => {
         const property = window.getComputedStyle(document.documentElement).getPropertyValue('--tg-safe-area-inset-top')
         let number = Number(property.replace("px", ""))
         if(number){
-          number += 140
+          number += 40
         }
         console.log(number, '|', rect.top )
         if ((rect.top - 35 - number) >= 0) {

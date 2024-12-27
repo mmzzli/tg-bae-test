@@ -53,7 +53,7 @@ const RecommendList = ({ containerRef }: PostListProps) => {
     }
   }, [containerRef])
 
-  if (isLoading && list.length === 0) {
+  if (isLoading && list.length === 0 && !containerRef) {
     return (
       <div className="mt-12">
         <PostSkeleton />

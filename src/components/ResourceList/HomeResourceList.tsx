@@ -33,6 +33,8 @@ import MoreText from '@/components/More/MoreText'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { videoHls } from '@/utils/video/videoHls'
 import { VirtualItem, Virtualizer } from '@tanstack/react-virtual'
+import Links from '@/components/ResourceList/Links'
+import Saved from '@/components/ResourceList/Saved'
 
 interface ShareDataProps {
   pid: number
@@ -468,6 +470,7 @@ const ResourceList = ({
                   currentUid={launchParams.initData?.user?.id ?? 0}
                   onProfileClick={jumpToProfilePage}
                   type={type}
+                  setResources={setResources}
                 />
                 <Box position="relative">
                   {data.act_type === 1 && type === 'recommend' && (
@@ -543,9 +546,10 @@ interface ResourceFooterProps {
   savedEve: (data: FormatterListItem) => void
   onShare: () => void
   type?: string
+  setResources?: React.Dispatch<React.SetStateAction<FormatterListItem[]>>
 }
 
-const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileClick, type }) => {
+const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileClick, type, setResources }) => {
   const cardValue = useContext(CardRecommendProvider)
   return (
     <div className="pl-4 pr-4 pb-4 flex items-center">
@@ -593,7 +597,7 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
   )
 })
 
-const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, savedEve, type }) => {
+const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, savedEve, type, setResources }) => {
   const likes = useStore((state) => state.like)
   const saveds = useStore((state) => state.save)
 
@@ -612,7 +616,9 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
     <>
       <div className="px-4 flex items-center justify-between h-6 mt-3 box-content">
         <div className="flex items-center gap-4">
-          <div
+          <Links data={data}/>
+          <Saved data={data} setResources={setResources}/>
+          {/* <div
             className="flex h-6 items-center"
             onClick={() => {
               linkEve(data)
@@ -630,8 +636,8 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
               <i className="iconfont icon-like text-[#0D0D0D]" style={{ fontSize: '22px' }}></i>
             )}
             <span className="pl-1 text-sm font-medium text-[##0D0D0D] mb-[1px]">{likeNum}</span>
-          </div>
-          <div
+          </div> */}
+          {/* <div
             className="flex items-center justify-center"
             onClick={() => {
               savedEve(data)
@@ -645,7 +651,7 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
                 style={{ fontSize: '22px' }}
               ></i>
             )}
-          </div>
+          </div> */}
         </div>
 
         <IconButton

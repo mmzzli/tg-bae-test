@@ -16,9 +16,6 @@ const FollowButton: FC<{
   const { getCurrentUid } = useTMAUtils()
   const currentUid = getCurrentUid()
 
-  const followResource = useStore((state) => state.followResource)
-  const setFollowResource = useStore((state) => state.setFollowResource)
-
   const {
     userInfo,
     myFollow,
@@ -40,8 +37,8 @@ const FollowButton: FC<{
   }))
 
   const isFollowing = useMemo(() => {
-    return followResource?.some((user) => user.uid === tgid && user.boll)
-  }, [followResource, tgid])
+    return myFollow.some((item) => item.tg_id === tgid)
+  }, [myFollow, tgid])
 
   const { runAsync: followHandler, loading: followLoading } = useRequest(follow, {
     manual: true,
@@ -51,12 +48,10 @@ const FollowButton: FC<{
       } else {
         setMyFollow([...myFollow, { avatar, tg_id: tgid, tgname: username }])
       }
-      const res = followResource?.map((user) =>
-        user.uid === tgid ? { ...user, boll: !user.boll } : user
-      )
-      setFollowResource(res)
       setTimeout(() => {
         updateUserFollowInfo()
+        resetRecommendList()
+        loadRecommendList(1)
       }, 500)
     },
   })

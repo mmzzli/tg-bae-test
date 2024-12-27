@@ -168,7 +168,10 @@ export const MainLayout: React.FC = () => {
         }
 
         // low priority then media dialog
-        if (useStore.getState().virtualRoutePage) {
+        if (
+          useStore.getState().virtualRoutePage &&
+          useStore.getState().virtualRoutePage?.enterFrom === window.location.pathname
+        ) {
           useStore.getState().resetVirtualRoutePage()
           return
         }

@@ -76,7 +76,7 @@ const RecommendList = ({ containerRef }: PostListProps) => {
           virtualList={items}
           virtualizer={virtualizer}
           hasMore={hasMore}
-          type="recommend"
+          // type="recommend"
         />
       </div>
       {isLoading && hasMore && (

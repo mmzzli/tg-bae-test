@@ -42,7 +42,10 @@ const ViewList = ({ className }: PostListProps) => {
       if (element && target) {
         const rect = target.getBoundingClientRect();
         const property = window.getComputedStyle(document.documentElement).getPropertyValue('--tg-safe-area-inset-top')
-        const number = Number(property.replace("px", ""))
+        let number = Number(property.replace("px", ""))
+        if(number){
+          number += 140
+        }
         console.log(number, '|', rect.top )
         if ((rect.top - 35 - number) >= 0) {
           setTargetBoll(false)

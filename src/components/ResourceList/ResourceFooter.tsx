@@ -10,8 +10,8 @@ import { ShareModal } from '@/components/ResourceList/ResourceList'
 import { useStore } from '@/store'
 import { favDel, favPost, postLike } from '@/api'
 
-// import Links from '@/components/ResourceList/Links'
-// import Saved from '@/components/ResourceList/Saved'
+import Links from '@/components/ResourceList/Links'
+import Saved from '@/components/ResourceList/Saved'
 
 interface ResourceFooterProps {
   data: FormatterListItem
@@ -81,9 +81,9 @@ const ResourceFooter: React.FC<ResourceFooterProps> = ({ data }) => {
   return (
     <div className="px-4 flex items-center justify-between box-border h-10">
       <Flex gap="4" alignItems="center">
-        {/* <Links data={data} className={`text-[#fff]`} iconClassName={`text-[#fff]`}/>
-        <Saved data={data} iconClassName={`text-[#fff]`}/> */}
-        <Flex
+        <Links data={data} className={`text-[#fff]`} iconClassName={`text-[#fff]`}/>
+        <Saved data={data} iconClassName={`text-[#fff]`}/>
+        {/* <Flex
           as={'button'}
           alignItems={'center'}
           onClick={() => {
@@ -114,7 +114,7 @@ const ResourceFooter: React.FC<ResourceFooterProps> = ({ data }) => {
           ) : (
             <i className="iconfont icon-bookmark-line text-white" style={{ fontSize: '24px' }}></i>
           )}
-        </Box>
+        </Box> */}
       </Flex>
       <IconButton
         onClick={() => {

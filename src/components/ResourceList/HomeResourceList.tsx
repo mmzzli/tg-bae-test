@@ -33,8 +33,8 @@ import MoreText from '@/components/More/MoreText'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { videoHls } from '@/utils/video/videoHls'
 import { VirtualItem, Virtualizer } from '@tanstack/react-virtual'
-// import Links from '@/components/ResourceList/Links'
-// import Saved from '@/components/ResourceList/Saved'
+import Links from '@/components/ResourceList/Links'
+import Saved from '@/components/ResourceList/Saved'
 
 interface ShareDataProps {
   pid: number
@@ -506,6 +506,7 @@ const ResourceList = ({
                   linkEve={linkEve}
                   savedEve={savedEve}
                   type={type}
+                  setResources={setResources}
                   onShare={() => {
                     getShareLink(data.title, data.id, data.uid)
                     setCurrentShareData({
@@ -544,6 +545,7 @@ interface ResourceFooterProps {
   linkEve: (data: FormatterListItem) => void
   savedEve: (data: FormatterListItem) => void
   onShare: () => void
+  setResources: any
   type?: string
 }
 
@@ -595,7 +597,7 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
   )
 })
 
-const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, savedEve, type }) => {
+const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, savedEve, type, setResources }) => {
   const likes = useStore((state) => state.like)
   const saveds = useStore((state) => state.save)
 
@@ -614,9 +616,9 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
     <>
       <div className="px-4 flex items-center justify-between h-6 mt-3 box-content">
         <div className="flex items-center gap-4">
-          {/* <Links data={data}/>
-          <Saved data={data} /> */}
-          <div
+          <Links data={data}/>
+          <Saved data={data} setResources={setResources} />
+          {/* <div
             className="flex h-6 items-center"
             onClick={() => {
               linkEve(data)
@@ -649,7 +651,7 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
                 style={{ fontSize: '22px' }}
               ></i>
             )}
-          </div>
+          </div> */}
         </div>
 
         <IconButton

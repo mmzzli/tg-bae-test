@@ -31,7 +31,8 @@ export const useRecommendList = () => {
   }, [page, token])
 
   const fetchMoreData = () => {
-    if (!isLoading && hasMore) {
+    // 为什么这边拿不到最新的数据 是有闭包么？
+    if (!isLoading && useStore.getState().recommendList.hasMore) {
       setRecommendPage(useStore.getState().recommendList.page + 1)
     }
   }

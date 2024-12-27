@@ -92,7 +92,7 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
             ) : (
               <BaseButton
                 height="40px"
-                text={`Unlock Post for ${price}`}
+                text={`Unlock post for ${price}`}
                 icon={<i className="iconfont icon-lock text-white"></i>}
                 iconRight={<i className="iconfont icon-stars text-[#FFC700]"></i>}
                 handler={() => invoiceEve()}

@@ -509,11 +509,11 @@ const useCacheVideo = (
     if (!list.length) return
     console.log(333333, '========jacob')
     // 初始化 Intersection Observer
-    // observerRef.current = new IntersectionObserver(handleIntersection, {
-    //   root: document.getElementById(domId),
-    //   threshold: [0.5, 0.75, 1.0],
-    //   rootMargin: '0px',
-    // })
+    observerRef.current = new IntersectionObserver(handleIntersection, {
+      root: document.getElementById(domId),
+      threshold: [0.5, 0.75, 1.0],
+      rootMargin: '0px',
+    })
     let container = document.getElementById(domId)
 
     // 使用定时器等待元素渲染

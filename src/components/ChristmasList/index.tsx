@@ -38,6 +38,7 @@ const RecommendList = ({ containerRef }: PostListProps) => {
   useEffect(() => {
     const container = containerRef?.current
     if (!container) return
+    virtualizer.scrollToIndex(0)
 
     const handleContainerScroll = debounce((e: Event) => {
       const target = e.target as HTMLDivElement
@@ -53,7 +54,7 @@ const RecommendList = ({ containerRef }: PostListProps) => {
     }
   }, [containerRef])
 
-  if (isLoading && list.length === 0 && !containerRef) {
+  if (isLoading && list.length === 0 && !parentRef) {
     return (
       <div className="mt-12">
         <PostSkeleton />

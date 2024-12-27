@@ -31,6 +31,8 @@ import MoreText from '@/components/More/MoreText'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { videoHls } from '@/utils/video/videoHls'
 
+import Links from '@/components/ResourceList/Links'
+
 interface ShareDataProps {
   pid: number
   uid: number

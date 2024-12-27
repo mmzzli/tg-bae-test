@@ -33,6 +33,8 @@ import MoreText from '@/components/More/MoreText'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { videoHls } from '@/utils/video/videoHls'
 import { VirtualItem, Virtualizer } from '@tanstack/react-virtual'
+import Links from '@/components/ResourceList/Links'
+import Saved from '@/components/ResourceList/Saved'
 
 interface ShareDataProps {
   pid: number
@@ -208,7 +210,6 @@ const ResourceList = ({
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const [resources, setResources] = useState<FormatterListItem[]>([])
   const likes = useStore((state) => state.like)
-  const setLikes = useStore((state) => state.setPatchLike)
   const initPatchLikes = useStore((state) => state.initPatchLike)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const toast = useToast()
@@ -217,8 +218,6 @@ const ResourceList = ({
   const saveds = useStore((state) => state.save)
 
   const initPatchSaves = useStore((state) => state.initPatchSave)
-
-  const setSaveds = useStore((state) => state.setPatchSave)
 
   const setImageResource = useStore((state) => state.setImageResource)
   const setFollowResource = useStore((state) => state.setFollowResource)
@@ -311,69 +310,7 @@ const ResourceList = ({
     }
   }, [resources])
 
-  const { run: linkRun } = useDebounceFn(
-    async (data: FormatterListItem) => {
-      const curLiked = likes.find((item) => item.id === data.id)?.liked
-      const res = await postLike({
-        act_type: curLiked ? 1 : 2,
-        post_id: data.id,
-      })
-      if (!res?.post_id) {
-        toast({
-          render: () => {
-            return (
-              <CustomToast
-                title="This content has been deleted by the creator and cannot be accessed."
-                type={typeOptions.error}
-              />
-            )
-          },
-          position: 'bottom',
-        })
-        setLikes(data)
-      }
-    },
-    { wait: 500 }
-  )
 
-  const linkEve = async (data: FormatterListItem) => {
-    setLikes(data)
-    linkRun(data)
-  }
-  const { run: favRun } = useDebounceFn(
-    async (data: FormatterListItem) => {
-      const isSaved = saveds.find((item) => item.id === data.id)?.saveds
-      if (isSaved) {
-        const res = await favPost(data.id)
-        if (res !== 'OK') {
-          toast({
-            render: () => {
-              return (
-                <CustomToast
-                  title="This content has been deleted by the creator and cannot be accessed."
-                  type={typeOptions.error}
-                />
-              )
-            },
-            position: 'bottom',
-          })
-          setSaveds(data)
-        }
-      } else {
-        await favDel(data.id)
-      }
-
-      if (type === 'fav') {
-        setResources((favResources) => favResources.filter((item) => item.id !== data.id))
-      }
-    },
-    { wait: 500 }
-  )
-
-  const savedEve = async (data: FormatterListItem) => {
-    setSaveds(data)
-    favRun(data)
-  }
   const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
     toggle()
     setIsLoading(false)
@@ -501,9 +438,8 @@ const ResourceList = ({
                   data={data}
                   likes={likes}
                   saveds={saveds}
-                  linkEve={linkEve}
-                  savedEve={savedEve}
                   type={type}
+                  setResources={setResources}
                   onShare={() => {
                     getShareLink(data.title, data.id, data.uid)
                     setCurrentShareData({
@@ -539,9 +475,8 @@ interface ResourceFooterProps {
   data: FormatterListItem
   likes: Like[]
   saveds: Saveds[]
-  linkEve: (data: FormatterListItem) => void
-  savedEve: (data: FormatterListItem) => void
   onShare: () => void
+  setResources: any
   type?: string
 }
 
@@ -593,59 +528,13 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
   )
 })
 
-const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, savedEve, type }) => {
-  const likes = useStore((state) => state.like)
-  const saveds = useStore((state) => state.save)
-
-  const liked = useMemo(() => {
-    return likes.find((like) => like.id === data.id)?.liked || false
-  }, [likes])
-
-  const likeNum = useMemo(() => {
-    return likes.find((like) => like.id === data.id)?.like || 0
-  }, [likes])
-
-  const saved = useMemo(() => {
-    return saveds.find((saved) => saved.id === data.id)?.saveds
-  }, [saveds])
+const ResourceFooter = memo<ResourceFooterProps>(({ data, onShare, type, setResources }) => {
   return (
     <>
       <div className="px-4 flex items-center justify-between h-6 mt-3 box-content">
         <div className="flex items-center gap-4">
-          <div
-            className="flex h-6 items-center"
-            onClick={() => {
-              linkEve(data)
-            }}
-          >
-            {liked ? (
-              <Lottie
-                animationData={likeAnimationData}
-                loop={false}
-                style={{
-                  width: '22px',
-                }}
-              ></Lottie>
-            ) : (
-              <i className="iconfont icon-like text-[#0D0D0D]" style={{ fontSize: '22px' }}></i>
-            )}
-            <span className="pl-1 text-sm font-medium text-[##0D0D0D] mb-[1px]">{likeNum}</span>
-          </div>
-          <div
-            className="flex items-center justify-center"
-            onClick={() => {
-              savedEve(data)
-            }}
-          >
-            {saved ? (
-              <i className="iconfont icon-saved text-[#FFCC5D]" style={{ fontSize: '22px' }}></i>
-            ) : (
-              <i
-                className="iconfont icon-bookmark-line text-[#0D0D0D]"
-                style={{ fontSize: '22px' }}
-              ></i>
-            )}
-          </div>
+          <Links data={data}/>
+          <Saved data={data} setResources={setResources} />
         </div>
 
         <IconButton

@@ -168,7 +168,10 @@ export const MainLayout: React.FC = () => {
         }
 
         // low priority then media dialog
-        if (useStore.getState().virtualRoutePage) {
+        if (
+          useStore.getState().virtualRoutePage &&
+          useStore.getState().virtualRoutePage?.enterFrom === window.location.pathname
+        ) {
           useStore.getState().resetVirtualRoutePage()
           return
         }
@@ -218,7 +221,10 @@ export const MainLayout: React.FC = () => {
 
     if (window.Telegram?.WebApp) {
       const tgApp = window.Telegram.WebApp
-      if (HIDE_BACK_BUTTON_PATHS.includes(location.pathname)) {
+      if (
+        HIDE_BACK_BUTTON_PATHS.includes(location.pathname) &&
+        !(videoResource || imageResource || virtualRoutePage)
+      ) {
         tgApp.BackButton.hide()
       } else {
         tgApp.BackButton.show()

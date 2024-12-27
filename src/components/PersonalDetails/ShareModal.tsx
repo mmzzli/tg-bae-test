@@ -163,7 +163,7 @@ const ShareModal = forwardRef<ChildMethods>(({}, ref) => {
         {isLoading ? (
           <div className="mt-4 w-full">
             <h3 className="font-bold text-2xl mb-[10px] text-[24px] text-[#333]">Share from Bae</h3>
-            <div className="text-[15px] text-[#999]">Earn $Bae every time you share from Bae</div>
+            <div className="text-[15px] text-[#999]">Earn Bae points when you share from Bae</div>
             <div className="mt-12 mb-[18px] mx-4">
               <BaseButton
                 text="Share via Telegram"

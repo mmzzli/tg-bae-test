@@ -31,7 +31,8 @@ export const useRecommendList = () => {
   }, [page, token])
 
   const fetchMoreData = () => {
-    if (!isLoading && hasMore) {
+    // 为什么这边拿不到最新的数据 是有闭包么？
+    if (!isLoading && useStore.getState().recommendList.hasMore) {
       setRecommendPage(useStore.getState().recommendList.page + 1)
     }
   }
@@ -516,19 +517,21 @@ const useCacheVideo = (
     let container = document.getElementById(domId)
 
     // 使用定时器等待元素渲染
-    const checkElements = () => {
-      container = document.getElementById(domId)
+    const checkElements = (retryCount = 0) => {
+      if (retryCount >= 50) {
+        console.warn('检查元素超时，已停止重试')
+        return
+      }
+
+      const container = document.getElementById(domId)
       const elements = container?.querySelectorAll(`.${cardClass}`)
-
-      container?.addEventListener('scroll', handleScroll)
-
-      if (container && elements && elements.length > 0 && videos.length === elements.length) {
+      if (container && elements && elements.length > 0) {
+        console.log('elements.forEach..')
         elements.forEach((element) => {
           observerRef.current?.observe(element)
         })
       } else {
-        // 如果元素还没渲染完，100ms后重试
-        setTimeout(checkElements, 100)
+        setTimeout(() => checkElements(retryCount + 1), 200)
       }
     }
 

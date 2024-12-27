@@ -10,6 +10,8 @@ import { DeleteDialog } from './DeleteDialog'
 import { useStore } from '@/store'
 import { setUnread, deleteConversation } from '@/api'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
+import { useToast } from '@chakra-ui/react'
+import { CustomToast, typeOptions } from '../comm/Toast'
 
 const ChatAvatar: FC<{ user: OthersUserInfo | null }> = ({ user }) => (
   <div className="relative w-12 h-12 mr-4">
@@ -62,9 +64,10 @@ const ChatListItem: FC<{
   const [isDragging, setIsDragging] = useState(false)
   const navigate = useNavigate()
   const { getChatPeopleInfo, initChatPeopleInfo } = useIM()
-  const { connection } = useStore((state) => ({
+  const { connection, deleteConversationInStore } = useStore((state) => ({
     connection: state.connection,
     // updateChatListItem: state.updateChatListItem,
+    deleteConversationInStore: state.deleteConversation,
   }))
   const [chatPeople, setChatPeople] = useState<OthersUserInfo | null>(null)
 
@@ -73,6 +76,7 @@ const ChatListItem: FC<{
   })) as Conversation
   const { getCurrentUid } = useTMAUtils()
   const current_uid = getCurrentUid()
+  const toast = useToast()
 
   useEffect(() => {
     const loadChatPeople = () => {
@@ -162,12 +166,33 @@ const ChatListItem: FC<{
       </motion.div>
       <DeleteDialog
         onDelete={() => {
-          connection?.removeConversation(chat.channel.channelID)
           deleteConversation({
             uid: current_uid + '',
             channel_id: chat.channel.channelID,
             channel_type: chat.channel.channelType,
           })
+            .then((res) => {
+              if (res && res.status === 200) {
+                connection?.removeConversation(chat.channel.channelID)
+                deleteConversationInStore(chat.channel.channelID)
+              } else {
+                toast({
+                  render: () => {
+                    return <CustomToast title="Delete failed" type={typeOptions.error} />
+                  },
+                  position: 'bottom',
+                })
+              }
+            })
+            .catch(() => {
+              toast({
+                render: () => {
+                  return <CustomToast title="Delete failed" type={typeOptions.error} />
+                },
+                position: 'bottom',
+              })
+            })
+
           controls.start({ x: 0 })
         }}
         onCancel={() => {

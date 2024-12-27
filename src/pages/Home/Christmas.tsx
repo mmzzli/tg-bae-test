@@ -1,5 +1,4 @@
 import { type FC, useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import ChristmasList from '@/components/ChristmasList/index'
 
 import { useStore } from '@/store'
@@ -9,33 +8,13 @@ import { throttle } from '@/utils/chat/schedulers'
 const SCROLL_THRESHOLD = 35
 
 const Christmas: FC = () => {
-  const navigate = useNavigate()
-  const [title, setTitle] = useState('Christmas Collection')
   const userInfo = useStore((state) => state.userInfo)
 
   const [videoOpen, setVideoOpen] = useState(false)
   const [showTopTitle, setShowTopTitle] = useState(false)
   const titleRef = useRef<HTMLHeadingElement>(null)
-
-  const styles = {
-    fadeIn: {
-      opacity: 1,
-      transition: 'opacity 0.3s ease-in',
-    },
-    fadeOut: {
-      opacity: 0,
-      transition: 'opacity 0.3s ease-out',
-    },
-  }
-
-  const animation = useMemo(() => {
-    if (userInfo.user_id !== -1 && userInfo.fans === 0) {
-      return {
-        animation: `slide 600ms forwards 300ms`,
-      }
-    }
-    return {}
-  }, [userInfo.user_id, userInfo.fans])
+  const titleTextRef = useRef<string>('Christmas Collection')
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const scrollDiv = document.getElementById('featuredScrollableDiv')
@@ -46,7 +25,6 @@ const Christmas: FC = () => {
       const shouldShowTitle = scrollDiv.scrollTop >= SCROLL_THRESHOLD
       if (shouldShowTitle !== showTopTitle) {
         setShowTopTitle(shouldShowTitle)
-        console.log('Title visibility updated to:', shouldShowTitle) // 更新日志输出
       }
     }, 40)
 
@@ -84,7 +62,11 @@ const Christmas: FC = () => {
     <div
       className="relative w-full overflow-auto scrollbar-hide"
       id="featuredScrollableDiv"
-      style={{ height: 'calc(100vh - 84px)' }}
+      style={{
+        height:
+          'calc(100vh - 84px - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top))',
+      }}
+      ref={containerRef}
     >
       <div
         className="flex p-[10px_16px] w-full z-[111]"
@@ -129,7 +111,7 @@ const Christmas: FC = () => {
                 opacity: showTopTitle ? 0 : 1,
               }}
             >
-              {title}
+              {titleTextRef.current}
             </h3>
             <h3
               className="fixed text-black dark:text-[#E0E2F6] text-[20px] w-[100%] justify-center flex items-center duration-300 ease-out"
@@ -144,7 +126,7 @@ const Christmas: FC = () => {
                 }`,
               }}
             >
-              {title}
+              {titleTextRef.current}
             </h3>
           </div>
         </div>
@@ -162,7 +144,7 @@ const Christmas: FC = () => {
         <div
           className={`${userInfo.user_id !== -1 && userInfo.fans === 0 ? '' : ''}  relative ${videoOpen ? 'z-[112]' : ''}`}
         >
-          <ChristmasList />
+          <ChristmasList containerRef={containerRef} />
         </div>
       </CardRecommendProvider.Provider>
     </div>

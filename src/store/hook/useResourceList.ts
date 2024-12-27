@@ -75,8 +75,8 @@ export const useAllFeaturedList = () => {
   }, [page, token])
 
   const fetchMoreData = () => {
-    if (!isLoading && hasMore) {
-      setAllFeaturedPage(page + 1)
+    if (!isLoading && useStore.getState().allFeaturedList.hasMore) {
+      setAllFeaturedPage(useStore.getState().allFeaturedList.page + 1)
     }
   }
 

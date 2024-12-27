@@ -509,14 +509,14 @@ const useCacheVideo = (
     if (!list.length) return
     console.log(333333, '========jacob')
     // 初始化 Intersection Observer
-    observerRef.current = new IntersectionObserver(handleIntersection, {
-      root: document.getElementById(domId),
-      threshold: [0.5, 0.75, 1.0],
-      rootMargin: '0px',
-    })
+    // observerRef.current = new IntersectionObserver(handleIntersection, {
+    //   root: document.getElementById(domId),
+    //   threshold: [0.5, 0.75, 1.0],
+    //   rootMargin: '0px',
+    // })
     let container = document.getElementById(domId)
 
-    // 使用定时器等待元素渲染
+    // 使用定时器等待元素渲染1
     const checkElements = (retryCount = 0) => {
       if (retryCount >= 50) {
         console.warn('检查元素超时，已停止重试')
@@ -525,6 +525,9 @@ const useCacheVideo = (
 
       const container = document.getElementById(domId)
       const elements = container?.querySelectorAll(`.${cardClass}`)
+
+      container?.addEventListener('scroll', handleScroll)
+
       if (container && elements && elements.length > 0) {
         console.log('elements.forEach..')
         elements.forEach((element) => {

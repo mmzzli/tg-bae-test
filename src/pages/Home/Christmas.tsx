@@ -12,6 +12,7 @@ const Christmas: FC = () => {
 
   const [videoOpen, setVideoOpen] = useState(false)
   const [showTopTitle, setShowTopTitle] = useState(false)
+  const [showList, setShowList] = useState(false)
   const titleRef = useRef<HTMLHeadingElement>(null)
   const titleTextRef = useRef<string>('Christmas Collection')
   const containerRef = useRef<HTMLDivElement>(null)
@@ -57,6 +58,10 @@ const Christmas: FC = () => {
   const handleDoubleClick = (): void => {
     handleDoubleTap()
   }
+
+  useEffect(() => {
+    setShowList(true)
+  }, [containerRef])
 
   return (
     <div
@@ -144,7 +149,7 @@ const Christmas: FC = () => {
         <div
           className={`${userInfo.user_id !== -1 && userInfo.fans === 0 ? '' : ''}  relative ${videoOpen ? 'z-[112]' : ''}`}
         >
-          <ChristmasList containerRef={containerRef} />
+          {showList && <ChristmasList containerRef={containerRef} />}
         </div>
       </CardRecommendProvider.Provider>
     </div>

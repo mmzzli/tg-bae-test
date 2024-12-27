@@ -38,7 +38,6 @@ const RecommendList = ({ containerRef }: PostListProps) => {
   useEffect(() => {
     const container = containerRef?.current
     if (!container) return
-    virtualizer.scrollToIndex(0)
 
     const handleContainerScroll = debounce((e: Event) => {
       const target = e.target as HTMLDivElement

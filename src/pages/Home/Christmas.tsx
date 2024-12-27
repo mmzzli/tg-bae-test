@@ -62,7 +62,10 @@ const Christmas: FC = () => {
     <div
       className="relative w-full overflow-auto scrollbar-hide"
       id="featuredScrollableDiv"
-      style={{ height: 'calc(100vh - 84px)' }}
+      style={{
+        height:
+          'calc(100vh - 84px - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top))',
+      }}
       ref={containerRef}
     >
       <div

@@ -1,18 +1,17 @@
-import { Box } from '@chakra-ui/react'
-import InfiniteScroll from 'react-infinite-scroll-component'
-import ResourceList from '../ResourceList/ResourceList'
-import { cn } from '@/utils/utils'
-import useCacheVideo, { useRecommendList, useAllFeaturedList } from '@/store/hook/useResourceList'
+import HomeResourceList from '../ResourceList/HomeResourceList'
+import useCacheVideo, { useAllFeaturedList } from '@/store/hook/useResourceList'
 import PostSkeleton from '../Skeketon/PostSkeleton'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useStore } from '@/store'
+import { useVirtualizer } from '@tanstack/react-virtual'
+import { debounce } from '@/utils/chat/schedulers'
 
 interface PostListProps {
-  className?: string
+  containerRef: React.RefObject<HTMLDivElement>
 }
 
-const RecommendList = ({ className }: PostListProps) => {
-  const { list, hasMore, fetchMoreData, page } = useAllFeaturedList()
+const RecommendList = ({ containerRef }: PostListProps) => {
+  const { list, hasMore, fetchMoreData, page, isLoading } = useAllFeaturedList()
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
   const updateCacheVideo = useStore((state) => state.updateCacheVideo)
@@ -27,25 +26,64 @@ const RecommendList = ({ className }: PostListProps) => {
     'video-card'
   )
 
+  const parentRef = containerRef || useRef<HTMLDivElement>(null)
+  const virtualizer = useVirtualizer({
+    count: list.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 500,
+    overscan: 5,
+  })
+  let items = virtualizer.getVirtualItems()
+
+  useEffect(() => {
+    const container = containerRef?.current
+    if (!container) return
+
+    const handleContainerScroll = debounce((e: Event) => {
+      const target = e.target as HTMLDivElement
+      const { scrollTop, clientHeight, scrollHeight } = target
+      if (scrollHeight - scrollTop - clientHeight < 50) {
+        fetchMoreData()
+      }
+    }, 100)
+
+    container.addEventListener('scroll', handleContainerScroll)
+    return () => {
+      container.removeEventListener('scroll', handleContainerScroll)
+    }
+  }, [containerRef])
+
+  if (isLoading && list.length === 0) {
+    return (
+      <div className="mt-12">
+        <PostSkeleton />
+      </div>
+    )
+  }
   return (
-    <div className={cn(className, '')}>
-      <InfiniteScroll
-        dataLength={list.length}
-        next={fetchMoreData}
-        hasMore={hasMore}
-        loader={
-          <Box textAlign="center" m="20px 0" className="p-4">
-            <PostSkeleton />
-          </Box>
-        }
-        scrollableTarget="featuredScrollableDiv"
-        scrollThreshold={0.1}
-        style={{ overflow: 'visible' }}
+    <div>
+      <div
+        id="view-container"
+        style={{
+          height: virtualizer.getTotalSize(),
+          width: '100%',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
       >
-        <div id="view-container">
-          <ResourceList resources={list} />
+        <HomeResourceList
+          resources={list}
+          virtualList={items}
+          virtualizer={virtualizer}
+          hasMore={hasMore}
+          type="recommend"
+        />
+      </div>
+      {isLoading && hasMore && (
+        <div className="mt-12">
+          <PostSkeleton />
         </div>
-      </InfiniteScroll>
+      )}
     </div>
   )
 }

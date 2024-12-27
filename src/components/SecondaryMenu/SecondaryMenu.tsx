@@ -82,7 +82,7 @@ const SecondaryMenu = ({ mediaData, currentUid, className, type }: Props) => {
       tgid: mediaData.uid,
     })
     setIsFollowLoading(false)
-    const res: any = followResource?.map((user) =>
+    const res = followResource?.map((user) =>
       user.uid === mediaData.uid ? { ...user, boll: !user.boll } : user
     )
     setFollowResource(res)

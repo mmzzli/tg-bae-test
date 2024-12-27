@@ -137,7 +137,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             Share from Bae
           </h3>
           <div className="text-[15px] dark:text-[#808080] text-[#999999]">
-            Earn $Bae every time you share from Bae
+            Earn Bae points when you share from Bae
           </div>
 
           <div className="mt-12 mb-[18px] mx-4">
@@ -309,7 +309,6 @@ const ResourceList = ({
       initPatchSaves([...resources, ...sharedPostList])
     }
   }, [resources])
-
 
   const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
     toggle()
@@ -533,7 +532,7 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, onShare, type, setReso
     <>
       <div className="px-4 flex items-center justify-between h-6 mt-3 box-content">
         <div className="flex items-center gap-4">
-          <Links data={data}/>
+          <Links data={data} />
           <Saved data={data} setResources={setResources} />
         </div>
 

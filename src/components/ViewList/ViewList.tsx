@@ -41,7 +41,9 @@ const ViewList = ({ className }: PostListProps) => {
     const handleScroll = () => {
       if (element && target) {
         const rect = target.getBoundingClientRect();
-        if (rect.top - 35 >= 0) {
+        const property = window.getComputedStyle(document.documentElement).getPropertyValue('--tg-safe-area-inset-top')
+        console.log(property)
+        if ((rect.top - 35 + Number(property)) >= 0) {
           setTargetBoll(false)
         } else {
           setTargetBoll(true)

@@ -10,7 +10,7 @@ on:
     
 jobs:
   dev-build:
-    if: github.ref == 'refs/heads/' || contains(github.ref, 'feat')
+    if: github.ref == 'refs/heads/dev' || contains(github.ref, 'feat')
     runs-on: ubuntu-latest
     strategy:
       matrix:

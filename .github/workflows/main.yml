@@ -10,7 +10,7 @@ on:
     
 jobs:
   dev-build:
-    if: contains(github.ref, 'dev') || contains(github.ref, 'feat')
+    if: github.ref == 'refs/heads/' || contains(github.ref, 'feat')
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -45,7 +45,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.TOMO_AWS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.TOMO_AWS_SECRET_ACCESS_KEY }}    
   test-build:
-    if: 'contains( github.ref, ''test'')'
+    if: github.ref == 'refs/heads/test'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -79,7 +79,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.TOMO_AWS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.TOMO_AWS_SECRET_ACCESS_KEY }}   
   main-build:
-    if: 'contains( github.ref, ''main'')'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     strategy:
       matrix:

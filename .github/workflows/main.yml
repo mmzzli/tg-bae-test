@@ -12,7 +12,7 @@ on:
     
 jobs:
   dev-build:
-    if: github.ref == 'refs/heads/dev' || contains(github.ref, 'feat')
+    if: github.event.pull_request.base.ref == 'refs/heads/main' || contains(github.event.pull_request.head.ref, 'feat')
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -38,7 +38,7 @@ jobs:
           AWS_REGION: us-west-1
           SOURCE_DIR: ./dist
       - name: dev Invalidate CloudFront
-        if: github.ref == 'refs/heads/dev' || contains(github.ref, 'feat')
+        if: github.event.pull_request.base.ref == 'refs/heads/main' || contains(github.event.pull_request.head.ref, 'feat')
         uses: chetan/invalidate-cloudfront-action@v2
         env:
           DISTRIBUTION: E1881X4A3HPP9L

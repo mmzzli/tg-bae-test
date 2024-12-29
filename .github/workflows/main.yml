@@ -5,7 +5,7 @@ on:
       - main
       - test
   pull_request:
-    branches: [ "feat/**"]
+    branches: [ "dev"]
     types:
       - opened
       - reopened

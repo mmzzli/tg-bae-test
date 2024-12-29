@@ -3,10 +3,12 @@ on:
   push:
     branches:
       - main
-      - 'feat/**'
       - test
   pull_request:
-    branches: [ "main","dev","test", "feat/**"]
+    branches: [ "feat/**"]
+    types:
+      - opened
+      - reopened
     
 jobs:
   dev-build:
@@ -36,7 +38,7 @@ jobs:
           AWS_REGION: us-west-1
           SOURCE_DIR: ./dist
       - name: dev Invalidate CloudFront
-        if: github.ref == 'refs/heads/dev'
+        if: github.ref == 'refs/heads/dev' || contains(github.ref, 'feat')
         uses: chetan/invalidate-cloudfront-action@v2
         env:
           DISTRIBUTION: E1881X4A3HPP9L

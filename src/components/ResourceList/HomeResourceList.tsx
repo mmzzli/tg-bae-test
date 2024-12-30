@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { DrawSkeletonItem } from '@/components/Skeketon/ChatSkeleton'
 import PostSkeleton from '../Skeketon/PostSkeleton'
 import { useSharedList } from '@/store/hook/useResourceList'
+import Report from '@/components/SecondaryMenu/Report'
 
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { BaseModal } from '../Modal/BaseModal'
@@ -367,8 +368,10 @@ const ResourceList = ({
       ></Empty>
     )
   }
+  const [reportVisible, setReportVisible] = useState(false)
   return (
     <>
+      {reportVisible && <Report isOpen={reportVisible} onClose={setReportVisible} />}
       <div
         style={{
           position: 'absolute',
@@ -399,6 +402,7 @@ const ResourceList = ({
                   currentUid={launchParams.initData?.user?.id ?? 0}
                   onProfileClick={jumpToProfilePage}
                   type={type}
+                  setReportVisible={setReportVisible}
                 />
                 <Box position="relative">
                   {data.act_type === 1 && type === 'recommend' && (
@@ -462,6 +466,7 @@ interface ResourceHeaderProps {
   data: FormatterListItem
   currentUid: number
   onProfileClick: (data: FormatterListItem) => void
+  setReportVisible:(boll:boolean)=>void
   type?: string
 }
 
@@ -474,7 +479,7 @@ interface ResourceFooterProps {
   type?: string
 }
 
-const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileClick, type }) => {
+const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileClick, type, setReportVisible }) => {
   const cardValue = useContext(CardRecommendProvider)
   return (
     <div className="pl-4 pr-4 pb-4 flex items-center">
@@ -517,6 +522,7 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
         mediaData={data}
         currentUid={currentUid}
         type={type}
+        setReportVisible={setReportVisible}
       />
     </div>
   )

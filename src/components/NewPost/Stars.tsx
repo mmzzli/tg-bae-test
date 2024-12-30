@@ -169,7 +169,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
               <Image src={StarsIcon} alt="Stars Icon" />
             </HStack>
 
-            <Box p="0px 18px" h={`${isFocused ? "300px" : ""}`}>
+            <Box p="0px 18px" h={`${isFocused ? "400px" : ""}`}>
               {boll && <Button
                 size="xl"
                 fontSize="14px"

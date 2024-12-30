@@ -14,15 +14,16 @@ import { useStore } from '@/store'
 type Props = {
   mediaData: FormatterListItem
   currentUid: number
+  setReportVisible:(boll:boolean)=>void
   className?: string
   type?: string
 }
 
-const SecondaryMenu = ({ mediaData, currentUid, className, type }: Props) => {
+const SecondaryMenu = ({ mediaData, currentUid, className, type, setReportVisible }: Props) => {
   const { uid, id } = mediaData
   const [visible, setVisible] = useSafeState(false)
   const menuRef = useRef<HTMLDivElement>(null)
-  const [reportVisible, setReportVisible] = useSafeState(false)
+  // const [reportVisible, setReportVisible] = useSafeState(false)
   const toast = useToast()
   const [isFollowLoading, setIsFollowLoading] = useState<boolean>(false)
   const followResource = useStore((state) => state.followResource)
@@ -148,7 +149,7 @@ const SecondaryMenu = ({ mediaData, currentUid, className, type }: Props) => {
           )}
         </div>
       )}
-      <Report isOpen={reportVisible} onClose={setReportVisible} />
+      {/* <Report isOpen={reportVisible} onClose={setReportVisible} /> */}
     </div>
   )
 }

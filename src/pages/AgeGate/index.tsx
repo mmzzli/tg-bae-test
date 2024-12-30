@@ -24,15 +24,16 @@ const AgeGate = () => {
     }
   }, [])
   return (
-    <div className="px-[20px] fixed w-screen h-screen bg-[#fff] z-10 overflow-auto scrollbar-hide">
+    <div
+      className="px-[20px] fixed w-screen bg-[#fff] z-10 overflow-auto scrollbar-hide"
+      style={{ minHeight: '100vh', height: '100dvh' }}
+    >
       <div className="mx-[auto] mt-[94px] mb-[50px] flex items-center justify-center">
         <Icon name={'icon-a-Frame2085661681'} style={{ width: '164px', height: '164px' }}></Icon>
       </div>
-
       <h3 className="text-[#333] text-[24px] text-center">Are you 18 years of age or older?</h3>
-
       <div className="text-[14px] mt-[10px] leading-[22px] text-center">
-        <p className="text-[#666] font-normal leading-[1.5]  text-[14px]">
+        <p className="text-[#666] font-normal leading-[1.5] text-[14px]">
           You must be 18 years or older and agree to our Terms of Service to access and use this
           app. By tapping the button below, you certify that you are 18 years or older and that you
           accept our.
@@ -41,7 +42,7 @@ const AgeGate = () => {
           <a className="text-[#6254FF] text-[14px] underline">Terms of Service</a>
         </p>
       </div>
-      <div className="mt-16 text-center">
+      <div className="mt-16 text-center pb-5">
         <div className="flex justify-center gap-[8px] flex-col items-center">
           <Checkbox
             type="checkbox"

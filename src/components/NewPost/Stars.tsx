@@ -46,7 +46,9 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
     }
   };
   const focusEve = (boll: boolean)=>{
-    isMobileDevice() && setIsFocused(boll)
+    setTimeout(()=>{
+      isMobileDevice() && setIsFocused(boll)
+    },10)
   }
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -62,17 +64,17 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
     }
   }, [isOpen])
 
-  useEffect(() => {
-    const handleKeyboardHide = () => {
-      setIsFocused(false)
-      window.scrollTo(0, 0);
-    };
-    window.addEventListener('focusout', handleKeyboardHide);
+  // useEffect(() => {
+  //   const handleKeyboardHide = () => {
+  //     setIsFocused(false)
+  //     window.scrollTo(0, 0);
+  //   };
+  //   window.addEventListener('focusout', handleKeyboardHide);
 
-    return () => {
-      window.removeEventListener('focusout', handleKeyboardHide);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener('focusout', handleKeyboardHide);
+  //   };
+  // }, []);
 
 
   return (
@@ -167,7 +169,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
               <Image src={StarsIcon} alt="Stars Icon" />
             </HStack>
 
-            <Box p="0px 18px" h={`${isFocused ? "400px" : ""}`}>
+            <Box p="0px 18px" h={`${isFocused ? "300px" : ""}`}>
               {boll && <Button
                 size="xl"
                 fontSize="14px"

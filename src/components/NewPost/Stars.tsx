@@ -46,7 +46,9 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
     }
   };
   const focusEve = (boll: boolean)=>{
-    isMobileDevice() && setIsFocused(boll)
+    setTimeout(()=>{
+      isMobileDevice() && setIsFocused(boll)
+    },10)
   }
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -64,6 +66,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
 
   useEffect(() => {
     const handleKeyboardHide = () => {
+      setIsFocused(false)
       window.scrollTo(0, 0);
     };
     window.addEventListener('focusout', handleKeyboardHide);

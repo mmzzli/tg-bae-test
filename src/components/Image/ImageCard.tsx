@@ -70,7 +70,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
                           objectFit: 'cover'
                         }
                       : {
-                          width: 'auto',
+                          width: '100%',
                           height: firImageHeight ? firImageHeight + 'px' : 'calc(1.5*100vw)',
                           objectFit: 'contain'
                         })

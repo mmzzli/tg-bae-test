@@ -14,7 +14,7 @@ import { useStore } from '@/store'
 type Props = {
   mediaData: FormatterListItem
   currentUid: number
-  setReportVisible:(boll:boolean)=>void
+  setReportVisible?:(boll:boolean)=>void
   className?: string
   type?: string
 }
@@ -63,7 +63,7 @@ const SecondaryMenu = ({ mediaData, currentUid, className, type, setReportVisibl
           //   status: 'success',
           //   position: 'top',
           // })
-          setReportVisible(true)
+          setReportVisible && setReportVisible(true)
           break
         default:
           break

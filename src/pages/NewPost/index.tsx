@@ -505,7 +505,7 @@ export const NewPost: FC = () => {
     >
       <Box p="0 16px">
         <Box>
-          <HStack justifyContent="space-between" position="fixed" w="100%" left="0px" p="0px 16px" pt="16px" bg="#fff">
+          <HStack justifyContent="space-between" position="fixed" w="100%" left="0px" p="12px 16px" bg="#fff" zIndex={11}>
             <Heading as="h3" fontSize="20px" color="#000">
               New Post
             </Heading>

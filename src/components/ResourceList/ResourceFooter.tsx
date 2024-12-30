@@ -3,7 +3,7 @@ import React, { useMemo, useState } from 'react'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import { useMemoizedFn, useRequest, useSetState } from 'ahooks'
 import { genShareLinkFn } from '@/utils/utils'
-import { getLink, getShareInlineMessageId } from '@/api/list'
+import { getLink } from '@/api/list'
 import { ShareModal } from '@/components/ResourceList/ResourceList'
 
 import Links from '@/components/ResourceList/Links'

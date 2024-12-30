@@ -85,6 +85,7 @@ const SecondaryMenu = ({ mediaData, currentUid, className, type }: Props) => {
     const res = followResource?.map((user) =>
       user.uid === mediaData.uid ? { ...user, boll: !user.boll } : user
     )
+    console.log(res)
     setFollowResource(res)
   }
 

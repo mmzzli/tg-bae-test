@@ -369,7 +369,7 @@ const ResourceList = ({
       ></Empty>
     )
   }
-  const [reportVisible, setReportVisible] = useState(true)
+  const [reportVisible, setReportVisible] = useState(false)
   return (
     <>
       {reportVisible && <Report isOpen={reportVisible} onClose={setReportVisible} />}

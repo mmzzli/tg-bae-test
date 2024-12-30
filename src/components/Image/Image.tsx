@@ -158,7 +158,7 @@ const Image = React.memo(
     return (
       <>
         <div
-          className={cn('relative flex overflow-hidden mx-auto', wrapperClassName)}
+          className={cn('relative flex overflow-hidden', wrapperClassName)}
           style={{ aspectRatio: rect ? 1 : '' }}
         >
           {rect ? (

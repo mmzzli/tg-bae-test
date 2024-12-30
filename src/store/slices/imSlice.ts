@@ -19,6 +19,8 @@ export interface IMSlice {
   addChatPeopleInfo: (info: OthersUserInfo) => void
 
   // USE NEW DATA STRUCTURE START
+  conversationUnreadCount: number
+  setConversationUnreadCount: (count: number) => void
   conversationIds: string[]
   conversationMap: Record<string, Conversation>
   setConversation: (conversation: Conversation[]) => void
@@ -55,6 +57,8 @@ export const createIMSlice: StateCreator<IMSlice> = (set) => ({
     set((state) => ({ chatPeopleInfoList: [...state.chatPeopleInfoList, info] })),
 
   // USE NEW DATA STRUCTURE START
+  conversationUnreadCount: 0,
+  setConversationUnreadCount: (count) => set({ conversationUnreadCount: count }),
   conversationIds: [],
   conversationMap: {},
   setConversationIds: (ids: string[]) => set({ conversationIds: [...ids] }),
@@ -65,18 +69,24 @@ export const createIMSlice: StateCreator<IMSlice> = (set) => ({
         (acc, item) => ({ ...acc, [item.channel.channelID]: item }),
         {}
       ),
+      conversationUnreadCount: conversation.reduce((sum, item) => sum + item.unread, 0),
     }),
   addConversation: (conversation) =>
     set((state) => {
       if (state.conversationMap[conversation.channel.channelID]) {
         return state
       }
+      const newConversationMap = {
+        ...state.conversationMap,
+        [conversation.channel.channelID]: { ...conversation } as Conversation,
+      }
       return {
         conversationIds: [conversation.channel.channelID, ...state.conversationIds],
-        conversationMap: {
-          ...state.conversationMap,
-          [conversation.channel.channelID]: { ...conversation } as Conversation,
-        },
+        conversationMap: newConversationMap,
+        conversationUnreadCount: Object.values(newConversationMap).reduce(
+          (sum, conversation) => sum + conversation.unread,
+          0
+        ),
       }
     }),
   updateConversation: (conversation) =>
@@ -93,6 +103,10 @@ export const createIMSlice: StateCreator<IMSlice> = (set) => ({
           (item) => item.channel.channelID
         ),
         conversationMap: newConversationMap,
+        conversationUnreadCount: Object.values(newConversationMap).reduce(
+          (sum, conversation) => sum + conversation.unread,
+          0
+        ),
       }
     }),
   deleteConversation: (conversationId) =>

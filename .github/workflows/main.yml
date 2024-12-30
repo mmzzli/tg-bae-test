@@ -3,14 +3,16 @@ on:
   push:
     branches:
       - main
-      - dev
       - test
   pull_request:
-    branches: [ "main","dev","test"]
+    branches: [ "dev"]
+    types:
+      - opened
+      - reopened
     
 jobs:
   dev-build:
-    if: 'contains( github.ref, ''dev'')'
+    if: github.event.pull_request.base.ref == 'refs/heads/main' || contains(github.event.pull_request.head.ref, 'feat')
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -22,6 +24,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '${{ matrix.node-version }}'
+        
       - run: 'npm install'
       - run: 'npm run build:dev'
       - name: Deploying application to Amazon S3
@@ -35,7 +38,7 @@ jobs:
           AWS_REGION: us-west-1
           SOURCE_DIR: ./dist
       - name: dev Invalidate CloudFront
-        if: github.ref == 'refs/heads/dev'
+        if: github.event.pull_request.base.ref == 'refs/heads/main' || contains(github.event.pull_request.head.ref, 'feat')
         uses: chetan/invalidate-cloudfront-action@v2
         env:
           DISTRIBUTION: E1881X4A3HPP9L
@@ -44,7 +47,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.TOMO_AWS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.TOMO_AWS_SECRET_ACCESS_KEY }}    
   test-build:
-    if: 'contains( github.ref, ''test'')'
+    if: github.ref == 'refs/heads/test'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -78,7 +81,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.TOMO_AWS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.TOMO_AWS_SECRET_ACCESS_KEY }}   
   main-build:
-    if: 'contains( github.ref, ''main'')'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     strategy:
       matrix:

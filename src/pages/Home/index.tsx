@@ -172,40 +172,13 @@ const HomePage: FC = () => {
       <PullToRefresh
         onRefresh={handleRefresh}
         renderText={(status) => {
-          switch (status) {
-            case 'canRelease':
-              return (
-                <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-                  <div
-                    className={`w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254FF]`}
-                  ></div>
-                </div>
-              )
-            case 'refreshing':
-              return (
-                <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-                  <div
-                    className={`w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254FF]`}
-                  ></div>
-                </div>
-              )
-            case 'complete':
-              return (
-                <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-                  <div
-                    className={`w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254FF]`}
-                  ></div>
-                </div>
-              )
-            default:
-              return (
-                <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-                  <div
-                    className={`w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254FF]`}
-                  ></div>
-                </div>
-              )
-          }
+          return (
+            <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+              <div
+                className={`w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254FF]`}
+              ></div>
+            </div>
+          )
         }}
       >
         <div className="overflow-hidden" style={{ height: '0px', opacity: 0, ...animation }}>

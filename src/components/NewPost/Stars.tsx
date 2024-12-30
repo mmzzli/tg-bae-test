@@ -46,7 +46,9 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
     }
   };
   const focusEve = (boll: boolean)=>{
-    isMobileDevice() && setIsFocused(boll)
+    setTimeout(()=>{
+      isMobileDevice() && setIsFocused(boll)
+    },10)
   }
   useEffect(() => {
     const timer = setTimeout(() => {

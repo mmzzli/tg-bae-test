@@ -45,6 +45,9 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
       }
     }
   };
+  const focusEve = (boll: boolean)=>{
+    isMobileDevice() && setIsFocused(boll)
+  }
   useEffect(() => {
     const timer = setTimeout(() => {
       setBoll(isOpen);
@@ -157,8 +160,8 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
                 onChange={handleChange}
                 value={price || ''}
                 h="100%"
-                onFocus={() => { isMobileDevice() && setIsFocused(true) }}
-                onBlur={() => { isMobileDevice() && setIsFocused(false) }}
+                onFocus={() => focusEve(true)}
+                onBlur={() => focusEve(false)}
               />}
               <Image src={StarsIcon} alt="Stars Icon" />
             </HStack>

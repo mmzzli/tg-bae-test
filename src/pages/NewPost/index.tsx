@@ -504,29 +504,31 @@ export const NewPost: FC = () => {
       id="scrollable"
     >
       <Box p="0 16px">
-        <HStack justifyContent="space-between" pt="16px">
-          <Heading as="h3" fontSize="20px" color="#000">
-            New Post
-          </Heading>
-          <Button
-            size="xl"
-            fontSize="14px"
-            variant="primary-dark"
-            w="82px"
-            h="35px"
-            onClick={handleUpload}
-            isLoading={isLoading}
-            isDisabled={firstFileType === 'image' ? files.length === 0 : videoFile == null}
-            _hover={{
-              bg: (firstFileType === 'image' ? files.length === 0 : videoFile == null)
-                ? '#D1D0DE'
-                : '#6254FF',
-            }}
-          >
-            <Image src={PostIcon} mr="5px" /> Post
-          </Button>
-        </HStack>
-        <Box pt="16px">
+        <Box>
+          <HStack justifyContent="space-between" position="fixed" w="100%" left="0px" p="12px 16px" bg="#fff" zIndex={11}>
+            <Heading as="h3" fontSize="20px" color="#000">
+              New Post
+            </Heading>
+            <Button
+              size="xl"
+              fontSize="14px"
+              variant="primary-dark"
+              w="82px"
+              h="35px"
+              onClick={handleUpload}
+              isLoading={isLoading}
+              isDisabled={firstFileType === 'image' ? files.length === 0 : videoFile == null}
+              _hover={{
+                bg: (firstFileType === 'image' ? files.length === 0 : videoFile == null)
+                  ? '#D1D0DE'
+                  : '#6254FF',
+              }}
+            >
+              <Image src={PostIcon} mr="5px" /> Post
+            </Button>
+          </HStack>
+        </Box>
+        <Box pt="66px">
           <Input
             type="file"
             accept=".png,.jpg,.jpeg,.mp4,.webm"

@@ -10,7 +10,6 @@ import { useToast } from '@chakra-ui/react'
 import BaseButton from '../BaseButton/BaseButton'
 import { getSomeoneProfile, follow } from '@/api'
 import { useStore } from '@/store'
-import { followPreview } from '@/store/slices/resourceListSlice'
 
 type Props = {
   mediaData: FormatterListItem
@@ -85,6 +84,7 @@ const SecondaryMenu = ({ mediaData, currentUid, className, type }: Props) => {
     const res = followResource?.map((user) =>
       user.uid === mediaData.uid ? { ...user, boll: !user.boll } : user
     )
+    console.log(res)
     setFollowResource(res)
   }
 

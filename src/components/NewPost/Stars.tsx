@@ -64,6 +64,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
 
   useEffect(() => {
     const handleKeyboardHide = () => {
+      setIsFocused(false)
       window.scrollTo(0, 0);
     };
     window.addEventListener('focusout', handleKeyboardHide);

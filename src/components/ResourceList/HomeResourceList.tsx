@@ -3,10 +3,8 @@ import { Box, HStack, IconButton, useBoolean, Text, useToast } from '@chakra-ui/
 import { useNavigate } from 'react-router-dom'
 import { DrawSkeletonItem } from '@/components/Skeketon/ChatSkeleton'
 import PostSkeleton from '../Skeketon/PostSkeleton'
-import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import { useSharedList } from '@/store/hook/useResourceList'
 
-import { favDel, favPost, postLike } from '@/api'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { BaseModal } from '../Modal/BaseModal'
 import BaseButton from '../BaseButton/BaseButton'

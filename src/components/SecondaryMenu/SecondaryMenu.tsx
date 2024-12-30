@@ -10,7 +10,6 @@ import { useToast } from '@chakra-ui/react'
 import BaseButton from '../BaseButton/BaseButton'
 import { getSomeoneProfile, follow } from '@/api'
 import { useStore } from '@/store'
-import { followPreview } from '@/store/slices/resourceListSlice'
 
 type Props = {
   mediaData: FormatterListItem

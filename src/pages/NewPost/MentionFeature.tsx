@@ -1,37 +1,49 @@
 import React, { useState, useRef, ChangeEvent } from "react";
 import { Textarea } from "@chakra-ui/react";
 
+import { generateUUID, isMobileDevice } from '@/utils/utils'
+
 interface MentionFeatureProps {
-  mentionCandidates: string[];
+  mentionCandidates: { tgname: string; avatar: string, tg_id: number, fans_id: number, if_follow: boolean }[];
+  title: string
+  setTitle: (str: string) => void
+  setIsFocused: (boll: boolean) => void
 }
 
-const MentionFeature: React.FC = () => {
-  const [mentionCandidates, setMentionCandidates] = useState([])
+const MentionFeature: React.FC<MentionFeatureProps> = ({ mentionCandidates, title, setTitle, setIsFocused }) => {
 
-  const [text, setText] = useState<string>(""); // 输入的文本
   const [showMentionList, setShowMentionList] = useState<boolean>(false); // 是否显示艾特列表
+  const [filteredCandidates, setFilteredCandidates] = useState<
+    { tgname: string; avatar: string }[]
+  >([]); // 筛选后的候选人
   const [cursorPosition, setCursorPosition] = useState<number>(0); // 光标位置
   const [mentionTop, setMentionTop] = useState<number>(0); // 艾特弹窗的动态定位
+  const [mentionQuery, setMentionQuery] = useState<string>(""); // 当前艾特查询
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>): void => {
     const value = e.target.value;
     const selectionStart = e.target.selectionStart || 0;
-    setText(value);
+    setTitle(value);
     setCursorPosition(selectionStart);
 
     // 计算弹窗位置
     if (textAreaRef.current) {
       const rect = textAreaRef.current.getBoundingClientRect();
-      setMentionTop(rect.height+40); // 根据内容变化动态设置弹窗的高度
+      setMentionTop(rect.height + 40); // 根据内容变化动态设置弹窗的高度
     }
 
-    // 获取当前输入的字符和前一个字符
-    const charBefore = value[selectionStart - 2] || ""; // @ 前的字符
-    const currentChar = value[selectionStart - 1]; // 当前输入的字符
+    // 获取当前输入内容并匹配规则
+    const queryMatch = value.slice(0, selectionStart).match(/(^|\s)@([a-zA-Z0-9]*)$/);
 
-    // 检查是否需要触发艾特
-    if (currentChar === "@" && (charBefore === " " || charBefore === "")) {
+    if (queryMatch) {
+      const query = queryMatch[2]; // 提取 `@` 后的查询内容
+      setMentionQuery(query);
+      setFilteredCandidates(
+        mentionCandidates.filter((candidate) =>
+          candidate.tgname.toLowerCase().includes(query.toLowerCase())
+        )
+      );
       setShowMentionList(true);
     } else {
       setShowMentionList(false);
@@ -39,17 +51,17 @@ const MentionFeature: React.FC = () => {
   };
 
   const handleMentionClick = (mention: string): void => {
-    const beforeCursor = text.slice(0, cursorPosition);
-    const afterCursor = text.slice(cursorPosition);
+    const beforeCursor = title.slice(0, cursorPosition).replace(/(^|\s)@([a-zA-Z0-9]*)$/, "$1"); // 替换 `@` 及后续内容，保留前面的空格
+    const afterCursor = title.slice(cursorPosition);
 
     // 插入选中的艾特用户
-    const newText = `${beforeCursor}${mention} ${afterCursor}`;
-    setText(newText);
+    const newText = `${beforeCursor}@${mention} ${afterCursor}`;
+    setTitle(newText);
     setShowMentionList(false);
 
     // 恢复光标位置
     setTimeout(() => {
-      const newPosition = beforeCursor.length + mention.length + 1;
+      const newPosition = beforeCursor.length + mention.length + 2;
       if (textAreaRef.current) {
         textAreaRef.current.setSelectionRange(newPosition, newPosition);
         textAreaRef.current.focus();
@@ -62,7 +74,13 @@ const MentionFeature: React.FC = () => {
       <Textarea
         ref={textAreaRef}
         className="placeholder-[#999] mt-6"
-        value={text}
+        value={title}
+        onFocus={() => {
+          isMobileDevice() && setIsFocused(true)
+        }}
+        onBlur={() => {
+          isMobileDevice() && setIsFocused(false)
+        }}
         onChange={handleInputChange}
         mt="10px"
         color="#333"
@@ -73,21 +91,23 @@ const MentionFeature: React.FC = () => {
         placeholder="Say something ..."
         h="80px"
       />
-      {showMentionList && (
+      {showMentionList && filteredCandidates.length > 0 && (
         <ul
           className="absolute left-0 z-[111] w-[100%] border-t border-gray-300 bg-white"
           style={{ top: `${mentionTop}px` }}
         >
-          {mentionCandidates.map((candidate) => (
+          {filteredCandidates.map((candidate) => (
             <li
-              key={candidate}
-              onClick={() => handleMentionClick(candidate)}
-              className="p-2 cursor-pointer flex"
+              key={candidate.tgname}
+              onClick={() => handleMentionClick(candidate.tgname)}
+              className="p-2 cursor-pointer flex items-center"
             >
-              <span className=""></span>
-              <p className="text-4 text-[#333]">
-                {candidate}
-              </p>
+              <img
+                src={candidate.avatar}
+                alt={candidate.tgname}
+                className="w-6 h-6 rounded-full mr-2"
+              />
+              <p className="text-sm text-gray-800">{candidate.tgname}</p>
             </li>
           ))}
         </ul>

@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Checkbox, useToast } from '@chakra-ui/react'
 
 import BaseButton from '@/components/BaseButton/BaseButton'
@@ -11,6 +11,8 @@ import Icon from '@/components/comm/Icon'
 const AgeGate = () => {
   const toast = useToast()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams();
+  const ref = searchParams.get('ref');
   const [isChecked, setIsChecked] = useState<boolean>(false)
   const [isShowTime, setIsShowTime] = useState<boolean>(false)
 
@@ -68,7 +70,11 @@ const AgeGate = () => {
               if (isShowTime) {
                 localStorage.setItem('ageGate', '1')
               }
-              navigate('/home')
+              if(ref){
+                navigate(`/shares?ref=${ref}`)
+              }else{
+                navigate('/home')
+              }
             } else {
               toast({
                 render: () => {

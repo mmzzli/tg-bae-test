@@ -100,13 +100,18 @@ const Splash: FC = () => {
 
   const handleNavigate = async (ref: string) => {
     console.log('token ready, navigating...')
+    const ageGateBoll = localStorage.getItem('ageGate')
     if (!token) return
     try {
       const data = await getSingleMedia(ref)
       console.log('getSingleMedia', data)
       if (data.type === SHARE_POST) {
         setSharedPostList(data.media)
-        navigate(`/shares?ref=${ref}`)
+        if(ageGateBoll){
+          navigate(`/shares?ref=${ref}`)
+        }else{
+          navigate(`/ageGate?ref=${ref}`)
+        }
       } else if (data.type === SHARE_PROFILE) {
         setOthersUserInfo({ ...data.userInfo, uid: data.userInfo.user_id })
         navigate(`/profile/${data.userInfo.uid || data.userInfo.user_id}`)

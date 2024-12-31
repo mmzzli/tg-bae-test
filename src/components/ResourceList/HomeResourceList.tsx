@@ -555,7 +555,7 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, onShare, type, setReso
             <MoreText text={data.title} bgColor={'#fff'} textColor={'#0F1419'} />
           </div>
           <div className="flex items-center justify-between">
-            {(((type === 'view' || type === 'recommend') && data.price > 0) || data.is_pay) && (
+            {(((type === 'view' || type === 'recommend') && data.price > 0) && data.is_pay) && (
               <div className="flex items-center gap-2 mt-1">
                 <p className="text-[#666666] dark:text-[#424048] text-[12px]">
                   Purchased for {data.price}

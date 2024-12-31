@@ -22,6 +22,7 @@ const ProfileEdit: FC = () => {
   const [isFocused, setIsFocused] = useState<boolean>(false)
   const setUserInfo = useStore((state) => state.setUserInfo)
   const [initLoading, setInitLoading] = useState<boolean>(false)
+  const [errBoll, setErrBoll] = useState<boolean>(false)
 
   const [profileData, setProfileData] = useState<UserInfoProfile>({
     username: '',
@@ -164,7 +165,19 @@ const ProfileEdit: FC = () => {
       return
     }
     setIsLoading(true)
-    await putProfile(profileData)
+    try {
+      await putProfile(profileData)
+    } catch (error) {
+      setIsLoading(false)
+      setErrBoll(true)
+      // toast({
+      //   position: 'bottom',
+      //   render: () => {
+      //     return <CustomToast title="This name is already taken." type={typeOptions.error} />
+      //   },
+      // })
+      return
+    }
     toast({
       position: 'bottom',
       onCloseComplete: () => {
@@ -238,8 +251,9 @@ const ProfileEdit: FC = () => {
             <input
               className="w-[100%] rounded-[10px] text-[#333] text-[14px] bg-[#F5F5FA] px-[16px] py-[15px]"
               value={profileData?.username}
-              onChange={(e) => changeEve(e, 'username')}
+              onChange={(e) => {changeEve(e, 'username');setErrBoll(false)}}
             />
+            { errBoll && <p className='text-[#FF684A] text-3 mt-1'>This name is already taken.</p>}
             <div className="mt-[24px]">
               <div className="flex justify-between items-center mb-[16px]">
                 <h3 className="text-[16px] text-[#0F1233] font-[500]">Bio</h3>

@@ -26,6 +26,7 @@ import { generateUUID, isMobileDevice } from '@/utils/utils'
 import { error } from 'console'
 import { useGetDailyTask } from '@/hooks/useDailyTask'
 import { useViewList } from '@/store/hook/useResourceList'
+import MentionFeature from './MentionFeature'
 
 export const NewPost: FC = () => {
   const navigate = useNavigate()
@@ -630,6 +631,11 @@ export const NewPost: FC = () => {
             placeholder="Say something ..."
             h="80px"
           />
+          {/* <MentionFeature
+            title={title}
+            setTitle={setTitle}
+            setIsFocused={setIsFocused}
+            /> */}
         </Box>
         <StarsPage setPrice={setPrice} price={price || 0} />
       </Box>

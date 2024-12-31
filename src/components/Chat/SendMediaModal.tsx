@@ -2,7 +2,6 @@ import { useBoolean } from '@chakra-ui/react'
 
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { AttachIcon } from '@/assets/icons'
-import { useTouch } from '@/hooks/useTouch'
 import { useEffect, useRef, useState } from 'react'
 import { MessageType } from './types'
 import { useFormatMessage } from '@/hooks/useFormatMessage'
@@ -116,15 +115,8 @@ const SendMediaModal = ({
         console.log(err)
       })
   }
-  const { touchHandlers } = useTouch({
-    onTap: () => {
-      beforeSelect?.()
-      attachRef.current?.click()
-    },
-  })
 
   const handleSubmit = () => {
-    // window.TelegramWebviewProxy.postEvent('web_app_request_fullscreen')
     if (validFileList.length === 0) return off()
     validFileList.forEach((metadata) => {
       let newMessage
@@ -181,8 +173,13 @@ const SendMediaModal = ({
       />
 
       <div
-        {...touchHandlers}
         className="relative w-[29px] h-[29px] cursor-pointer mr-[8px] mt-[3px] no-tap"
+        onTouchEnd={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          beforeSelect?.()
+          attachRef.current?.click()
+        }}
       >
         <img src={AttachIcon} />
       </div>

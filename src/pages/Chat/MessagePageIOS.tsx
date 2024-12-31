@@ -252,12 +252,12 @@ const MessagePageIOS = () => {
             inputRef.current?.focus()
           }}
           className="flex items-center flex-1 h-[36px] text-sm dark:bg-black bg-[#F5F3F3] border-[1px]
-        dark:border-[#4B4B4D] border-[#F5F3F3] rounded-full px-3"
+        dark:border-[#4B4B4D] border-[#F5F3F3] rounded-full px-3 pr-[54px]"
           style={{
             color: message ? '#333333' : '#999999',
           }}
         >
-          {message ? message : 'Type a Message....'}
+          {message ? message : 'Type a Message...'}
         </div>
         <div
           onClick={handleSubmit}
@@ -273,15 +273,6 @@ const MessagePageIOS = () => {
         </div>
       </div>
 
-      <div className="absolute left-[10px] bottom-[28px] w-[28px] z-[99]">
-        <SendMediaModal
-          tgid={Number(uid)}
-          beforeOpen={() => {
-            inputRef.current?.blur()
-          }}
-        />
-      </div>
-
       {/* REAL INPUT */}
       <div
         className={cn(
@@ -295,8 +286,8 @@ const MessagePageIOS = () => {
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyPress}
           type="text"
-          className="absolute left-[42px] right-[14px] top-[5px] h-[36px] text-sm dark:border-[1px] dark:bg-black
-           dark:border-[#4B4B4D] dark:focus:border-[#4B4B4D] focus:border-[#F5F3F3] bg-[#F5F3F3] rounded-full px-3 outline-none
+          className="absolute left-[42px] right-[14px] top-[5px] h-[36px] leading-[36px] pb-[1px] pl-[13px] text-sm dark:border-[1px] dark:bg-black
+           dark:border-[#4B4B4D] dark:focus:border-[#4B4B4D] focus:border-[#F5F3F3] bg-[#F5F3F3] rounded-full outline-none
             dark:text-white dark:placeholder:text-[#5D5D60] placeholder:text-[#999999] pr-[60px]"
           placeholder="Type a Message..."
         />
@@ -325,6 +316,16 @@ const MessagePageIOS = () => {
             style={{ fontSize: '20px' }}
           ></i>
         </div>
+      </div>
+
+      {/* SEND MEDIA */}
+      <div className="absolute left-[10px] bottom-[28px] w-[28px] z-[99]">
+        <SendMediaModal
+          tgid={Number(uid)}
+          beforeOpen={() => {
+            inputRef.current?.blur()
+          }}
+        />
       </div>
     </div>
   )

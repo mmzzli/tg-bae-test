@@ -471,16 +471,7 @@ const ClaimedButton: React.FC = () => {
   return (
     <BaseButton
       text=""
-      icon={
-        <div
-          className="w-[10px] h-[7px] border-[2px] border-l-[#CDCDD4] border-b-[#CDCDD4] border-t-transparent border-r-transparent"
-          style={{
-            transform: 'rotate(-45deg)',
-            marginTop: '-3px',
-            marginLeft: '6px',
-          }}
-        ></div>
-      }
+      icon={<i className="iconfont icon-a-check-line1 text-[22px] text-[#CDCDD4]"></i>}
       disabled={true}
       handler={() => {}}
       className="bg-[#EFF2F8] w-[79px] h-[34px]"

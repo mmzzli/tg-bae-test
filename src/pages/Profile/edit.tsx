@@ -164,7 +164,18 @@ const ProfileEdit: FC = () => {
       return
     }
     setIsLoading(true)
-    await putProfile(profileData)
+    try {
+      await putProfile(profileData)
+    } catch (error) {
+      setIsLoading(false)
+      toast({
+        position: 'bottom',
+        render: () => {
+          return <CustomToast title="This name is already taken." type={typeOptions.error} />
+        },
+      })
+      return
+    }
     toast({
       position: 'bottom',
       onCloseComplete: () => {

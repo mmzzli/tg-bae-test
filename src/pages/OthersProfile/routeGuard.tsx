@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useStore } from '@/store'
 import { DefaultAvatarIcon } from '@/assets/icons'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
-import { getFollowingList, getSomeoneProfile } from '@/api'
+import { getFollowingList, getSomeoneProfile, getSearchTgidName } from '@/api'
 
 interface ProfileGuardProps {
   children: React.ReactNode
@@ -43,6 +43,8 @@ const ProfileGuard: FC<ProfileGuardProps> = ({ children }) => {
 
         // Fetch user profile data if uid and token are available
         if (uid && token) {
+          console.log(uid,123)
+          await getSearchTgidName(uid)
           const user = await getSomeoneProfile(Number(uid))
           setOthersUserInfo({ ...user, user_id: user.uid })
         }

@@ -26,6 +26,7 @@ import { generateUUID, isMobileDevice } from '@/utils/utils'
 import { error } from 'console'
 import { useGetDailyTask } from '@/hooks/useDailyTask'
 import { useViewList } from '@/store/hook/useResourceList'
+import MentionFeature from './MentionFeature'
 
 export const NewPost: FC = () => {
   const navigate = useNavigate()
@@ -611,7 +612,7 @@ export const NewPost: FC = () => {
               </Grid>
             )}
           </Box>
-          <Textarea
+          {/* <Textarea
             className="placeholder-[#999] mt-6"
             value={title}
             onFocus={() => {
@@ -629,7 +630,25 @@ export const NewPost: FC = () => {
             border="none"
             placeholder="Say something ..."
             h="80px"
-          />
+          /> */}
+          <MentionFeature
+            title={title}
+            setTitle={setTitle}
+            setIsFocused={setIsFocused}
+            mentionCandidates={[{
+              "tg_id": 55000000000008,
+              "tgname": "kuku10",
+              "avatar": "https://pub-6e2e464db30f4a5cb4e463e73ec1fc2c.r2.dev/avatar.png",
+              "fans_id": 55000000000008,
+              "if_follow": false
+            },
+            {
+              "tg_id": 55000000000009,
+              "tgname": "kuku11",
+              "avatar": "https://pub-6e2e464db30f4a5cb4e463e73ec1fc2c.r2.dev/avatar.png",
+              "fans_id": 55000000000009,
+              "if_follow": false
+            }]}/>
         </Box>
         <StarsPage setPrice={setPrice} price={price || 0} />
       </Box>

@@ -114,7 +114,8 @@ const MoreText: React.FC<MoreTextProps> = ({
     return text.split(mentionRegex).reduce<React.ReactNode[]>((acc, part, index, array) => {
       if (index < array.length - 1) {
         const mentions = text.match(mentionRegex) || [];
-        return [...acc, part, <a href={`/profile/${mentions[index]}`} key={index} style={{ color: '#6254FF' }}>{mentions[index]}</a>];
+        const urlId = mentions[index].replace(/@/g, '')
+        return [...acc, part, <a href={`/profile/${urlId}`} key={index} style={{ color: '#6254FF' }}>{mentions[index]}</a>];
       }
       return [...acc, part];
     }, []);

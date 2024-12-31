@@ -44,9 +44,14 @@ const ProfileGuard: FC<ProfileGuardProps> = ({ children }) => {
         // Fetch user profile data if uid and token are available
         if (uid && token) {
           console.log(uid,123)
-          await getSearchTgidName(uid)
-          const user = await getSomeoneProfile(Number(uid))
-          setOthersUserInfo({ ...user, user_id: user.uid })
+          try {
+            const id = await getSearchTgidName(`${uid}`)
+            const user = await getSomeoneProfile(Number(id))
+            setOthersUserInfo({ ...user, user_id: user.uid })
+          } catch (error) {
+            const user = await getSomeoneProfile(Number(uid))
+            setOthersUserInfo({ ...user, user_id: user.uid })
+          }
         }
 
         // Get following list if accessed via share link

@@ -28,6 +28,9 @@ export const getFollowerList = (uid: number) => {
 export const getFollowingList = (uid: number) => {
   return get<Follow[]>(`/api/v1/fans/${uid}`)
 }
+export const getFansFollowers = (uid: number) => {
+  return get<Follow[]>(`/api/v1//fans_followers/${uid}`)
+}
 
 export const follow = (params: { fansid: number; tgid: number }) => {
   return post(`/api/v1/follow`, params)

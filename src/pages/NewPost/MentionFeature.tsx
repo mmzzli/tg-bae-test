@@ -1,25 +1,37 @@
-import React, { useState, useRef, ChangeEvent } from "react";
+import React, { useState, useRef, ChangeEvent, useEffect } from "react";
 import { Textarea } from "@chakra-ui/react";
 
-import { generateUUID, isMobileDevice } from '@/utils/utils'
+import { getFansFollowers } from "@/api";
+import { generateUUID, isMobileDevice } from "@/utils/utils";
+import { useTMAUtils } from "@/hooks/useTMAUtils";
+import { useStore } from "@/store";
 
-interface MentionFeatureProps {
-  mentionCandidates: { tgname: string; avatar: string, tg_id: number, fans_id: number, if_follow: boolean }[];
-  title: string
-  setTitle: (str: string) => void
-  setIsFocused: (boll: boolean) => void
+interface MentionCandidate {
+  tgname: string;
+  avatar: string;
+  tg_id: number;
+  fans_id: number;
+  if_follow: boolean;
 }
 
-const MentionFeature: React.FC<MentionFeatureProps> = ({ mentionCandidates, title, setTitle, setIsFocused }) => {
+interface MentionFeatureProps {
+  title: string;
+  setTitle: (str: string) => void;
+  setIsFocused: (bool: boolean) => void;
+}
 
-  const [showMentionList, setShowMentionList] = useState<boolean>(false); // 是否显示艾特列表
-  const [filteredCandidates, setFilteredCandidates] = useState<
-    { tgname: string; avatar: string }[]
-  >([]); // 筛选后的候选人
-  const [cursorPosition, setCursorPosition] = useState<number>(0); // 光标位置
-  const [mentionTop, setMentionTop] = useState<number>(0); // 艾特弹窗的动态定位
-  const [mentionQuery, setMentionQuery] = useState<string>(""); // 当前艾特查询
+const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsFocused }) => {
+  const [mentionCandidates, setMentionCandidates] = useState<MentionCandidate[]>([]); // 修正类型
+  const [showMentionList, setShowMentionList] = useState<boolean>(false);
+  const [filteredCandidates, setFilteredCandidates] = useState<MentionCandidate[]>([]); // 修正类型
+  const [cursorPosition, setCursorPosition] = useState<number>(0);
+  const [mentionTop, setMentionTop] = useState<number>(0);
+  const [mentionQuery, setMentionQuery] = useState<string>("");
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const token = useStore((state) => state.token);
+  const { getCurrentUid } = useTMAUtils();
+  const current_uid = getCurrentUid();
 
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>): void => {
     const value = e.target.value;
@@ -30,14 +42,14 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ mentionCandidates, titl
     // 计算弹窗位置
     if (textAreaRef.current) {
       const rect = textAreaRef.current.getBoundingClientRect();
-      setMentionTop(rect.height + 40); // 根据内容变化动态设置弹窗的高度
+      setMentionTop(rect.height + 40);
     }
 
     // 获取当前输入内容并匹配规则
     const queryMatch = value.slice(0, selectionStart).match(/(^|\s)@([a-zA-Z0-9]*)$/);
 
     if (queryMatch) {
-      const query = queryMatch[2]; // 提取 `@` 后的查询内容
+      const query = queryMatch[2] || ""; // 检查 queryMatch[2] 是否为 undefined
       setMentionQuery(query);
       setFilteredCandidates(
         mentionCandidates.filter((candidate) =>
@@ -51,15 +63,13 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ mentionCandidates, titl
   };
 
   const handleMentionClick = (mention: string): void => {
-    const beforeCursor = title.slice(0, cursorPosition).replace(/(^|\s)@([a-zA-Z0-9]*)$/, "$1"); // 替换 `@` 及后续内容，保留前面的空格
+    const beforeCursor = title.slice(0, cursorPosition).replace(/(^|\s)@([a-zA-Z0-9]*)$/, "$1");
     const afterCursor = title.slice(cursorPosition);
 
-    // 插入选中的艾特用户
     const newText = `${beforeCursor}@${mention} ${afterCursor}`;
     setTitle(newText);
     setShowMentionList(false);
 
-    // 恢复光标位置
     setTimeout(() => {
       const newPosition = beforeCursor.length + mention.length + 2;
       if (textAreaRef.current) {
@@ -69,18 +79,29 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ mentionCandidates, titl
     }, 0);
   };
 
+  const loadCandidates = async () => {
+    try {
+      const res:any = await getFansFollowers(current_uid);
+      setMentionCandidates(res);
+    } catch (error) {
+      console.error("Failed to fetch mention candidates:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (token && current_uid) {
+      loadCandidates();
+    }
+  }, [current_uid, token]);
+
   return (
     <div className="relative">
       <Textarea
         ref={textAreaRef}
         className="placeholder-[#999] mt-6"
         value={title}
-        onFocus={() => {
-          isMobileDevice() && setIsFocused(true)
-        }}
-        onBlur={() => {
-          isMobileDevice() && setIsFocused(false)
-        }}
+        onFocus={() => isMobileDevice() && setIsFocused(true)}
+        onBlur={() => isMobileDevice() && setIsFocused(false)}
         onChange={handleInputChange}
         mt="10px"
         color="#333"

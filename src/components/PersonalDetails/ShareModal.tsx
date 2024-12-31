@@ -1,10 +1,9 @@
 import { forwardRef, useImperativeHandle, useState } from 'react'
-import { Image, useBoolean } from '@chakra-ui/react'
+import { useBoolean } from '@chakra-ui/react'
 import { DrawSkeletonItem } from '@/components/Skeketon/ChatSkeleton'
 
 import { BaseModal } from '@/components/Modal/BaseModal'
 import BaseButton from '@/components/BaseButton/BaseButton'
-import { LinkIcon, TelegramIcon } from '@/assets/icons'
 import { useMemoizedFn, useRequest, useSetState } from 'ahooks'
 import useCopy from '@/hooks/useCopy'
 import { getLink, getShareInlineMessageId } from '@/api/list'
@@ -169,7 +168,7 @@ const ShareModal = forwardRef<ChildMethods>(({}, ref) => {
                 text="Share via Telegram"
                 height="48px"
                 loading={getInlineMessageIdLoading}
-                icon={<Image src={TelegramIcon} />}
+                icon={<i className="iconfont icon-telegram-2-line text-[22px]" />}
                 handler={() => {
                   // shareLink(links.shareLink ?? '')
                   setTimeout(() => {
@@ -185,7 +184,7 @@ const ShareModal = forwardRef<ChildMethods>(({}, ref) => {
               <BaseButton
                 text="Copy link"
                 height="48px"
-                icon={<Image src={LinkIcon} />}
+                icon={<i className="iconfont icon-link-m text-[22px]" />}
                 handler={() => {
                   copy(links.copyLink)
                   off()

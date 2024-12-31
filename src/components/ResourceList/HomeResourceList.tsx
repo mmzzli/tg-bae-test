@@ -1,22 +1,22 @@
-import { memo, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useCallback, useContext, useEffect, useState } from 'react'
 import { Box, HStack, IconButton, useBoolean, Text, useToast } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { DrawSkeletonItem } from '@/components/Skeketon/ChatSkeleton'
 import PostSkeleton from '../Skeketon/PostSkeleton'
 import { useSharedList } from '@/store/hook/useResourceList'
+import Report from '@/components/SecondaryMenu/Report'
 
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { BaseModal } from '../Modal/BaseModal'
 import BaseButton from '../BaseButton/BaseButton'
 import useCopy from '@/hooks/useCopy'
-import { useMemoizedFn, useRequest, useSetState, useDebounceFn } from 'ahooks'
-import { LinkIcon, StarsIcon, TelegramIcon } from '@/assets/icons'
+import { useMemoizedFn, useRequest, useSetState } from 'ahooks'
+import { StarsIcon } from '@/assets/icons'
 import { followPreview, FormatterListItem } from '@/store/slices/resourceListSlice'
 import Image from '../Image/Image'
 import SecondaryMenu from '../SecondaryMenu/SecondaryMenu'
 import { getLink, getShareInlineMessageId } from '@/api/list'
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
-import useMobile from '@/hooks/useMobile'
 import playIcon from '@/assets/icons/videoSwitch.svg'
 import Empty from '../comm/Empty'
 import Icon from '../comm/Icon'
@@ -141,7 +141,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               text="Share via Telegram"
               height="48px"
               loading={getInlineMessageIdLoading}
-              icon={<Image src={TelegramIcon} />}
+              icon={<i className="iconfont icon-telegram-2-line text-[22px]" />}
               handler={() => {
                 // shareLink(links.shareLink ?? '')
                 setTimeout(() => {
@@ -157,7 +157,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             <BaseButton
               text="Copy link"
               height="48px"
-              icon={<Image src={LinkIcon} />}
+              icon={<i className="iconfont icon-link-m text-[22px]" />}
               handler={() => {
                 copy(links.copyLink)
                 off()
@@ -368,8 +368,10 @@ const ResourceList = ({
       ></Empty>
     )
   }
+  const [reportVisible, setReportVisible] = useState(false)
   return (
     <>
+      {reportVisible && <Report isOpen={reportVisible} onClose={setReportVisible} />}
       <div
         style={{
           position: 'absolute',
@@ -400,6 +402,7 @@ const ResourceList = ({
                   currentUid={launchParams.initData?.user?.id ?? 0}
                   onProfileClick={jumpToProfilePage}
                   type={type}
+                  setReportVisible={setReportVisible}
                 />
                 <Box position="relative">
                   {data.act_type === 1 && type === 'recommend' && (
@@ -463,6 +466,7 @@ interface ResourceHeaderProps {
   data: FormatterListItem
   currentUid: number
   onProfileClick: (data: FormatterListItem) => void
+  setReportVisible:(boll:boolean)=>void
   type?: string
 }
 
@@ -475,7 +479,7 @@ interface ResourceFooterProps {
   type?: string
 }
 
-const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileClick, type }) => {
+const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileClick, type, setReportVisible }) => {
   const cardValue = useContext(CardRecommendProvider)
   return (
     <div className="pl-4 pr-4 pb-4 flex items-center">
@@ -518,6 +522,7 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
         mediaData={data}
         currentUid={currentUid}
         type={type}
+        setReportVisible={setReportVisible}
       />
     </div>
   )

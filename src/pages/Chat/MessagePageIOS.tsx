@@ -273,15 +273,6 @@ const MessagePageIOS = () => {
         </div>
       </div>
 
-      <div className="absolute left-[10px] bottom-[28px] w-[28px] z-[99]">
-        <SendMediaModal
-          tgid={Number(uid)}
-          beforeOpen={() => {
-            inputRef.current?.blur()
-          }}
-        />
-      </div>
-
       {/* REAL INPUT */}
       <div
         className={cn(
@@ -325,6 +316,16 @@ const MessagePageIOS = () => {
             style={{ fontSize: '20px' }}
           ></i>
         </div>
+      </div>
+
+      {/* SEND MEDIA */}
+      <div className="absolute left-[10px] bottom-[28px] w-[28px] z-[99]">
+        <SendMediaModal
+          tgid={Number(uid)}
+          beforeOpen={() => {
+            inputRef.current?.blur()
+          }}
+        />
       </div>
     </div>
   )

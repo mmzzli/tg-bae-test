@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 
 interface MoreTextProps {
   text: string
@@ -10,6 +10,7 @@ interface MoreTextProps {
   textColor?: string
   className?: string
 }
+
 const MoreText: React.FC<MoreTextProps> = ({
   text,
   moreColor = '#5D6BFF',
@@ -19,52 +20,115 @@ const MoreText: React.FC<MoreTextProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const [isTextClipped, setIsTextClipped] = useState(false)
+  const processedText = text.replace(/\n/g, ' ').trim()
+  const [displayText, setDisplayText] = useState(processedText)
   const textRef = useRef<HTMLDivElement | null>(null)
 
-  // text += "Do you have a Band-Aid? Because I just scraped my heart falling for youDo you have a Band-Aid? Because I just scraped my heart falling for you"
-
   useEffect(() => {
+    let frameId: number
+    let timeoutId: NodeJS.Timeout
+
     const checkTextClipping = () => {
-      setTimeout(() => {
-        if (textRef.current) {
-          textRef.current.classList.remove('line-clamp-2')
-          const fullHeight = textRef.current.getBoundingClientRect().height
-          textRef.current.classList.add('line-clamp-2')
-          const clampHeight = textRef.current.getBoundingClientRect().height
-          setIsTextClipped(fullHeight > clampHeight)
+      const canvas = document.createElement('canvas')
+      const context = canvas.getContext('2d')
+      if (!context || !textRef.current) return
+
+      const width = textRef.current.clientWidth
+      // 如果宽度为0，继续等待
+      if (width === 0) {
+        timeoutId = setTimeout(() => {
+          frameId = requestAnimationFrame(checkTextClipping)
+        }, 50)
+        return
+      }
+
+      const style = window.getComputedStyle(textRef.current)
+      context.font = `${style.fontSize} ${style.fontFamily}`
+
+      const moreText = '...More'
+      const moreWidth = context.measureText(moreText).width
+
+      if (!isExpanded) {
+        const chars = Array.from(processedText)
+        let lines: string[] = ['']
+        let currentLine = 0
+
+        for (let char of chars) {
+          const testLine = lines[currentLine] + char
+          const metrics = context.measureText(testLine)
+
+          if (currentLine === 1 && metrics.width > width - moreWidth) {
+            setIsTextClipped(true)
+            const finalText = lines[0] + '\n' + lines[1]
+            setDisplayText(finalText + '...')
+            return
+          }
+
+          if (metrics.width > width) {
+            if (currentLine === 1) {
+              setIsTextClipped(true)
+              const finalText = lines[0] + '\n' + lines[1]
+              setDisplayText(finalText)
+              return
+            }
+            currentLine++
+            lines[currentLine] = char
+          } else {
+            lines[currentLine] = testLine
+          }
         }
-      }, 100)
+
+        setIsTextClipped(currentLine >= 2)
+        setDisplayText(lines.join('\n'))
+      } else {
+        setDisplayText(processedText)
+      }
     }
-    checkTextClipping()
-    // Resize 监听器，窗口大小变化时重新检查
-    window.addEventListener('resize', checkTextClipping)
-    // 清理函数
-    return () => window.removeEventListener('resize', checkTextClipping)
-  }, [text])
+
+    // 初始延迟执行，等待弹框动画
+    timeoutId = setTimeout(() => {
+      frameId = requestAnimationFrame(checkTextClipping)
+    }, 300)
+
+    const resizeObserver = new ResizeObserver(() => {
+      frameId = requestAnimationFrame(checkTextClipping)
+    })
+
+    if (textRef.current) {
+      resizeObserver.observe(textRef.current)
+    }
+
+    return () => {
+      resizeObserver.disconnect()
+      cancelAnimationFrame(frameId)
+      clearTimeout(timeoutId)
+    }
+  }, [text, isExpanded, processedText])
 
   return (
     <div className="relative mt-[8px]">
-      {/* 内容部分 */}
       <div
         ref={textRef}
-        className={`text-sm leading-relaxed overflow-hidden transition-all duration-300 dark:text-[#333333] font-weight-500 ${
-          isExpanded ? 'line-clamp-none' : 'line-clamp-2'
-        }  text-[${textColor}] dark:text-[${textColor}] ${className}`}
+        className={`text-sm leading-relaxed whitespace-pre-wrap ${className}`}
         style={{
-          color: moreColor,
+          color: textColor,
+          wordBreak: 'break-word',
+          overflowWrap: 'break-word',
+          whiteSpace: 'pre-wrap',
+          wordWrap: 'break-word',
+          hyphens: 'auto',
         }}
       >
-        {text}
-
-        {/* 切换按钮 */}
+        {displayText}
         {isTextClipped && (
-          <div
-            className={`mt-1 text-[${moreColor}] text-sm ${isExpanded ? 'relative inline-block' : 'absolute'} bottom-0 right-0 px-1 text-[#5D6BFF] bg-[${bgColor}]`}
-            style={{ borderRadius: '5px', background: bgColor }}
+          <span
+            style={{
+              color: moreColor,
+            }}
             onClick={() => setIsExpanded(!isExpanded)}
           >
             {isExpanded ? 'Less' : 'More'}
-          </div>
+          </span>
         )}
       </div>
     </div>

@@ -9,6 +9,7 @@ import { useStore } from '@/store'
 import { CardRecommendProvider } from '@/utils/constants'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
+import { VolumeMuteIcon } from '@/assets/icons'
 
 interface VideoCardProps {
   data: FormatterListItem
@@ -128,6 +129,17 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
                 <Text color="white" fontSize="14px">
                   {formatTime(Number(playVideoTime))}
                 </Text>
+              </HStack>
+              <HStack
+                position="absolute"
+                bottom="12px"
+                right="12px"
+                p="4px 10px"
+                gap="4px"
+                rounded="20px"
+                zIndex={2}
+              >
+                <image src={VolumeMuteIcon} />
               </HStack>
               {data.uid !== getCurrentUid() && data.price > 0 && !data.is_pay && (
                 <>

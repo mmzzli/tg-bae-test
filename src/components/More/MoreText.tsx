@@ -9,6 +9,7 @@ interface MoreTextProps {
   moreLine?: boolean
   textColor?: string
   className?: string
+  type?: string
 }
 
 const MoreText: React.FC<MoreTextProps> = ({
@@ -17,6 +18,7 @@ const MoreText: React.FC<MoreTextProps> = ({
   bgColor = '#fff',
   textColor = '#666',
   className = '',
+  type
 }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const [isTextClipped, setIsTextClipped] = useState(false)
@@ -105,6 +107,18 @@ const MoreText: React.FC<MoreTextProps> = ({
     }
   }, [text, isExpanded, processedText])
 
+  const highlightMentions = (text: string): React.ReactNode[] => {
+    const mentionRegex = /@\w+/g; // 匹配以 @ 开头的单词
+
+    // 使用 split 和 match 分割和提取
+    return text.split(mentionRegex).reduce<React.ReactNode[]>((acc, part, index, array) => {
+      if (index < array.length - 1) {
+        const mentions = text.match(mentionRegex) || [];
+        return [...acc, part, <a href={`/profile/${mentions[index]}`} key={index} style={{ color: 'blue' }}>{mentions[index]}</a>];
+      }
+      return [...acc, part];
+    }, []);
+  };
   return (
     <div className="relative mt-[8px]">
       <div
@@ -120,6 +134,8 @@ const MoreText: React.FC<MoreTextProps> = ({
         }}
       >
         {displayText}
+        {type === 'post'?highlightMentions(text):text}
+        {/* 切换按钮 */}
         {isTextClipped && (
           <span
             style={{

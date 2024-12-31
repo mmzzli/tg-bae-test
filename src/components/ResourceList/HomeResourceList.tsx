@@ -5,6 +5,7 @@ import { DrawSkeletonItem } from '@/components/Skeketon/ChatSkeleton'
 import PostSkeleton from '../Skeketon/PostSkeleton'
 import { useSharedList } from '@/store/hook/useResourceList'
 import Report from '@/components/SecondaryMenu/Report'
+import { CustomToast, typeOptions } from '@/components/comm/Toast'
 
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { BaseModal } from '../Modal/BaseModal'
@@ -60,6 +61,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 }) => {
   const { launchParams, getCurrentUid } = useTMAUtils()
   const { copy } = useCopy()
+
+  const toast = useToast()
 
   const { runAsync: getInlineMessageId, loading: getInlineMessageIdLoading } = useRequest(
     getShareInlineMessageId,
@@ -158,9 +161,21 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               text="Copy link"
               height="48px"
               icon={<i className="iconfont icon-link-m text-[22px]" />}
-              handler={() => {
+              handler={async() => {
                 copy(links.copyLink)
+                toast({
+                  render: () => {
+                    return <CustomToast title="Link copied!" type={typeOptions.success} />
+                  },
+                  position: 'bottom',
+                })
                 off()
+                if (currentShareData) {
+                  const { result } = await getInlineMessageId({
+                    pid: currentShareData.pid,
+                    uid: launchParams.initData?.user?.id ?? 0,
+                  })
+                }
               }}
             />
           </div>

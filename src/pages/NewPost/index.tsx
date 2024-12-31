@@ -648,7 +648,29 @@ export const NewPost: FC = () => {
               "avatar": "https://pub-6e2e464db30f4a5cb4e463e73ec1fc2c.r2.dev/avatar.png",
               "fans_id": 55000000000009,
               "if_follow": false
-            }]}/>
+            },
+            {
+              "tg_id": 55000000000009,
+              "tgname": "kuku1112222222",
+              "avatar": "https://pub-6e2e464db30f4a5cb4e463e73ec1fc2c.r2.dev/avatar.png",
+              "fans_id": 55000000000009,
+              "if_follow": false
+            },
+            {
+              "tg_id": 55000000000009,
+              "tgname": "kuku1133",
+              "avatar": "https://pub-6e2e464db30f4a5cb4e463e73ec1fc2c.r2.dev/avatar.png",
+              "fans_id": 55000000000009,
+              "if_follow": false
+            },
+            {
+              "tg_id": 55000000000009,
+              "tgname": "kuku1122",
+              "avatar": "https://pub-6e2e464db30f4a5cb4e463e73ec1fc2c.r2.dev/avatar.png",
+              "fans_id": 55000000000009,
+              "if_follow": false
+            }
+            ]}/>
         </Box>
         <StarsPage setPrice={setPrice} price={price || 0} />
       </Box>

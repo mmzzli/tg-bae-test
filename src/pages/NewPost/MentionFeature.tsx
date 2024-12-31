@@ -93,7 +93,7 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ mentionCandidates, titl
       />
       {showMentionList && filteredCandidates.length > 0 && (
         <ul
-          className="absolute left-0 z-[111] w-[100%] border-t border-gray-300 bg-white"
+          className="absolute left-0 z-[111] w-[100%] border-t border-gray-300 bg-white h-[200px] overflow-auto"
           style={{ top: `${mentionTop}px` }}
         >
           {filteredCandidates.map((candidate) => (
@@ -105,9 +105,9 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ mentionCandidates, titl
               <img
                 src={candidate.avatar}
                 alt={candidate.tgname}
-                className="w-6 h-6 rounded-full mr-2"
+                className="w-9 h-9 rounded-full mr-3"
               />
-              <p className="text-sm text-gray-800">{candidate.tgname}</p>
+              <p className="text-4 text-[#333]">{candidate.tgname}</p>
             </li>
           ))}
         </ul>

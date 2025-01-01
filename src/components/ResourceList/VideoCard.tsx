@@ -1,7 +1,7 @@
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import { Box, HStack, Text } from '@chakra-ui/react'
 import { formatImage, formatTime } from '@/utils/utils'
-import React, { useCallback, useContext, useMemo, useRef } from 'react'
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import FrostedGlass from '@/components/ResourceList/FrostedGlass'
 import Image from '../Image/Image'
 import { PlayButton } from '@/components/ResourceList/ResourceList'
@@ -17,6 +17,7 @@ interface VideoCardProps {
 const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
   const videoCardContainer = useRef<HTMLDivElement>(null)
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
+  const cacheVideoIndex = useStore((state) => state.cacheVideoIndex)
   const setVideoResource = useStore((state) => state.setVideoResource)
   const { runDailyWatch } = useDailyTaskActions()
 
@@ -30,6 +31,52 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
       videoDom.muted = false
     }
   }, [])
+  const videoPlayerRef = useRef<HTMLVideoElement | null>(null)
+
+  const [playVideoTime, setPlayVideoTime] = useState(data.duration)
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout | null = null
+
+    const handleTimeUpdate = () => {
+      // 获取它的播放时间
+      // videoPlayerRef.current.
+      const lostTime = Number(data.duration) - (videoPlayerRef.current?.currentTime || 0)
+      setPlayVideoTime(lostTime < 0 ? 0 : lostTime)
+    }
+
+    const findVideoPlayer = () => {
+      videoPlayerRef.current = document.querySelector('#default-video-player')
+
+      if (cacheVideoIndex === data.id) {
+        if (videoPlayerRef.current) {
+          videoPlayerRef.current.addEventListener('timeupdate', handleTimeUpdate)
+
+          return () => {
+            if (videoPlayerRef.current) {
+              videoPlayerRef.current.removeEventListener('timeupdate', handleTimeUpdate)
+            }
+          }
+        } else {
+          timeoutId = setTimeout(findVideoPlayer, 100)
+        }
+      } else {
+        if (playVideoTime !== data.duration) {
+          setPlayVideoTime(data.duration)
+        }
+      }
+    }
+
+    findVideoPlayer()
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+      if (videoPlayerRef.current) {
+        videoPlayerRef.current.removeEventListener('timeupdate', handleTimeUpdate)
+      }
+    }
+  }, [cacheVideoIndex])
 
   const { getCurrentUid } = useTMAUtils()
 
@@ -79,7 +126,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
               >
                 <i className="iconfont icon-a-Frame2085661742 text-[12px] text-white"></i>
                 <Text color="white" fontSize="14px">
-                  {formatTime(Number(data.duration))}
+                  {formatTime(Number(playVideoTime))}
                 </Text>
               </HStack>
               {data.uid !== getCurrentUid() && data.price > 0 && !data.is_pay && (

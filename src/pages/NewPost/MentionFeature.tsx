@@ -80,23 +80,23 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsF
 
   const loadCandidates = async () => {
     try {
-      const res:any = await getFansFollowers(current_uid);
+      const res: any = await getFansFollowers(current_uid);
       setMentionCandidates(res);
     } catch (error) {
       console.error("Failed to fetch mention candidates:", error);
     }
   };
-  const mentionEve = (boll:boolean)=>{
-    isMobileDevice() && setIsFocused(boll)
-    setTimeout(()=>{
+  const mentionEve = (boll: boolean) => {
+    setTimeout(() => {
+      isMobileDevice() && setIsFocused(boll)
       setFeatureBoll(boll)
-    },100)
+    }, 0)
   }
 
   useEffect(() => {
     if (token && current_uid) {
       loadCandidates();
-      if(!isMobileDevice()){
+      if (!isMobileDevice()) {
         setFeatureBoll(true)
       }
     }
@@ -124,6 +124,11 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsF
         <ul
           className="absolute left-0 z-[111] w-[100%] border-t border-gray-300 bg-white h-[200px] overflow-auto"
           style={{ top: `${mentionTop}px` }}
+          onClick={() => {
+            if (textAreaRef.current) {
+              textAreaRef.current.focus();
+            }
+          }}
         >
           {filteredCandidates.map((candidate) => (
             <li

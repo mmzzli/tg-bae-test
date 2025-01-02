@@ -125,5 +125,5 @@ export const searchByUsername = (params: { field: string; page_num: number; reco
   return post<SearchItem>(`/api/v1/user/search_by_username`, params)
 }
 export const getSearchTgidName = (name:string) => {
-  return get<string>(`/api/v1/user/search_tgid_by_name/${name}`)
+  return get<number>(`/api/v1/user/search_tgid_by_name/${name}`)
 }

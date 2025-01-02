@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useStore } from '@/store'
 import { DefaultAvatarIcon } from '@/assets/icons'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
@@ -11,6 +11,7 @@ interface ProfileGuardProps {
 
 const ProfileGuard: FC<ProfileGuardProps> = ({ children }) => {
   const { uid } = useParams()
+  const navigate = useNavigate()
 
   const [ready, setReady] = useState(false)
   const { getCurrentUid } = useTMAUtils()
@@ -46,6 +47,10 @@ const ProfileGuard: FC<ProfileGuardProps> = ({ children }) => {
           console.log(uid,123)
           try {
             const id = await getSearchTgidName(`${uid}`)
+            if(id === current_uid){
+              navigate('/profile')
+              return
+            }
             const user = await getSomeoneProfile(Number(id))
             setOthersUserInfo({ ...user, user_id: user.uid })
           } catch (error) {

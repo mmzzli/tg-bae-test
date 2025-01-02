@@ -32,12 +32,13 @@ const Splash: FC = () => {
   const { list } = useRecommendList()
   const [isCached, setIsCached] = useState(false)
 
-  const { isInTMA } = useTMAUtils()
+  const { isInTMA, getCurrentUid } = useTMAUtils()
   const { startParam } = retrieveLaunchParams()
+  const current_uid = getCurrentUid()
 
   useEffect(() => {
     const timeoutTimer = setTimeout(() => {
-      const ageGateBoll = localStorage.getItem('ageGate')
+      const ageGateBoll = localStorage.getItem(`ageGate-${current_uid}`)
       if (ageGateBoll) {
         navigate('/home')
       } else {
@@ -65,7 +66,7 @@ const Splash: FC = () => {
 
   useEffect(() => {
     if (userInfo.user_id && token && isCached) {
-      const ageGateBoll = localStorage.getItem('ageGate')
+      const ageGateBoll = localStorage.getItem(`ageGate-${current_uid}`)
       if (!isInTMA || !startParam || history.length > 2) {
         if (ageGateBoll) {
           return navigate('/home')
@@ -100,7 +101,7 @@ const Splash: FC = () => {
 
   const handleNavigate = async (ref: string) => {
     console.log('token ready, navigating...')
-    const ageGateBoll = localStorage.getItem('ageGate')
+    const ageGateBoll = localStorage.getItem(`ageGate-${current_uid}`)
     if (!token) return
     try {
       const data = await getSingleMedia(ref)

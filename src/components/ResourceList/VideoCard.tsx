@@ -9,7 +9,7 @@ import { useStore } from '@/store'
 import { CardRecommendProvider } from '@/utils/constants'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
-import { VolumeMuteIcon } from '@/assets/icons'
+import { VolumeMuteIcon, VolumeSpeakerIcon } from '@/assets/icons'
 
 interface VideoCardProps {
   data: FormatterListItem
@@ -17,6 +17,8 @@ interface VideoCardProps {
 }
 const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
   const videoCardContainer = useRef<HTMLDivElement>(null)
+  const homeVideoMuted = useStore((state) => state.homeVideoMuted)
+  const setHomeVideoMuted = useStore((state) => state.setHomeVideoMuted)
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const cacheVideoIndex = useStore((state) => state.cacheVideoIndex)
   const setVideoResource = useStore((state) => state.setVideoResource)
@@ -132,14 +134,24 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
               </HStack>
               <HStack
                 position="absolute"
-                bottom="12px"
-                right="12px"
-                p="4px 10px"
+                bottom="20px"
+                right="16px"
+                p="5px"
                 gap="4px"
-                rounded="20px"
+                rounded="full"
                 zIndex={2}
+                bg="rgba(0, 0, 0, 0.40)"
+                cursor="pointer"
+                onClick={() => {
+                  console.log('click')
+                  setHomeVideoMuted(!homeVideoMuted)
+                }}
               >
-                <image src={VolumeMuteIcon} />
+                {homeVideoMuted ? (
+                  <Image src={VolumeMuteIcon} className="w-[26px] h-[26px] text-white" />
+                ) : (
+                  <Image src={VolumeSpeakerIcon} className="w-[26px] h-[26px] text-white" />
+                )}
               </HStack>
               {data.uid !== getCurrentUid() && data.price > 0 && !data.is_pay && (
                 <>

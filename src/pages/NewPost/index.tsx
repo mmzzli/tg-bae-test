@@ -635,11 +635,12 @@ export const NewPost: FC = () => {
             title={title}
             setTitle={setTitle}
             setIsFocused={setIsFocused}
+            isFocused={isFocused}
             />
         </Box>
         <StarsPage setPrice={setPrice} price={price || 0} />
       </Box>
-      <Box h={`${isFocused ? '800px' : ''}`}></Box>
+      <Box h={`${isFocused ? '700px' : ''}`}></Box>
     </Box>
   )
 }

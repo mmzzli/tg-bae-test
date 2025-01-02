@@ -18,9 +18,10 @@ interface MentionFeatureProps {
   title: string;
   setTitle: (str: string) => void;
   setIsFocused: (bool: boolean) => void;
+  isFocused: boolean
 }
 
-const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsFocused }) => {
+const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsFocused, isFocused }) => {
   const [mentionCandidates, setMentionCandidates] = useState<MentionCandidate[]>([]);
   const [showMentionList, setShowMentionList] = useState<boolean>(false);
   const [filteredCandidates, setFilteredCandidates] = useState<MentionCandidate[]>([]);
@@ -110,7 +111,7 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsF
         placeholder="Say something ..."
         h="80px"
       />
-      {showMentionList && filteredCandidates.length > 0 && (
+      {isFocused && showMentionList && filteredCandidates.length > 0 && (
         <ul
           className="absolute left-0 z-[111] w-[100%] border-t border-gray-300 bg-white h-[200px] overflow-auto"
           style={{ top: `${mentionTop}px` }}

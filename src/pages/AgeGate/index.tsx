@@ -14,6 +14,7 @@ const AgeGate = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams();
   const ref = searchParams.get('ref');
+  const type = searchParams.get('type');
   const [isChecked, setIsChecked] = useState<boolean>(false)
   const [isShowTime, setIsShowTime] = useState<boolean>(false)
   const { isInTMA, getCurrentUid } = useTMAUtils()
@@ -72,6 +73,10 @@ const AgeGate = () => {
             if (isChecked) {
               if (isShowTime) {
                 localStorage.setItem(`ageGate-${current_uid}`, '1')
+              }
+              if(type === "2"){
+                navigate(`/profile/${ref}`)
+                return
               }
               if(ref){
                 navigate(`/shares?ref=${ref}`)

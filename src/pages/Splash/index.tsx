@@ -115,7 +115,11 @@ const Splash: FC = () => {
         }
       } else if (data.type === SHARE_PROFILE) {
         setOthersUserInfo({ ...data.userInfo, uid: data.userInfo.user_id })
-        navigate(`/profile/${data.userInfo.uid || data.userInfo.user_id}`)
+        if(ageGateBoll){
+          navigate(`/profile/${data.userInfo.uid || data.userInfo.user_id}`)
+        }else{
+          navigate(`/ageGate?ref=${data.userInfo.uid || data.userInfo.user_id}&type=${data.type}`)
+        }
       }
     } catch (error) {
       toast({

@@ -297,7 +297,7 @@ const Tasks: FC = () => {
       {/* stars */}
       <div className="relative flex items-center justify-center mb-6 h-[93px] bg-[#F7F9FC] rounded-2xl">
         <div className="flex flex-col items-center justify-center flex-1">
-          <div className="h-[38px] text-[28px] font-bold flex items-center">
+          <div className="h-[38px] text-[24px] font-[800] flex items-center">
             {paidStars}
             <i className="iconfont icon-stars text-[22px] text-[#FFC700] ml-1"></i>
           </div>
@@ -305,7 +305,7 @@ const Tasks: FC = () => {
         </div>
         <div className="absolute top-[34px] bottom-[34px] left-1/2 w-[1px] bg-[#EBEBF4]"></div>
         <div className="relative flex flex-col items-center justify-center flex-1">
-          <div className="h-[38px] text-[28px] font-bold flex items-center">{paidStarsPoints}</div>
+          <div className="h-[38px] text-[24px] font-[800] flex items-center">{paidStarsPoints}</div>
           <div className="flex items-center text-[#666666] text-xs h-[20px]">
             Points earned
             <i

@@ -18,10 +18,9 @@ interface MentionFeatureProps {
   title: string;
   setTitle: (str: string) => void;
   setIsFocused: (bool: boolean) => void;
-  isFocused: boolean
 }
 
-const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsFocused, isFocused }) => {
+const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsFocused }) => {
   const [mentionCandidates, setMentionCandidates] = useState<MentionCandidate[]>([]);
   const [showMentionList, setShowMentionList] = useState<boolean>(false);
   const [filteredCandidates, setFilteredCandidates] = useState<MentionCandidate[]>([]);
@@ -29,6 +28,7 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsF
   const [mentionTop, setMentionTop] = useState<number>(0);
   const [mentionQuery, setMentionQuery] = useState<string>("");
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
+  const [featureBoll, setFeatureBoll] = useState<boolean>(false)
 
   const token = useStore((state) => state.token);
   const { getCurrentUid } = useTMAUtils();
@@ -86,10 +86,19 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsF
       console.error("Failed to fetch mention candidates:", error);
     }
   };
+  const mentionEve = (boll:boolean)=>{
+    isMobileDevice() && setIsFocused(boll)
+    setTimeout(()=>{
+      setFeatureBoll(boll)
+    },100)
+  }
 
   useEffect(() => {
     if (token && current_uid) {
       loadCandidates();
+      if(!isMobileDevice()){
+        setFeatureBoll(true)
+      }
     }
   }, [current_uid, token]);
 
@@ -99,8 +108,8 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsF
         ref={textAreaRef}
         className="placeholder-[#999] mt-6"
         value={title}
-        onFocus={() => isMobileDevice() && setIsFocused(true)}
-        onBlur={() => isMobileDevice() && setIsFocused(false)}
+        onFocus={() => mentionEve(true)}
+        onBlur={() => mentionEve(false)}
         onChange={handleInputChange}
         mt="10px"
         color="#333"
@@ -111,7 +120,7 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsF
         placeholder="Say something ..."
         h="80px"
       />
-      {isFocused && showMentionList && filteredCandidates.length > 0 && (
+      {featureBoll && showMentionList && filteredCandidates.length > 0 && (
         <ul
           className="absolute left-0 z-[111] w-[100%] border-t border-gray-300 bg-white h-[200px] overflow-auto"
           style={{ top: `${mentionTop}px` }}

@@ -612,7 +612,7 @@ export const NewPost: FC = () => {
               </Grid>
             )}
           </Box>
-          <Textarea
+          {/* <Textarea
             className="placeholder-[#999] mt-6"
             value={title}
             onFocus={() => {
@@ -630,16 +630,16 @@ export const NewPost: FC = () => {
             border="none"
             placeholder="Say something ..."
             h="80px"
-          />
-          {/* <MentionFeature
+          /> */}
+          <MentionFeature
             title={title}
             setTitle={setTitle}
             setIsFocused={setIsFocused}
-            /> */}
+            />
         </Box>
         <StarsPage setPrice={setPrice} price={price || 0} />
       </Box>
-      <Box h={`${isFocused ? '600px' : ''}`}></Box>
+      <Box h={`${isFocused ? '700px' : ''}`}></Box>
     </Box>
   )
 }

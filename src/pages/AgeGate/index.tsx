@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Checkbox, useToast } from '@chakra-ui/react'
 
 import BaseButton from '@/components/BaseButton/BaseButton'
@@ -7,22 +7,28 @@ import Image from '@/components/Image/Image'
 // import { GateImg } from '@/assets/image'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import Icon from '@/components/comm/Icon'
+import { useTMAUtils } from '@/hooks/useTMAUtils'
 
 const AgeGate = () => {
   const toast = useToast()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams();
+  const ref = searchParams.get('ref');
+  const type = searchParams.get('type');
   const [isChecked, setIsChecked] = useState<boolean>(false)
   const [isShowTime, setIsShowTime] = useState<boolean>(false)
+  const { isInTMA, getCurrentUid } = useTMAUtils()
+  const current_uid = getCurrentUid()
 
   const handleChange = () => {
     setIsChecked(!isChecked)
   }
 
   useEffect(() => {
-    if (localStorage.getItem('ageGate')) {
+    if (current_uid && localStorage.getItem(`ageGate-${current_uid}`)) {
       navigate('/home')
     }
-  }, [])
+  }, [current_uid])
   return (
     <div
       className="px-[20px] fixed w-screen bg-[#fff] z-10 overflow-auto scrollbar-hide"
@@ -66,9 +72,17 @@ const AgeGate = () => {
           handler={() => {
             if (isChecked) {
               if (isShowTime) {
-                localStorage.setItem('ageGate', '1')
+                localStorage.setItem(`ageGate-${current_uid}`, '1')
               }
-              navigate('/home')
+              if(type === "2"){
+                navigate(`/profile/${ref}`)
+                return
+              }
+              if(ref){
+                navigate(`/shares?ref=${ref}`)
+              }else{
+                navigate('/home')
+              }
             } else {
               toast({
                 render: () => {

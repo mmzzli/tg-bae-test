@@ -25,12 +25,13 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
   const [isBaseModalOpen, { toggle, on, off }] = useBoolean(false)
   const token = useStore((state) => state.token)
   const [loading, setLoading] = useState(false)
-
+  const isLandscape =
+    selectedFrame?.width && selectedFrame?.height
+      ? selectedFrame.width > selectedFrame.height
+      : false
   const extractFramesFromVideo = async () => {
     if (!videoRef.current) return
     const video = videoRef.current
-    console.log(videoRef)
-    console.log(video)
 
     const framesArray: Frame[] = []
     const canvas = document.createElement('canvas')
@@ -73,8 +74,8 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
   const handleSelectFrame = (frame: Frame) => {
     setSelectedFrame(frame)
   }
-  const handler = async (curl:string) => {
-    if(!curl){
+  const handler = async (curl: string) => {
+    if (!curl) {
       console.log('post error')
       return
     }
@@ -99,18 +100,15 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
   }
 
   useEffect(() => {
-    console.log(videoSrc,'123321')
-    if(videoRef){
+    if (videoRef) {
       const timer = setTimeout(() => {
         extractFramesFromVideo()
       }, 1000)
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer)
     }
   }, [videoRef, videoSrc])
   useEffect(() => {
-    console.log(frames)
     if (frames.length === 3) {
-      console.log(frames)
       setSelectedFrame(frames[0])
       handler(frames[0]?.url)
     }
@@ -147,7 +145,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
       <BaseModal
         isOpen={isBaseModalOpen}
         onClose={off}
-        height="90vh"
+        height={isLandscape ? '78vh' : '85vh'}
         animation={{
           duration: 400,
           timingFunction: 'ease-in-out',
@@ -217,7 +215,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
                   width="100%"
                   loading={loading}
                   className="h-[48px]"
-                  handler={()=>handler(selectedFrame?.url || '')}
+                  handler={() => handler(selectedFrame?.url || '')}
                 />
               </div>
             </div>

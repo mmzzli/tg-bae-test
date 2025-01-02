@@ -173,6 +173,9 @@ export interface ResourceListSlice {
   sharedPostList: FormatterListItem[]
   setSharedPostList: (list: ListItem[]) => void
   resetSharedPostList: () => void
+
+  homeVideoMuted: boolean
+  setHomeVideoMuted: (muted: boolean) => void
 }
 
 const initialListState: BaseListState = {
@@ -427,6 +430,10 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     })
   },
   cacheVideo: [],
+  homeVideoMuted: true,
+  setHomeVideoMuted: (muted) => {
+    set({ homeVideoMuted: muted })
+  },
   // 根据当前索引更新缓存池
   updateCacheVideo: (videoList, force = false) => {
     const { cacheVideoIndex, cacheVideo } = get()

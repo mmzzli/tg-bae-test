@@ -1,5 +1,6 @@
 import Hls from 'hls.js'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
+import { useStore } from '@/store'
 const video = document.createElement('video')
 video.controls = false
 video.playsInline = true
@@ -15,6 +16,8 @@ export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLE
   const url = videoCard.media[0]
 
   const curVideo = videoCardContainer.querySelector('video')
+
+  const homeVideoMuted = useStore.getState().homeVideoMuted
   if (curVideo) return
 
   const videoParentContainer = videoCardContainer.querySelector('.video-container')
@@ -58,16 +61,42 @@ export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLE
   hls.loadSource(url)
   hls.attachMedia(video)
 
+  const unsubscribeRoute = useStore.subscribe((state) => {
+    const currentPath = window.location.pathname
+    if (video) {
+      if (currentPath === '/home' || currentPath === '/') {
+        video.play().catch((error) => {
+          console.log('视频播放失败:', error)
+          video.muted = true
+          video.play()
+        })
+      } else {
+        video.pause()
+      }
+    }
+  })
+
+  const unsubscribe = useStore.subscribe((state) => {
+    const newMutedState = state.homeVideoMuted
+    if (video) {
+      video.muted = newMutedState
+    }
+  })
+
   hls.on(Hls.Events.MANIFEST_PARSED, () => {
     video.muted = true
-    console.log('loaded========')
-    video.play().catch((error) => {
+    video.play().then(() => {
+      video.muted = homeVideoMuted
+    }).catch((error) => {
       console.log(error, 'error====jacob')
       video.muted = true
       video.play()
-      // setTimeout(() => {
-      //   video.muted = false
-      // }, 1000)
     })
   })
+
+  // 清理函数
+  return () => {
+    unsubscribe()
+    unsubscribeRoute()
+  }
 }

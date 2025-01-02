@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
+import { useNavigate } from "react-router-dom";
+
 
 interface MoreTextProps {
   text: string
@@ -13,18 +15,34 @@ interface MoreTextProps {
 }
 
 const MoreText: React.FC<MoreTextProps> = ({
-  text,
-  moreColor = '#5D6BFF',
-  bgColor = '#fff',
-  textColor = '#666',
-  className = '',
-  type
-}) => {
+                                             text,
+                                             moreColor = '#5D6BFF',
+                                             bgColor = '#fff',
+                                             textColor = '#666',
+                                             className = '',
+                                             type
+                                           }) => {
+  const navigate = useNavigate()
+
   const [isExpanded, setIsExpanded] = useState(false)
   const [isTextClipped, setIsTextClipped] = useState(false)
   const processedText = text.replace(/\n/g, ' ').trim()
   const [displayText, setDisplayText] = useState(processedText)
   const textRef = useRef<HTMLDivElement | null>(null)
+
+
+  const highlightMentions = (text: string): React.ReactNode[] => {
+    const mentionRegex = /@\w+/g;
+    return text.split(mentionRegex).reduce<React.ReactNode[]>((acc, part, index, array) => {
+      if (index < array.length - 1) {
+        const mentions = text.match(mentionRegex) || [];
+        const name = mentions[index].replace(/@/g, '');
+        return [...acc, part, <a onClick={() => navigate(`/profile/${name}`)} key={index} className='text-[#6254FF]'>{mentions[index]}</a>];
+      }
+      return [...acc, part];
+    }, []);
+  };
+
 
   useEffect(() => {
     let frameId: number
@@ -107,25 +125,12 @@ const MoreText: React.FC<MoreTextProps> = ({
     }
   }, [text, isExpanded, processedText])
 
-  const highlightMentions = (text: string): React.ReactNode[] => {
-    const mentionRegex = /@\w+/g; // 匹配以 @ 开头的单词
 
-    // 使用 split 和 match 分割和提取
-    return text.split(mentionRegex).reduce<React.ReactNode[]>((acc, part, index, array) => {
-      if (index < array.length - 1) {
-        const mentions = text.match(mentionRegex) || [];
-        const urlId = mentions[index].replace(/@/g, '')
-        return [...acc, part, <a href={`/profile/${urlId}`} key={index} style={{ color: '#6254FF' }}>{mentions[index]}</a>];
-      }
-      return [...acc, part];
-    }, []);
-  };
   return (
     <div className="relative mt-[8px]">
       <div
         ref={textRef}
-        className={`text-sm leading-relaxed overflow-hidden transition-all duration-300 dark:text-[#333333] font-weight-500 ${isExpanded ? 'line-clamp-none' : 'line-clamp-2'
-          }  text-[${textColor}] dark:text-[${textColor}] ${className}`}
+        className={`text-sm leading-relaxed whitespace-pre-wrap ${className}`}
         style={{
           color: textColor,
           wordBreak: 'break-word',
@@ -135,9 +140,7 @@ const MoreText: React.FC<MoreTextProps> = ({
           hyphens: 'auto',
         }}
       >
-        {displayText}
-        {type === 'post'?highlightMentions(text):text}
-        {/* 切换按钮 */}
+        {type === "post" ? highlightMentions(displayText) : displayText}
         {isTextClipped && (
           <span
             style={{

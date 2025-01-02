@@ -21,9 +21,9 @@ interface MentionFeatureProps {
 }
 
 const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsFocused }) => {
-  const [mentionCandidates, setMentionCandidates] = useState<MentionCandidate[]>([]); // 修正类型
+  const [mentionCandidates, setMentionCandidates] = useState<MentionCandidate[]>([]);
   const [showMentionList, setShowMentionList] = useState<boolean>(false);
-  const [filteredCandidates, setFilteredCandidates] = useState<MentionCandidate[]>([]); // 修正类型
+  const [filteredCandidates, setFilteredCandidates] = useState<MentionCandidate[]>([]);
   const [cursorPosition, setCursorPosition] = useState<number>(0);
   const [mentionTop, setMentionTop] = useState<number>(0);
   const [mentionQuery, setMentionQuery] = useState<string>("");
@@ -39,17 +39,15 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsF
     setTitle(value);
     setCursorPosition(selectionStart);
 
-    // 计算弹窗位置
     if (textAreaRef.current) {
       const rect = textAreaRef.current.getBoundingClientRect();
       setMentionTop(rect.height + 40);
     }
 
-    // 获取当前输入内容并匹配规则
     const queryMatch = value.slice(0, selectionStart).match(/(^|\s)@([a-zA-Z0-9]*)$/);
 
     if (queryMatch) {
-      const query = queryMatch[2] || ""; // 检查 queryMatch[2] 是否为 undefined
+      const query = queryMatch[2] || "";
       setMentionQuery(query);
       setFilteredCandidates(
         mentionCandidates.filter((candidate) =>

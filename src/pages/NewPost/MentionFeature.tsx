@@ -41,7 +41,7 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsF
 
     if (textAreaRef.current) {
       const rect = textAreaRef.current.getBoundingClientRect();
-      setMentionTop(rect.height + 40);
+      setMentionTop(rect.height + 40 - 14);
     }
 
     const queryMatch = value.slice(0, selectionStart).match(/(^|\s)@([a-zA-Z0-9]*)$/);

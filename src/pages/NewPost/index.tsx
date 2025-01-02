@@ -487,15 +487,15 @@ export const NewPost: FC = () => {
       window.removeEventListener('focusout', handleKeyboardHide)
     }
   }, [])
-  // useEffect(() => {
-  //   if (isFocused) {
-  //     const scrollable: any = document.getElementById('scrollable')
-  //     scrollable.scrollTo({
-  //       top: 100000,
-  //       behavior: 'smooth',
-  //     })
-  //   }
-  // }, [isFocused])
+  useEffect(() => {
+    if (isFocused) {
+      const scrollable: any = document.getElementById('scrollable')
+      scrollable.scrollTo({
+        top: 100000,
+        behavior: 'smooth',
+      })
+    }
+  }, [isFocused])
 
   return (
     <Box
@@ -639,7 +639,7 @@ export const NewPost: FC = () => {
         </Box>
         <StarsPage setPrice={setPrice} price={price || 0} />
       </Box>
-      {/* <Box h={`${isFocused ? '600px' : ''}`}></Box> */}
+      <Box h={`${isFocused ? '800px' : ''}`}></Box>
     </Box>
   )
 }

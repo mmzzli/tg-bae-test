@@ -46,10 +46,10 @@ function App() {
     const root = document.querySelector('#root')
     if (root instanceof HTMLElement) {
       const onFocusIn = () => {
-        root.style.paddingBottom = '300px'
+        root.style.paddingBottom = '300px' //键盘高度
       }
       const onFocusOut = () => {
-        root.style.paddingBottom = '0px'
+        root.style.paddingBottom = '0px' //键盘高度
       }
 
       document.addEventListener('focusin', onFocusIn)

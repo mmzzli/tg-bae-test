@@ -9,15 +9,20 @@ import Icon from '../comm/Icon'
 import PostSkeleton from '../Skeketon/PostSkeleton'
 import { Tabs } from 'antd'
 import './tab.css'
+import { useLocation } from 'react-router-dom'
+import { useActivate, useUnactivate } from 'react-activation'
 
 interface PostListProps {
   className?: string
 }
 
+type Align = 'start' | 'center' | 'end';
 const ViewList = ({ className }: PostListProps) => {
   const { initialize } = useFavList()
   const [ids, setIsd] = useState<string>('posts')
   const [showIndicator, setShowIndicator] = useState(false)
+  const [alignValue, setAlignValue] = useState<Align>('center');
+  const location = useLocation()
 
   const menuItems = useMemo(() => [
     {
@@ -42,15 +47,22 @@ const ViewList = ({ className }: PostListProps) => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setShowIndicator(true)
+      if (location.pathname.includes('/profile')) {
+        setAlignValue('center')
+      }
     }, 100)
     return () => clearTimeout(timer)
-  }, [])
+  }, [location.pathname])
+
+  useActivate(() => {
+    setAlignValue('center')
+  })
+
 
   const indicatorConfig = useMemo(() => ({
     size: () => 32,
-    align: 'center' as const,
-    render: showIndicator ? undefined : () => null
+    align: alignValue,
+    render: () => null
   }), [showIndicator]);
 
   const handleTabChange = (key: string) => {
@@ -102,7 +114,7 @@ const ViewList = ({ className }: PostListProps) => {
           className="mx-4"
           size='small'
           tabBarStyle={tabBarStyle}
-          indicator={indicatorConfig}
+          indicator={{ size: () => 32, align: alignValue, }}
         />
       </div>
       <div className={cn(className, '')} id="targetElement">

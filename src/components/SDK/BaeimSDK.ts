@@ -90,7 +90,7 @@ class BaeimSDK {
       }
       config.provider.syncMessagesCallback = cb
     }
-    config.heartbeatInterval = 30000
+    config.heartbeatInterval = 35000
     WKSDK.shared().config = config
 
     this.connect()

@@ -21,7 +21,7 @@ const ViewList = ({ className }: PostListProps) => {
   const { initialize } = useFavList()
   const [ids, setIsd] = useState<string>('posts')
   const [showIndicator, setShowIndicator] = useState(false)
-  const [alignValue, setAlignValue] = useState<Align>('center');
+  const [alignValue, setAlignValue] = useState<Align>('start');
   const location = useLocation()
 
   const menuItems = useMemo(() => [
@@ -55,9 +55,14 @@ const ViewList = ({ className }: PostListProps) => {
   }, [location.pathname])
 
   useActivate(() => {
-    setAlignValue('center')
+    setTimeout(() => {
+      setAlignValue('center')
+    }, 100)
   })
 
+  useUnactivate(() => {
+    setAlignValue('start')
+  })
 
   const indicatorConfig = useMemo(() => ({
     size: () => 32,

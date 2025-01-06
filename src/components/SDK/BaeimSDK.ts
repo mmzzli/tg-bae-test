@@ -98,6 +98,7 @@ class BaeimSDK {
 
   private async connect() {
     if (WKSDK.shared().connectManager.status === ConnectStatus.Connected) {
+      console.log('SDK already connected.')
       return
     }
     try {

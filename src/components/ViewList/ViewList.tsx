@@ -17,7 +17,7 @@ interface PostListProps {
 const ViewList = ({ className }: PostListProps) => {
   const { initialize } = useFavList()
   const [ids, setIsd] = useState<string>('posts')
-  const [isAnimated, setIsAnimated] = useState<boolean>(false)
+  const [showIndicator, setShowIndicator] = useState(false)
 
   const menuItems = useMemo(() => [
     {
@@ -40,10 +40,18 @@ const ViewList = ({ className }: PostListProps) => {
     fontWeight: '500',
   }), []);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowIndicator(true)
+    }, 100)
+    return () => clearTimeout(timer)
+  }, [])
+
   const indicatorConfig = useMemo(() => ({
     size: () => 32,
-    align: 'center' as const
-  }), []);
+    align: 'center' as const,
+    render: showIndicator ? undefined : () => null
+  }), [showIndicator]);
 
   const handleTabChange = (key: string) => {
     initialize()
@@ -79,14 +87,6 @@ const ViewList = ({ className }: PostListProps) => {
     };
   }, []);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsAnimated(true)
-    }, 1000)
-
-    return () => clearTimeout(timer)
-  }, [])
-
   return (
     <>
       <div
@@ -103,7 +103,6 @@ const ViewList = ({ className }: PostListProps) => {
           size='small'
           tabBarStyle={tabBarStyle}
           indicator={indicatorConfig}
-          animated={false}
         />
       </div>
       <div className={cn(className, '')} id="targetElement">

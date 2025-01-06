@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Box } from '@chakra-ui/react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import ResourceList from '../ResourceList/ResourceList'
@@ -18,7 +18,7 @@ const ViewList = ({ className }: PostListProps) => {
   const { initialize } = useFavList()
   const [ids, setIsd] = useState<string>('posts')
 
-  const menuItems = [
+  const menuItems = useMemo(() => [
     {
       key: 'posts',
       label: 'My posts',
@@ -31,7 +31,18 @@ const ViewList = ({ className }: PostListProps) => {
       key: 'saved',
       label: 'Saved',
     },
-  ]
+  ], []);
+
+  const tabBarStyle = useMemo(() => ({
+    color: '#666',
+    fontSize: '16px',
+    fontWeight: '500',
+  }), []);
+
+  const indicatorConfig = useMemo(() => ({
+    size: () => 32,
+    align: 'center' as const
+  }), []);
 
   const handleTabChange = (key: string) => {
     initialize()
@@ -81,12 +92,8 @@ const ViewList = ({ className }: PostListProps) => {
           onChange={handleTabChange}
           className="mx-4"
           size='small'
-          tabBarStyle={{
-            color: '#666',
-            fontSize: '16px',
-            fontWeight: '500',
-          }}
-          indicator={{ size: (origin) => 32, align: 'center' }}
+          tabBarStyle={tabBarStyle}
+          indicator={indicatorConfig}
         />
       </div>
       <div className={cn(className, '')} id="targetElement">

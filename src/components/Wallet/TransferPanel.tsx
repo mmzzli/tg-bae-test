@@ -1,0 +1,175 @@
+import { useState, useEffect, useRef } from 'react'
+import { formatUnits } from 'viem'
+import BigNumber from 'bignumber.js'
+import { SendRewardButton } from './SendRewardButton'
+
+interface TransferPanelProps {
+  balance: bigint
+  symbol: string
+  decimals: number
+  price?: number // USD price
+  onAmountChange: (amount: string) => void
+  tokenAddress: string
+  contractAddress: string
+  chainId: number
+}
+
+export const TransferPanel = ({
+  balance,
+  symbol,
+  decimals,
+  price = 0,
+  tokenAddress,
+  contractAddress,
+  onAmountChange,
+  chainId,
+}: TransferPanelProps) => {
+  const [amount, setAmount] = useState('')
+  const [error, setError] = useState('')
+  const formattedBalance = formatUnits(balance, decimals)
+
+  const [inputWidth, setInputWidth] = useState(0)
+  const [unitMeasureWidth, setUnitMeasureWidth] = useState(0)
+  const measureRef = useRef<HTMLSpanElement>(null)
+  const unitMeasureRef = useRef<HTMLSpanElement>(null)
+  const percentages = [
+    { label: '10%', value: 0.1 },
+    { label: '25%', value: 0.25 },
+    { label: '50%', value: 0.5 },
+    { label: 'MAX', value: 1 },
+  ]
+
+  const validateAmount = (value: string) => {
+    if (!value) {
+      setError('')
+      return true
+    }
+
+    const decimalParts = value.split('.')
+    if (decimalParts.length > 1 && decimalParts[1].length > decimals) {
+      setError(`Max ${decimals} decimal places`)
+      return false
+    }
+
+    if (!/^\d*\.?\d*$/.test(value)) {
+      setError('Invalid input')
+      return false
+    }
+
+    try {
+      const inputBN = new BigNumber(value)
+      const balanceBN = new BigNumber(formattedBalance)
+
+      if (inputBN.isGreaterThan(balanceBN)) {
+        setError('Insufficient balance')
+        return false
+      }
+    } catch {
+      setError('Invalid input')
+      return false
+    }
+
+    const validNumberFormat = /^([1-9]\d*|0)(\.\d*[1-9])?$/
+    if (!validNumberFormat.test(value)) {
+      setError('Invalid input')
+      return true
+    }
+
+    setError('')
+    return true
+  }
+
+  const handleAmountChange = (value: string) => {
+    if (!/^\d*\.?\d*$/.test(value) && value !== '') return
+
+    setAmount(value)
+    if (validateAmount(value)) {
+      onAmountChange(value)
+    }
+  }
+
+  const handlePercentageClick = (percentage: number) => {
+    const balanceBN = new BigNumber(formattedBalance)
+    const newAmount = balanceBN.multipliedBy(percentage)
+    handleAmountChange(newAmount.toString())
+  }
+
+  const usdValue = new BigNumber(amount || '0').multipliedBy(price).toFixed(2)
+
+  useEffect(() => {
+    if (measureRef.current) {
+      const width = measureRef.current.offsetWidth
+      setInputWidth(Math.max(0, width + 12))
+    }
+  }, [amount])
+
+  useEffect(() => {
+    if (unitMeasureRef.current) {
+      const width = unitMeasureRef.current.offsetWidth
+      setUnitMeasureWidth(Math.max(0, width))
+    }
+  }, [])
+
+  return (
+    <div className="flex flex-col w-full">
+      <div className="text-[48px] font-bold absolute invisible">
+        <span ref={measureRef} className=" whitespace-pre" style={{ fontFamily: 'inherit' }}>
+          {amount || '0'}
+        </span>
+        <span ref={unitMeasureRef} className="whitespace-pre" style={{ fontFamily: 'inherit' }}>
+          {symbol}
+        </span>
+      </div>
+
+      <div className="relative flex justify-center items-center h-[58px] overflow-hidden">
+        <div
+          className="relative inline-flex items-center text-[48px] font-bold"
+          style={{ width: `${inputWidth + unitMeasureWidth}px` }}
+        >
+          <input
+            type="number"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            value={amount}
+            onChange={(e) => handleAmountChange(e.target.value)}
+            className=" h-[58px] w-full bg-transparent border-none outline-none text-[#12122A] font-bold"
+            placeholder="0"
+            style={{ paddingRight: `${unitMeasureWidth}px` }}
+          />
+          <span
+            className="absolute text-[#C1C0D8]"
+            style={{ left: '100%', transform: 'translateX(-100%)' }}
+          >
+            {symbol}
+          </span>
+        </div>
+      </div>
+
+      <div className="text-center text-base text-[#616184]">${usdValue}</div>
+
+      <div className="text-center text-xs text-[#EB4B6D] h-[18px] mt-2">{error}</div>
+
+      <div className="flex items-center justify-center gap-2 mt-6 h-[42px]">
+        {percentages.map(({ label, value }) => (
+          <button
+            key={label}
+            onClick={() => handlePercentageClick(value)}
+            className="font-medium text-sm w-[74px] h-[34px] flex items-center justify-center rounded-full bg-[#F7F9FC] hover:bg-[#F7F9FC]"
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-5 flex justify-center">
+        <SendRewardButton
+          amount={amount}
+          tokenAddress={tokenAddress}
+          contractAddress={contractAddress}
+          chainId={chainId}
+          disabled={!!error}
+        />
+      </div>
+    </div>
+  )
+}

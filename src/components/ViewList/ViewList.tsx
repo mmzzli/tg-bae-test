@@ -17,6 +17,7 @@ interface PostListProps {
 const ViewList = ({ className }: PostListProps) => {
   const { initialize } = useFavList()
   const [ids, setIsd] = useState<string>('posts')
+  const [isAnimated, setIsAnimated] = useState<boolean>(false)
 
   const menuItems = useMemo(() => [
     {
@@ -78,6 +79,14 @@ const ViewList = ({ className }: PostListProps) => {
     };
   }, []);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsAnimated(true)
+    }, 1000)
+
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
     <>
       <div
@@ -94,6 +103,7 @@ const ViewList = ({ className }: PostListProps) => {
           size='small'
           tabBarStyle={tabBarStyle}
           indicator={indicatorConfig}
+          animated={isAnimated}
         />
       </div>
       <div className={cn(className, '')} id="targetElement">

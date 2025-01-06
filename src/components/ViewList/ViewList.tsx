@@ -7,6 +7,8 @@ import { useFavList, useOrdersList, useViewList } from '@/store/hook/useResource
 import Empty from '../comm/Empty'
 import Icon from '../comm/Icon'
 import PostSkeleton from '../Skeketon/PostSkeleton'
+import { Tabs } from 'antd'
+import './tab.css'
 
 interface PostListProps {
   className?: string
@@ -15,23 +17,25 @@ interface PostListProps {
 const ViewList = ({ className }: PostListProps) => {
   const { initialize } = useFavList()
   const [ids, setIsd] = useState<string>('posts')
-  const menuList = [
+
+  const menuItems = [
     {
-      name: 'My posts',
-      id: 'posts',
+      key: 'posts',
+      label: 'My posts',
     },
     {
-      name: 'Purchased',
-      id: 'purchased',
+      key: 'purchased',
+      label: 'Purchased',
     },
     {
-      name: 'Saved',
-      id: 'saved',
+      key: 'saved',
+      label: 'Saved',
     },
   ]
-  const tabEve = (id: string) => {
+
+  const handleTabChange = (key: string) => {
     initialize()
-    setIsd(id)
+    setIsd(key)
   }
 
   const [targetBoll, setTargetBoll] = useState<boolean>(false)
@@ -65,23 +69,25 @@ const ViewList = ({ className }: PostListProps) => {
 
   return (
     <>
-      <div className={targetBoll ? `fixed top-0 w-full bg-white z-[111]` : ''}
+      <div
+        className={targetBoll ? `fixed top-0 w-full bg-white z-[111]` : ''}
         style={{
           paddingTop: targetBoll ? `calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))`:'',
         }}
       >
-        <Box className="flex justify-around" borderBottom="1px solid #EBEBF4">
-          {menuList.map((item) => (
-            <div
-              key={item.id}
-              className={`text-[16px] text-[${item.id === ids ? '#0F1233' : '#666'}] font-medium`}
-              onClick={() => tabEve(item.id)}
-            >
-              {item.name}
-              {item.id === ids && <p className="w-[32px] bg-[#4A3AFF] h-[2px] m-[auto] mt-[8px]"></p>}
-            </div>
-          ))}
-        </Box>
+        <Tabs
+          activeKey={ids}
+          items={menuItems}
+          onChange={handleTabChange}
+          className="mx-4"
+          size='small'
+          tabBarStyle={{
+            color: '#666',
+            fontSize: '16px',
+            fontWeight: '500',
+          }}
+          indicator={{ size: (origin) => 32, align: 'center' }}
+        />
       </div>
       <div className={cn(className, '')} id="targetElement">
         {ids === 'posts' && <MyPosts key={'posts'} />}

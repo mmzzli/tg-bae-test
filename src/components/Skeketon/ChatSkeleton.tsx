@@ -1,3 +1,5 @@
+import { Skeleton } from 'antd-mobile'
+
 export default function ChatSkeleton() {
   return (
     <div className="flex items-center gap-4 p-6 h-[56px] mb-[20px]">
@@ -19,9 +21,7 @@ export default function ChatSkeleton() {
 
 export const SkeletonShine = () => {
   return (
-    <div
-      className="absolute top-0 left-[-120px] w-[120px] h-full animate-shimmer bg-gradient-to-r from-transparent via-white/70 to-transparent"
-    ></div>
+    <div className="absolute top-0 left-[-120px] w-[120px] h-full animate-shimmer bg-gradient-to-r from-transparent via-white/70 to-transparent"></div>
   )
 }
 
@@ -34,3 +34,24 @@ export const DrawSkeletonItem: React.FC<{ className: string }> = ({ className })
     </div>
   )
 }
+
+interface SearchPageSkeletonProps {
+  className?: string;
+  count: number; // 配置子项个数
+}
+
+export const SearchPageSkeleton: React.FC<SearchPageSkeletonProps> = ({ className = '', count }) => {
+  return (
+    <div className={`w-full flex flex-col gap-4 ${className}`}>
+      {Array.from({ length: count }).map((_, index) => (
+        <div
+          key={index}
+          className="w-full flex items-center gap-4"
+        >
+          <div className="adm-skeleton adm-skeleton-animated w-[56px] h-[56px] rounded-full bg-[#F4F4F4] dark:bg-[#272727]"></div>
+          <Skeleton.Paragraph className="w-[60%]" lineCount={2} animated />
+        </div>
+      ))}
+    </div>
+  );
+};

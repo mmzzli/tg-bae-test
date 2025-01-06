@@ -124,3 +124,8 @@ video {
 .border-1:hover::after {
   transform: scale(0.5); /* 缩小至实际边框大小 */
 }
+
+.adm-skeleton.adm-skeleton-paragraph-line {
+  --height: 12px !important;
+}
+

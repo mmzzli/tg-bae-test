@@ -639,7 +639,7 @@ export const NewPost: FC = () => {
         </Box>
         <StarsPage setPrice={setPrice} price={price || 0} />
       </Box>
-      <Box h={`${isFocused ? '600px' : ''}`}></Box>
+      <Box h={`${isFocused ? '700px' : ''}`}></Box>
     </Box>
   )
 }

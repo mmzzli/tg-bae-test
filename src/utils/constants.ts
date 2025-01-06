@@ -11,7 +11,8 @@ export const COMMUNITY_LINK = 'https://t.me/bae_epoch'
 // export const DEV_INIT_DATA_RAW =
 //   'query_id=AAGPWGl0AgAAAI9YaXRCJCcS&user=%7B%22id%22%3A6248028303%2C%22first_name%22%3A%22GrayCookie%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22GrayJy1915%22%2C%22language_code%22%3A%22zh-hans%22%2C%22allows_write_to_pm%22%3Atrue%7D&auth_date=1730567469&hash=4c7ee210c591d2cfb1c879ffd2436530d0b81f6fa1731ac852dc31e3e3c3b51c'
 
-export const DEV_INIT_DATA_RAW = `query_id=AAFNmGp-AgAAAE2Yan7BWxgn&user=%7B%22id%22%3A6415882317%2C%22first_name%22%3A%22Jacob%22%2C%22last_name%22%3A%22zhao%22%2C%22username%22%3A%22Jacobizhao%22%2C%22language_code%22%3A%22zh-hans%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FXmEI1Kz5fjkOSL6oEMDY4XkK6Rst74TQzQC1S2TAV_buacn8uBVk0MhT80JaAvDT.svg%22%7D&auth_date=1735571320&signature=Vu6l9MUeqOJP0m7NMgnht8BGluFXC5QtX-gtDChORpvGipFanIa8uBiQt4UoHK7LZ_fwJJHv_YGOIKYgYdasCg&hash=f87d5142997f49aa0fdbcf4c9ab570265b5319f90d69091b16f355fe75a3e8d3`
+export const DEV_INIT_DATA_RAW = import.meta.env.VITE_APP_DEV_INIT_DATA_RAW || ''
+
 export const CardRecommendProvider = createContext<
   { recommend: boolean; setVideoOpen: React.Dispatch<React.SetStateAction<boolean>> } | undefined
 >(undefined)

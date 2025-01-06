@@ -114,7 +114,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
                   className="object-left w-[100%] m-[auto]"
                   onClick={() => handleVideoClick(data)}
                 />
-                {/* {data.media?.[0] && <PlayButton onClick={() => handleVideoClick(data)} />} */}
+                {data.media?.[0] && <PlayButton onClick={() => handleVideoClick(data)} />}
               </div>
               <HStack
                 borderRadius="4px"

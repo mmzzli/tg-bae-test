@@ -103,7 +103,7 @@ const ViewList = ({ className }: PostListProps) => {
           size='small'
           tabBarStyle={tabBarStyle}
           indicator={indicatorConfig}
-          animated={isAnimated}
+          animated={false}
         />
       </div>
       <div className={cn(className, '')} id="targetElement">

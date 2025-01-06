@@ -7,10 +7,11 @@ import EarningsPage from '@/components/PersonalDetails/Earnings'
 import ShareUser from './ShareUser'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { profileImg } from '@/assets/image'
-import More from './More'
 import ProfileSkeleton from '../Skeketon/ProfileSkeleton'
 import Notification from './Notification/Notification'
 import MoreText from '@/components/More/MoreText'
+// import ConnectButton from '../Wallet/ConnectButton'
+
 const UserProfile: FC = () => {
   const { launchParams } = useTMAUtils()
   const userId = launchParams.initData?.user?.id ?? 0
@@ -99,6 +100,20 @@ const UserProfile: FC = () => {
           </Text>
         </Box>
       </HStack>
+      <div>
+        {/* <BaseButton
+          text="Connect wallet"
+          className="h-[48px] mb-[24px] w-[343px]"
+          // handler={async () => {
+          //   const tomo_ton = window.tomo_ton
+          //   await tomo_ton?.connect()
+          // }}
+          handler={() => {
+            openConnectModal()
+          }}
+        ></BaseButton> */}
+        {/* <ConnectButton /> */}
+      </div>
     </Box>
   )
 }

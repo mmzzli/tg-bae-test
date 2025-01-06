@@ -14,6 +14,7 @@ import SendMediaModal from '@/components/Chat/SendMediaModal'
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { debounce } from '@/utils/chat/schedulers'
+import RewardButton from '@/components/Wallet/RewardButton'
 // const PAGE_SIZE = 20
 const isIOS = () => {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
@@ -131,9 +132,10 @@ const MessagePageIOS = () => {
     if (!containerRef.current) return
     const tg = window.Telegram?.WebApp
     setInitTgViewportHeight(tg.viewportStableHeight)
-    // 这个函数在视口变化时立即执行 可以提前确定布局
 
+    // 这个函数在视口变化时立即执行 可以提前确定布局
     const handleViewportChange = debounce(() => {
+      if (useStore.getState().virtualRoutePage?.name === 'SendRewardPage') return
       console.log('###### TG viewportChanged ######')
       console.log('tg.viewportStableHeight', tg.viewportStableHeight)
       console.log('initTgViewportHeightRef', initTgViewportHeightRef.current)
@@ -153,7 +155,8 @@ const MessagePageIOS = () => {
 
     // 这个函数在视口稳定后执行 可以在这个之后稳定real input位置
     const handleVisualViewportResize = debounce(() => {
-      if (!window.visualViewport) return
+      if (useStore.getState().virtualRoutePage?.name === 'SendRewardPage' || !window.visualViewport)
+        return
       const currentHeight = window.visualViewport.height
 
       console.log('###### window visualViewport ######')
@@ -196,7 +199,7 @@ const MessagePageIOS = () => {
   return (
     <div
       ref={containerRef}
-      className="absolute top-0 left-0 right-0 flex flex-col dark:bg-[#000000] bg-white z-[8888] overflow-hidden slide-in-from-right"
+      className="absolute top-0 left-0 right-0 flex flex-col dark:bg-[#000000] bg-white z-[10] overflow-hidden slide-in-from-right"
       style={{
         WebkitOverflowScrolling: 'touch',
         transition: isIOS() ? 'height 0.3s ease-in-out' : '',
@@ -243,78 +246,92 @@ const MessagePageIOS = () => {
 
       {/* FAKE INPUT */}
       <div
-        className={`'flex h-[68px] absolute border-t border-t-[#EBEBF4] dark:border-t-black bottom-0 left-0 right-0 dark:bg-black bg-white pr-[14px] pt-[5px] pl-[42px] ${
+        className={`'flex h-[68px] absolute border-t border-t-[#EBEBF4] dark:border-t-black bottom-0 left-0 right-0 dark:bg-black bg-white pl-[48px] ${
           showInput ? 'hidden' : 'block'
         }`}
       >
-        <div
-          onClick={() => {
-            inputRef.current?.focus()
-          }}
-          className="flex items-center flex-1 h-[36px] text-sm dark:bg-black bg-[#F5F3F3] border-[1px]
-        dark:border-[#4B4B4D] border-[#F5F3F3] rounded-full px-3 pr-[54px]"
-          style={{
-            color: message ? '#333333' : '#999999',
-          }}
-        >
-          {message ? message : 'Type a Message...'}
-        </div>
-        <div
-          onClick={handleSubmit}
-          className="absolute items-center justify-center top-[10px] rounded-full h-[26px] w-[48px] right-[20px] cursor-pointer bg-[#6761FF] z[999]"
-          style={{
-            display: message ? 'flex' : 'none',
-          }}
-        >
-          <i
-            className="iconfont icon-a-Frame2085661744 text-white mt-[2px]"
-            style={{ fontSize: '20px' }}
-          ></i>
+        <div className="relative flex items-center w-full h-[46px] box-border">
+          <div
+            onClick={() => {
+              inputRef.current?.focus()
+            }}
+            className="flex items-center flex-1 h-[36px] text-sm dark:bg-black bg-[#F5F3F3] border-[1px]
+        dark:border-[#4B4B4D] border-[#F5F3F3] rounded-full pl-3 pr-[60px] overflow-hidden"
+            style={{
+              color: message ? '#333333' : '#999999',
+            }}
+          >
+            <span className="flex-1 overflow-hidden whitespace-nowrap">
+              {message ? message : 'Type a Message...'}
+            </span>
+          </div>
+
+          <div className="flex items-center justify-center h-[28px] min-w-[48px] overflow-hidden">
+            <RewardButton userInfo={chatPeople || ({} as OthersUserInfo)} />
+          </div>
+
+          <div
+            onClick={handleSubmit}
+            className="absolute items-center justify-center top-[10px] rounded-full h-[26px] w-[48px] right-[54px] cursor-pointer bg-[#6761FF] z[999]"
+            style={{
+              display: message ? 'flex' : 'none',
+            }}
+          >
+            <i
+              className="iconfont icon-a-Frame2085661744 text-white mt-[2px]"
+              style={{ fontSize: '20px' }}
+            ></i>
+          </div>
         </div>
       </div>
 
       {/* REAL INPUT */}
       <div
         className={cn(
-          'flex h-[68px] absolute left-0 right-0 dark:bg-black bg-[#ffffff] border-t dark:border-none border-t-[#F5F3F3] overflow-hidden',
+          'flex h-[68px] absolute left-0 right-0 dark:bg-black bg-[#ffffff] border-t dark:border-none border-t-[#F5F3F3] overflow-hidden pl-[48px]',
           showInput ? 'bottom-0 opacity-100' : '-top-32 opacity-0'
         )}
       >
-        <input
-          ref={inputRef}
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyDown={handleKeyPress}
-          type="text"
-          className="absolute left-[42px] right-[14px] top-[5px] h-[36px] leading-[36px] pb-[1px] pl-[13px] text-sm dark:border-[1px] dark:bg-black
+        <div className="relative flex h-[46px] items-center w-full">
+          <input
+            ref={inputRef}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={handleKeyPress}
+            type="text"
+            className="flex-1 h-[36px] leading-[36px] pb-[1px] pl-[13px] text-sm dark:border-[1px] dark:bg-black
            dark:border-[#4B4B4D] dark:focus:border-[#4B4B4D] focus:border-[#F5F3F3] bg-[#F5F3F3] rounded-full outline-none
             dark:text-white dark:placeholder:text-[#5D5D60] placeholder:text-[#999999] pr-[60px]"
-          placeholder="Type a Message..."
-        />
-        <div
-          onClick={handleSubmit}
-          onTouchStart={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-          }}
-          onTouchEnd={handleSubmit}
-          onMouseDown={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-          }}
-          onMouseUp={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-          }}
-          className="absolute items-center justify-center rounded-full top-[10px] h-[26px] w-[48px] right-[20px] cursor-pointer bg-[#6761FF] z[999]"
-          style={{
-            display: message ? 'flex' : 'none',
-          }}
-        >
-          <i
-            className="iconfont icon-a-Frame2085661744 text-white mt-[2px]"
-            style={{ fontSize: '20px' }}
-          ></i>
+            placeholder="Type a Message..."
+          />
+          <div className="flex items-center justify-center h-[28px] w-[48px] overflow-hidden">
+            <RewardButton userInfo={chatPeople || ({} as OthersUserInfo)} />
+          </div>
+          <div
+            onClick={handleSubmit}
+            onTouchStart={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+            }}
+            onTouchEnd={handleSubmit}
+            onMouseDown={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+            }}
+            onMouseUp={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+            }}
+            className="absolute items-center justify-center rounded-full top-[10px] h-[26px] w-[48px] right-[54px] cursor-pointer bg-[#6761FF] z[999]"
+            style={{
+              display: message ? 'flex' : 'none',
+            }}
+          >
+            <i
+              className="iconfont icon-a-Frame2085661744 text-white mt-[2px]"
+              style={{ fontSize: '20px' }}
+            ></i>
+          </div>
         </div>
       </div>
 
@@ -330,4 +347,5 @@ const MessagePageIOS = () => {
     </div>
   )
 }
+
 export default MessagePageIOS

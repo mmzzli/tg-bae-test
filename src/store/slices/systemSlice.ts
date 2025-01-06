@@ -2,7 +2,7 @@ import { StateCreator } from 'zustand'
 import { Notification } from '@/types'
 export type RoutePage = {
   name: string
-  params?: Record<string, string>
+  params?: Record<string, any>
   enterFrom?: string
 }
 

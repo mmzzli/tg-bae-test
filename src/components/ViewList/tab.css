@@ -1,0 +1,26 @@
+.ant-tabs {
+  width: 100%;
+}
+
+.ant-tabs-tab {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* 如果有多个 tab，让它们平均分配宽度 */
+.ant-tabs-nav .ant-tabs-nav-list {
+  width: 100%;
+  display: flex;
+}
+
+.ant-tabs-tab-btn {
+  text-align: center;
+}
+
+.ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #0f1233;
+}
+.ant-tabs .ant-tabs-ink-bar {
+  background-color: rgb(74 58 255 / var(--tw-bg-opacity, 1));
+}

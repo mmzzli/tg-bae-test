@@ -1,91 +1,91 @@
-import React, { useState, useRef, ChangeEvent, useEffect } from "react";
-import { Textarea } from "@chakra-ui/react";
+import React, { useState, useRef, ChangeEvent, useEffect } from 'react'
+import { Textarea } from '@chakra-ui/react'
 
-import { getFansFollowers } from "@/api";
-import { generateUUID, isMobileDevice } from "@/utils/utils";
-import { useTMAUtils } from "@/hooks/useTMAUtils";
-import { useStore } from "@/store";
+import { getFansFollowers } from '@/api'
+import { generateUUID, isMobileDevice } from '@/utils/utils'
+import { useTMAUtils } from '@/hooks/useTMAUtils'
+import { useStore } from '@/store'
 
 interface MentionCandidate {
-  tgname: string;
-  avatar: string;
-  tg_id: number;
-  fans_id: number;
-  if_follow: boolean;
+  tgname: string
+  avatar: string
+  tg_id: number
+  fans_id: number
+  if_follow: boolean
 }
 
 interface MentionFeatureProps {
-  title: string;
-  setTitle: (str: string) => void;
-  setIsFocused: (bool: boolean) => void;
+  title: string
+  setTitle: (str: string) => void
+  setIsFocused: (bool: boolean) => void
 }
 
 const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsFocused }) => {
-  const [mentionCandidates, setMentionCandidates] = useState<MentionCandidate[]>([]);
-  const [showMentionList, setShowMentionList] = useState<boolean>(false);
-  const [filteredCandidates, setFilteredCandidates] = useState<MentionCandidate[]>([]);
-  const [cursorPosition, setCursorPosition] = useState<number>(0);
-  const [mentionTop, setMentionTop] = useState<number>(0);
-  const [mentionQuery, setMentionQuery] = useState<string>("");
-  const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
+  const [mentionCandidates, setMentionCandidates] = useState<MentionCandidate[]>([])
+  const [showMentionList, setShowMentionList] = useState<boolean>(false)
+  const [filteredCandidates, setFilteredCandidates] = useState<MentionCandidate[]>([])
+  const [cursorPosition, setCursorPosition] = useState<number>(0)
+  const [mentionTop, setMentionTop] = useState<number>(0)
+  const [mentionQuery, setMentionQuery] = useState<string>('')
+  const textAreaRef = useRef<HTMLTextAreaElement | null>(null)
   const [featureBoll, setFeatureBoll] = useState<boolean>(false)
 
-  const token = useStore((state) => state.token);
-  const { getCurrentUid } = useTMAUtils();
-  const current_uid = getCurrentUid();
+  const token = useStore((state) => state.token)
+  const { getCurrentUid } = useTMAUtils()
+  const current_uid = getCurrentUid()
 
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>): void => {
-    const value = e.target.value;
-    const selectionStart = e.target.selectionStart || 0;
-    setTitle(value);
-    setCursorPosition(selectionStart);
+    const value = e.target.value
+    const selectionStart = e.target.selectionStart || 0
+    setTitle(value)
+    setCursorPosition(selectionStart)
 
     if (textAreaRef.current) {
-      const rect = textAreaRef.current.getBoundingClientRect();
-      setMentionTop(rect.height + 40 - 14);
+      const rect = textAreaRef.current.getBoundingClientRect()
+      setMentionTop(rect.height + 40 - 14)
     }
 
-    const queryMatch = value.slice(0, selectionStart).match(/(^|\s)@([a-zA-Z0-9]*)$/);
+    const queryMatch = value.slice(0, selectionStart).match(/(^|\s)@([a-zA-Z0-9\u4e00-\u9fa5]*)$/)
 
     if (queryMatch) {
-      const query = queryMatch[2] || "";
-      setMentionQuery(query);
+      const query = queryMatch[2] || ''
+      setMentionQuery(query)
       setFilteredCandidates(
         mentionCandidates.filter((candidate) =>
           candidate.tgname.toLowerCase().includes(query.toLowerCase())
         )
-      );
-      setShowMentionList(true);
+      )
+      setShowMentionList(true)
     } else {
-      setShowMentionList(false);
+      setShowMentionList(false)
     }
-  };
+  }
 
   const handleMentionClick = (mention: string): void => {
-    const beforeCursor = title.slice(0, cursorPosition).replace(/(^|\s)@([a-zA-Z0-9]*)$/, "$1");
-    const afterCursor = title.slice(cursorPosition);
+    const beforeCursor = title.slice(0, cursorPosition).replace(/(^|\s)@([a-zA-Z0-9]*)$/, '$1')
+    const afterCursor = title.slice(cursorPosition)
 
-    const newText = `${beforeCursor}@${mention} ${afterCursor}`;
-    setTitle(newText);
-    setShowMentionList(false);
+    const newText = `${beforeCursor}@${mention} ${afterCursor}`
+    setTitle(newText)
+    setShowMentionList(false)
 
     setTimeout(() => {
-      const newPosition = beforeCursor.length + mention.length + 2;
+      const newPosition = beforeCursor.length + mention.length + 2
       if (textAreaRef.current) {
-        textAreaRef.current.setSelectionRange(newPosition, newPosition);
-        textAreaRef.current.focus();
+        textAreaRef.current.setSelectionRange(newPosition, newPosition)
+        textAreaRef.current.focus()
       }
-    }, 0);
-  };
+    }, 0)
+  }
 
   const loadCandidates = async () => {
     try {
-      const res: any = await getFansFollowers(current_uid);
-      setMentionCandidates(res);
+      const res: any = await getFansFollowers(current_uid)
+      setMentionCandidates(res)
     } catch (error) {
-      console.error("Failed to fetch mention candidates:", error);
+      console.error('Failed to fetch mention candidates:', error)
     }
-  };
+  }
   const mentionEve = (boll: boolean) => {
     setTimeout(() => {
       isMobileDevice() && setIsFocused(boll)
@@ -95,12 +95,12 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsF
 
   useEffect(() => {
     if (token && current_uid) {
-      loadCandidates();
+      loadCandidates()
       if (!isMobileDevice()) {
         setFeatureBoll(true)
       }
     }
-  }, [current_uid, token]);
+  }, [current_uid, token])
 
   return (
     <div className="relative">
@@ -126,7 +126,7 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsF
           style={{ top: `${mentionTop}px` }}
           onClick={() => {
             if (textAreaRef.current) {
-              textAreaRef.current.focus();
+              textAreaRef.current.focus()
             }
           }}
         >
@@ -147,7 +147,7 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsF
         </ul>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default MentionFeature;
+export default MentionFeature

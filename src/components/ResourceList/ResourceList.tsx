@@ -650,7 +650,7 @@ export const PlayButton = memo(({ onClick }: { onClick: (e: React.MouseEvent) =>
     onClick={onClick}
     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 no-tap z-[5] video-card-switch"
   >
-    <Image src={playIcon} alt="play" className="w-[72px] h-[72px] no-tap" />
+    {/* <Image src={playIcon} alt="play" className="w-[72px] h-[72px] no-tap" /> */}
   </div>
 ))
 

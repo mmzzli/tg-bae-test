@@ -1,12 +1,9 @@
-import { DrawSkeletonItem, SkeletonShine } from './ChatSkeleton'
-import PostSkeleton from './PostSkeleton'
+import { SearchPageSkeleton } from './ChatSkeleton'
 
 const GeneralSkeleton = () => {
   return (
-    <div className='w-full'>
-      <DrawSkeletonItem className="w-full h-[56px] mb-[24px]"></DrawSkeletonItem>
-      <DrawSkeletonItem className="w-full h-[56px] mb-[24px]"></DrawSkeletonItem>
-      <DrawSkeletonItem className="w-full h-[56px] mb-[24px]"></DrawSkeletonItem>
+    <div className="w-full pt-[10px]">
+      <SearchPageSkeleton className="mb-[24px]" count={4}></SearchPageSkeleton>
     </div>
   )
 }

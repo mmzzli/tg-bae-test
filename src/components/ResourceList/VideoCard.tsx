@@ -143,7 +143,6 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
                 bg="rgba(0, 0, 0, 0.40)"
                 cursor="pointer"
                 onClick={() => {
-                  console.log('click')
                   setHomeVideoMuted(!homeVideoMuted)
                 }}
               >

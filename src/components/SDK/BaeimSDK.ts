@@ -90,16 +90,18 @@ class BaeimSDK {
       }
       config.provider.syncMessagesCallback = cb
     }
-    config.heartbeatInterval = 10000
+    config.heartbeatInterval = 35000
     WKSDK.shared().config = config
 
     this.connect()
   }
 
   private async connect() {
+    if (WKSDK.shared().connectManager.status === ConnectStatus.Connected) {
+      console.log('SDK already connected.')
+      return
+    }
     try {
-      console.log('SDK connect manager------', WKSDK.shared().connectManager)
-      console.log('SDK connect config------', WKSDK.shared().config)
       await WKSDK.shared().connectManager.connect()
       console.log('SDK connected successfully.')
     } catch (error) {
@@ -230,6 +232,10 @@ class BaeimSDK {
   public start() {
     this.initializeSDK()
     WKSDK.shared().connectManager.addConnectStatusListener(this.handleConnectStatus)
+  }
+
+  public reconnect() {
+    this.connect()
   }
 
   public stop() {

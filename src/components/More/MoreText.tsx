@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { useNavigate } from "react-router-dom";
-
+import { useNavigate } from 'react-router-dom'
 
 interface MoreTextProps {
   text: string
@@ -15,13 +14,13 @@ interface MoreTextProps {
 }
 
 const MoreText: React.FC<MoreTextProps> = ({
-                                             text,
-                                             moreColor = '#5D6BFF',
-                                             bgColor = '#fff',
-                                             textColor = '#666',
-                                             className = '',
-                                             type
-                                           }) => {
+  text,
+  moreColor = '#5D6BFF',
+  bgColor = '#fff',
+  textColor = '#666',
+  className = '',
+  type,
+}) => {
   const navigate = useNavigate()
 
   const [isExpanded, setIsExpanded] = useState(false)
@@ -30,19 +29,23 @@ const MoreText: React.FC<MoreTextProps> = ({
   const [displayText, setDisplayText] = useState(processedText)
   const textRef = useRef<HTMLDivElement | null>(null)
 
-
   const highlightMentions = (text: string): React.ReactNode[] => {
-    const mentionRegex = /@\w+/g;
+    const mentionRegex = /@\w+/g
     return text.split(mentionRegex).reduce<React.ReactNode[]>((acc, part, index, array) => {
       if (index < array.length - 1) {
-        const mentions = text.match(mentionRegex) || [];
-        const name = mentions[index].replace(/@/g, '');
-        return [...acc, part, <a onClick={() => navigate(`/profile/${name}`)} key={index} className='text-[#6254FF]'>{mentions[index]}</a>];
+        const mentions = text.match(mentionRegex) || []
+        const name = mentions[index].replace(/@/g, '')
+        return [
+          ...acc,
+          part,
+          <a onClick={() => navigate(`/profile/${name}`)} key={index} className="text-[#6254FF]">
+            {mentions[index]}
+          </a>,
+        ]
       }
-      return [...acc, part];
-    }, []);
-  };
-
+      return [...acc, part]
+    }, [])
+  }
 
   useEffect(() => {
     let frameId: number
@@ -125,7 +128,6 @@ const MoreText: React.FC<MoreTextProps> = ({
     }
   }, [text, isExpanded, processedText])
 
-
   return (
     <div className="relative mt-[8px]">
       <div
@@ -140,7 +142,7 @@ const MoreText: React.FC<MoreTextProps> = ({
           hyphens: 'auto',
         }}
       >
-        {type === "post" ? highlightMentions(displayText) : displayText}
+        {type === 'post' ? highlightMentions(displayText) : displayText}
         {isTextClipped && (
           <span
             style={{

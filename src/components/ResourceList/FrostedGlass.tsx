@@ -41,12 +41,12 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
         user_id: String(initData?.user?.id),
       })
 
-      let retryCount = 0;
-      const MAX_RETRIES = 10;
+      let retryCount = 0
+      const MAX_RETRIES = 10
 
       const items = setInterval(async () => {
         try {
-          retryCount++;
+          retryCount++
           const viewUrl = await viewPid(post_id)
           resourcesEve(post_id, viewUrl, true)
           clearInterval(items)
@@ -62,20 +62,22 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
       if (window.Telegram?.WebApp) {
         const tgApp = window.Telegram.WebApp
         tgApp.openInvoice(url, (status: string) => {
-          console.log(status, 123)
           if (status === 'paid') {
             const timestamp = Date.now()
-
             trackPurchase({
               transaction_id: `${initData?.user?.id}_${post_id}_${timestamp}`,
               value: price,
-              user_id: String(initData?.user?.id),
-              items: [{
-                item_id: String(post_id),
-                name: String(post_id),
-                price: price,
-                quantity: 1, // 默认数量为1
-              }]
+              tg_user_id: String(initData?.user?.id),
+              bae_user_name: userInfo.username,
+              tg_user_name: initData?.user?.username,
+              items: [
+                {
+                  item_id: String(post_id),
+                  name: String(post_id),
+                  price: price,
+                  quantity: 1,
+                },
+              ],
             })
           } else {
             setLoading(false)
@@ -99,12 +101,7 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
             zIndex={3}
           >
             {loading ? (
-              <BaseButton
-                text=""
-                handler={()=>console.log(1)}
-                loading={true}
-                height="40px"
-              />
+              <BaseButton text="" handler={() => console.log(1)} loading={true} height="40px" />
             ) : (
               <BaseButton
                 height="40px"

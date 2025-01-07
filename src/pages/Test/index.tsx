@@ -4,7 +4,7 @@ const VideoCoverSelector: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement | null>(null); // 视频引用
   const canvasRef = useRef<HTMLCanvasElement | null>(null); // Canvas 引用
   const [videoUrl, setVideoUrl] = useState<string | null>(null); // 视频 URL
-  const [thumbnails, setThumbnails] = useState<string[]>([]); // 存储生成的 20 张缩略图
+  const [selectedFrame, setSelectedFrame] = useState<string | null>(null); // 已选封面
   const [duration, setDuration] = useState<number>(0); // 视频总时长
   const [currentTime, setCurrentTime] = useState<number>(0); // 当前播放时间
 
@@ -18,39 +18,15 @@ const VideoCoverSelector: React.FC = () => {
   };
 
   // 渲染视频帧到 Canvas
-  const renderFrameToCanvas = (time: number): void => {
+  const renderFrameToCanvas = (): void => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
 
     if (video && canvas) {
-      video.currentTime = time; // 设置视频播放时间到指定的时间点
       const ctx = canvas.getContext("2d");
       if (ctx) {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       }
-    }
-  };
-
-  // 生成缩略图
-  const generateThumbnails = (): void => {
-    const video = videoRef.current;
-    if (video) {
-      const videoDuration = video.duration;
-      const thumbCount = 20; // 生成 20 张缩略图
-      const thumbnailsArr: string[] = [];
-
-      // 生成 20 个均匀分布的时间点
-      for (let i = 0; i < thumbCount; i++) {
-        const time = (i / (thumbCount - 1)) * videoDuration; // 计算时间点
-        const canvas = canvasRef.current;
-        if (canvas) {
-          renderFrameToCanvas(time); // 渲染每个时间点的帧到 canvas
-          const frameData = canvas.toDataURL("image/png"); // 转换为图片
-          thumbnailsArr.push(frameData);
-        }
-      }
-
-      setThumbnails(thumbnailsArr); // 保存生成的缩略图
     }
   };
 
@@ -60,7 +36,8 @@ const VideoCoverSelector: React.FC = () => {
     if (video) {
       const handleLoadedMetadata = () => {
         setDuration(video.duration);
-        generateThumbnails(); // 视频加载完成后生成缩略图
+        setCurrentTime(0); // 确保视频一开始时是从第 0 秒开始
+        renderFrameToCanvas(); // 渲染视频的第一帧
       };
       video.addEventListener("loadedmetadata", handleLoadedMetadata);
 
@@ -70,12 +47,39 @@ const VideoCoverSelector: React.FC = () => {
     }
   }, [videoUrl]);
 
-  // 更新当前时间
+  // 动态更新 Canvas 内容
+  useEffect(() => {
+    let animationFrameId: number;
+
+    const updateCanvas = (): void => {
+      renderFrameToCanvas(); // 渲染当前帧
+      animationFrameId = requestAnimationFrame(updateCanvas); // 持续更新
+    };
+
+    if (videoUrl) {
+      updateCanvas();
+    }
+
+    return () => {
+      cancelAnimationFrame(animationFrameId); // 清理动画帧
+    };
+  }, [videoUrl, currentTime]); // 依赖 currentTime 以确保更新帧
+
+  // 更新播放时间
   const handleSliderChange = (value: number | string): void => {
     const video = videoRef.current;
     if (video) {
       video.currentTime = Number(value); // 设置视频播放时间
       setCurrentTime(Number(value)); // 更新当前时间状态
+    }
+  };
+
+  // 捕获当前帧作为封面
+  const captureFrame = (): void => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const frameData = canvas.toDataURL("image/png");
+      setSelectedFrame(frameData);
     }
   };
 
@@ -96,6 +100,7 @@ const VideoCoverSelector: React.FC = () => {
 
           {/* 显示视频帧的 Canvas */}
           <canvas
+            className="w-[100%]"
             ref={canvasRef}
             width={640}
             height={360}
@@ -118,18 +123,16 @@ const VideoCoverSelector: React.FC = () => {
             />
           </div>
 
-          {/* 生成的缩略图 */}
-          <div style={{ marginTop: "10px", display: "flex", overflowX: "auto" }}>
-            {thumbnails.map((thumbnail, index) => (
-              <img
-                key={index}
-                src={thumbnail}
-                alt={`Thumbnail ${index}`}
-                style={{ width: "50px", marginRight: "10px", cursor: "pointer" }}
-                onClick={() => handleSliderChange((index / (thumbnails.length - 1)) * duration)}
-              />
-            ))}
-          </div>
+          {/* 捕获按钮 */}
+          <button onClick={captureFrame}>选择当前帧作为封面</button>
+        </div>
+      )}
+
+      {/* 显示选定的封面 */}
+      {selectedFrame && (
+        <div style={{ marginTop: "20px" }}>
+          <h3>选定的封面</h3>
+          <img src={selectedFrame} alt="Selected Frame" style={{ width: "200px" }} />
         </div>
       )}
     </div>

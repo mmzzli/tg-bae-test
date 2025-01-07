@@ -48,6 +48,7 @@ export default defineConfig(({ mode }) => {
             ton: ['ton', 'ton-core', 'ton-crypto', 'tonweb'],
             swiper: ['swiper'],
             axios: ['axios'],
+            wukongimjssdk: ['wukongimjssdk'],
           },
         },
       },

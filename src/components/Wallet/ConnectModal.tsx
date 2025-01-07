@@ -5,6 +5,25 @@ import { injected } from 'wagmi/connectors'
 import { config } from '@/config/wagmi-config'
 import { BaseModal } from '@/components/Modal/BaseModal'
 import BaseButton from '@/components/BaseButton/BaseButton'
+import Image from '@/components/Image/Image'
+import { TomoIcon } from '@/assets/icons'
+
+const WalletIcon = () => {
+  return (
+    <div
+      className="relative"
+      style={{
+        width: '28px',
+        height: '28px',
+      }}
+    >
+      <Image src={TomoIcon} rect type="avatar" width={28} height={28} />
+      <div className="absolute bottom-0 right-0 w-[16px] h-[16px] bg-[#2badff] rounded-full flex items-center justify-center border border-solid border-[#fff]">
+        <i className="iconfont icon-a-Frame2085661744 text-[12px] mt-1 text-[#fff]" />
+      </div>
+    </div>
+  )
+}
 
 interface ChildMethods {
   someMethod: () => void
@@ -67,10 +86,10 @@ const ConnectModal = forwardRef<ChildMethods, Props>(({ afterConnect }, ref) => 
           </div>
           <div className="mt-10 mx-4">
             <BaseButton
-              text="Connect Wallet"
+              text="TOMO Wallet"
               height="48px"
               loading={accountStatus === 'connecting'}
-              icon={<i className="iconfont icon-telegram-2-line text-[22px]" />}
+              icon={<WalletIcon />}
               handler={() => {
                 awaitConnectRef.current = true
                 connect({ connector: injected() })

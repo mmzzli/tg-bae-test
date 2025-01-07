@@ -46,7 +46,7 @@ const AgeGate = () => {
           to use this app. By tapping the button below, you confirm you meet these requirements.
         </p>
       </div>
-      <div className="mt-16 text-center pb-5 px-[40px]">
+      <div className={`mt-16 text-center pb-5 ${window.devicePixelRatio >=3 ? 'px-[40px]' : 'px-[38px]'}`}>
         <div className="flex justify-center gap-[8px] flex-col items-center pl-[3px]">
           <Checkbox
             type="checkbox"

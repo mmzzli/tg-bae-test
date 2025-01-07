@@ -68,12 +68,13 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
 
             trackPurchase({
               transaction_id: `${initData?.user?.id}_${post_id}_${timestamp}`,
-              value: 1,
+              value: price,
               user_id: String(initData?.user?.id),
               items: [{
                 item_id: String(post_id),
                 name: String(post_id),
                 price: price,
+                quantity: 1, // 默认数量为1
               }]
             })
           } else {

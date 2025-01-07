@@ -135,6 +135,7 @@ const HomePage: FC = () => {
                 top: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top)) + 18px',
                 opacity: showTopTitle ? 0 : 1,
               }}
+              // onClick={()=>navigate('/test')}
             >
               {title}
             </h3>

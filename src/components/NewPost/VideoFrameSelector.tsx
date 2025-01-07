@@ -145,7 +145,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
       <BaseModal
         isOpen={isBaseModalOpen}
         onClose={off}
-        height={isLandscape ? '78vh' : '85vh'}
+        height={isLandscape ? '70vh' : '85vh'}
         animation={{
           duration: 400,
           timingFunction: 'ease-in-out',
@@ -209,7 +209,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
                   />
                 ))}
               </div>
-              <div className="px-[20px] pt-[24px] pb-[44px]">
+              <div className="px-[20px] pt-[24px] pb-[20px]">
                 <BaseButton
                   text="Done"
                   width="100%"

@@ -18,6 +18,7 @@ interface GA4TrackingMethods {
       item_id: string;
       name: string;
       [key: string]: any;
+      quantity?: number;
     }>;
   }) => void;
   trackPageView: (pageTitle: string, pagePath: string) => void;
@@ -67,8 +68,10 @@ export const useGA4EventTrackingReporting = (): GA4TrackingMethods => {
       item_id: string;
       name: string;
       [key: string]: any;
+      quantity?: number;
     }>;
   }) => {
+    console.log('trackPurchase', params)
     trackEvent('purchase', {
       currency: params.currency || 'STRTS',
       ...params,

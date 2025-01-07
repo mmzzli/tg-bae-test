@@ -18,7 +18,13 @@ const ChainName2Icon: Record<string, string> = {
 const TokenIcon = ({ chainName, token, size = '40px' }: TokenIconProps) => {
   return (
     <div
-      className={`w-[${size}] h-[${size}] min-h-[${size}] min-w-[${size}] rounded-full relative`}
+      className="rounded-full relative"
+      style={{
+        width: size,
+        height: size,
+        minWidth: size,
+        minHeight: size,
+      }}
     >
       <Image src={tokenIconMap[token]} rect type="avatar" width={size} height={size} />
       <div className="absolute bottom-0 right-0 w-[14px] h-[14px] bg-white rounded-full flex items-center justify-center">

@@ -51,7 +51,7 @@ export const TokenCard = ({ token, onTokenSelect }: TokenCardProps) => {
       className="flex justify-between items-center h-[74px]"
       onClick={() => onTokenSelect(token, balance)}
     >
-      <div className="flex items-center gap-2">
+      <div className="flex flex-1 items-center gap-2">
         <TokenIcon token={token.token} chainName={token.chainName} />
         <div className="flex flex-col">
           <span className="text-[16px] font-medium text-[#12122A]">

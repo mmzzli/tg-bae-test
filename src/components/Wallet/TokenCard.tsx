@@ -20,8 +20,9 @@ export const TokenCard = ({ token, onTokenSelect }: TokenCardProps) => {
       retry: 3,
       retryDelay: 1000,
       refetchOnWindowFocus: false,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnReconnect: false,
+      refetchInterval: 20000,
     },
     address,
     ...(token.isNative

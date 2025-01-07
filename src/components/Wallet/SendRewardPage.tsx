@@ -78,7 +78,7 @@ const SendRewardPage = () => {
           symbol={token}
           decimals={balance?.decimals || 18}
           price={2}
-          tokenAddress={address ? address : rewardContractAddress}
+          tokenAddress={address ? address : '0x0000000000000000000000000000000000000000'}
           contractAddress={rewardContractAddress}
           chainId={chainId}
           onAmountChange={handleAmountChange}

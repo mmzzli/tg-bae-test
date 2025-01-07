@@ -33,16 +33,30 @@ const VideoCoverSelector: React.FC = () => {
         const videoWidth = video.videoWidth;
         const videoHeight = video.videoHeight;
 
-        // 计算保持视频比例的缩放因子
-        const scale = Math.min(displayWidth / videoWidth, displayHeight / videoHeight);
+        // 计算视频的宽高比
+        const videoRatio = videoWidth / videoHeight;
+        const canvasRatio = displayWidth / displayHeight;
 
-        // 计算渲染到 Canvas 上的视频尺寸
-        const renderWidth = videoWidth * scale;
-        const renderHeight = videoHeight * scale;
+        let renderWidth, renderHeight;
+
+        if (canvasRatio > videoRatio) {
+          // 如果 Canvas 宽高比大于视频宽高比，宽度为 Canvas 宽度，高度按比例调整
+          renderWidth = displayWidth;
+          renderHeight = displayWidth / videoRatio;
+        } else {
+          // 如果 Canvas 宽高比小于视频宽高比，高度为 Canvas 高度，宽度按比例调整
+          renderHeight = displayHeight;
+          renderWidth = displayHeight * videoRatio;
+        }
 
         // 清空画布并渲染视频帧
         ctx.clearRect(0, 0, canvas.width, canvas.height); // 清空画布
-        ctx.drawImage(video, 0, 0, videoWidth, videoHeight, 0, 0, renderWidth, renderHeight); // 绘制视频帧到 Canvas
+
+        // 使视频帧填充整个 Canvas
+        ctx.drawImage(video, 0, 0, videoWidth, videoHeight,
+                      (displayWidth - renderWidth) / 2,
+                      (displayHeight - renderHeight) / 2,
+                      renderWidth, renderHeight);
       }
     }
   };

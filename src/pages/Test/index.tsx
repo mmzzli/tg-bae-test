@@ -25,29 +25,24 @@ const VideoCoverSelector: React.FC = () => {
     if (video && canvas) {
       const ctx = canvas.getContext("2d");
       if (ctx) {
-        // 获取设备像素比，确保在高清屏幕上渲染得更清晰
-      const scale = window.devicePixelRatio || 1; // 默认为 1，如果有高清屏幕，scale 会是 2 或更大
+        // 获取 Canvas 的显示区域宽高
+        const displayWidth = canvas.clientWidth;
+        const displayHeight = canvas.clientHeight;
 
-      // 获取 Canvas 显示区域的宽高
-      const displayWidth = canvas.clientWidth;
-      const displayHeight = canvas.clientHeight;
+        // 获取视频的宽高
+        const videoWidth = video.videoWidth;
+        const videoHeight = video.videoHeight;
 
-      // 增加内部渲染分辨率（实际渲染分辨率比显示分辨率高）
-      const width = displayWidth * scale;
-      const height = displayHeight * scale;
+        // 计算保持视频比例的缩放因子
+        const scale = Math.min(displayWidth / videoWidth, displayHeight / videoHeight);
 
-      // 设置 Canvas 内部渲染分辨率
-      canvas.width = width;
-      canvas.height = height;
+        // 计算渲染到 Canvas 上的视频尺寸
+        const renderWidth = videoWidth * scale;
+        const renderHeight = videoHeight * scale;
 
-      ctx.clearRect(0, 0, width, height); // 清空画布
-
-      // 渲染视频帧到更高分辨率的 Canvas
-      ctx.drawImage(video, 0, 0, width, height);
-
-      // 保持 Canvas 在页面上的显示尺寸不变
-      canvas.style.width = `${displayWidth}px`;
-      canvas.style.height = `${displayHeight}px`;
+        // 清空画布并渲染视频帧
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // 清空画布
+        ctx.drawImage(video, 0, 0, videoWidth, videoHeight, 0, 0, renderWidth, renderHeight); // 绘制视频帧到 Canvas
       }
     }
   };
@@ -59,15 +54,18 @@ const VideoCoverSelector: React.FC = () => {
       const handleLoadedMetadata = () => {
         setDuration(video.duration);
         setCurrentTime(0);
+      };
+
+      const handleCanPlay = () => {
         renderFrameToCanvas(); // 渲染视频的第一帧
       };
 
       video.addEventListener("loadedmetadata", handleLoadedMetadata);
-      video.addEventListener("canplay", renderFrameToCanvas);
+      video.addEventListener("canplay", handleCanPlay);
 
       return () => {
         video.removeEventListener("loadedmetadata", handleLoadedMetadata);
-        video.removeEventListener("canplay", renderFrameToCanvas);
+        video.removeEventListener("canplay", handleCanPlay);
       };
     }
   }, [videoUrl]);
@@ -103,15 +101,15 @@ const VideoCoverSelector: React.FC = () => {
             ref={videoRef}
             src={videoUrl}
             style={{ display: "none" }}
-            preload="metadata"
+            preload="auto" // 改为 'auto' 以便加载完整视频数据
             playsInline // 移动端内联播放
           />
 
           {/* 显示视频帧的 Canvas */}
           <canvas
             ref={canvasRef}
-            width={640}
-            height={360}
+            width={640} // 设置固定 Canvas 尺寸
+            height={360} // 设置固定 Canvas 尺寸
             style={{
               border: "1px solid black",
               marginTop: "10px",
@@ -128,7 +126,7 @@ const VideoCoverSelector: React.FC = () => {
               max={duration || 0}
               step="0.1"
               value={currentTime}
-              onInput={(e:any) => handleSliderChange(e.target.value)} // 即时响应滑动
+              onInput={(e: any) => handleSliderChange(e.target.value)} // 即时响应滑动
             />
           </div>
 

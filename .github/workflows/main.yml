@@ -5,11 +5,11 @@ on:
       - main
       - test
   pull_request:
-    branches: [ "dev"]
+    branches: ['dev']
     types:
       - opened
       - reopened
-    
+
 jobs:
   dev-build:
     if: github.event.pull_request.base.ref == 'refs/heads/main' || contains(github.event.pull_request.head.ref, 'feat')
@@ -24,7 +24,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '${{ matrix.node-version }}'
-        
+      - name: Set Node options
+        run: export NODE_OPTIONS="--max-old-space-size=16384 --expose-gc"
       - run: 'npm install'
       - run: 'npm run build:dev'
       - name: Deploying application to Amazon S3
@@ -42,10 +43,10 @@ jobs:
         uses: chetan/invalidate-cloudfront-action@v2
         env:
           DISTRIBUTION: E1881X4A3HPP9L
-          PATHS: "/*"
-          AWS_REGION: "us-west-1"
+          PATHS: '/*'
+          AWS_REGION: 'us-west-1'
           AWS_ACCESS_KEY_ID: ${{ secrets.TOMO_AWS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.TOMO_AWS_SECRET_ACCESS_KEY }}    
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.TOMO_AWS_SECRET_ACCESS_KEY }}
   test-build:
     if: github.ref == 'refs/heads/test'
     runs-on: ubuntu-latest
@@ -76,10 +77,10 @@ jobs:
         uses: chetan/invalidate-cloudfront-action@v2
         env:
           DISTRIBUTION: EXHZTXSHC1WJH
-          PATHS: "/*"
-          AWS_REGION: "us-west-1"
+          PATHS: '/*'
+          AWS_REGION: 'us-west-1'
           AWS_ACCESS_KEY_ID: ${{ secrets.TOMO_AWS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.TOMO_AWS_SECRET_ACCESS_KEY }}   
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.TOMO_AWS_SECRET_ACCESS_KEY }}
   main-build:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
@@ -106,11 +107,11 @@ jobs:
           AWS_REGION: us-west-1
           SOURCE_DIR: ./dist
       - name: prod Invalidate CloudFront
-        if: github.ref == 'refs/heads/main' 
+        if: github.ref == 'refs/heads/main'
         uses: chetan/invalidate-cloudfront-action@v2
         env:
           DISTRIBUTION: E2WVONNJML18O3
-          PATHS: "/*"
-          AWS_REGION: "us-west-1"
+          PATHS: '/*'
+          AWS_REGION: 'us-west-1'
           AWS_ACCESS_KEY_ID: ${{ secrets.TOMO_AWS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.TOMO_AWS_SECRET_ACCESS_KEY }}

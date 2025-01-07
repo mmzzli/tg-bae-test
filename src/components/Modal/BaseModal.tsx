@@ -139,14 +139,24 @@ export const BaseModal: FC<BottomSheetProps> = ({
             role="presentation"
           />
         )}
+        {/*
+        <div
+          className="absolute top-[12px] right-[14px] flex items-center justify-center bg-[#F5F5FA] rounded-full ml-auto no-tap mb-3"
+          style={{ height: '36px', width: '36px' }}
+        >
+          <i
+            onClick={handleBackdropClick}
+            className="iconfont icon-icon_close text-[#12122A] dark:text-[#E0E2F6] text-[20px]"
+          ></i>
+        </div> */}
 
         <div
-          className="p-[16px] overflow-y-auto bg-[#fff] dark:bg-[#1C1C1C] text-[#E0E2F6] rounded-t-2xl rounded-b-none border-[#1c1c1c]"
+          className="px-4 py-3 overflow-y-auto bg-[#fff] dark:bg-[#1C1C1C] text-[#E0E2F6] rounded-t-2xl rounded-b-none border-[#1c1c1c]"
           style={{ height: 'calc(100%)' }}
         >
           {/* <Image src={CloseIcon} className="cursor-pointer" onClick={handleBackdropClick} /> */}
           <div
-            className="flex items-center justify-center bg-[#F5F5FA] rounded-full ml-auto no-tap"
+            className="flex items-center justify-center bg-[#F5F5FA] rounded-full ml-auto no-tap mb-3"
             style={{ height: '36px', width: '36px' }}
           >
             <i

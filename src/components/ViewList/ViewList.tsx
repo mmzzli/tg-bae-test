@@ -16,34 +16,40 @@ interface PostListProps {
   className?: string
 }
 
-type Align = 'start' | 'center' | 'end';
+type Align = 'start' | 'center' | 'end'
 const ViewList = ({ className }: PostListProps) => {
   const { initialize } = useFavList()
   const [ids, setIsd] = useState<string>('posts')
   const [showIndicator, setShowIndicator] = useState(false)
-  const [alignValue, setAlignValue] = useState<Align>('start');
+  const [alignValue, setAlignValue] = useState<Align>('start')
   const location = useLocation()
 
-  const menuItems = useMemo(() => [
-    {
-      key: 'posts',
-      label: 'My posts',
-    },
-    {
-      key: 'purchased',
-      label: 'Purchased',
-    },
-    {
-      key: 'saved',
-      label: 'Saved',
-    },
-  ], []);
+  const menuItems = useMemo(
+    () => [
+      {
+        key: 'posts',
+        label: 'My posts',
+      },
+      {
+        key: 'purchased',
+        label: 'Purchased',
+      },
+      {
+        key: 'saved',
+        label: 'Saved',
+      },
+    ],
+    []
+  )
 
-  const tabBarStyle = useMemo(() => ({
-    color: '#666',
-    fontSize: '16px',
-    fontWeight: '400',
-  }), []);
+  const tabBarStyle = useMemo(
+    () => ({
+      color: '#666',
+      fontSize: '16px',
+      fontWeight: '400',
+    }),
+    []
+  )
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -64,11 +70,14 @@ const ViewList = ({ className }: PostListProps) => {
     setAlignValue('start')
   })
 
-  const indicatorConfig = useMemo(() => ({
-    size: () => 32,
-    align: alignValue,
-    render: () => null
-  }), [showIndicator]);
+  const indicatorConfig = useMemo(
+    () => ({
+      size: () => 32,
+      align: alignValue,
+      render: () => null,
+    }),
+    [showIndicator]
+  )
 
   const handleTabChange = (key: string) => {
     initialize()
@@ -77,48 +86,54 @@ const ViewList = ({ className }: PostListProps) => {
 
   const [targetBoll, setTargetBoll] = useState<boolean>(false)
   useEffect(() => {
-    const element = document.getElementById("profileScrollableDiv");
-    const target = document.getElementById("targetElement");
+    const element = document.getElementById('profileScrollableDiv')
+    const target = document.getElementById('targetElement')
     const handleScroll = () => {
       if (element && target) {
-        const rect = target.getBoundingClientRect();
-        const safeTop = window.getComputedStyle(document.documentElement).getPropertyValue('--tg-safe-area-inset-top')
-        const contentTop = window.getComputedStyle(document.documentElement).getPropertyValue('--tg-content-safe-area-inset-top')
-        const safeTopNum = Number(safeTop.replace("px", ""))
-        const contentTopNum = Number(contentTop.replace("px", ""))
-        console.log(contentTopNum,'|',safeTopNum, '|', rect.top )
-        if ((rect.top - 35 - (safeTopNum + contentTopNum)) >= 0) {
+        const rect = target.getBoundingClientRect()
+        const safeTop = window
+          .getComputedStyle(document.documentElement)
+          .getPropertyValue('--tg-safe-area-inset-top')
+        const contentTop = window
+          .getComputedStyle(document.documentElement)
+          .getPropertyValue('--tg-content-safe-area-inset-top')
+        const safeTopNum = Number(safeTop.replace('px', ''))
+        const contentTopNum = Number(contentTop.replace('px', ''))
+        console.log(contentTopNum, '|', safeTopNum, '|', rect.top)
+        if (rect.top - 35 - (safeTopNum + contentTopNum) >= 0) {
           setTargetBoll(false)
         } else {
           setTargetBoll(true)
         }
       }
-    };
+    }
     if (element) {
-      element.addEventListener("scroll", handleScroll);
+      element.addEventListener('scroll', handleScroll)
     }
     return () => {
       if (element) {
-        element.removeEventListener("scroll", handleScroll);
+        element.removeEventListener('scroll', handleScroll)
       }
-    };
-  }, []);
+    }
+  }, [])
 
   return (
     <>
       <div
         className={targetBoll ? `fixed top-0 w-full bg-white z-[111]` : ''}
         style={{
-          paddingTop: targetBoll ? `calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))`:'',
+          paddingTop: targetBoll
+            ? `calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))`
+            : '',
         }}
       >
         <Tabs
           activeKey={ids}
           items={menuItems}
           onChange={handleTabChange}
-          size='small'
+          size="small"
           tabBarStyle={tabBarStyle}
-          indicator={{ size: () => 32, align: alignValue, }}
+          indicator={{ size: () => 32, align: alignValue }}
         />
       </div>
       <div className={cn(className, '')} id="targetElement">
@@ -170,7 +185,7 @@ const MyPosts = () => {
       scrollThreshold={0.8}
       style={{ overflow: 'visible' }}
     >
-      <ResourceList resources={list} type='view' />
+      <ResourceList resources={list} type="view" />
     </InfiniteScroll>
   )
 }

@@ -49,7 +49,7 @@ const bscTestnet = defineChain({
 
 export const evmChainList =
   import.meta.env.VITE_APP_ENV === 'production'
-    ? [arbitrum, bsc, mainnet, optimism]
+    ? ([arbitrum, bsc, mainnet, optimism] as const)
     : ([arbitrum, bsc, mainnet, optimism, duckChainTestnet, bscTestnet] as const)
 
 const usdtAddressOnEvm = {

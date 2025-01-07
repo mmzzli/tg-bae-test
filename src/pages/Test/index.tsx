@@ -25,8 +25,29 @@ const VideoCoverSelector: React.FC = () => {
     if (video && canvas) {
       const ctx = canvas.getContext("2d");
       if (ctx) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height); // 清空画布
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        // 获取设备像素比，确保在高清屏幕上渲染得更清晰
+      const scale = window.devicePixelRatio || 1; // 默认为 1，如果有高清屏幕，scale 会是 2 或更大
+
+      // 获取 Canvas 显示区域的宽高
+      const displayWidth = canvas.clientWidth;
+      const displayHeight = canvas.clientHeight;
+
+      // 增加内部渲染分辨率（实际渲染分辨率比显示分辨率高）
+      const width = displayWidth * scale;
+      const height = displayHeight * scale;
+
+      // 设置 Canvas 内部渲染分辨率
+      canvas.width = width;
+      canvas.height = height;
+
+      ctx.clearRect(0, 0, width, height); // 清空画布
+
+      // 渲染视频帧到更高分辨率的 Canvas
+      ctx.drawImage(video, 0, 0, width, height);
+
+      // 保持 Canvas 在页面上的显示尺寸不变
+      canvas.style.width = `${displayWidth}px`;
+      canvas.style.height = `${displayHeight}px`;
       }
     }
   };

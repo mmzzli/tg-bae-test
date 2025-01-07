@@ -524,17 +524,18 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
           />
         </div>
         <div className="flex flex-col">
-          <div className="text-[#0F1233] dark:text-[#E0E2F6]  font-bold text-base">
-            {data.username}
-            {data.is_follow}
-          </div>
-          <div className="flex gap-1.5 items-center">
+          <div className='flex items-center gap-1.5'>
+            <div className="text-[#0F1233] dark:text-[#E0E2F6]  font-bold text-base">
+              {data.username}
+            </div>
             <p className="text-[#868686] dark:text-[#424048] text-xs">
               {getTimeStringAutoShort(
                 new Date(data.created_at).getTime() - new Date().getTimezoneOffset() * 60000,
                 true
               )}
             </p>
+          </div>
+          <div className="flex gap-1.5 items-center">
             {data.act_type === 1 && type === 'recommend' ? (
               <div className="text-[#333333] text-[12px]">Featured</div>
             ) : (
@@ -627,7 +628,7 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
       {(data.title || data.is_pay) && (
         <div className="px-4 pt-[10px]">
           <div className="text-[#0F1419] dark:text-[#ccc] font-normal text-sm leading-4">
-            <MoreText text={data.title} bgColor={'#fff'} textColor={'#0F1419'} />
+            <MoreText text={data.title} bgColor={'#fff'} textColor={'#0F1419'} type="post" />
           </div>
           <div className="flex items-center justify-between">
             {(((type === 'view' || type === 'recommend') && data.price > 0) || data.is_pay) && (
@@ -650,7 +651,7 @@ export const PlayButton = memo(({ onClick }: { onClick: (e: React.MouseEvent) =>
     onClick={onClick}
     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 no-tap z-[5] video-card-switch"
   >
-    <Image src={playIcon} alt="play" className="w-[72px] h-[72px] no-tap" />
+    {/* <Image src={playIcon} alt="play" className="w-[72px] h-[72px] no-tap" /> */}
   </div>
 ))
 

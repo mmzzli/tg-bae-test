@@ -3,6 +3,7 @@ import PriceService from '@/utils/wallet/PriceService'
 import { formatUnits } from 'viem'
 import { useBalance } from 'wagmi'
 import { useAccount } from 'wagmi'
+import TokenIcon from './TokenIcon'
 
 interface TokenCardProps {
   token: (typeof supportEVMTokenList)[0]
@@ -51,9 +52,7 @@ export const TokenCard = ({ token, onTokenSelect }: TokenCardProps) => {
       onClick={() => onTokenSelect(token, balance)}
     >
       <div className="flex items-center gap-2">
-        <div className="w-[40px] h-[40px] rounded-full overflow-hidden">
-          <img src={token.icon} alt={token.token} className="w-full h-full object-cover" />
-        </div>
+        <TokenIcon token={token.token} chainName={token.chainName} />
         <div className="flex flex-col">
           <span className="text-[16px] font-medium text-[#12122A]">
             {token.chainName}-{token.token}

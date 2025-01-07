@@ -291,7 +291,7 @@ const Tasks: FC = () => {
         <h1 className="text-[40px] leading-[42px] font-bold text-[#333333]">
           <AnimatedNumber value={totalTaskPoints + totalFollowTaskPoints} />
         </h1>
-        <p className="text-[12px] leading-[16px] text-[#999999]">My Bae points</p>
+        <p className="pt-[10px] text-[12px] leading-[16px] text-[#999999]">My Bae points</p>
       </div>
 
       {/* stars */}
@@ -299,7 +299,7 @@ const Tasks: FC = () => {
         <div className="flex flex-col items-center justify-center flex-1">
           <div className="h-[38px] text-[24px] font-[800] flex items-center">
             {paidStars}
-            <i className="iconfont icon-stars text-[22px] text-[#FFC700] ml-1"></i>
+            <i className="iconfont icon-stars text-[19px] text-[#FFC700] ml-1"></i>
           </div>
           <span className="text-[#666666] text-xs h-[20px]">Stars paid</span>
         </div>

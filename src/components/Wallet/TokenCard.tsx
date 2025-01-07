@@ -48,7 +48,7 @@ export const TokenCard = ({ token, onTokenSelect }: TokenCardProps) => {
 
   return (
     <div
-      className="flex justify-between items-center h-[74px]"
+      className="flex justify-between items-center min-h-[74px]"
       onClick={() => onTokenSelect(token, balance)}
     >
       <div className="flex flex-1 items-center gap-2">

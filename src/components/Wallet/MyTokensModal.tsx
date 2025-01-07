@@ -75,12 +75,12 @@ const MyTokensModal = forwardRef<ChildMethods, { userInfo: OthersUserInfo }>(
           closeOnBackdropClick={true}
           showHandle={false}
         >
-          <div className="flex flex-col w-full">
-            <div className="mt-1 w-full">
+          <div className="absolute top-[60px] left-6 right-0 pt-[48px] bottom-0">
+            <div className="absolute top-0 left-0 right-0 bg-[#fff]">
               <h3 className="font-bold text-2xl mb-[14px] text-[24px] text-[#333]">Select Token</h3>
               <div className="m-4"></div>
             </div>
-            <div className="flex flex-col">
+            <div className="absolute top-[48px] left-0 right-0 pr-6 bottom-0 flex flex-col overflow-y-auto no-scrollbar">
               {supportEVMTokenList.map((token) => {
                 return (
                   <TokenCard
@@ -90,6 +90,7 @@ const MyTokensModal = forwardRef<ChildMethods, { userInfo: OthersUserInfo }>(
                   />
                 )
               })}
+              <div className="min-h-[48px]"></div>
             </div>
           </div>
         </BaseModal>

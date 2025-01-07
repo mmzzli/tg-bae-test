@@ -18,6 +18,8 @@ import Empty from '@/components/comm/Empty'
 import Icon from '@/components/comm/Icon'
 import { sortConversations } from '@/utils/chat/util'
 
+let sdk: BaeimSDK
+
 const ChatListPage: FC<{ className?: string }> = ({ className }) => {
   const {
     connection,
@@ -99,10 +101,9 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
   useEffect(() => {
     let removeConnectionStatusListener: () => void
     let removeSyncConversationListener: () => void
-    let sdk: BaeimSDK
     if (userInfo.user_id && token) {
       const initIM = async () => {
-        const sdk = new BaeimSDK({
+        sdk = new BaeimSDK({
           token,
           userUid: String(currentUid),
           serverAddr: import.meta.env.VITE_APP_IM_WS_URL,
@@ -174,8 +175,12 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
             } catch (error) {
               console.warn('getAllConversation error', error)
             }
-          } else if (status === ConnectStatus.ConnectKick || status === ConnectStatus.Disconnect) {
-            removeSyncConversationListener && removeSyncConversationListener()
+          } else if (
+            status === ConnectStatus.ConnectKick ||
+            status === ConnectStatus.Disconnect ||
+            status === ConnectStatus.ConnectFail
+          ) {
+            sdk.reconnect()
           }
         })
       }
@@ -187,7 +192,27 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
       removeConnectionStatusListener?.()
     }
   }, [token])
-  console.warn('chatListPage render')
+
+  useEffect(() => {
+    const checkAndBindEvent = (retryCount = 0) => {
+      if (window.Telegram?.WebView) {
+        window.Telegram.WebView.onEvent(
+          'visibility_changed',
+          (eventType: string, eventData: { is_visible: boolean }) => {
+            if (eventData.is_visible) {
+              console.warn('chatListPage visibility_changed is_visible')
+            } else {
+              console.warn('chatListPage visibility_changed is_hidden')
+            }
+          }
+        )
+      } else if (retryCount < 6) {
+        setTimeout(() => checkAndBindEvent(retryCount + 1), 1200)
+      }
+    }
+
+    checkAndBindEvent()
+  }, [])
   return (
     <div
       className={cn(

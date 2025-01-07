@@ -127,9 +127,9 @@ export const TransferPanel = ({
           style={{ width: `${inputWidth + unitMeasureWidth}px` }}
         >
           <input
-            type="number"
-            inputMode="numeric"
-            pattern="[0-9]*"
+            type="text"
+            inputMode="decimal"
+            pattern="[0-9]*[.,]?[0-9]*"
             value={amount}
             onChange={(e) => handleAmountChange(e.target.value)}
             className=" h-[58px] w-full bg-transparent border-none outline-none text-[#12122A] font-bold"

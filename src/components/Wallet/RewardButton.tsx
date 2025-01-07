@@ -38,7 +38,6 @@ const RewardButton = ({
   }
 
   const handleAfterConnect = () => {
-    console.log('handleAfterConnect', status, address)
     status === 'connected' && address && myTokensModalRef.current?.someMethod()
   }
 

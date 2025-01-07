@@ -84,17 +84,13 @@ export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLE
 
   hls.on(Hls.Events.MANIFEST_PARSED, () => {
     video.muted = true
-    if (video.paused) {
       video.play().then(() => {
         video.muted = homeVideoMuted
       }).catch((error) => {
         console.log(error, 'error====jacob')
         video.muted = true
-        if (video.paused) {
-          video.play()
-        }
+        video.play()
       })
-    }
   })
 
   // 清理函数

@@ -156,7 +156,7 @@ export const BaseModal: FC<BottomSheetProps> = ({
         >
           {/* <Image src={CloseIcon} className="cursor-pointer" onClick={handleBackdropClick} /> */}
           <div
-            className="flex items-center justify-center bg-[#F5F5FA] rounded-full ml-auto no-tap mb-3"
+            // className="flex items-center justify-center bg-[#F5F5FA] rounded-full ml-auto no-tap mb-3"
             style={{ height: '36px', width: '36px' }}
           >
             {/* <i

@@ -25,6 +25,7 @@ const VideoCoverSelector: React.FC = () => {
     if (video && canvas) {
       const ctx = canvas.getContext("2d");
       if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // 清空画布
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       }
     }
@@ -36,41 +37,27 @@ const VideoCoverSelector: React.FC = () => {
     if (video) {
       const handleLoadedMetadata = () => {
         setDuration(video.duration);
-        setCurrentTime(0); // 确保视频一开始时是从第 0 秒开始
+        setCurrentTime(0);
         renderFrameToCanvas(); // 渲染视频的第一帧
       };
+
       video.addEventListener("loadedmetadata", handleLoadedMetadata);
+      video.addEventListener("canplay", renderFrameToCanvas);
 
       return () => {
         video.removeEventListener("loadedmetadata", handleLoadedMetadata);
+        video.removeEventListener("canplay", renderFrameToCanvas);
       };
     }
   }, [videoUrl]);
 
-  // 动态更新 Canvas 内容
-  useEffect(() => {
-    let animationFrameId: number;
-
-    const updateCanvas = (): void => {
-      renderFrameToCanvas(); // 渲染当前帧
-      animationFrameId = requestAnimationFrame(updateCanvas); // 持续更新
-    };
-
-    if (videoUrl) {
-      updateCanvas();
-    }
-
-    return () => {
-      cancelAnimationFrame(animationFrameId); // 清理动画帧
-    };
-  }, [videoUrl, currentTime]); // 依赖 currentTime 以确保更新帧
-
-  // 更新播放时间
-  const handleSliderChange = (value: number | string): void => {
+  // 同步滑块和视频播放时间
+  const handleSliderChange = (value: React.FormEvent<HTMLInputElement>): void => {
     const video = videoRef.current;
     if (video) {
-      video.currentTime = Number(value); // 设置视频播放时间
-      setCurrentTime(Number(value)); // 更新当前时间状态
+      video.currentTime = Number(value);
+      setCurrentTime(Number(value));
+      renderFrameToCanvas(); // 渲染当前帧
     }
   };
 
@@ -90,17 +77,17 @@ const VideoCoverSelector: React.FC = () => {
 
       {videoUrl && (
         <div>
-          {/* 隐藏的视频元素 */}
+          {/* 视频元素 */}
           <video
             ref={videoRef}
             src={videoUrl}
             style={{ display: "none" }}
-            onTimeUpdate={() => setCurrentTime(videoRef.current?.currentTime || 0)}
+            preload="metadata"
+            playsInline // 移动端内联播放
           />
 
           {/* 显示视频帧的 Canvas */}
           <canvas
-            className="w-[100%]"
             ref={canvasRef}
             width={640}
             height={360}
@@ -108,6 +95,7 @@ const VideoCoverSelector: React.FC = () => {
               border: "1px solid black",
               marginTop: "10px",
               display: "block",
+              backgroundColor: "#000", // 提供黑色背景
             }}
           ></canvas>
 
@@ -116,10 +104,10 @@ const VideoCoverSelector: React.FC = () => {
             <input
               type="range"
               min="0"
-              max={duration}
+              max={duration || 0}
               step="0.1"
               value={currentTime}
-              onChange={(e) => handleSliderChange(e.target.value)}
+              onInput={(e) => handleSliderChange(e.target.value)} // 即时响应滑动
             />
           </div>
 

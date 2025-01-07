@@ -100,7 +100,7 @@ const VideoCoverSelector: React.FC = () => {
           <video
             ref={videoRef}
             src={videoUrl}
-            style={{ display: "none" }}
+            style={{ display: "none", width: "243px", height: "315px" }} // 固定尺寸
             preload="auto" // 改为 'auto' 以便加载完整视频数据
             playsInline // 移动端内联播放
           />
@@ -108,13 +108,15 @@ const VideoCoverSelector: React.FC = () => {
           {/* 显示视频帧的 Canvas */}
           <canvas
             ref={canvasRef}
-            width={640} // 设置固定 Canvas 尺寸
-            height={360} // 设置固定 Canvas 尺寸
+            width={243} // 固定宽度
+            height={315} // 固定高度
             style={{
               border: "1px solid black",
               marginTop: "10px",
               display: "block",
               backgroundColor: "#000", // 提供黑色背景
+              width: "243px", // 固定宽度
+              height: "315px", // 固定高度
             }}
           ></canvas>
 

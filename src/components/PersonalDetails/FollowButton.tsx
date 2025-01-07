@@ -73,6 +73,9 @@ const FollowButton: FC<{
       })
     }
   }
+  if(tgid === currentUid){
+    return <></>
+  }
   return isFollowing ? (
     <BaseButton
       text="Following"

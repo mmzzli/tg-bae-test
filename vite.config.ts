@@ -58,6 +58,8 @@ export default defineConfig(({ mode }) => {
           drop_debugger: true,
         },
       },
+      cache: true,
+      cssCodeSplit: true,
     },
     server: {
       port: 3000,

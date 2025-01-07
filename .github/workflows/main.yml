@@ -25,9 +25,9 @@ jobs:
         with:
           node-version: '${{ matrix.node-version }}'
       - name: Set Node options
-        run: export NODE_OPTIONS="--max-old-space-size=8192"
+        run: export NODE_OPTIONS="--max-old-space-size=16384"
       - run: 'npm install'
-      - run: 'npm run build:dev'
+      - run: 'npm run build:dev --parallel'
       - name: Deploying application to Amazon S3
         uses: jakejarvis/s3-sync-action@master
         with:

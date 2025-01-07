@@ -164,6 +164,7 @@ export const TransferPanel = ({
       <div className="mt-5 flex justify-center">
         <SendRewardButton
           amount={amount}
+          decimals={decimals}
           tokenAddress={tokenAddress}
           contractAddress={contractAddress}
           chainId={chainId}

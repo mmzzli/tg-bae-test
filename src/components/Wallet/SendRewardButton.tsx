@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { SlideButton, SlideButtonHandle } from '../BaseButton/SlideButton'
 import {
-  BaseError,
   useEstimateFeesPerGas,
   useEstimateGas,
   useSwitchChain,
@@ -12,16 +11,18 @@ import { abi } from '@/config/abi'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useToast } from '@chakra-ui/react'
 import { CustomToast, typeOptions } from '../comm/Toast'
-import { parseEther, parseGwei } from 'viem'
+import { parseUnits } from 'viem'
 
 export const SendRewardButton = ({
   amount,
+  decimals,
   tokenAddress,
   contractAddress,
   chainId,
   disabled = false,
 }: {
   amount: string
+  decimals: number
   tokenAddress: string
   contractAddress: string
   chainId: number
@@ -52,23 +53,24 @@ export const SendRewardButton = ({
         chainId,
       },
       {
-        onSuccess: () => {
-          console.log('writeContract onSuccess', parseEther(amount))
+        onSuccess: async () => {
+          console.log('writeContract onSuccess', parseUnits(amount, decimals))
           console.log('gasLimit', gasLimit)
           console.log('feesPerGas', feesPerGas)
+
           writeContract({
             address: contractAddress as `0x${string}`,
             abi,
             functionName: 'reward',
             args: [
-              BigInt(0),
+              parseUnits('0', decimals),
               tokenAddress as `0x${string}`,
-              parseEther(amount),
+              parseUnits(amount, decimals),
               BigInt(current_uid),
             ],
             value:
               tokenAddress === '0x0000000000000000000000000000000000000000'
-                ? parseEther(amount)
+                ? parseUnits(amount, decimals)
                 : 0n,
             gas: gasLimit,
             maxFeePerGas: feesPerGas?.maxFeePerGas,
@@ -87,12 +89,7 @@ export const SendRewardButton = ({
     if (error) {
       toast({
         render: () => {
-          return (
-            <CustomToast
-              title={(error as BaseError).shortMessage || (error as BaseError).message}
-              type={typeOptions.error}
-            />
-          )
+          return <CustomToast title={'Failed to send'} type={typeOptions.error} />
         },
         position: 'bottom',
       })

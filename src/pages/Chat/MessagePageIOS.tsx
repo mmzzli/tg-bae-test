@@ -14,7 +14,7 @@ import SendMediaModal from '@/components/Chat/SendMediaModal'
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { debounce } from '@/utils/chat/schedulers'
-import RewardButton from '@/components/Wallet/RewardButton'
+// import RewardButton from '@/components/Wallet/RewardButton'
 // const PAGE_SIZE = 20
 const isIOS = () => {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
@@ -267,7 +267,7 @@ const MessagePageIOS = () => {
           </div>
 
           <div className="flex items-center justify-center h-[28px] min-w-[48px] overflow-hidden">
-            <RewardButton userInfo={chatPeople || ({} as OthersUserInfo)} />
+            {/* <RewardButton userInfo={chatPeople || ({} as OthersUserInfo)} /> */}
           </div>
 
           <div
@@ -305,7 +305,7 @@ const MessagePageIOS = () => {
             placeholder="Type a Message..."
           />
           <div className="flex items-center justify-center h-[28px] w-[48px] overflow-hidden">
-            <RewardButton userInfo={chatPeople || ({} as OthersUserInfo)} />
+            {/* <RewardButton userInfo={chatPeople || ({} as OthersUserInfo)} /> */}
           </div>
           <div
             onClick={handleSubmit}

@@ -16,10 +16,17 @@
 
 .ant-tabs-tab-btn {
   text-align: center;
+  font-weight: 400;
+  font-size: 16px;
+  color: #666;
 }
 
 .ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
   color: #0f1233;
+  font-family: Switzer;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
 }
 .ant-tabs .ant-tabs-ink-bar {
   background-color: rgb(74 58 255 / var(--tw-bg-opacity, 1));

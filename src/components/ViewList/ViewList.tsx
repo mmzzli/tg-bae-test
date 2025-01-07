@@ -42,7 +42,7 @@ const ViewList = ({ className }: PostListProps) => {
   const tabBarStyle = useMemo(() => ({
     color: '#666',
     fontSize: '16px',
-    fontWeight: '500',
+    fontWeight: '400',
   }), []);
 
   useEffect(() => {

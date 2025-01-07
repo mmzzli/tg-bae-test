@@ -147,9 +147,9 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
                 }}
               >
                 {homeVideoMuted ? (
-                  <Image src={VolumeMuteIcon} className="w-[26px] h-[26px] text-white" />
+                  <Image src={VolumeMuteIcon} className="w-[22px] h-[22px] text-white" />
                 ) : (
-                  <Image src={VolumeSpeakerIcon} className="w-[26px] h-[26px] text-white" />
+                  <Image src={VolumeSpeakerIcon} className="w-[22px] h-[22px] text-white" />
                 )}
               </HStack>
               {data.uid !== getCurrentUid() && data.price > 0 && !data.is_pay && (

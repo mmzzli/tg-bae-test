@@ -42,7 +42,7 @@ const ViewList = ({ className }: PostListProps) => {
   const tabBarStyle = useMemo(() => ({
     color: '#666',
     fontSize: '16px',
-    fontWeight: '500',
+    fontWeight: '400',
   }), []);
 
   useEffect(() => {
@@ -116,7 +116,6 @@ const ViewList = ({ className }: PostListProps) => {
           activeKey={ids}
           items={menuItems}
           onChange={handleTabChange}
-          className="mx-4"
           size='small'
           tabBarStyle={tabBarStyle}
           indicator={{ size: () => 32, align: alignValue, }}

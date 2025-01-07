@@ -511,17 +511,18 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
           />
         </div>
         <div className="flex flex-col">
-          <div className="text-[#0F1233] dark:text-[#E0E2F6]  font-bold text-base">
-            {data.username}
-            {data.is_follow}
-          </div>
-          <div className="flex gap-1.5 items-center">
+          <div className='flex items-center gap-1.5'>
+            <div className="text-[#0F1233] dark:text-[#E0E2F6]  font-bold text-base">
+              {data.username}
+            </div>
             <p className="text-[#868686] dark:text-[#424048] text-xs">
               {getTimeStringAutoShort(
                 new Date(data.created_at).getTime() - new Date().getTimezoneOffset() * 60000,
                 true
               )}
             </p>
+          </div>
+          <div className="flex gap-1.5 items-center">
             {data.act_type === 1 && type === 'recommend' ? (
               <div className="text-[#333333] text-[12px]">Featured</div>
             ) : (

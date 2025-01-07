@@ -51,7 +51,7 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       port: 3000,
-      host: '127.0.0.1',
+      host: '0.0.0.0',
       https: false,
       // https: (() => {
       //   if (process.env.HTTPS_CERT_PEM && process.env.HTTPS_CERT_KEY) {

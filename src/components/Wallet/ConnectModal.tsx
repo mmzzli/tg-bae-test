@@ -11,14 +11,14 @@ import { TomoIcon } from '@/assets/icons'
 const WalletIcon = () => {
   return (
     <div
-      className="relative"
+      className="relative mr-[4px]"
       style={{
         width: '28px',
         height: '28px',
       }}
     >
       <Image src={TomoIcon} rect type="avatar" width={28} height={28} />
-      <div className="absolute bottom-0 right-0 w-[16px] h-[16px] bg-[#2badff] rounded-full flex items-center justify-center border border-solid border-[#fff]">
+      <div className="absolute bottom-[2px] -right-1 w-[16px] h-[16px] bg-[#2badff] rounded-full flex items-center justify-center border border-solid border-[#fff]">
         <i className="iconfont icon-a-Frame2085661744 text-[12px] mt-1 text-[#fff]" />
       </div>
     </div>

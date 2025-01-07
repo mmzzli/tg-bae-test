@@ -14,7 +14,6 @@ video.id = 'default-video-player'
 
 export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLElement) => {
   const url = videoCard.media[0]
-
   const curVideo = videoCardContainer.querySelector('video')
 
   const homeVideoMuted = useStore.getState().homeVideoMuted
@@ -64,7 +63,7 @@ export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLE
   const unsubscribeRoute = useStore.subscribe((state) => {
     const currentPath = window.location.pathname
     if (video) {
-      if (currentPath === '/home' || currentPath === '/') {
+      if (currentPath === '/home' || currentPath === '/christmas' || currentPath === '/') {
         video.play().catch((error) => {
           console.log('视频播放失败:', error)
           video.muted = true
@@ -85,13 +84,17 @@ export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLE
 
   hls.on(Hls.Events.MANIFEST_PARSED, () => {
     video.muted = true
-    video.play().then(() => {
-      video.muted = homeVideoMuted
-    }).catch((error) => {
-      console.log(error, 'error====jacob')
-      video.muted = true
-      video.play()
-    })
+    if (video.paused) {
+      video.play().then(() => {
+        video.muted = homeVideoMuted
+      }).catch((error) => {
+        console.log(error, 'error====jacob')
+        video.muted = true
+        if (video.paused) {
+          video.play()
+        }
+      })
+    }
   })
 
   // 清理函数

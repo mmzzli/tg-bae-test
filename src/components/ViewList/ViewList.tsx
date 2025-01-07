@@ -116,7 +116,6 @@ const ViewList = ({ className }: PostListProps) => {
           activeKey={ids}
           items={menuItems}
           onChange={handleTabChange}
-          className="mx-4"
           size='small'
           tabBarStyle={tabBarStyle}
           indicator={{ size: () => 32, align: alignValue, }}

@@ -1,11 +1,18 @@
 import { useEffect, useRef } from 'react'
 import { SlideButton, SlideButtonHandle } from '../BaseButton/SlideButton'
-import { BaseError, useSwitchChain, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
+import {
+  BaseError,
+  useEstimateFeesPerGas,
+  useEstimateGas,
+  useSwitchChain,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from 'wagmi'
 import { abi } from '@/config/abi'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useToast } from '@chakra-ui/react'
 import { CustomToast, typeOptions } from '../comm/Toast'
-import { parseEther } from 'viem'
+import { parseEther, parseGwei } from 'viem'
 
 export const SendRewardButton = ({
   amount,
@@ -29,7 +36,8 @@ export const SendRewardButton = ({
   const current_uid = getCurrentUid()
 
   const toast = useToast()
-
+  const { data: gasLimit } = useEstimateGas()
+  const { data: feesPerGas } = useEstimateFeesPerGas()
   const handleSendReward = () => {
     console.log('handleSendReward', amount, tokenAddress, contractAddress, current_uid)
     if (!contractAddress) {
@@ -45,6 +53,9 @@ export const SendRewardButton = ({
       },
       {
         onSuccess: () => {
+          console.log('writeContract onSuccess', parseEther(amount))
+          console.log('gasLimit', gasLimit)
+          console.log('feesPerGas', feesPerGas)
           writeContract({
             address: contractAddress as `0x${string}`,
             abi,
@@ -52,10 +63,16 @@ export const SendRewardButton = ({
             args: [
               BigInt(0),
               tokenAddress as `0x${string}`,
-              contractAddress === tokenAddress ? parseEther(amount) : 0n,
+              parseEther(amount),
               BigInt(current_uid),
             ],
-            value: contractAddress === tokenAddress ? parseEther(amount) : 0n,
+            value:
+              tokenAddress === '0x0000000000000000000000000000000000000000'
+                ? parseEther(amount)
+                : 0n,
+            gas: gasLimit,
+            maxFeePerGas: feesPerGas?.maxFeePerGas,
+            maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
           })
         },
       }

@@ -1,6 +1,7 @@
 import React, { FC, useState } from 'react'
 import { Box, Flex, Text, IconButton, useBoolean } from '@chakra-ui/react'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
+import { useGA4EventTrackingReporting } from '@/hooks/useGA4EventTrackingReporting'
 
 import BaseButton from '@/components/BaseButton/BaseButton'
 import Image from '@/components/Image/Image'
@@ -23,9 +24,11 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
   const { initData } = launchParams
   const [loading, setLoading] = useState<boolean>(false)
   const [isPay, setIsPay] = useState<boolean>(true)
+  const { trackPurchase } = useGA4EventTrackingReporting()
 
   const invoiceEve = async () => {
     setLoading(true)
+
     try {
       const viewUrl = await viewPid(post_id)
       resourcesEve(post_id, viewUrl, true)
@@ -61,6 +64,18 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
         tgApp.openInvoice(url, (status: string) => {
           console.log(status, 123)
           if (status === 'paid') {
+            const timestamp = Date.now()
+
+            trackPurchase({
+              transaction_id: `${initData?.user?.id}_${post_id}_${timestamp}`,
+              value: 1,
+              user_id: String(initData?.user?.id),
+              items: [{
+                item_id: String(post_id),
+                name: String(post_id),
+                price: price,
+              }]
+            })
           } else {
             setLoading(false)
           }

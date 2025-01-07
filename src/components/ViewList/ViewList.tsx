@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Box } from '@chakra-ui/react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import ResourceList from '../ResourceList/ResourceList'
@@ -7,31 +7,72 @@ import { useFavList, useOrdersList, useViewList } from '@/store/hook/useResource
 import Empty from '../comm/Empty'
 import Icon from '../comm/Icon'
 import PostSkeleton from '../Skeketon/PostSkeleton'
+import { Tabs } from 'antd'
+import './tab.css'
+import { useLocation } from 'react-router-dom'
+import { useActivate, useUnactivate } from 'react-activation'
 
 interface PostListProps {
   className?: string
 }
 
+type Align = 'start' | 'center' | 'end';
 const ViewList = ({ className }: PostListProps) => {
   const { initialize } = useFavList()
   const [ids, setIsd] = useState<string>('posts')
-  const menuList = [
+  const [showIndicator, setShowIndicator] = useState(false)
+  const [alignValue, setAlignValue] = useState<Align>('start');
+  const location = useLocation()
+
+  const menuItems = useMemo(() => [
     {
-      name: 'My posts',
-      id: 'posts',
+      key: 'posts',
+      label: 'My posts',
     },
     {
-      name: 'Purchased',
-      id: 'purchased',
+      key: 'purchased',
+      label: 'Purchased',
     },
     {
-      name: 'Saved',
-      id: 'saved',
+      key: 'saved',
+      label: 'Saved',
     },
-  ]
-  const tabEve = (id: string) => {
+  ], []);
+
+  const tabBarStyle = useMemo(() => ({
+    color: '#666',
+    fontSize: '16px',
+    fontWeight: '500',
+  }), []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (location.pathname.includes('/profile')) {
+        setAlignValue('center')
+      }
+    }, 100)
+    return () => clearTimeout(timer)
+  }, [location.pathname])
+
+  useActivate(() => {
+    setTimeout(() => {
+      setAlignValue('center')
+    }, 100)
+  })
+
+  useUnactivate(() => {
+    setAlignValue('start')
+  })
+
+  const indicatorConfig = useMemo(() => ({
+    size: () => 32,
+    align: alignValue,
+    render: () => null
+  }), [showIndicator]);
+
+  const handleTabChange = (key: string) => {
     initialize()
-    setIsd(id)
+    setIsd(key)
   }
 
   const [targetBoll, setTargetBoll] = useState<boolean>(false)
@@ -65,23 +106,20 @@ const ViewList = ({ className }: PostListProps) => {
 
   return (
     <>
-      <div className={targetBoll ? `fixed top-0 w-full bg-white z-[111]` : ''}
+      <div
+        className={targetBoll ? `fixed top-0 w-full bg-white z-[111]` : ''}
         style={{
           paddingTop: targetBoll ? `calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))`:'',
         }}
       >
-        <Box className="flex justify-around" borderBottom="1px solid #EBEBF4">
-          {menuList.map((item) => (
-            <div
-              key={item.id}
-              className={`text-[16px] text-[${item.id === ids ? '#0F1233' : '#666'}] font-medium`}
-              onClick={() => tabEve(item.id)}
-            >
-              {item.name}
-              {item.id === ids && <p className="w-[32px] bg-[#4A3AFF] h-[2px] m-[auto] mt-[8px]"></p>}
-            </div>
-          ))}
-        </Box>
+        <Tabs
+          activeKey={ids}
+          items={menuItems}
+          onChange={handleTabChange}
+          size='small'
+          tabBarStyle={tabBarStyle}
+          indicator={{ size: () => 32, align: alignValue, }}
+        />
       </div>
       <div className={cn(className, '')} id="targetElement">
         {ids === 'posts' && <MyPosts key={'posts'} />}

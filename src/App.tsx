@@ -1,41 +1,26 @@
 import { ChakraProvider } from '@chakra-ui/react'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, useRoutes } from 'react-router-dom'
+import NiceModal from '@ebay/nice-modal-react'
+import { AliveScope } from 'react-activation'
+
 import { WagmiProvider } from 'wagmi'
 import { config } from '@/config/wagmi-config'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { TomoWalletTgSdkV2, TomoProvider } from '@tomo-inc/tomo-telegram-sdk'
+import PriceService from '@/utils/wallet/PriceService'
 
 import theme from '@/theme'
-
+import { routes } from './router/routes'
+import { AgeGateWrapper } from './router/AgeGateWrapper'
 import './App.css'
 import './types/window.d.ts'
 
-import { MainLayout } from '@/components/layout'
-import Splash from '@/pages/Splash'
-// import HomePage from '@/pages/Home'
-import Searching from '@/pages/Home/Searching'
-import Christmas from '@/pages/Home/Christmas'
-import { NewPost } from '@/pages/NewPost'
-import Shares from '@/pages/Shares'
-import Profile from '@/pages/Profile'
-import ProfileEdit from '@/pages/Profile/edit'
-import OthersProfile from '@/pages/OthersProfile'
-import EarningsHistory from '@/components/PersonalDetails/Earnings/History'
-import Follow from './pages/Follow'
-import ProfileGuard from './pages/OthersProfile/routeGuard'
-import MessagePageRouteGuard from './pages/Chat/MessagePageRouteGuard'
-import AgeGate from '@/pages/AgeGate'
-import { lazy, Suspense, useEffect } from 'react'
-import NiceModal from '@ebay/nice-modal-react'
-import { TomoWalletTgSdkV2, TomoProvider } from '@tomo-inc/tomo-telegram-sdk'
-import PriceService from '@/utils/wallet/PriceService'
 import { mockTelegramEnv, parseInitData } from '@tma.js/sdk'
 import { DEV_INIT_DATA_RAW } from './utils/constants'
-import { AliveScope, KeepAlive } from 'react-activation'
+import { useEffect } from 'react'
 import '@tomo-inc/tomo-telegram-sdk/dist/styles.css'
 
 import { TOMO_META_DATA } from './config/tomo-config'
-
-const Task = lazy(() => import('./pages/Task'))
 
 PriceService.init()
 
@@ -66,15 +51,20 @@ if (import.meta.env.MODE === 'dev') {
   })
 }
 
+const AppRoutes = () => {
+  const element = useRoutes(routes)
+  return <AgeGateWrapper>{element}</AgeGateWrapper>
+}
+
 function App() {
   useEffect(() => {
     const root = document.querySelector('#root')
     if (root instanceof HTMLElement) {
       const onFocusIn = () => {
-        root.style.paddingBottom = '300px' // 键盘高度
+        root.style.paddingBottom = '300px' //键盘高度
       }
       const onFocusOut = () => {
-        root.style.paddingBottom = '0px' // 键盘高度
+        root.style.paddingBottom = '0px' //键盘高度
       }
 
       document.addEventListener('focusin', onFocusIn)
@@ -86,6 +76,7 @@ function App() {
       }
     }
   }, [])
+
   return (
     <TomoProvider theme="light" supportedProviders={['EVM']} tomoOptions={TOMO_META_DATA}>
       <WagmiProvider config={config}>
@@ -94,77 +85,7 @@ function App() {
             <ChakraProvider resetCSS theme={theme}>
               <AliveScope>
                 <BrowserRouter>
-                  <Routes>
-                    <Route path="/" element={<MainLayout />}>
-                      <Route index element={<Splash />} />
-                      <Route path="home" element={<div></div>}>
-                        {/* <Route
-                      index
-                      element={
-                        <KeepAlive name="home">
-                          <HomePage />
-                        </KeepAlive>
-                      }
-                    /> */}
-                      </Route>
-
-                      <Route path="searching" element={<Searching />} />
-                      <Route path="christmas" element={<Christmas />} />
-
-                      <Route path="post" element={<NewPost />} />
-                      <Route path="shares" element={<Shares />} />
-
-                      <Route
-                        path="task"
-                        element={
-                          <Suspense
-                            fallback={
-                              <div className="flex items-center justify-center h-full pb-10">
-                                <i
-                                  className="iconfont icon-loading animate-spin text-[#6254FF]"
-                                  style={{ fontSize: '40px' }}
-                                />
-                              </div>
-                            }
-                          >
-                            <Task />
-                          </Suspense>
-                        }
-                      />
-
-                      {/* Profile  */}
-                      <Route path="profile">
-                        <Route
-                          index
-                          element={
-                            <Suspense fallback={null}>
-                              <KeepAlive name="profile">
-                                <Profile />
-                              </KeepAlive>
-                            </Suspense>
-                          }
-                        />
-                        <Route path="edit" element={<ProfileEdit />} />
-                        <Route path="earningsHistory" element={<EarningsHistory />} />
-                        <Route
-                          path=":uid"
-                          element={
-                            <ProfileGuard>
-                              <OthersProfile />
-                            </ProfileGuard>
-                          }
-                        />
-                      </Route>
-
-                      {/* Follow */}
-                      <Route path="follow/:uid" element={<Follow />} />
-
-                      {/* Chat */}
-                      <Route path="chat" element={<></>} />
-                      <Route path="chat/:uid" element={<MessagePageRouteGuard />} />
-                      <Route path="ageGate" element={<AgeGate />} />
-                    </Route>
-                  </Routes>
+                  <AppRoutes />
                 </BrowserRouter>
               </AliveScope>
             </ChakraProvider>

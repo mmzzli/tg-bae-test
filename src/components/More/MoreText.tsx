@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 interface MoreTextProps {
   text: string
@@ -9,6 +10,7 @@ interface MoreTextProps {
   moreLine?: boolean
   textColor?: string
   className?: string
+  type?: string
 }
 
 const MoreText: React.FC<MoreTextProps> = ({
@@ -17,12 +19,33 @@ const MoreText: React.FC<MoreTextProps> = ({
   bgColor = '#fff',
   textColor = '#666',
   className = '',
+  type,
 }) => {
+  const navigate = useNavigate()
+
   const [isExpanded, setIsExpanded] = useState(false)
   const [isTextClipped, setIsTextClipped] = useState(false)
   const processedText = text.replace(/\n/g, ' ').trim()
   const [displayText, setDisplayText] = useState(processedText)
   const textRef = useRef<HTMLDivElement | null>(null)
+
+  const highlightMentions = (text: string): React.ReactNode[] => {
+    const mentionRegex = /@\w+/g
+    return text.split(mentionRegex).reduce<React.ReactNode[]>((acc, part, index, array) => {
+      if (index < array.length - 1) {
+        const mentions = text.match(mentionRegex) || []
+        const name = mentions[index].replace(/@/g, '')
+        return [
+          ...acc,
+          part,
+          <a onClick={() => navigate(`/profile/${name}`)} key={index} className="text-[#6254FF]">
+            {mentions[index]}
+          </a>,
+        ]
+      }
+      return [...acc, part]
+    }, [])
+  }
 
   useEffect(() => {
     let frameId: number
@@ -119,7 +142,7 @@ const MoreText: React.FC<MoreTextProps> = ({
           hyphens: 'auto',
         }}
       >
-        {displayText}
+        {type === 'post' ? highlightMentions(displayText) : displayText}
         {isTextClipped && (
           <span
             style={{

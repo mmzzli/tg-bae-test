@@ -36,7 +36,7 @@ const ChatMenuItem: FC<MenuItemProps> = memo(
               name === 'POST' && 'text-[#fff] text-[18px]'
             )}
           ></i>
-          <UnreadCount unreadCount={conversationUnreadCount} className="top-0" />
+          <UnreadCount unreadCount={0} className="top-0" />
         </div>
       </div>
     )

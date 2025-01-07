@@ -1,9 +1,9 @@
 import { FC, useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useStore } from '@/store'
 import { DefaultAvatarIcon } from '@/assets/icons'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
-import { getFollowingList, getSomeoneProfile } from '@/api'
+import { getFollowingList, getSomeoneProfile, getSearchTgidName } from '@/api'
 
 interface ProfileGuardProps {
   children: React.ReactNode
@@ -11,6 +11,7 @@ interface ProfileGuardProps {
 
 const ProfileGuard: FC<ProfileGuardProps> = ({ children }) => {
   const { uid } = useParams()
+  const navigate = useNavigate()
 
   const [ready, setReady] = useState(false)
   const { getCurrentUid } = useTMAUtils()
@@ -43,8 +44,19 @@ const ProfileGuard: FC<ProfileGuardProps> = ({ children }) => {
 
         // Fetch user profile data if uid and token are available
         if (uid && token) {
-          const user = await getSomeoneProfile(Number(uid))
-          setOthersUserInfo({ ...user, user_id: user.uid })
+          console.log(uid,123)
+          try {
+            const id = await getSearchTgidName(`${uid}`)
+            if(id === current_uid){
+              navigate('/profile')
+              return
+            }
+            const user = await getSomeoneProfile(Number(id))
+            setOthersUserInfo({ ...user, user_id: user.uid })
+          } catch (error) {
+            const user = await getSomeoneProfile(Number(uid))
+            setOthersUserInfo({ ...user, user_id: user.uid })
+          }
         }
 
         // Get following list if accessed via share link

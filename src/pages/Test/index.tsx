@@ -107,7 +107,7 @@ const VideoCoverSelector: React.FC = () => {
               max={duration || 0}
               step="0.1"
               value={currentTime}
-              onInput={(e) => handleSliderChange(e.target.value)} // 即时响应滑动
+              onInput={(e:any) => handleSliderChange(e.target.value)} // 即时响应滑动
             />
           </div>
 

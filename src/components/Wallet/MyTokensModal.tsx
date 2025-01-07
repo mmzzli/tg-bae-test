@@ -8,6 +8,7 @@ import SendRewardPage from './SendRewardPage'
 import { useStore } from '@/store/store'
 import { OthersUserInfo } from '@/types'
 import { TokenCard } from './TokenCard'
+// import { CustomToast, typeOptions } from '../comm/Toast'
 
 interface ChildMethods {
   someMethod: () => void
@@ -15,6 +16,8 @@ interface ChildMethods {
 
 const MyTokensModal = forwardRef<ChildMethods, { userInfo: OthersUserInfo }>(
   ({ userInfo }, ref) => {
+    // const toast = useToast()
+
     useImperativeHandle(ref, () => ({
       someMethod: () => {
         toggle()
@@ -30,6 +33,15 @@ const MyTokensModal = forwardRef<ChildMethods, { userInfo: OthersUserInfo }>(
       token: (typeof supportEVMTokenList)[0],
       balance: ReturnType<typeof useBalance>['data']
     ) => {
+      if (import.meta.env.VITE_APP_ENV === 'production') {
+        // toast({
+        //   render: () => {
+        //     return <CustomToast title="Coming soon" type={typeOptions.info} />
+        //   },
+        //   position: 'bottom',
+        // })
+        return
+      }
       setVirtualRoutePage({
         name: 'SendRewardPage',
         params: {

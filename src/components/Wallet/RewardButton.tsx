@@ -20,15 +20,6 @@ const RewardButton = ({
 
   const connectModalRef = useRef<{ someMethod: () => void }>(null)
   const handleReward = async () => {
-    if (import.meta.env.VITE_APP_ENV === 'production') {
-      toast({
-        render: () => {
-          return <CustomToast title="Coming soon" type={typeOptions.info} />
-        },
-        position: 'bottom',
-      })
-      return
-    }
     console.log('status', status)
     console.log('address', address)
     console.log('chain', chain)

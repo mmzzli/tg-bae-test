@@ -6,6 +6,7 @@ import EarningsHistory from '@/components/PersonalDetails/Earnings/History'
 
 import Splash from '@/pages/Splash'
 import Shares from '@/pages/Shares'
+import Test from '@/pages/Test'
 import Profile from '@/pages/Profile'
 import Follow from '@/pages/Follow'
 import AgeGate from '@/pages/AgeGate'
@@ -42,6 +43,7 @@ export const routes = [
       { path: 'christmas', element: <Christmas /> },
       { path: 'post', element: <NewPost /> },
       { path: 'shares', element: <Shares /> },
+      { path: 'test', element: <Test /> },
       {
         path: 'task',
         element: (

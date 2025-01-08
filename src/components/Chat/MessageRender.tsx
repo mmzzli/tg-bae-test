@@ -107,6 +107,12 @@ const ImageRenderer = React.memo(
     uploadError?: string | null
   }) => {
     const setImageResource = useStore((state) => state.setImageResource)
+    let newWidth = width + 'px'
+    let newHeight = height + 'px'
+    if (width === 0 || height === 0) {
+      newWidth = '200px'
+      newHeight = 'auto'
+    }
     if (file) {
       return (
         <div
@@ -116,8 +122,8 @@ const ImageRenderer = React.memo(
             className
           )}
           style={{
-            width: width + 'px',
-            height: height + 'px',
+            width: newWidth,
+            height: newHeight,
           }}
         >
           <img src={URL.createObjectURL(file)} alt="" />
@@ -139,15 +145,15 @@ const ImageRenderer = React.memo(
           className
         )}
         style={{
-          width: width + 'px',
-          height: height + 'px',
+          width: newWidth,
+          height: newHeight,
         }}
       >
         <Image
           src={url}
           alt=""
-          width={width + 'px'}
-          height={height + 'px'}
+          width={newWidth}
+          height={newHeight}
           onClick={() => {
             if (url) setImageResource({ images: [url], currentIndex: 0 })
           }}
@@ -252,6 +258,8 @@ export const MessageRender: React.FC<MessageRenderProps> = ({
       }
     }
   }, [isUploading])
+
+  console.log('message', message)
 
   if (!message) return null
 

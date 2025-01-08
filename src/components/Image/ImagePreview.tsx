@@ -9,7 +9,6 @@ import { handleZoomAndPan } from './resizeAndMove'
 import 'swiper/css'
 import { useSafeState } from 'ahooks'
 import { useStore } from '@/store'
-import { expand } from '@telegram-apps/sdk/dist/dts/scopes/components/viewport/methods'
 import { useDrag } from 'react-use-gesture'
 
 interface ImagePreviewProps {
@@ -97,23 +96,25 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
     setTranslateY(0)
   }
 
-  const bind = useDrag(({ down, movement: [mx, my], direction: [xDir, yDir], velocity }) => {
-    setIsDragging(down)
-    if (down) {
-      // 实时更新位置和透明度
-      setTranslateY(Math.max(0, my))
-      setOpacity(Math.max(0, 1 - my / 400))
-    } else if (yDir > 0 && my > 100 && velocity > 0.2) {
-      // 向下滑动超过阈值时，触发关闭动画
-      setTranslateY(window.innerHeight)
-      setOpacity(0)
-      setTimeout(handlerClose, 200)
-    } else {
-      // 未达到关闭阈值，回弹到原位
-      setTranslateY(0)
-      setOpacity(1)
-    }
-  }, {
+  const bind = useDrag(
+    ({ down, movement: [mx, my], direction: [xDir, yDir], velocity }) => {
+      setIsDragging(down)
+      if (down) {
+        // 实时更新位置和透明度
+        setTranslateY(Math.max(0, my))
+        setOpacity(Math.max(0, 1 - my / 400))
+      } else if (yDir > 0 && my > 100 && velocity > 0.2) {
+        // 向下滑动超过阈值时，触发关闭动画
+        setTranslateY(window.innerHeight)
+        setOpacity(0)
+        setTimeout(handlerClose, 200)
+      } else {
+        // 未达到关闭阈值，回弹到原位
+        setTranslateY(0)
+        setOpacity(1)
+      }
+    },
+    {
       filterTaps: true,
       from: () => [0, translateY],
     }

@@ -139,7 +139,7 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsF
               <img
                 src={candidate.avatar}
                 alt={candidate.tgname}
-                className="w-9 h-9 rounded-full mr-3"
+                className="w-9 h-9 rounded-full mr-3 object-cover"
               />
               <p className="text-4 text-[#333]">{candidate.tgname}</p>
             </li>

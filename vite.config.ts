@@ -27,7 +27,7 @@ const cacheBusterPlugin = () => {
 }
 
 export default defineConfig(({ mode }) => {
-  console.log(mode);
+  console.log(mode)
   return {
     plugins: [react(), nodePolyfills(), mkcert(), cacheBusterPlugin()],
     build: {
@@ -38,16 +38,29 @@ export default defineConfig(({ mode }) => {
             'react-vendor': ['react', 'react-dom', 'react-router-dom'],
             chakra: ['@chakra-ui/react', '@emotion/react', '@emotion/styled'],
             telegram: ['@tma.js/sdk'],
+            'react-query': ['@tanstack/react-query'],
+            'react-virtual': ['@tanstack/react-virtual'],
+            'framer-motion': ['framer-motion'],
+            'lottie-react': ['lottie-react'],
+            'lottie-web': ['lottie-web'],
+            viem: ['viem'],
+            antd: ['antd', 'antd-mobile'],
+            ton: ['ton', 'ton-core', 'ton-crypto', 'tonweb'],
+            swiper: ['swiper'],
+            axios: ['axios'],
+            wukongimjssdk: ['wukongimjssdk'],
           },
         },
       },
       minify: 'terser',
       terserOptions: {
         compress: {
-          drop_console: mode === 'production' ,
+          drop_console: mode === 'production',
           drop_debugger: true,
         },
       },
+      cache: true,
+      cssCodeSplit: true,
     },
     server: {
       port: 3000,

@@ -269,6 +269,8 @@ export const MessageRender: React.FC<MessageRenderProps> = ({
     }
   }, [isUploading])
 
+  console.log('message', message)
+
   if (!message) return null
 
   if (isImageMessage(message)) {

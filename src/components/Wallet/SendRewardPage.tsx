@@ -2,18 +2,24 @@ import Image from '@/components/Image/Image'
 import { useStore } from '@/store/store'
 import { TransferPanel } from './TransferPanel'
 import { isMobileDevice } from '@/utils/utils'
+import TokenIcon from './TokenIcon'
+import PriceService from '@/utils/wallet/PriceService'
 const SendRewardPage = () => {
   const { virtualRoutePage, resetVirtualRoutePage } = useStore((state) => ({
     virtualRoutePage: state.virtualRoutePage,
     resetVirtualRoutePage: state.resetVirtualRoutePage,
   }))
   console.log('virtualRoutePage', virtualRoutePage)
-  const { token, balance, avatar, username, icon, address, rewardContractAddress, chainId } =
+  const { token, balance, avatar, username, address, rewardContractAddress, chainId, chainName } =
     virtualRoutePage?.params || {}
 
   const handleAmountChange = (amount: string) => {
     console.log('Amount changed:', amount, balance)
   }
+
+  const price = PriceService.getInstance().getPrice(token)
+
+  console.log('price', price)
 
   return (
     <div
@@ -52,20 +58,14 @@ const SendRewardPage = () => {
 
         {/* Token Balance */}
         <div className="flex items-center justify-center h-[48px] mt-8 w-[205px] rounded-full overflow-hidden bg-[#F5F5FA] text-sm mb-7">
-          <div className="w-8 h-8 bg-[#a5a5a5] rounded-full overflow-hidden mr-2">
-            <Image
-              type="avatar"
-              rect
-              src={icon}
-              alt="token"
-              className="w-[32px] h-[32px] rounded-full"
-            />
+          <div className="w-8 h-8 overflow-hidden mr-2">
+            <TokenIcon token={token} chainName={chainName} size="32px" />
           </div>
           <span className="text-[#616184]">Balance :&nbsp;</span>
           <span className="dark:text-white text-[#12122A]">
             {balance?.formatted
-              ? Number(balance.formatted).toString().split('.')[1]?.length > 5
-                ? Number(balance.formatted).toFixed(5)
+              ? Number(balance.formatted).toString().split('.')[1]?.length > 6
+                ? Number(balance.formatted).toFixed(6)
                 : Number(balance.formatted).toString()
               : '0.00'}
             &nbsp;
@@ -77,7 +77,7 @@ const SendRewardPage = () => {
           balance={balance?.value || 0n}
           symbol={token}
           decimals={balance?.decimals || 18}
-          price={2}
+          price={price || 0}
           tokenAddress={address ? address : '0x0000000000000000000000000000000000000000'}
           contractAddress={rewardContractAddress}
           chainId={chainId}

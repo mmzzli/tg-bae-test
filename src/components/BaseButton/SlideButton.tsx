@@ -106,7 +106,7 @@ export const SlideButton = forwardRef<SlideButtonHandle, SlideButtonProps>(
             position: 'absolute',
             left: 0,
             borderRadius: '50%',
-            backgroundColor: isDragging || isLoading ? '#6254FF' : '#D1D0DE',
+            backgroundColor: disabled ? '#D1D0DE' : '#6254FF',
             cursor: disabled ? 'not-allowed' : 'grab',
             display: 'flex',
             alignItems: 'center',

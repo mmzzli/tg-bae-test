@@ -25,7 +25,38 @@ const VideoCoverSelector: React.FC = () => {
     if (video && canvas) {
       const ctx = canvas.getContext("2d");
       if (ctx) {
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        // 获取 Canvas 的显示区域宽高
+        const displayWidth = canvas.clientWidth;
+        const displayHeight = canvas.clientHeight;
+
+        // 获取视频的宽高
+        const videoWidth = video.videoWidth;
+        const videoHeight = video.videoHeight;
+
+        // 计算视频的宽高比
+        const videoRatio = videoWidth / videoHeight;
+        const canvasRatio = displayWidth / displayHeight;
+
+        let renderWidth, renderHeight;
+
+        if (canvasRatio > videoRatio) {
+          // 如果 Canvas 宽高比大于视频宽高比，宽度为 Canvas 宽度，高度按比例调整
+          renderWidth = displayWidth;
+          renderHeight = displayWidth / videoRatio;
+        } else {
+          // 如果 Canvas 宽高比小于视频宽高比，高度为 Canvas 高度，宽度按比例调整
+          renderHeight = displayHeight;
+          renderWidth = displayHeight * videoRatio;
+        }
+
+        // 清空画布并渲染视频帧
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // 清空画布
+
+        // 使视频帧填充整个 Canvas
+        ctx.drawImage(video, 0, 0, videoWidth, videoHeight,
+                      (displayWidth - renderWidth) / 2,
+                      (displayHeight - renderHeight) / 2,
+                      renderWidth, renderHeight);
       }
     }
   };
@@ -36,41 +67,30 @@ const VideoCoverSelector: React.FC = () => {
     if (video) {
       const handleLoadedMetadata = () => {
         setDuration(video.duration);
-        setCurrentTime(0); // 确保视频一开始时是从第 0 秒开始
+        setCurrentTime(0);
+      };
+
+      const handleCanPlay = () => {
         renderFrameToCanvas(); // 渲染视频的第一帧
       };
+
       video.addEventListener("loadedmetadata", handleLoadedMetadata);
+      video.addEventListener("canplay", handleCanPlay);
 
       return () => {
         video.removeEventListener("loadedmetadata", handleLoadedMetadata);
+        video.removeEventListener("canplay", handleCanPlay);
       };
     }
   }, [videoUrl]);
 
-  // 动态更新 Canvas 内容
-  useEffect(() => {
-    let animationFrameId: number;
-
-    const updateCanvas = (): void => {
-      renderFrameToCanvas(); // 渲染当前帧
-      animationFrameId = requestAnimationFrame(updateCanvas); // 持续更新
-    };
-
-    if (videoUrl) {
-      updateCanvas();
-    }
-
-    return () => {
-      cancelAnimationFrame(animationFrameId); // 清理动画帧
-    };
-  }, [videoUrl, currentTime]); // 依赖 currentTime 以确保更新帧
-
-  // 更新播放时间
-  const handleSliderChange = (value: number | string): void => {
+  // 同步滑块和视频播放时间
+  const handleSliderChange = (value: React.FormEvent<HTMLInputElement>): void => {
     const video = videoRef.current;
     if (video) {
-      video.currentTime = Number(value); // 设置视频播放时间
-      setCurrentTime(Number(value)); // 更新当前时间状态
+      video.currentTime = Number(value);
+      setCurrentTime(Number(value));
+      renderFrameToCanvas(); // 渲染当前帧
     }
   };
 
@@ -90,24 +110,27 @@ const VideoCoverSelector: React.FC = () => {
 
       {videoUrl && (
         <div>
-          {/* 隐藏的视频元素 */}
+          {/* 视频元素 */}
           <video
             ref={videoRef}
             src={videoUrl}
-            style={{ display: "none" }}
-            onTimeUpdate={() => setCurrentTime(videoRef.current?.currentTime || 0)}
+            style={{ display: "none", width: "243px", height: "315px" }} // 固定尺寸
+            preload="auto" // 改为 'auto' 以便加载完整视频数据
+            playsInline // 移动端内联播放
           />
 
           {/* 显示视频帧的 Canvas */}
           <canvas
-            className="w-[100%]"
             ref={canvasRef}
-            width={640}
-            height={360}
+            width={243} // 固定宽度
+            height={315} // 固定高度
             style={{
               border: "1px solid black",
               marginTop: "10px",
               display: "block",
+              backgroundColor: "#000", // 提供黑色背景
+              width: "243px", // 固定宽度
+              height: "315px", // 固定高度
             }}
           ></canvas>
 
@@ -116,10 +139,10 @@ const VideoCoverSelector: React.FC = () => {
             <input
               type="range"
               min="0"
-              max={duration}
+              max={duration || 0}
               step="0.1"
               value={currentTime}
-              onChange={(e) => handleSliderChange(e.target.value)}
+              onInput={(e: any) => handleSliderChange(e.target.value)} // 即时响应滑动
             />
           </div>
 

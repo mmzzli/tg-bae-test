@@ -8,8 +8,9 @@ import { DeleteDialogWarp } from '../Chat/DeleteDialog'
 import { useModal } from '@ebay/nice-modal-react'
 import { useToast } from '@chakra-ui/react'
 import BaseButton from '../BaseButton/BaseButton'
-import { getSomeoneProfile, follow } from '@/api'
+import { getSomeoneProfile, follow, getFollowingList } from '@/api'
 import { useStore } from '@/store'
+import { useTMAUtils } from '@/hooks/useTMAUtils'
 
 type Props = {
   mediaData: FormatterListItem
@@ -28,8 +29,12 @@ const SecondaryMenu = ({ mediaData, currentUid, className, type, setReportVisibl
   const [isFollowLoading, setIsFollowLoading] = useState<boolean>(false)
   const followResource = useStore((state) => state.followResource)
   const setFollowResource = useStore((state) => state.setFollowResource)
+  const setMyFollow = useStore((state) => state.setMyFollow)
 
   const deleteDialogWrap = useModal(DeleteDialogWarp)
+
+  const { getCurrentUid } = useTMAUtils()
+  const current_uid = getCurrentUid()
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -87,6 +92,7 @@ const SecondaryMenu = ({ mediaData, currentUid, className, type, setReportVisibl
     )
     console.log(res)
     setFollowResource(res)
+    getFollowingList(current_uid).then((res) => setMyFollow(res))
   }
 
   return (

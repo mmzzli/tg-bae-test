@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 import { formatUnits } from 'viem'
 import BigNumber from 'bignumber.js'
 import { SendRewardButton } from './SendRewardButton'
+import { useToast } from '@chakra-ui/react'
+import { CustomToast, typeOptions } from '../comm/Toast'
 
 interface TransferPanelProps {
   balance: bigint
@@ -27,7 +29,7 @@ export const TransferPanel = ({
   const [amount, setAmount] = useState('')
   const [error, setError] = useState('')
   const formattedBalance = formatUnits(balance, decimals)
-
+  const toast = useToast()
   const [inputWidth, setInputWidth] = useState(0)
   const [unitMeasureWidth, setUnitMeasureWidth] = useState(0)
   const measureRef = useRef<HTMLSpanElement>(null)
@@ -47,7 +49,14 @@ export const TransferPanel = ({
 
     const decimalParts = value.split('.')
     if (decimalParts.length > 1 && decimalParts[1].length > decimals) {
-      setError(`Max ${decimals} decimal places`)
+      toast({
+        render: () => (
+          <CustomToast title={`Max ${decimals} decimal places`} type={typeOptions.info} />
+        ),
+      })
+      const truncatedValue = `${decimalParts[0]}.${decimalParts[1].slice(0, decimals)}`
+      setAmount(truncatedValue)
+      onAmountChange(truncatedValue)
       return false
     }
 
@@ -80,8 +89,8 @@ export const TransferPanel = ({
   }
 
   const handleAmountChange = (value: string) => {
-    if (!/^\d*\.?\d*$/.test(value) && value !== '') return
-
+    // 匹配正常数字
+    if (value !== '' && !/^[1-9]\d*\.?\d*$|^0\.?\d*$/.test(value)) return
     setAmount(value)
     if (validateAmount(value)) {
       onAmountChange(value)
@@ -90,7 +99,9 @@ export const TransferPanel = ({
 
   const handlePercentageClick = (percentage: number) => {
     const balanceBN = new BigNumber(formattedBalance)
-    const newAmount = balanceBN.multipliedBy(percentage)
+    const newAmount = balanceBN
+      .multipliedBy(percentage)
+      .decimalPlaces(decimals, BigNumber.ROUND_DOWN)
     handleAmountChange(newAmount.toString())
   }
 
@@ -168,7 +179,7 @@ export const TransferPanel = ({
           tokenAddress={tokenAddress}
           contractAddress={contractAddress}
           chainId={chainId}
-          disabled={!!error}
+          disabled={!!error || amount === '' || parseFloat(amount) === 0}
         />
       </div>
     </div>

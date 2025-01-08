@@ -101,6 +101,7 @@ const Searching = () => {
               className="w-[24px] h-[24px] p-[12px] bg-[#A0A3BD] rounded-[50px] flex items-center justify-center cursor-pointer"
               onClick={() => {
                 setField('')
+                setDebouncedField('')
                 setData({ users: [] })
                 inputRef.current?.focus()
                 setIsLoading(false)

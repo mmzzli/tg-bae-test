@@ -41,6 +41,7 @@
     "@tomo-inc/tomo-telegram-sdk": "^1.0.16",
     "@tonconnect/ui-react": "^2.0.9",
     "@types/scheduler": "^0.23.0",
+    "@ankr.com/ankr.js": "0.5.2",
     "ahooks": "^3.8.1",
     "antd": "^5.22.7",
     "antd-mobile": "^5.36.1",

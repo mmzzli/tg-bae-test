@@ -10,6 +10,7 @@ import { profileImg } from '@/assets/image'
 import ProfileSkeleton from '../Skeketon/ProfileSkeleton'
 import Notification from './Notification/Notification'
 import MoreText from '@/components/More/MoreText'
+import ProfileConnectButton from '../Wallet/ProfileConnectButton'
 // import ConnectButton from '../Wallet/ConnectButton'
 
 const UserProfile: FC = () => {
@@ -115,18 +116,7 @@ const UserProfile: FC = () => {
         </Box>
       </HStack>
       <div>
-        {/* <BaseButton
-          text="Connect wallet"
-          className="h-[48px] mb-[24px] w-[343px]"
-          // handler={async () => {
-          //   const tomo_ton = window.tomo_ton
-          //   await tomo_ton?.connect()
-          // }}
-          handler={() => {
-            openConnectModal()
-          }}
-        ></BaseButton> */}
-        {/* <ConnectButton /> */}
+        <ProfileConnectButton />
       </div>
     </Box>
   )

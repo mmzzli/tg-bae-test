@@ -1,4 +1,4 @@
-import { http, createConfig } from 'wagmi'
+import { http, createConfig, injected } from 'wagmi'
 import { defineChain } from 'viem'
 import { arbitrum, bsc, mainnet, optimism } from 'wagmi/chains'
 import { tokenIconMap } from './token-icon'
@@ -67,6 +67,7 @@ const contractAddress = {
 
 export const config = createConfig({
   chains: evmChainList,
+  connectors: [injected()],
   transports: {
     [arbitrum.id]: http(),
     [bsc.id]: http(),

@@ -70,6 +70,7 @@ export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLE
           video.play()
         })
       } else {
+        hls.destroy()
         video.pause()
       }
     }

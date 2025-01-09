@@ -43,8 +43,8 @@ const ChatContent: FC<{ user: OthersUserInfo | null; chat: Conversation }> = ({ 
 
     <div className="flex justify-between items-start min-h-[24px]">
       <p className="flex-1 text-[#666] text-sm truncate mt-1 font-normal">
-        {chat?.lastMessage?.content?.entity?.type === MessageType.REWARD && '[Reward]'}
-        {chat?.lastMessage?.content?.entity?.type === MessageType.IMAGE && '[Picture]'}
+        {chat?.lastMessage?.content?.entity?.type === MessageType.REWARD && '[Tips]'}
+        {chat?.lastMessage?.content?.entity?.type === MessageType.IMAGE && '[Image]'}
         {chat?.lastMessage?.content?.entity?.type === MessageType.VIDEO && '[Video]'}
         {chat?.lastMessage?.content?.entity?.type === MessageType.TEXT &&
           chat?.lastMessage?.content?.entity?.text}

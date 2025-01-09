@@ -395,7 +395,7 @@ const useCacheVideo = (
         defaultVideo.parentNode?.removeChild(defaultVideo)
       }
     }
-  }, 100)
+  }, 1000)
 
   const handleIntersection = (entries: IntersectionObserverEntry[]) => {
     let maxVisibility = 0

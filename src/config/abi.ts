@@ -148,3 +148,24 @@ export const abi = [
     type: 'function',
   },
 ] as const
+
+export const approveAbi = [
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_spender',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: '_value',
+        type: 'uint256',
+      },
+    ],
+    name: 'approve',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+] as const

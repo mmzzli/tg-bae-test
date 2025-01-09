@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useBoolean, useToast } from '@chakra-ui/react'
+import { useAccount } from 'wagmi'
 
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { StarsIcon, RightIcon } from '@/assets/icons'
@@ -7,9 +9,12 @@ import { totalAvailableInvoice } from '@/api'
 import { useStore } from '@/store/store'
 import { totalAvailable } from '@/types'
 import { formatNumber } from '@/utils/utils'
+import { CustomToast, typeOptions } from '@/components/comm/Toast'
+import ConnectModal from '@/components/Wallet/ConnectModal'
 
 const Earnings = () => {
   const navigate = useNavigate()
+  const toast = useToast()
   const { token } = useStore((state) => ({
     token: state.token,
   }))
@@ -18,6 +23,32 @@ const Earnings = () => {
     exchange_rate: 0,
     total: 0,
   })
+  const connectModalRef = useRef<{ someMethod: () => void }>(null)
+  const myTokensModalRef = useRef<{ someMethod: () => void }>(null)
+  const { address, chain, status } = useAccount()
+
+
+  const handleAfterConnect = () => {
+    status === 'connected' && address && myTokensModalRef.current?.someMethod()
+  }
+
+  const handleReward = async () => {
+    console.log('status', status)
+    console.log('address', address)
+    console.log('chain', chain)
+    if (status === 'disconnected') {
+      connectModalRef.current?.someMethod()
+    } else if (status === 'connected') {
+      myTokensModalRef.current?.someMethod()
+    } else {
+      toast({
+        render: () => {
+          return <CustomToast title="Connecting..." type={typeOptions.info} />
+        },
+        position: 'bottom',
+      })
+    }
+  }
 
   useEffect(() => {
     if (!token) return
@@ -76,6 +107,12 @@ const Earnings = () => {
             width="100%"
             height="40px"
             handler={() => {
+              toast({
+                render: () => {
+                  return <CustomToast title="coming soon" type={typeOptions.warning} />
+                },
+                position: 'bottom',
+              })
               // toggle()
             }}
           />
@@ -94,18 +131,29 @@ const Earnings = () => {
             <h3 className='text-[#000] text-[22px] my-4'>$0.00</h3>
             <p className='text-[#666] text-[12px]'>This shows the estimated total value of crypto you received from others, subject to market fluctuations.</p>
             <div className='px-3'>
-              <BaseButton
+              {status === 'disconnected' ? <BaseButton
                 className='mt-5'
                 text="Connect wallet"
                 width="100%"
                 height="40px"
                 handler={() => {
-                  // toggle()
+                  handleReward()
                 }}
-              />
+              />:
+                <BaseButton
+                  className='mt-5'
+                  text="Lauch wallet to withdraw"
+                  width="100%"
+                  height="40px"
+                  handler={() => {
+
+                  }}
+                />
+              }
             </div>
         </div>
       </div>
+      <ConnectModal ref={connectModalRef} afterConnect={handleAfterConnect} />
     </div>
   )
 }

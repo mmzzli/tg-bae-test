@@ -3,7 +3,7 @@ import { useBoolean } from '@chakra-ui/react'
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { AttachIcon } from '@/assets/icons'
 import { useEffect, useRef, useState } from 'react'
-import { MessageType } from './types'
+import { MessageMetadata, MessageType } from './types'
 import { useFormatMessage } from '@/hooks/useFormatMessage'
 import { useIM } from '@/store/hook/userIM'
 
@@ -125,14 +125,14 @@ const SendMediaModal = ({
           type: MessageType.IMAGE,
           url: '',
           to: tgid,
-          metadata,
+          metadata: metadata as MessageMetadata,
         })
       } else if (metadata.type.startsWith('video/')) {
         newMessage = formatMessage({
           type: MessageType.VIDEO,
           url: '',
           to: tgid,
-          metadata,
+          metadata: metadata as MessageMetadata,
         })
       }
       if (newMessage) {

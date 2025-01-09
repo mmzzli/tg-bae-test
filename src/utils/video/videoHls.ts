@@ -82,15 +82,29 @@ export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLE
     }
   })
 
-  hls.on(Hls.Events.MANIFEST_PARSED, () => {
-    video.muted = true
-      video.play().then(() => {
-        video.muted = homeVideoMuted
-      }).catch((error) => {
-        console.log(error, 'error====jacob')
-        video.muted = true
-        video.play()
-      })
+  hls.on(Hls.Events.MANIFEST_PARSED, async () => {
+    try {
+      // 首先设置为静音以确保可以自动播放
+      video.muted = true
+      await video.play()
+
+      // 如果初始播放成功，再根据状态设置静音
+      if (!homeVideoMuted) {
+        // 添加延时以确保浏览器不会阻止取消静音
+        setTimeout(() => {
+          video.muted = homeVideoMuted
+        }, 100)
+      }
+    } catch (error) {
+      console.warn('视频播放失败:', error)
+      // 保持静音状态继续尝试播放
+      video.muted = true
+      try {
+        await video.play()
+      } catch (retryError) {
+        console.error('重试播放失败:', retryError)
+      }
+    }
   })
 
   // 清理函数

@@ -110,7 +110,7 @@ const UserProfile: FC = () => {
             $123
           </Heading>
           <Text color="#8A8C91" fontSize="12px" lineHeight="14px">
-            earnings
+            Earnings
           </Text>
         </Box>
       </HStack>

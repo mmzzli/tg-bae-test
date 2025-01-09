@@ -56,7 +56,7 @@ const usdtAddressOnEvm = {
   [mainnet.id]: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
   [optimism.id]: '0x94b008aA00579c1307B0EF2c499aD98a8ce58e58',
   [duckChainTestnet.id]: '',
-  [bscTestnet.id]: '',
+  [bscTestnet.id]: '0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee',
 }
 const contractAddress = {
   [duckChainTestnet.id]: '0x84868afcC4Ba758a4ae2aca141D2fF0ECD8C5fac',

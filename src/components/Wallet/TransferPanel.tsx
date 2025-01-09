@@ -14,6 +14,8 @@ interface TransferPanelProps {
   tokenAddress: string
   contractAddress: string
   chainId: number
+  chainName: string
+  toUid: number
 }
 
 export const TransferPanel = ({
@@ -25,6 +27,8 @@ export const TransferPanel = ({
   contractAddress,
   onAmountChange,
   chainId,
+  chainName,
+  toUid,
 }: TransferPanelProps) => {
   const [amount, setAmount] = useState('')
   const [error, setError] = useState('')
@@ -179,6 +183,9 @@ export const TransferPanel = ({
           tokenAddress={tokenAddress}
           contractAddress={contractAddress}
           chainId={chainId}
+          chainName={chainName}
+          token={symbol}
+          toUid={toUid}
           disabled={!!error || amount === '' || parseFloat(amount) === 0}
         />
       </div>

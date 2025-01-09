@@ -32,7 +32,9 @@ a:hover {
 }
 
 
-
+ul,li{
+  list-style: none;
+}
 img {
   max-width: none;
 }

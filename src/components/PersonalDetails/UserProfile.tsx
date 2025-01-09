@@ -10,6 +10,7 @@ import { profileImg } from '@/assets/image'
 import ProfileSkeleton from '../Skeketon/ProfileSkeleton'
 import Notification from './Notification/Notification'
 import MoreText from '@/components/More/MoreText'
+import ProfileConnectButton from '../Wallet/ProfileConnectButton'
 // import ConnectButton from '../Wallet/ConnectButton'
 
 const UserProfile: FC = () => {
@@ -53,7 +54,7 @@ const UserProfile: FC = () => {
           />
         </div>
         <Box display="flex" alignItems="center">
-          <EarningsPage />
+          {/* <EarningsPage /> */}
           <Notification />
           <ShareUser userInfo={userInfo} />
         </Box>
@@ -99,20 +100,23 @@ const UserProfile: FC = () => {
             Following
           </Text>
         </Box>
+        <Box textAlign="center">
+          <Heading
+            fontSize="20px"
+            color="#0F1233"
+            lineHeight="24px"
+            cursor="pointer"
+            onClick={() => navigate(`/profile/earnings`)}
+          >
+            $123
+          </Heading>
+          <Text color="#8A8C91" fontSize="12px" lineHeight="14px">
+            Earnings
+          </Text>
+        </Box>
       </HStack>
       <div>
-        {/* <BaseButton
-          text="Connect wallet"
-          className="h-[48px] mb-[24px] w-[343px]"
-          // handler={async () => {
-          //   const tomo_ton = window.tomo_ton
-          //   await tomo_ton?.connect()
-          // }}
-          handler={() => {
-            openConnectModal()
-          }}
-        ></BaseButton> */}
-        {/* <ConnectButton /> */}
+        <ProfileConnectButton />
       </div>
     </Box>
   )

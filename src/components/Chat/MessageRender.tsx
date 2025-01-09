@@ -1,13 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { MessageParser, ParsedContent } from '@/components/Chat/MessageParser'
 import clsx from 'clsx'
-import { MessageStatus, MessageType, WrappedMessage } from './types'
+import {
+  FileMetadata,
+  MessageMetadata,
+  MessageStatus,
+  MessageType,
+  RewardMetadata,
+  WrappedMessage,
+} from './types'
 import Image from '../Image/Image'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useStore } from '@/store'
 import axios from 'axios'
 import { useIM } from '@/store/hook/userIM'
-
+import TokenIcon from '../Wallet/TokenIcon'
+import PriceService from '@/utils/wallet/PriceService'
+import BigNumber from 'bignumber.js'
+import { evmChainList } from '@/config/wagmi-config'
 interface MessageRenderProps {
   message: WrappedMessage
   className?: string
@@ -107,6 +117,12 @@ const ImageRenderer = React.memo(
     uploadError?: string | null
   }) => {
     const setImageResource = useStore((state) => state.setImageResource)
+    let newWidth = width + 'px'
+    let newHeight = height + 'px'
+    if (width === 0 || height === 0) {
+      newWidth = '200px'
+      newHeight = 'auto'
+    }
     if (file) {
       return (
         <div
@@ -116,8 +132,8 @@ const ImageRenderer = React.memo(
             className
           )}
           style={{
-            width: width + 'px',
-            height: height + 'px',
+            width: newWidth,
+            height: newHeight,
           }}
         >
           <img src={URL.createObjectURL(file)} alt="" />
@@ -139,15 +155,15 @@ const ImageRenderer = React.memo(
           className
         )}
         style={{
-          width: width + 'px',
-          height: height + 'px',
+          width: newWidth,
+          height: newHeight,
         }}
       >
         <Image
           src={url}
           alt=""
-          width={width + 'px'}
-          height={height + 'px'}
+          width={newWidth}
+          height={newHeight}
           onClick={() => {
             if (url) setImageResource({ images: [url], currentIndex: 0 })
           }}
@@ -202,7 +218,7 @@ export const MessageRender: React.FC<MessageRenderProps> = ({
         ...message,
         url: response.data,
         status: MessageStatus.UPLOADED,
-        metadata: { ...message?.metadata, file: undefined },
+        metadata: { ...message?.metadata, file: undefined } as MessageMetadata,
       } as WrappedMessage
       sendMessage(newMessage, false)
       setMessage(newMessage)
@@ -255,7 +271,7 @@ export const MessageRender: React.FC<MessageRenderProps> = ({
 
   if (!message) return null
 
-  if (message.type === MessageType.IMAGE) {
+  if (isImageMessage(message)) {
     const { width, height } = scaleImage(
       message.metadata?.width || 0,
       message.metadata?.height || 0
@@ -286,7 +302,7 @@ export const MessageRender: React.FC<MessageRenderProps> = ({
     )
   }
 
-  if (message.type === MessageType.VIDEO) {
+  if (isVideoMessage(message)) {
     const { width, height } = scaleImage(
       message.metadata?.width || 0,
       message.metadata?.height || 0
@@ -345,6 +361,10 @@ export const MessageRender: React.FC<MessageRenderProps> = ({
         </video>
       </div>
     )
+  }
+
+  if (isRewardMessage(message)) {
+    return <RewardCard message={message} />
   }
 
   return (
@@ -444,4 +464,53 @@ const MessagePart: React.FC<{ part: ParsedContent }> = ({ part }) => {
     )
   }
   return null
+}
+
+const RewardCard: React.FC<{ message: WrappedMessage }> = ({ message }) => {
+  const { chain_name, token, amount, hash, chain_id } = message.metadata as RewardMetadata
+  const price = PriceService.getInstance().getPrice(token)
+  const usdValue = price ? new BigNumber(amount || '0').multipliedBy(price).toFixed(2) : '0.00'
+
+  const { openLink } = useTMAUtils()
+  const handleClick = () => {
+    if (!hash || !chain_id) return
+
+    const explorerUrl = evmChainList.find((chain) => chain.id === chain_id)?.blockExplorers?.default
+      ?.url
+    if (explorerUrl) {
+      openLink(explorerUrl + `tx/${hash}`)
+    }
+  }
+  return (
+    <div
+      className="cursor-pointer flex items-center w-[255px] h-[72px] border-[0.5px] border-[#CDCDD4] rounded-lg px-4 bg-white"
+      onClick={handleClick}
+    >
+      <TokenIcon token={token} chainName={chain_name} size="36px" />
+      <div className="flex flex-col justify-between ml-3">
+        <div className="text-[18px] text-[#333] font-bold">${usdValue || '0.00'}</div>
+        <div className="text-[13px] text-[#999]">
+          {amount} {token}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function isImageMessage(
+  message: WrappedMessage
+): message is WrappedMessage & { metadata: FileMetadata } {
+  return message.type === MessageType.IMAGE
+}
+
+function isVideoMessage(
+  message: WrappedMessage
+): message is WrappedMessage & { metadata: FileMetadata } {
+  return message.type === MessageType.VIDEO
+}
+
+function isRewardMessage(
+  message: WrappedMessage
+): message is WrappedMessage & { metadata: RewardMetadata } {
+  return message.type === MessageType.REWARD
 }

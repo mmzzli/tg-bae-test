@@ -8,6 +8,7 @@ import Splash from '@/pages/Splash'
 import Shares from '@/pages/Shares'
 import Test from '@/pages/Test'
 import Profile from '@/pages/Profile'
+import Earnings from '@/pages/Profile/earnings'
 import Follow from '@/pages/Follow'
 import AgeGate from '@/pages/AgeGate'
 import { NewPost } from '@/pages/NewPost'
@@ -65,6 +66,7 @@ export const routes = [
               </Suspense>
             ),
           },
+          { path: 'earnings', element: <Earnings /> },
           { path: 'edit', element: <ProfileEdit /> },
           { path: 'earningsHistory', element: <EarningsHistory /> },
           {

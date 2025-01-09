@@ -311,7 +311,7 @@ const Tasks: FC = () => {
           <p className="text-center font-[Switzer] text-[16px] font-[400] leading-[120%] text-[#666)] mb-[24px]">
             You have won <span style={{ color: '#6254FF', fontFamily: 'Roboto', fontSize: '16px', fontStyle: 'normal', fontWeight: '600', lineHeight: '120%' }}>{taskPoints}</span> Bae points.
           </p>
-          <BaseButton text="Got it" handler={() => {}} className="w-[270px] h-[48px]" />
+          <BaseButton text="Got it" handler={() => setIsOpen(false)} className="w-[270px] h-[48px]" />
         </Box>
       </BottomCloseModal>
       <div className="mb-4 flex flex-col items-center justify-center">

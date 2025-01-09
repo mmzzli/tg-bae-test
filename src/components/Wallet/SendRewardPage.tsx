@@ -10,8 +10,17 @@ const SendRewardPage = () => {
     resetVirtualRoutePage: state.resetVirtualRoutePage,
   }))
   console.log('virtualRoutePage', virtualRoutePage)
-  const { token, balance, avatar, username, address, rewardContractAddress, chainId, chainName } =
-    virtualRoutePage?.params || {}
+  const {
+    token,
+    balance,
+    avatar,
+    username,
+    address,
+    rewardContractAddress,
+    chainId,
+    chainName,
+    uid,
+  } = virtualRoutePage?.params || {}
 
   const handleAmountChange = (amount: string) => {
     console.log('Amount changed:', amount, balance)
@@ -81,6 +90,8 @@ const SendRewardPage = () => {
           tokenAddress={address ? address : '0x0000000000000000000000000000000000000000'}
           contractAddress={rewardContractAddress}
           chainId={chainId}
+          chainName={chainName}
+          toUid={uid}
           onAmountChange={handleAmountChange}
         />
       </div>

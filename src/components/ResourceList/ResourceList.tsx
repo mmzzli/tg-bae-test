@@ -61,6 +61,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 }) => {
   const { launchParams } = useTMAUtils()
   const { copy } = useCopy()
+  const toast = useToast()
 
   const { runAsync: getInlineMessageId, loading: getInlineMessageIdLoading } = useRequest(
     getShareInlineMessageId,
@@ -151,6 +152,12 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               icon={<Image src={LinkIcon} />}
               handler={() => {
                 copy(links.copyLink)
+                toast({
+                  render: () => {
+                    return <CustomToast title="Link copied!" type={typeOptions.success} />
+                  },
+                  position: 'bottom',
+                })
                 off()
               }}
             />

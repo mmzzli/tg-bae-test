@@ -12,6 +12,7 @@ export enum MessageType {
   TEXT = 'TEXT',
   IMAGE = 'IMAGE',
   VIDEO = 'VIDEO',
+  REWARD = 'REWARD',
 }
 
 export type MessageWindowListItem = {
@@ -36,6 +37,16 @@ export type FileMetadata = {
   duration: number
 }
 
+export type RewardMetadata = {
+  chain_id: number
+  amount: string
+  to_uid: number
+  token: string
+  chain_name: string
+  token_address: string
+  hash: string
+}
+
 export type WrappedMessage = Message & {
   id: string
   timestamp: number
@@ -44,6 +55,7 @@ export type WrappedMessage = Message & {
   messageSeq: number
   channelID: string
   status?: MessageStatus
+  metadata?: FileMetadata | RewardMetadata
 }
 export interface ChatListProps {
   chats: Conversation[]

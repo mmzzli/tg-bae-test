@@ -1,4 +1,4 @@
-import { MessageType, WrappedMessage } from '@/components/Chat/types'
+import { FileMetadata, MessageType, RewardMetadata, WrappedMessage } from '@/components/Chat/types'
 import { retrieveLaunchParams } from '@tma.js/sdk'
 function generateUUID() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -7,16 +7,7 @@ function generateUUID() {
     return v.toString(16)
   })
 }
-type FileMetadata = {
-  name: string
-  size: number
-  type: string
-  file: File
-  url: string
-  width: number
-  height: number
-  duration: number
-}
+
 export const useFormatMessage = () => {
   const launchParams = retrieveLaunchParams()
   const currentUid = launchParams.initData?.user?.id ?? 0
@@ -32,7 +23,7 @@ export const useFormatMessage = () => {
     text?: string
     url?: string
     to: number
-    metadata?: FileMetadata
+    metadata?: FileMetadata | RewardMetadata
   }): WrappedMessage => {
     return {
       id: generateUUID(),

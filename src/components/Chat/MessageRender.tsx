@@ -1,13 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { MessageParser, ParsedContent } from '@/components/Chat/MessageParser'
 import clsx from 'clsx'
-import { MessageStatus, MessageType, WrappedMessage } from './types'
+import { MessageStatus, MessageType, RewardMetadata, WrappedMessage } from './types'
 import Image from '../Image/Image'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useStore } from '@/store'
 import axios from 'axios'
 import { useIM } from '@/store/hook/userIM'
-
+import TokenIcon from '../Wallet/TokenIcon'
+import PriceService from '@/utils/wallet/PriceService'
+import BigNumber from 'bignumber.js'
+import { evmChainList } from '@/config/wagmi-config'
 interface MessageRenderProps {
   message: WrappedMessage
   className?: string
@@ -353,6 +356,10 @@ export const MessageRender: React.FC<MessageRenderProps> = ({
     )
   }
 
+  if (message.type === MessageType.REWARD) {
+    return <RewardCard message={message} />
+  }
+
   return (
     <div>
       <div className={clsx('whitespace-pre-wrap break-words', className)}>
@@ -450,4 +457,35 @@ const MessagePart: React.FC<{ part: ParsedContent }> = ({ part }) => {
     )
   }
   return null
+}
+
+const RewardCard: React.FC<{ message: WrappedMessage }> = ({ message }) => {
+  const { chain_name, token, amount, hash, chain_id } = message.metadata as RewardMetadata
+  const price = PriceService.getInstance().getPrice(token)
+  const usdValue = price ? new BigNumber(amount || '0').multipliedBy(price).toFixed(2) : '0.00'
+
+  const { openLink } = useTMAUtils()
+  const handleClick = () => {
+    if (!hash || !chain_id) return
+
+    const explorerUrl = evmChainList.find((chain) => chain.id === chain_id)?.blockExplorers?.default
+      ?.url
+    if (explorerUrl) {
+      openLink(explorerUrl + `tx/${hash}`)
+    }
+  }
+  return (
+    <div
+      className="cursor-pointer flex items-center w-[255px] h-[72px] border-[0.5px] border-[#CDCDD4] rounded-lg px-4 bg-white"
+      onClick={handleClick}
+    >
+      <TokenIcon token={token} chainName={chain_name} size="36px" />
+      <div className="flex flex-col justify-between ml-3">
+        <div className="text-[18px] text-[#333] font-bold">${usdValue || '0.00'}</div>
+        <div className="text-[13px] text-[#999]">
+          {amount} {token}
+        </div>
+      </div>
+    </div>
+  )
 }

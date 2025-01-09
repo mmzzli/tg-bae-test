@@ -1,4 +1,4 @@
-import { http, createConfig } from 'wagmi'
+import { http, createConfig, injected } from 'wagmi'
 import { defineChain } from 'viem'
 import { arbitrum, bsc, mainnet, optimism } from 'wagmi/chains'
 import { tokenIconMap } from './token-icon'
@@ -48,9 +48,7 @@ const bscTestnet = defineChain({
 })
 
 export const evmChainList =
-  import.meta.env.VITE_APP_ENV === 'production'
-    ? ([arbitrum, bsc, mainnet, optimism] as const)
-    : ([arbitrum, bsc, mainnet, optimism, duckChainTestnet, bscTestnet] as const)
+  import.meta.env.VITE_APP_ENV === 'production' ? ([bsc] as const) : ([bsc, bscTestnet] as const)
 
 const usdtAddressOnEvm = {
   [arbitrum.id]: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
@@ -58,15 +56,16 @@ const usdtAddressOnEvm = {
   [mainnet.id]: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
   [optimism.id]: '0x94b008aA00579c1307B0EF2c499aD98a8ce58e58',
   [duckChainTestnet.id]: '',
-  [bscTestnet.id]: '',
+  [bscTestnet.id]: '0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee',
 }
 const contractAddress = {
   [duckChainTestnet.id]: '0x84868afcC4Ba758a4ae2aca141D2fF0ECD8C5fac',
-  [bscTestnet.id]: '0xE3a2D8cDCB11511000749eC2d5371c35dC43E611',
+  [bscTestnet.id]: '0xF165cFb92441544cF9DEF72427028Db85b0aDEe2',
 }
 
 export const config = createConfig({
   chains: evmChainList,
+  connectors: [injected()],
   transports: {
     [arbitrum.id]: http(),
     [bsc.id]: http(),

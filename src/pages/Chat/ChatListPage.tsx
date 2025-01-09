@@ -19,6 +19,8 @@ import Icon from '@/components/comm/Icon'
 import { sortConversations } from '@/utils/chat/util'
 
 let sdk: BaeimSDK
+const MAX_RETRY_COUNT = 12
+const RETRY_INTERVAL = 3000
 
 const ChatListPage: FC<{ className?: string }> = ({ className }) => {
   const {
@@ -56,6 +58,7 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
     setResetTrigger(resetTrigger + 1)
   }
   const [status, setStatus] = useState<ConnectStatus>(ConnectStatus.Disconnect)
+  const [retryCount, setRetryCount] = useState(0)
   const getStatusText = () => {
     switch (status) {
       case ConnectStatus.Connected:
@@ -136,6 +139,7 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
           console.warn('-----ConnectionStatusListener------', status)
           const isChatListLoadedStateFormStore = useStore.getState().isChatListLoaded
           if (status === ConnectStatus.Connected && !isChatListLoadedStateFormStore) {
+            setRetryCount(0)
             try {
               const res = await sdk.getAllConversation()
               setIsChatListLoaded(true)
@@ -180,7 +184,12 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
             status === ConnectStatus.Disconnect ||
             status === ConnectStatus.ConnectFail
           ) {
-            sdk.reconnect()
+            if (retryCount < MAX_RETRY_COUNT) {
+              setTimeout(() => {
+                sdk.reconnect()
+                setRetryCount(retryCount + 1)
+              }, RETRY_INTERVAL)
+            }
           }
         })
       }

@@ -12,6 +12,7 @@ import { setUnread, deleteConversation } from '@/api'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useToast } from '@chakra-ui/react'
 import { CustomToast, typeOptions } from '../comm/Toast'
+import { MessageType } from './types'
 
 const ChatAvatar: FC<{ user: OthersUserInfo | null }> = ({ user }) => (
   <div className="relative w-12 h-12 mr-4">
@@ -42,7 +43,11 @@ const ChatContent: FC<{ user: OthersUserInfo | null; chat: Conversation }> = ({ 
 
     <div className="flex justify-between items-start min-h-[24px]">
       <p className="flex-1 text-[#666] text-sm truncate mt-1 font-normal">
-        {chat?.lastMessage?.content?.entity?.text}
+        {chat?.lastMessage?.content?.entity?.type === MessageType.REWARD && '[Tips]'}
+        {chat?.lastMessage?.content?.entity?.type === MessageType.IMAGE && '[Image]'}
+        {chat?.lastMessage?.content?.entity?.type === MessageType.VIDEO && '[Video]'}
+        {chat?.lastMessage?.content?.entity?.type === MessageType.TEXT &&
+          chat?.lastMessage?.content?.entity?.text}
       </p>
       {chat.unread ? (
         <div className="mt-1 ml-3 bg-[#6254FF] rounded-full w-[22px] h-[20px] flex items-center justify-center">

@@ -61,6 +61,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 }) => {
   const { launchParams } = useTMAUtils()
   const { copy } = useCopy()
+  const toast = useToast()
 
   const { runAsync: getInlineMessageId, loading: getInlineMessageIdLoading } = useRequest(
     getShareInlineMessageId,
@@ -151,6 +152,12 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               icon={<Image src={LinkIcon} />}
               handler={() => {
                 copy(links.copyLink)
+                toast({
+                  render: () => {
+                    return <CustomToast title="Link copied!" type={typeOptions.success} />
+                  },
+                  position: 'bottom',
+                })
                 off()
               }}
             />
@@ -373,6 +380,7 @@ const ResourceList = ({
 
         console.log(item.act_type, '=======jacob')
         console.log(url, '=======jacob')
+        runDailyWatch(post_id)
         if (item.act_type === 0) {
           const medias = url.split(',')
           const picUrl = medias.find((item) => !item.endsWith('.m3u8'))

@@ -1,13 +1,11 @@
 export const abi = [
   {
     inputs: [
-      // 打赏的话为0
       {
         internalType: 'uint256',
         name: '_id',
         type: 'uint256',
       },
-      // 打赏的token地址 如果是原生gas 则地址为当前合约地址
       {
         internalType: 'address',
         name: '_token',
@@ -16,6 +14,11 @@ export const abi = [
       {
         internalType: 'uint256',
         name: '_amount',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: '_fromuid',
         type: 'uint256',
       },
       {
@@ -29,6 +32,7 @@ export const abi = [
     stateMutability: 'payable',
     type: 'function',
   },
+
   {
     inputs: [
       {
@@ -139,6 +143,27 @@ export const abi = [
       },
     ],
     name: 'withdrawToken',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+] as const
+
+export const approveAbi = [
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_spender',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: '_value',
+        type: 'uint256',
+      },
+    ],
+    name: 'approve',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',

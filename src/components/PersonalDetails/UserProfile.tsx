@@ -54,7 +54,7 @@ const UserProfile: FC = () => {
           />
         </div>
         <Box display="flex" alignItems="center">
-          {/* <EarningsPage /> */}
+          <EarningsPage />
           <Notification />
           <ShareUser userInfo={userInfo} />
         </Box>
@@ -100,7 +100,7 @@ const UserProfile: FC = () => {
             Following
           </Text>
         </Box>
-        <Box textAlign="center">
+        {/* <Box textAlign="center">
           <Heading
             fontSize="20px"
             color="#0F1233"
@@ -113,7 +113,7 @@ const UserProfile: FC = () => {
           <Text color="#8A8C91" fontSize="12px" lineHeight="14px">
             Earnings
           </Text>
-        </Box>
+        </Box> */}
       </HStack>
       <div>
         <ProfileConnectButton />

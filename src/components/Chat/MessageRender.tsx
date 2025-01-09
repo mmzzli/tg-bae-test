@@ -1,7 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { MessageParser, ParsedContent } from '@/components/Chat/MessageParser'
 import clsx from 'clsx'
-import { MessageStatus, MessageType, RewardMetadata, WrappedMessage } from './types'
+import {
+  FileMetadata,
+  MessageMetadata,
+  MessageStatus,
+  MessageType,
+  RewardMetadata,
+  WrappedMessage,
+} from './types'
 import Image from '../Image/Image'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useStore } from '@/store'
@@ -211,7 +218,7 @@ export const MessageRender: React.FC<MessageRenderProps> = ({
         ...message,
         url: response.data,
         status: MessageStatus.UPLOADED,
-        metadata: { ...message?.metadata, file: undefined },
+        metadata: { ...message?.metadata, file: undefined } as MessageMetadata,
       } as WrappedMessage
       sendMessage(newMessage, false)
       setMessage(newMessage)
@@ -264,7 +271,7 @@ export const MessageRender: React.FC<MessageRenderProps> = ({
 
   if (!message) return null
 
-  if (message.type === MessageType.IMAGE) {
+  if (isImageMessage(message)) {
     const { width, height } = scaleImage(
       message.metadata?.width || 0,
       message.metadata?.height || 0
@@ -295,7 +302,7 @@ export const MessageRender: React.FC<MessageRenderProps> = ({
     )
   }
 
-  if (message.type === MessageType.VIDEO) {
+  if (isVideoMessage(message)) {
     const { width, height } = scaleImage(
       message.metadata?.width || 0,
       message.metadata?.height || 0
@@ -356,7 +363,7 @@ export const MessageRender: React.FC<MessageRenderProps> = ({
     )
   }
 
-  if (message.type === MessageType.REWARD) {
+  if (isRewardMessage(message)) {
     return <RewardCard message={message} />
   }
 
@@ -488,4 +495,22 @@ const RewardCard: React.FC<{ message: WrappedMessage }> = ({ message }) => {
       </div>
     </div>
   )
+}
+
+function isImageMessage(
+  message: WrappedMessage
+): message is WrappedMessage & { metadata: FileMetadata } {
+  return message.type === MessageType.IMAGE
+}
+
+function isVideoMessage(
+  message: WrappedMessage
+): message is WrappedMessage & { metadata: FileMetadata } {
+  return message.type === MessageType.VIDEO
+}
+
+function isRewardMessage(
+  message: WrappedMessage
+): message is WrappedMessage & { metadata: RewardMetadata } {
+  return message.type === MessageType.REWARD
 }

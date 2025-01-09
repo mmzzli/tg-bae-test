@@ -29,3 +29,7 @@ export const recommendFeatured = (type:number) => {
 export const getDailyTask = () => {
   return post<DailyTask>(`/api/v1/points`)
 }
+
+export const getTaskPoints = () => {
+  return post<any>(`/api/v1/points/activity`)
+}

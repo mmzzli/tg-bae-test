@@ -4,12 +4,15 @@ import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import { useGetDailyTask, useDailyTaskStatus, useGetFollowTask } from '@/hooks/useDailyTask'
 import { useStore } from '@/store'
 import { DailyTaskItem, DailyTaskStatusEnum } from '@/store/slices/systemSlice'
-import { useToast } from '@chakra-ui/react'
+import { Box, useToast } from '@chakra-ui/react'
 import { postEvent } from '@telegram-apps/sdk'
 import { useRequest } from 'ahooks'
 import { FC, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
+import BottomCloseModal from '@/components/TaskPointsDialog'
+import PointsAlertIcon from '@/assets/image/task/points-alert-icon.png'
+import { getTaskPoints } from '@/api/list'
 
 enum TaskType {
   ClaimAll = 11,
@@ -203,6 +206,8 @@ const TaskItem: React.FC<{
 }
 
 const Tasks: FC = () => {
+  const [isOpen, setIsOpen] = useState(false)
+  const [taskPoints, setTaskPoints] = useState(0)
   const navigate = useNavigate()
   const {
     dailyTaskList,
@@ -264,10 +269,21 @@ const Tasks: FC = () => {
     }
   }
 
+  const { run: runGetTaskPoints } = useRequest(getTaskPoints, {
+    manual: true,
+    onSuccess(data) {
+      if (data) {
+        setIsOpen(true)
+        setTaskPoints(data)
+      }
+    },
+  })
+
   useEffect(() => {
     if (token) {
       runGetDailyTask()
       runGetFollowTask()
+      runGetTaskPoints()
     }
   }, [token])
 
@@ -287,6 +303,17 @@ const Tasks: FC = () => {
   return (
     <div className="p-6 bg-white overflow-auto h-full scrollbar-hide">
       {/* title */}
+
+      <BottomCloseModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+        <Box className="flex items-center justify-center flex-col">
+          <img src={PointsAlertIcon} alt="points" className="w-[168px] h-[136px]" />
+          <p className="text-center font-[Switzer] text-[20px] font-[700] leading-[130%] text-[#121212] capitalize my-[12px]">congrats !</p>
+          <p className="text-center font-[Switzer] text-[16px] font-[400] leading-[120%] text-[#666)] mb-[24px]">
+            You have won <span style={{ color: '#6254FF', fontFamily: 'Roboto', fontSize: '16px', fontStyle: 'normal', fontWeight: '600', lineHeight: '120%' }}>{taskPoints}</span> Bae points.
+          </p>
+          <BaseButton text="Got it" handler={() => {}} className="w-[270px] h-[48px]" />
+        </Box>
+      </BottomCloseModal>
       <div className="mb-4 flex flex-col items-center justify-center">
         <h1 className="text-[40px] leading-[42px] font-bold text-[#333333]">
           <AnimatedNumber value={totalTaskPoints + totalFollowTaskPoints} />

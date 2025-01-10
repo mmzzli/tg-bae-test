@@ -152,10 +152,13 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
                       )
                       if (!repeat) {
                         addConversation(conversation)
-                        addMessageWindowListItem({
-                          channel: conversation.channel,
-                          messages: conversation.recents?.map(getWrappedMessage) ?? [],
-                        })
+                        addMessageWindowListItem(
+                          {
+                            channel: conversation.channel,
+                            messages: conversation.recents?.map(getWrappedMessage) ?? [],
+                          },
+                          false
+                        )
                       }
                     } else if (action === ConversationAction.update) {
                       console.warn('addConversationListener update conversation', conversation)
@@ -170,10 +173,13 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
               const res = await sdk.getAllConversation()
               setConversation(sortConversations(res))
               res.forEach((conversation) => {
-                addMessageWindowListItem({
-                  channel: conversation.channel,
-                  messages: conversation.recents?.map(getWrappedMessage).reverse() ?? [],
-                })
+                addMessageWindowListItem(
+                  {
+                    channel: conversation.channel,
+                    messages: conversation.recents?.map(getWrappedMessage).reverse() ?? [],
+                  },
+                  true
+                )
               })
               console.warn('getAllConversation', res)
             } catch (error) {

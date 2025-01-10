@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import { useSearchParams } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { Tabs } from 'antd';
+const { TabPane } = Tabs;
 
 import { accountdetailList } from '@/api';
 import { useStore } from '@/store/store';
@@ -75,47 +77,76 @@ const EarningsHistory = () => {
       <div className="flex justify-between">
         <h3 className="text-[20px] text-[#333] font-[700] mt-[24px]">History</h3>
       </div>
-      <div className="pt-[16px]">
-        <InfiniteScroll
-          dataLength={data.accounts.length}
-          next={fetchMoreData}
-          hasMore={hasMore}
-          loader={
-            <Box textAlign="center" m="20px 0" className="p-4">
-              <Skeleton />
-            </Box>
-          }
-          scrollableTarget="earningsScrollableDiv"
-        >
-          {data.accounts.map((item, key) => (
-            <div className="flex justify-between py-[20px] border-b border-[#EBEBF4]" key={key}>
-              <div>
-                <h4 className="text-[16px] text-[#333]">Income</h4>
-                <p className="text-[12px] text-[#999] mt-[12px]">
-                  {dayjs(item.created_at).format('YYYY-MM-DD HH:mm')}
-                </p>
-              </div>
-              <div className="">
-                <div className="flex gap-[4px]">
-                  <h4 className="text-[20px] text-[#333]">+{item.coin_amount}</h4>
-                  <img src={StarsIcon} alt="Stars Icon" />
-                </div>
-                <p className="text-[12px] text-[#666] text-right">
-                  ${item.coin_amount * exchangeRate}
-                </p>
-              </div>
+      <div className='mt-10'>
+        <Tabs defaultActiveKey="1" onChange={key => console.log(key)}>
+          <TabPane tab="Telegram stars" key="1">
+            <div className="pt-[16px]">
+              <InfiniteScroll
+                dataLength={data.accounts.length}
+                next={fetchMoreData}
+                hasMore={hasMore}
+                loader={
+                  <Box textAlign="center" m="20px 0" className="p-4">
+                    <Skeleton />
+                  </Box>
+                }
+                scrollableTarget="earningsScrollableDiv"
+              >
+                {data.accounts.map((item, key) => (
+                  <div className="flex justify-between py-[20px] border-b border-[#EBEBF4]" key={key}>
+                    <div>
+                      <h4 className="text-[16px] text-[#333]">Income</h4>
+                      <p className="text-[12px] text-[#999] mt-[12px]">
+                        {dayjs(item.created_at).format('YYYY-MM-DD HH:mm')}
+                      </p>
+                    </div>
+                    <div className="">
+                      <div className="flex gap-[4px]">
+                        <h4 className="text-[20px] text-[#333]">+{item.coin_amount}</h4>
+                        <img src={StarsIcon} alt="Stars Icon" />
+                      </div>
+                      <p className="text-[12px] text-[#666] text-right">
+                        ${item.coin_amount * exchangeRate}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </InfiniteScroll>
+              {loading && !hasMore && (
+                <Icon
+                  name="icon-Empty_white_chat"
+                  style={{ width: '164px', height: '164px', margin: 'auto' }}
+                />
+              )}
             </div>
-          ))}
-        </InfiniteScroll>
-        {loading && !hasMore && (
-          <Icon
-            name="icon-Empty_white_chat"
-            style={{ width: '164px', height: '164px', margin: 'auto' }}
-          />
-        )}
+          </TabPane>
+          <TabPane tab="Cryptos" key="2">
+            <Cryptos/>
+          </TabPane>
+        </Tabs>
       </div>
     </div>
   );
 };
+
+
+const Cryptos = ()=>{
+  return (
+    <div>
+      <ul className='flex justify-between items-center'>
+        <li>
+          <h4 className='text-[#12122A] text-[16px]'>Withdraw</h4>
+          <p className='text-[#666] text-[12px]'>to Tomo wallet</p>
+          <p className='text-[#999] text-[12px]'>1/9 12:43</p>
+        </li>
+        <li className='text-right'>
+          <h3 className='text-[#FF5596] text-[16px]'>- 0.0  1099 ETH</h3>
+          <p className='text-[#666] text-[12px]'>$10.56</p>
+        </li>
+      </ul>
+    </div>
+  )
+
+}
 
 export default EarningsHistory;

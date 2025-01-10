@@ -44,34 +44,28 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
     if (video && canvas) {
       const ctx = canvas.getContext("2d");
       if (ctx) {
-        const displayWidth = canvas.clientWidth;
-        const displayHeight = canvas.clientHeight;
-
+        // Use the original size of the video for the canvas size
         const videoWidth = video.videoWidth;
         const videoHeight = video.videoHeight;
 
-        const videoRatio = videoWidth / videoHeight;
-        const canvasRatio = displayWidth / displayHeight;
+        // Set canvas size to match the video size
+        canvas.width = videoWidth;
+        canvas.height = videoHeight;
 
-        let renderWidth, renderHeight;
-
-        if (canvasRatio > videoRatio) {
-          renderWidth = displayWidth;
-          renderHeight = displayWidth / videoRatio;
-        } else {
-          renderHeight = displayHeight;
-          renderWidth = displayHeight * videoRatio;
-        }
-
+        // Clear the canvas before drawing the new frame
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        ctx.drawImage(video, 0, 0, videoWidth, videoHeight,
-          (displayWidth - renderWidth) / 2,
-          (displayHeight - renderHeight) / 2,
-          renderWidth, renderHeight);
+        // Draw the current video frame onto the canvas at its original size
+        ctx.drawImage(
+          video,
+          0, 0, videoWidth, videoHeight, // Original video dimensions
+          0, 0, videoWidth, videoHeight  // Draw the frame at the same size as the video
+        );
       }
     }
   };
+
+
 
   useEffect(() => {
     const video = videoRef.current;
@@ -114,35 +108,36 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
   }, [videoRef, videoUrl])
 
   // 捕获当前帧作为封面
-  const captureFrame = async() => {
+  const captureFrame = async () => {
     const canvas = canvasRef.current;
-    off()
+    off();
     if (canvas) {
+      // Get the frame as a PNG image at the video's full size
       const frameData = canvas.toDataURL("image/png", 1.0);
-      const file = base64ToFile(frameData, 'image.png')
-      console.log(file)
+      const file = base64ToFile(frameData, 'image.png');
+      console.log(file);
 
-      const timestamp: number = new Date().getTime()
-      const url = `${import.meta.env.VITE_APP_UPLOAD_URL}upload/${timestamp}`
+      const timestamp: number = new Date().getTime();
+      const url = `${import.meta.env.VITE_APP_UPLOAD_URL}upload/${timestamp}`;
 
-      const formData = new FormData()
-      formData.append('file', file)
+      const formData = new FormData();
+      formData.append('file', file);
       try {
         const response = await axios.put(url, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
             Authorization: `Bearer ${token}`,
           },
-        })
-        setCover(response.data)
+        });
+        setCover(response.data);
       } catch (error) {
-        console.error(`Error uploading ${file.name}:`, error)
+        console.error(`Error uploading ${file.name}:`, error);
       }
-      // setSelectedFrame(frameData);
     }
   };
 
-  const base64ToFile = (base64String: any, filename: string)=>{
+
+  const base64ToFile = (base64String: any, filename: string) => {
     const arr = base64String.split(',')
     const mime = arr[0].match(/:(.*?);/)[1]
     const bstr = atob(arr[1])

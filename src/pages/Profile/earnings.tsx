@@ -1,7 +1,8 @@
 import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useBoolean, useToast } from '@chakra-ui/react'
-import { useAccount, useReadContract, useSwitchChain, useWriteContract } from 'wagmi'
+import { parseUnits } from 'viem'
+import { useAccount, useReadContract, useSwitchChain, useWriteContract, useEstimateFeesPerGas, useEstimateGas } from 'wagmi'
 import { abi } from '@/config/abi'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 // import {
@@ -14,7 +15,7 @@ import { useTMAUtils } from '@/hooks/useTMAUtils'
 
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { StarsIcon, RightIcon } from '@/assets/icons'
-import { totalAvailableInvoice } from '@/api'
+import { totalAvailableInvoice, giftSign } from '@/api'
 import { useStore } from '@/store/store'
 import { totalAvailable } from '@/types'
 import { formatNumber } from '@/utils/utils'
@@ -40,6 +41,9 @@ const Earnings = () => {
   const { getCurrentUid } = useTMAUtils()
   const current_uid = getCurrentUid()
 
+  const { data: gasLimit } = useEstimateGas()
+  const { data: feesPerGas } = useEstimateFeesPerGas()
+
   const { data: rewardByUid } = useReadContract({
     abi,
     address: `0xF165cFb92441544cF9DEF72427028Db85b0aDEe2` as `0x${string}`,
@@ -48,31 +52,43 @@ const Earnings = () => {
   })
   console.log(rewardByUid)
 
-  // const walletWithdraw = async () => {
+  const walletWithdraw = async () => {
+    console.log(parseUnits("2", 18))
+    switchChain(
+      {
+        chainId: 97,
+      },
+      {
+        onSuccess: async () => {
 
-  //   switchChain(
-  //     {
-  //       chainId: 97,
-  //     },
-  //     {
-  //       onSuccess: async () => {
+          const {signature, deadline} = await giftSign({
+            receiver: `${address}` as `0x${string}`,
+            token:  `0x0000000000000000000000000000000000000000` as `0x${string}`,
+            chainid:  97,
+            amount:  Number(parseUnits("2", 18))
+          })
 
-  //         writeContract({
-  //           address: `0xF165cFb92441544cF9DEF72427028Db85b0aDEe2` as `0x${string}`,
-  //           abi,
-  //           functionName: 'withdrawToken',
-  //           args:[
-  //             BigInt(current_uid),
-  //             `${address}` as `0x${string}`,
-  //             `${address}` as `0x${string}`,
+          writeContract({
+            address: `0xF165cFb92441544cF9DEF72427028Db85b0aDEe2` as `0x${string}`,
+            abi,
+            functionName: 'withdrawToken',
+            args:[
+              BigInt(current_uid),
+              `${address}` as `0x${string}`,
+              `0x0000000000000000000000000000000000000000` as `0x${string}`,
+              parseUnits("2", 18),
+              BigInt(deadline),
+              signature as `0x${string}`
+            ],
+            gas: gasLimit,
+            maxFeePerGas: feesPerGas?.maxFeePerGas,
+            maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
+          })
 
-  //           ]
-  //         })
-
-  //       }
-  //     }
-  //   )
-  // }
+        }
+      }
+    )
+  }
 
 
   const handleAfterConnect = () => {
@@ -193,13 +209,13 @@ const Earnings = () => {
                 width="100%"
                 height="40px"
                 handler={() => {
-                  toast({
-                    render: () => {
-                      return <CustomToast title="coming soon" type={typeOptions.warning} />
-                    },
-                    position: 'bottom',
-                  })
-                  // walletWithdraw()
+                  // toast({
+                  //   render: () => {
+                  //     return <CustomToast title="coming soon" type={typeOptions.warning} />
+                  //   },
+                  //   position: 'bottom',
+                  // })
+                  walletWithdraw()
                 }}
               />
             }

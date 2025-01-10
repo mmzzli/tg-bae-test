@@ -137,3 +137,7 @@ export const rewardEvent = (params: {
 }) => {
   return post<any>(`/api/v1/verify`, params)
 }
+
+export const approveEvent = (params: { hash: string; chain_id: number }) => {
+  return post<any>(`/api/v1/verify_hash`, params)
+}

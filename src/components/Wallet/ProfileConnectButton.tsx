@@ -62,7 +62,7 @@ const ProfileConnectButton = ({ className }: { className?: string }) => {
     return !isConnected ? (
       <BaseButton
         text="Connect wallet"
-        className="h-[48px] mb-[24px] w-[343px] mx-auto "
+        className="h-[48px] mb-[24px] mx-auto "
         icon={<i className="iconfont icon-wallet-line" style={{ fontSize: '20px' }}></i>}
         handler={() => {
           handleConnect()

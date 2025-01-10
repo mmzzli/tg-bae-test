@@ -13,12 +13,12 @@ import Skeleton from '@/components/Skeketon/Skeleton'
 import SubscriptCounting from '@/components/SubscriptCounting'
 
 import { AccountdetailRes } from '@/types'
-import { getTransactionLink } from '@/config/chainBlockBrowser'
+import { ChainToken, getTransactionLink } from '@/config/chainBlockBrowser'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 
 import { StarsIcon } from '@/assets/icons'
 import './history.css'
-import { formatDecimal } from '@/utils/utils'
+import { formatDecimal, formatUSD } from '@/utils/utils'
 
 const EarningsHistory = () => {
   const [searchParams] = useSearchParams()
@@ -219,11 +219,13 @@ const EarningsHistory = () => {
                 </li>
                 <li className="text-right">
                   <h3 className="text-[#FF5596] text-[16px]">
-                    {item.source === 'Withdraw' ? '+' : '-'}
+                    {item.source === 'Withdraw' ? '-' : '+'}
                     <SubscriptCounting className="pl-[5px]" amount={item.amount} />
-                    <span className="pl-[5px]">{item.currency}</span>
+                    <span className="pl-[5px]">{ChainToken[item.currency].symbol}</span>
                   </h3>
-                  <p className="text-[#666] text-[12px]">${formatDecimal(item.dollar)}</p>
+                  <p className="text-[#666] text-[12px]">
+                    {formatUSD(item.dollar)}
+                  </p>
                 </li>
               </ul>
             </div>

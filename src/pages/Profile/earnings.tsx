@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useBoolean, useToast } from '@chakra-ui/react'
 import { parseUnits } from 'viem'
-import { useAccount, useReadContract, useSwitchChain, useWriteContract, useEstimateFeesPerGas, useEstimateGas } from 'wagmi'
+import { useAccount, useReadContract, useSwitchChain, useWriteContract, useEstimateFeesPerGas, useEstimateGas, useWaitForTransactionReceipt } from 'wagmi'
 import { abi } from '@/config/abi'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 // import {
@@ -43,31 +43,56 @@ const Earnings = () => {
 
   const { data: gasLimit } = useEstimateGas()
   const { data: feesPerGas } = useEstimateFeesPerGas()
+  const [receivedNum, setReceivednum] = useState(0)
+  const [loading, setLiading] = useState(false)
 
-  const { data: rewardByUid } = useReadContract({
+  const { data: rewardByUidList } = useReadContract({
     abi,
     address: `0xF165cFb92441544cF9DEF72427028Db85b0aDEe2` as `0x${string}`,
     functionName: 'getRewardByUid',
     args:[BigInt(current_uid)]
   })
-  console.log(rewardByUid)
+  useEffect(()=>{
+    console.log(rewardByUidList)
+    if(rewardByUidList){
+      const total = rewardByUidList.reduce((sum, item) => sum + Number(item.amount), 0);
+      setReceivednum(total/1e18)
+    }
+  },[rewardByUidList])
+
+  const { isSuccess: isConfirmed, error: receiptError } = useWaitForTransactionReceipt({
+    hash,
+  })
 
   const walletWithdraw = async () => {
     console.log(parseUnits("2", 18))
+    if(!(rewardByUidList && rewardByUidList.length)) return
+    // const rewardByUidList
+    const token = rewardByUidList[0].token
+    const amount = rewardByUidList[0].amount
+    console.log(token, amount)
     switchChain(
       {
         chainId: 97,
       },
       {
         onSuccess: async () => {
-
+          setLiading(true)
           const {signature, deadline} = await giftSign({
             receiver: `${address}` as `0x${string}`,
-            token:  `0x0000000000000000000000000000000000000000` as `0x${string}`,
+            token:  token as `0x${string}`,
             chainid:  97,
-            amount:  Number(parseUnits("2", 18))
+            amount:  Number(amount)
           })
-
+          const args1 = [
+            BigInt(current_uid),
+            `${address}` as `0x${string}`,
+            token as `0x${string}`,
+            amount,
+            deadline,
+            signature as `0x${string}`
+          ]
+          console.log(args1)
           writeContract({
             address: `0xF165cFb92441544cF9DEF72427028Db85b0aDEe2` as `0x${string}`,
             abi,
@@ -75,16 +100,20 @@ const Earnings = () => {
             args:[
               BigInt(current_uid),
               `${address}` as `0x${string}`,
-              `0x0000000000000000000000000000000000000000` as `0x${string}`,
-              parseUnits("2", 18),
+              token as `0x${string}`,
+              amount,
               BigInt(deadline),
               signature as `0x${string}`
             ],
-            gas: gasLimit,
+            gas: BigInt(Number(gasLimit) * 3),
             maxFeePerGas: feesPerGas?.maxFeePerGas,
             maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
           })
 
+        },
+        onError:(e)=>{
+          console.log(e)
+          setLiading(false)
         }
       }
     )
@@ -112,6 +141,18 @@ const Earnings = () => {
       })
     }
   }
+
+  useEffect(() => {
+    if (error || receiptError) {
+      toast({
+        render: () => {
+          return <CustomToast title={'Failed'} type={typeOptions.error} />
+        },
+        position: 'bottom',
+      })
+      setLiading(false)
+    }
+  }, [error, receiptError])
 
   useEffect(() => {
     if (!token) return
@@ -191,7 +232,7 @@ const Earnings = () => {
         </div>
         <div className="bg-[#F7F9FC] px-5 py-5 mt-3 rounded-lg">
           <p className='text-[#999] text-[12px]'>Cryptos received</p>
-          <h3 className='text-[#000] text-[22px] my-4'>$0.00</h3>
+          <h3 className='text-[#000] text-[22px] my-4'>${receivedNum}</h3>
           <p className='text-[#666] text-[12px]'>This shows the estimated total value of crypto you received from others, subject to market fluctuations.</p>
           <div className='px-3'>
             {status === 'disconnected' ? <BaseButton
@@ -208,6 +249,7 @@ const Earnings = () => {
                 text="Lauch wallet to withdraw"
                 width="100%"
                 height="40px"
+                loading={loading}
                 handler={() => {
                   // toast({
                   //   render: () => {

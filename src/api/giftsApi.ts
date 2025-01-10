@@ -4,7 +4,9 @@ import {
   SignReq,
   SignRes,
   GiftsRes,
-  WithdrawReq
+  WithdrawReq,
+  GiftHistoryRes,
+  GiftHistoryReq
 } from '@/types'
 
 export const getTotalGifts = () => {
@@ -23,5 +25,9 @@ export const giftSign = (params:SignReq) => {
 // }
 export const verifyWithdraw = (params:WithdrawReq) => {
   return post(`/api/v1/verify_withdraw`,params)
+}
+
+export const getGiftHistory = (params: GiftHistoryReq) => {
+  return post<GiftHistoryRes>(`/api/v1/gifts`, params)
 }
 

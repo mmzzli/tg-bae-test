@@ -45,11 +45,13 @@ const Earnings = () => {
   const { data: feesPerGas } = useEstimateFeesPerGas()
   const [loading, setLiading] = useState(false)
   const [gifts, setGifts] = useState(0)
-  const [chainId, setChainId] = useState(97)
+
+  const chainId = import.meta.env.VITE_APP_ENV === 'production' ? 56 : 97
+  const contractAddress  = import.meta.env.VITE_APP_ENV === 'production' ? `0xF165cFb92441544cF9DEF72427028Db85b0aDEe2` : `0xF165cFb92441544cF9DEF72427028Db85b0aDEe2`
 
   const { data: rewardByUidList, refetch } = useReadContract({
     abi,
-    address: `0xF165cFb92441544cF9DEF72427028Db85b0aDEe2` as `0x${string}`,
+    address: contractAddress as `0x${string}`,
     functionName: 'getRewardByUid',
     args:[BigInt(current_uid)]
   })
@@ -93,7 +95,7 @@ const Earnings = () => {
           ]
           console.log(args1)
           writeContract({
-            address: `0xF165cFb92441544cF9DEF72427028Db85b0aDEe2` as `0x${string}`,
+            address: contractAddress as `0x${string}`,
             abi,
             functionName: 'withdrawToken',
             args:[
@@ -189,9 +191,6 @@ const Earnings = () => {
 
   useEffect(() => {
     if (!token) return
-    if(import.meta.env.VITE_APP_ENV === 'production'){
-      setChainId(56)
-    }
     load()
   }, [token])
   return (

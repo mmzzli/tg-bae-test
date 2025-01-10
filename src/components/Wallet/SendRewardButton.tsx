@@ -86,7 +86,7 @@ export const SendRewardButton = ({
               abi: approveAbi,
               functionName: 'approve',
               args: [contractAddress as `0x${string}`, parseUnits(amount, decimals)],
-              gas: gasLimit,
+              gas: BigInt(Number(gasLimit) * 3),
               maxFeePerGas: feesPerGas?.maxFeePerGas,
               maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
             })
@@ -126,7 +126,7 @@ export const SendRewardButton = ({
               tokenAddress === '0x0000000000000000000000000000000000000000'
                 ? parseUnits(amount, decimals)
                 : 0n,
-            gas: gasLimit,
+            gas: BigInt(Number(gasLimit) * 3),
             maxFeePerGas: feesPerGas?.maxFeePerGas,
             maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
           })
@@ -215,7 +215,7 @@ export const SendRewardButton = ({
                 tokenAddress === '0x0000000000000000000000000000000000000000'
                   ? parseUnits(amount, decimals)
                   : 0n,
-              gas: gasLimit,
+              gas: BigInt(Number(gasLimit) * 3),
               maxFeePerGas: feesPerGas?.maxFeePerGas,
               maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
             })

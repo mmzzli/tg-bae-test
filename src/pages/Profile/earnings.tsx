@@ -259,7 +259,11 @@ const Earnings = () => {
       <div className='mt-7'>
         <div className="flex justify-between items-center">
           <h4 className="text-[#333] text-[16px]">Cryptos</h4>
-          <div className='flex gap-2'>
+          <div className='flex gap-2'
+            onClick={() =>
+              navigate(`/profile/earningsHistory?exchange_rate=${data.exchange_rate}&type=cryptos`)
+            }
+          >
             <p className="text-[#666] text-[14px]">History</p>
             <img className="mt-[2px]" src={RightIcon} />
           </div>

@@ -17,6 +17,7 @@ import Skeleton from '@/components/Skeketon/Skeleton'
 const EarningsHistory = () => {
   const [searchParams] = useSearchParams();
   const rate = searchParams.get('exchange_rate');
+  const type = searchParams.get('type');
   const [exchangeRate, setExchangeRate] = useState<number>(0);
   const { token } = useStore((state) => ({
     token: state.token,
@@ -78,7 +79,7 @@ const EarningsHistory = () => {
         <h3 className="text-[20px] text-[#333] font-[700] mt-[24px]">History</h3>
       </div>
       <div className='mt-10'>
-        <Tabs defaultActiveKey="1" onChange={key => console.log(key)}>
+        <Tabs defaultActiveKey={type==='cryptos'?"2":"1"} onChange={key => console.log(key)}>
           <Tab title="Telegram stars" key="1">
             <div className="pt-[16px]">
               <InfiniteScroll

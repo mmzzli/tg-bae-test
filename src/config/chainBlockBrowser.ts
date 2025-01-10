@@ -26,7 +26,7 @@ export const ChainToken: { [key: number]: { symbol: string; name: string } } = {
     name: 'BNB Chain',
   },
   4: {
-    symbol: 'BUSD',
+    symbol: 'USDT',
     name: 'BSC-USDT',
   },
   5: {
@@ -42,7 +42,7 @@ export const ChainToken: { [key: number]: { symbol: string; name: string } } = {
     name: 'Optimism',
   },
   8: {
-    symbol: 'OPUSDT',
+    symbol: 'USDT',
     name: 'Optimism-USDT',
   },
   9: {
@@ -50,7 +50,7 @@ export const ChainToken: { [key: number]: { symbol: string; name: string } } = {
     name: 'Linea',
   },
   10: {
-    symbol: 'LineaUSDT',
+    symbol: 'USDT',
     name: 'Linea-USDT',
   },
   11: {
@@ -58,7 +58,7 @@ export const ChainToken: { [key: number]: { symbol: string; name: string } } = {
     name: 'Base',
   },
   12: {
-    symbol: 'BaseUSDT',
+    symbol: 'USDT',
     name: 'Base-USDT',
   },
   13: {
@@ -66,7 +66,7 @@ export const ChainToken: { [key: number]: { symbol: string; name: string } } = {
     name: 'Scroll',
   },
   14: {
-    symbol: 'ScrollUSDT',
+    symbol: 'USDT',
     name: 'Scroll-USDT',
   },
   15: {
@@ -74,7 +74,7 @@ export const ChainToken: { [key: number]: { symbol: string; name: string } } = {
     name: 'Duck',
   },
   16: {
-    symbol: 'DuckUSDT',
+    symbol: 'USDT',
     name: 'Duck-USDT',
   },
   17: {

@@ -300,8 +300,7 @@ export const formatNumber = (num: number): string => {
 }
 export default formatNumber
 
-
-export function splitNumberParts(num: number) {
+export const splitNumberParts = (num: number) => {
   const bigNum = new BigNumber(num)
   const numStr = bigNum.toFixed() // 保持原始数字格式，不转科学计数法
 
@@ -311,7 +310,7 @@ export function splitNumberParts(num: number) {
       integerPart: numStr,
       dot: null,
       zeros: null,
-      decimalPart: null
+      decimalPart: null,
     }
   }
 
@@ -328,7 +327,7 @@ export function splitNumberParts(num: number) {
       integerPart,
       dot: '.0',
       zeros: zerosCount,
-      decimalPart: remainingPart
+      decimalPart: remainingPart,
     }
   }
 
@@ -337,17 +336,31 @@ export function splitNumberParts(num: number) {
     integerPart: numStr,
     dot: null,
     zeros: null,
-    decimalPart: null
+    decimalPart: null,
   }
 }
 
+export const formatDecimal = (num: number, decimalPlaces = 2) => {
+  const bigNum = new BigNumber(num)
 
-export const formatDecimal = (num: number): number => {
-  // 如果是0或整数，直接返回
-  if (Number.isInteger(num)) {
-    return num;
+  // 使用 toFixed 截取小数位，但默认会四舍五入
+  const factor = new BigNumber(10).pow(decimalPlaces)
+
+  // 通过乘法、取整、再除法实现截取（不会四舍五入）
+  const truncated = bigNum.multipliedBy(factor).integerValue(BigNumber.ROUND_DOWN).dividedBy(factor)
+
+  return truncated.toFixed(decimalPlaces)
+}
+
+export const formatUSD = (input: number) => {
+  const minValue = new BigNumber(0.00001) // 定义最小值
+  const num = new BigNumber(input)
+
+  // 如果数字小于最小值，返回 '<0.00001'
+  if (num.isLessThan(minValue)) {
+    return '<$0.00001';
   }
 
-  // 处理小数，保留2位
-  return Math.floor(num * 100) / 100;
+  // 保留四位有效数字
+  return `$${num.toPrecision(4)}`
 }

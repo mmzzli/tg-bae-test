@@ -92,7 +92,7 @@ const UserProfile: FC = () => {
 
       <MoreText text={userInfo.bio} className={'leading-4'}></MoreText>
 
-      <HStack p="24px 0" gap="56px">
+      <HStack p="24px 0" gap="56px" className='justify-between'>
         <Box textAlign="center">
           <Heading
             fontSize="20px"

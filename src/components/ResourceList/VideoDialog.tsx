@@ -194,28 +194,13 @@ const VideoDialog = () => {
 
     if (info?.media && info.media[0]) {
       setUrl(info.media[0])
-      setTimeout(() => {
-        if (videoRef.current && !playing) {
-          videoRef.current.muted = true;
-          videoRef.current.play().then(() => {
-            videoRef.current!.muted = false;
-          }).catch((error) => {
-            console.log('强制播放失败', error);
-            videoRef.current!.muted = true;
-            videoRef.current!.play();
-            setTimeout(() => {
-              videoRef.current!.muted = false;
-            }, 1000);
-          });
-        }
-      }, 1000);
     }
     if (!info && videoRef?.current) {
       setTimeout(() => {
         setVideoResource(null)
       }, 100)
     }
-  }, [info, playing])
+  }, [info])
 
   useEffect(() => {
     const video = videoRef.current
@@ -269,9 +254,27 @@ const VideoDialog = () => {
   }, [url])
 
   useEffect(() => {
+    const video = videoRef.current
     if (isLoading) {
       const timer = setTimeout(() => setShowLoader(true), 500)
       return () => clearTimeout(timer)
+    } else {
+      if (video?.paused) {
+        video.muted = true
+        video.play().then(() => {
+          setTimeout(() => {
+            video.muted = false
+          }, 200)
+        }).catch((error) => {
+          console.log(error, 'error====jacob')
+          console.log('自动播放失败')
+          video.muted = true
+          video.play()
+          setTimeout(() => {
+            video.muted = false
+          }, 1000)
+        })
+      }
     }
     setShowLoader(false)
   }, [isLoading])

@@ -79,11 +79,11 @@ const Earnings = () => {
   )
 
   // 都先用主网
-  const chainId = import.meta.env.VITE_APP_ENV === 'production' ? 56 : 97
+  const chainId = import.meta.env.VITE_APP_ENV === 'production' ? 56 : 56
   const contractAddress =
     import.meta.env.VITE_APP_ENV === 'production'
       ? `0x359E9Ef12132ea2a49701F838B5CdFbc13771AaF`
-      : `0xF165cFb92441544cF9DEF72427028Db85b0aDEe2`
+      : `0x359E9Ef12132ea2a49701F838B5CdFbc13771AaF`
 
   const { data: rewardByUidList, refetch } = useReadContract({
     abi,

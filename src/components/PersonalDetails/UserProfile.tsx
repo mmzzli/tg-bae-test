@@ -12,6 +12,8 @@ import Notification from './Notification/Notification'
 import MoreText from '@/components/More/MoreText'
 import ProfileConnectButton from '../Wallet/ProfileConnectButton'
 import { getTotalGifts } from '@/api'
+import { formatNumber } from '@/utils/utils'
+
 // import ConnectButton from '../Wallet/ConnectButton'
 
 const UserProfile: FC = () => {
@@ -28,8 +30,8 @@ const UserProfile: FC = () => {
 
   useEffect(()=>{
     const load = async()=>{
-      const {gifts} = await getTotalGifts()
-      setGifts(gifts)
+      const {withdraw_gifts} = await getTotalGifts()
+      setGifts(withdraw_gifts)
     }
     if(token){
       load()
@@ -126,7 +128,7 @@ const UserProfile: FC = () => {
             cursor="pointer"
             onClick={() => navigate(`/profile/earnings`)}
           >
-            ${gifts}
+            ${formatNumber(gifts)}
           </Heading>
           <Text color="#8A8C91" fontSize="12px" lineHeight="14px">
             Earnings

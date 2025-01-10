@@ -9,7 +9,7 @@ import { supportEVMTokenList } from '@/config/wagmi-config'
 
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { StarsIcon, RightIcon } from '@/assets/icons'
-import { totalAvailableInvoice, giftSign, verifyWithdraw } from '@/api'
+import { totalAvailableInvoice, giftSign, verifyWithdraw, getTotalGifts } from '@/api'
 import { useStore } from '@/store/store'
 import { totalAvailable } from '@/types'
 import { formatNumber } from '@/utils/utils'
@@ -44,6 +44,8 @@ const Earnings = () => {
   const { data: gasLimit } = useEstimateGas()
   const { data: feesPerGas } = useEstimateFeesPerGas()
   const [loading, setLiading] = useState(false)
+  const [gifts, setGifts] = useState(0)
+  const [chainId, setChainId] = useState(97)
 
   const { data: rewardByUidList, refetch } = useReadContract({
     abi,
@@ -63,14 +65,14 @@ const Earnings = () => {
   })
 
   const walletWithdraw = async () => {
-    const tokenInfo = getTokenInfoByChainId(97)
+    const tokenInfo = getTokenInfoByChainId(chainId)
     console.log(tokenInfo)
     if(!(rewardByUidList && rewardByUidList.length)) return
     const token = rewardByUidList[0].token
     const amount = rewardByUidList[0].amount
     switchChain(
       {
-        chainId: 97,
+        chainId: chainId,
       },
       {
         onSuccess: async () => {
@@ -78,7 +80,7 @@ const Earnings = () => {
           const {signature, deadline} = await giftSign({
             receiver: `${address}` as `0x${string}`,
             token:  token as `0x${string}`,
-            chainid:  97,
+            chainid:  chainId,
             amount:  Number(amount)
           })
           const args1 = [
@@ -144,10 +146,11 @@ const Earnings = () => {
 
     await verifyWithdraw({
       from: address  as `0x${string}`,
-      chain_id: 97,
-      amount: 1,
-      hash: ""
+      chain_id: chainId,
+      amount: gifts,
+      hash: hash  as `0x${string}`
     })
+    load()
 
     toast({
       render: () => {
@@ -177,11 +180,17 @@ const Earnings = () => {
     }
   }, [error, receiptError])
 
+  const load = async () => {
+    const {withdraw_gifts} = await getTotalGifts()
+    setGifts(withdraw_gifts)
+    const res = await totalAvailableInvoice()
+    setData(res)
+  }
+
   useEffect(() => {
     if (!token) return
-    const load = async () => {
-      const res = await totalAvailableInvoice()
-      setData(res)
+    if(import.meta.env.VITE_APP_ENV === 'production'){
+      setChainId(56)
     }
     load()
   }, [token])
@@ -255,7 +264,7 @@ const Earnings = () => {
         </div>
         <div className="bg-[#F7F9FC] px-5 py-5 mt-3 rounded-lg">
           <p className='text-[#999] text-[12px]'>Cryptos received</p>
-          <h3 className='text-[#000] text-[22px] my-4'>$123</h3>
+          <h3 className='text-[#000] text-[22px] my-4'>${formatNumber(gifts)}</h3>
           <p className='text-[#666] text-[12px]'>This shows the estimated total value of crypto you received from others, subject to market fluctuations.</p>
           <div className='px-3'>
             {status === 'disconnected' ? <BaseButton

@@ -272,7 +272,7 @@ const Earnings = () => {
           />
         </div>
       </div>
-      <div className="mt-7">
+      <div className="mt-7  pb-20">
         <div className="flex justify-between items-center">
           <h4 className="text-[#333] text-[16px]">Cryptos</h4>
           <div

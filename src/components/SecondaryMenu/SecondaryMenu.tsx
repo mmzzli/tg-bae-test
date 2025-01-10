@@ -108,14 +108,8 @@ const SecondaryMenu = ({ mediaData, currentUid, className, type, setReportVisibl
               }
               loading={isFollowLoading}
               loadingColor="border-t-[#999]"
-              width={
-                followResource?.some((user) => user.uid === mediaData.uid && user.boll)
-                  ? '104px'
-                  : '80px'
-              }
-              height="34px"
               handler={doFollow}
-              className={`border-[1px] border-1 bg-transparent text-[#333333] border-[#CDCDD4] ${className}`}
+              className={`rounded-[20px] bg-[#F5F3F3] flex justify-center items-center gap-[4px] w-[80px] h-[34px] px-[8px] text-[#333]`}
             />
           )}
         <button className="rounded-full" onClick={() => setVisible(!visible)}>

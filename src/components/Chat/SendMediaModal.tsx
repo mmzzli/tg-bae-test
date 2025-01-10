@@ -34,16 +34,22 @@ const SendMediaModal = ({
   tgid,
   beforeOpen,
   beforeSelect,
+  beforeClose,
 }: {
   tgid: number
   beforeOpen?: () => void
   beforeSelect?: () => void
+  beforeClose?: () => void
 }) => {
   const attachRef = useRef<HTMLInputElement>(null)
   const [isBaseModalOpen, { toggle, off }] = useBoolean(false)
   const [validFileList, setValidFileList] = useState<FileMetadata[]>([])
   const { formatMessage } = useFormatMessage()
   const { updateMessage } = useIM()
+  const handleClose = () => {
+    beforeClose?.()
+    off()
+  }
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
     console.log('files------------>', files)
@@ -117,7 +123,7 @@ const SendMediaModal = ({
   }
 
   const handleSubmit = () => {
-    if (validFileList.length === 0) return off()
+    if (validFileList.length === 0) return handleClose()
     validFileList.forEach((metadata) => {
       let newMessage
       if (metadata.type.startsWith('image/')) {
@@ -139,7 +145,7 @@ const SendMediaModal = ({
         updateMessage(newMessage, tgid)
       }
       setValidFileList([])
-      off()
+      handleClose()
     })
   }
 
@@ -202,7 +208,7 @@ const SendMediaModal = ({
           <div className="relative px-[14px] pb-[14px] overflow-y-auto dark:bg-[#1C1C1C] bg-white text-[#E0E2F6] rounded-t-2xl rounded-b-none border-[#1c1c1c] max-h-[70vh]">
             <div className="sticky top-0 flex items-center justify-end dark:bg-[#1C1C1C] bg-white z-10 h-[70px]">
               <button
-                onClick={() => off()}
+                onClick={() => handleClose()}
                 className="dark:text-white text-black w-9 h-9 flex items-center justify-center bg-[#F5F5FA] rounded-full"
               >
                 <i className="iconfont icon-icon_close text-[#12122A] dark:text-[#E0E2F6] text-[20px]"></i>

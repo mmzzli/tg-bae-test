@@ -80,15 +80,20 @@ export const SendRewardButton = ({
             )
 
             setIsApproving(true)
-
+            const gasConfig =
+              import.meta.env.VITE_APP_ENV === 'production'
+                ? {}
+                : {
+                    gas: BigInt(Number(gasLimit) * 3),
+                    maxFeePerGas: feesPerGas?.maxFeePerGas,
+                    maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
+                  }
             writeContract({
               address: tokenAddress as `0x${string}`,
               abi: approveAbi,
               functionName: 'approve',
               args: [contractAddress as `0x${string}`, parseUnits(amount, decimals)],
-              gas: BigInt(Number(gasLimit) * 3),
-              maxFeePerGas: feesPerGas?.maxFeePerGas,
-              maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
+              ...gasConfig,
             })
           },
         }
@@ -111,6 +116,15 @@ export const SendRewardButton = ({
             BigInt(toUid)
           )
 
+          const gasConfig =
+            import.meta.env.VITE_APP_ENV === 'production'
+              ? {}
+              : {
+                  gas: BigInt(Number(gasLimit) * 3),
+                  maxFeePerGas: feesPerGas?.maxFeePerGas,
+                  maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
+                }
+
           writeContract({
             address: contractAddress as `0x${string}`,
             abi,
@@ -126,9 +140,7 @@ export const SendRewardButton = ({
               tokenAddress === '0x0000000000000000000000000000000000000000'
                 ? parseUnits(amount, decimals)
                 : 0n,
-            gas: BigInt(Number(gasLimit) * 3),
-            maxFeePerGas: feesPerGas?.maxFeePerGas,
-            maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
+            ...gasConfig,
           })
         },
       }
@@ -200,6 +212,15 @@ export const SendRewardButton = ({
               BigInt(toUid)
             )
 
+            const gasConfig =
+              import.meta.env.VITE_APP_ENV === 'production'
+                ? {}
+                : {
+                    gas: BigInt(Number(gasLimit) * 3),
+                    maxFeePerGas: feesPerGas?.maxFeePerGas,
+                    maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
+                  }
+
             writeContract({
               address: contractAddress as `0x${string}`,
               abi,
@@ -215,9 +236,7 @@ export const SendRewardButton = ({
                 tokenAddress === '0x0000000000000000000000000000000000000000'
                   ? parseUnits(amount, decimals)
                   : 0n,
-              gas: BigInt(Number(gasLimit) * 3),
-              maxFeePerGas: feesPerGas?.maxFeePerGas,
-              maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
+              ...gasConfig,
             })
           },
         }

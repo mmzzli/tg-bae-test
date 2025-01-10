@@ -35,6 +35,7 @@ const MessagePageIOS = () => {
   const jumpToProfilePage = useProfileNavigation()
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const [zIndex, setZIndex] = useState(98)
 
   const [initTgViewportHeight, setInitTgViewportHeight] = useState(0)
   const [initVisualViewportHeight, setInitVisualViewportHeight] = useState(0)
@@ -332,15 +333,19 @@ const MessagePageIOS = () => {
       </div>
 
       {/* SEND MEDIA */}
-      <div className="absolute left-[10px] bottom-[28px] w-[28px] z-[99]">
+      <div className="absolute left-[10px] bottom-[28px] w-[28px]" style={{ zIndex }}>
         <SendMediaModal
           tgid={Number(uid)}
           beforeOpen={() => {
+            setZIndex(101)
             inputRef.current?.blur()
+          }}
+          beforeClose={() => {
+            setZIndex(98)
           }}
         />
       </div>
-      <div className="absolute right-[2px] bottom-[25px] w-[48px]  flex items-center justify-center h-[36px] z-[99]">
+      <div className="absolute right-[2px] bottom-[25px] w-[48px]  flex items-center justify-center h-[36px] z-[98]">
         <RewardButton userInfo={chatPeople || ({} as OthersUserInfo)} />
       </div>
     </div>

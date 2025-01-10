@@ -25,6 +25,8 @@ const EarningsHistory = () => {
   const { openLink } = useTMAUtils()
 
   const rate = searchParams.get('exchange_rate')
+  const type = searchParams.get('type')
+
   const [exchangeRate, setExchangeRate] = useState<number>(0)
   const { token } = useStore((state) => ({
     token: state.token,
@@ -37,6 +39,9 @@ const EarningsHistory = () => {
   const [giftData, setGiftData] = useState<any[]>([])
   const [giftHasMore, setGiftHasMore] = useState(true)
   const [giftPage, setGiftPage] = useState(1)
+  const [activeKey,setActiveKey] = useState(()=>type === 'cryptos' ? '2':'1')
+
+  console.log(activeKey);
 
   useEffect(() => {
     if (rate) {
@@ -76,7 +81,12 @@ const EarningsHistory = () => {
   }, [token])
 
   const handleChange = (key: string) => {
-    if (key === '1') {
+    setActiveKey(key)
+  }
+
+  useEffect(() => {
+    console.log(activeKey,'activeKey999999999');
+    if (activeKey === '1') {
       setPage(1)
       setHasMore(true)
       fetchAccounts(1)
@@ -87,7 +97,7 @@ const EarningsHistory = () => {
       setGiftHasMore(true)
       fetchGiftHistory(1)
     }
-  }
+  }, [activeKey]);
 
   const fetchGiftHistory = async (pageNum: number) => {
     if (cryptoLoading) return
@@ -244,6 +254,7 @@ const EarningsHistory = () => {
     )
   }
 
+
   return (
     <div
       id="earningsScrollableDiv"
@@ -253,7 +264,7 @@ const EarningsHistory = () => {
         <h3 className="text-[20px] text-[#333] font-[700] mt-[24px]">History</h3>
       </div>
       <div className="mt-10">
-        <Tabs defaultActiveKey="1" onChange={(key) => handleChange(key)} activeLineMode="fixed">
+        <Tabs defaultActiveKey="1" activeKey={activeKey} onChange={(key) => handleChange(key)} activeLineMode="fixed">
           <Tabs.Tab title="Telegram stars" key="1">
             <TelegramStars />
           </Tabs.Tab>

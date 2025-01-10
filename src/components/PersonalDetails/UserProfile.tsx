@@ -20,6 +20,7 @@ const UserProfile: FC = () => {
   const { launchParams } = useTMAUtils()
   const userId = launchParams.initData?.user?.id ?? 0
   const userInfo = useStore((state) => state.userInfo)
+  const needUpdateEarnings = useStore((state) => state.needUpdateEarnings)
   const [gifts, setGifts] = useState(0)
 
   const { token } = useStore((state) => ({
@@ -28,16 +29,16 @@ const UserProfile: FC = () => {
 
   const navigate = useNavigate()
 
-  useEffect(()=>{
-    const load = async()=>{
-      const {withdraw_gifts} = await getTotalGifts()
-      const {available, exchange_rate} = await totalAvailableInvoice()
+  useEffect(() => {
+    const load = async () => {
+      const { withdraw_gifts } = await getTotalGifts()
+      const { available, exchange_rate } = await totalAvailableInvoice()
       setGifts(available * exchange_rate + withdraw_gifts)
     }
-    if(token){
+    if (token && needUpdateEarnings) {
       load()
     }
-  },[token])
+  }, [token, needUpdateEarnings])
 
   return !userInfo.avatar ? (
     <ProfileSkeleton />
@@ -92,7 +93,7 @@ const UserProfile: FC = () => {
 
       <MoreText text={userInfo.bio} className={'leading-4'}></MoreText>
 
-      <HStack p="24px 0" gap="56px" className='justify-between'>
+      <HStack p="24px 0" gap="56px" className="justify-between">
         <Box textAlign="center">
           <Heading
             fontSize="20px"

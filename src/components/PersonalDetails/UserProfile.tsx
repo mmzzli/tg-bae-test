@@ -11,7 +11,7 @@ import ProfileSkeleton from '../Skeketon/ProfileSkeleton'
 import Notification from './Notification/Notification'
 import MoreText from '@/components/More/MoreText'
 import ProfileConnectButton from '../Wallet/ProfileConnectButton'
-import { getTotalGifts } from '@/api'
+import { getTotalGifts, totalAvailableInvoice } from '@/api'
 import { formatNumber } from '@/utils/utils'
 
 // import ConnectButton from '../Wallet/ConnectButton'
@@ -31,7 +31,8 @@ const UserProfile: FC = () => {
   useEffect(()=>{
     const load = async()=>{
       const {withdraw_gifts} = await getTotalGifts()
-      setGifts(withdraw_gifts)
+      const {total, exchange_rate} = await totalAvailableInvoice()
+      setGifts(total * exchange_rate + withdraw_gifts)
     }
     if(token){
       load()

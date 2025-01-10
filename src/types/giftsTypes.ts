@@ -22,3 +22,26 @@ export interface WithdrawReq {
   amount: number
   hash: string
 }
+
+export interface GiftHistoryReq {
+  page_num: number
+  records: number
+}
+
+export interface GiftHistoryItem {
+  amount: number
+  created_at: string
+  currency: number
+  from_address: string
+  from_uid: number
+  hash: string
+  source: string
+  status: number
+  to_uid: number
+  token: string
+}
+
+export interface GiftHistoryRes {
+  gifts: GiftHistoryItem[]
+}
+

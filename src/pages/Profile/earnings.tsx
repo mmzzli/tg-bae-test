@@ -53,15 +53,15 @@ const Earnings = () => {
   const [loading, setLiading] = useState(false)
   const [totalGifts, setTotalGifts] = useState({
     gifts: 0,
-    withdraw_gifts: 0
+    withdraw_gifts: 0,
   })
 
-
-  const chainId = import.meta.env.VITE_APP_ENV === 'production' ? 56 : 97
+  // 都先用主网
+  const chainId = import.meta.env.VITE_APP_ENV === 'production' ? 56 : 56
   const contractAddress =
     import.meta.env.VITE_APP_ENV === 'production'
-      ? `0xF165cFb92441544cF9DEF72427028Db85b0aDEe2`
-      : `0xF165cFb92441544cF9DEF72427028Db85b0aDEe2`
+      ? `0x359E9Ef12132ea2a49701F838B5CdFbc13771AaF`
+      : `0x359E9Ef12132ea2a49701F838B5CdFbc13771AaF`
 
   const { data: rewardByUidList, refetch } = useReadContract({
     abi,
@@ -238,7 +238,7 @@ const Earnings = () => {
             <h5 className="text-[#000] text-[22px] my-4">
               ${formatNumber(data.total * data.exchange_rate)}
             </h5>
-            <p className='flex gap-1'>
+            <p className="flex gap-1">
               <span className="text-[#888] text-[14px]">{data.total}</span>
               <img src={StarsIcon} />
             </p>
@@ -248,7 +248,7 @@ const Earnings = () => {
             <h5 className="text-[#000] text-[22px] my-4">
               ${formatNumber(data.available * data.exchange_rate)}
             </h5>
-            <p className='flex gap-1'>
+            <p className="flex gap-1">
               <span className="text-[#888] text-[14px]">{data.available}</span>
               <img src={StarsIcon} />
             </p>
@@ -275,7 +275,8 @@ const Earnings = () => {
       <div className="mt-7">
         <div className="flex justify-between items-center">
           <h4 className="text-[#333] text-[16px]">Cryptos</h4>
-          <div className="flex gap-2"
+          <div
+            className="flex gap-2"
             onClick={() =>
               navigate(`/profile/earningsHistory?exchange_rate=${data.exchange_rate}&type=cryptos`)
             }
@@ -285,14 +286,16 @@ const Earnings = () => {
           </div>
         </div>
         <div className="bg-[#F7F9FC] px-5 py-5 mt-3 rounded-lg">
-          <ul className='flex justify-between items-center'>
+          <ul className="flex justify-between items-center">
             <li>
-              <p className='text-[#999] text-[12px]'>Cryptos received</p>
-              <h3 className='text-[#000] text-[22px] my-4'>${formatNumber(totalGifts.gifts)}</h3>
+              <p className="text-[#999] text-[12px]">Cryptos received</p>
+              <h3 className="text-[#000] text-[22px] my-4">${formatNumber(totalGifts.gifts)}</h3>
             </li>
             <li>
-              <p className='text-[#999] text-[12px]'>Available to withdraw</p>
-              <h3 className='text-[#000] text-[22px] my-4'>${formatNumber(totalGifts.withdraw_gifts)}</h3>
+              <p className="text-[#999] text-[12px]">Available to withdraw</p>
+              <h3 className="text-[#000] text-[22px] my-4">
+                ${formatNumber(totalGifts.withdraw_gifts)}
+              </h3>
             </li>
           </ul>
           <p className="text-[#666] text-[12px]">
@@ -313,17 +316,11 @@ const Earnings = () => {
             ) : (
               <BaseButton
                 className="mt-5"
-                text="Lauch wallet to withdraw"
+                text="Launch wallet to withdraw"
                 width="100%"
                 height="40px"
                 loading={loading}
                 handler={() => {
-                  // toast({
-                  //   render: () => {
-                  //     return <CustomToast title="coming soon" type={typeOptions.warning} />
-                  //   },
-                  //   position: 'bottom',
-                  // })
                   walletWithdraw()
                 }}
               />

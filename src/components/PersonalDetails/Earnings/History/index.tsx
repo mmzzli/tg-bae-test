@@ -218,14 +218,17 @@ const EarningsHistory = () => {
                   </p>
                 </li>
                 <li className="text-right">
-                  <h3 className="text-[#FF5596] text-[16px]">
+                  <h3
+                    className="text-[16px]"
+                    style={{
+                      color: item.source === 'Withdraw' ? '#FF5596' : '#333',
+                    }}
+                  >
                     {item.source === 'Withdraw' ? '-' : '+'}
                     <SubscriptCounting className="pl-[5px]" amount={item.amount} />
                     <span className="pl-[5px]">{ChainToken[item.currency].symbol}</span>
                   </h3>
-                  <p className="text-[#666] text-[12px]">
-                    {formatUSD(item.dollar)}
-                  </p>
+                  <p className="text-[#666] text-[12px]">{formatUSD(item.dollar)}</p>
                 </li>
               </ul>
             </div>

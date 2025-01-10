@@ -134,7 +134,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
               </HStack>
               <HStack
                 position="absolute"
-                bottom="20px"
+                bottom="40px"
                 right="16px"
                 p="5px"
                 gap="4px"

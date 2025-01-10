@@ -44,7 +44,10 @@ const Earnings = () => {
   const { data: gasLimit } = useEstimateGas()
   const { data: feesPerGas } = useEstimateFeesPerGas()
   const [loading, setLiading] = useState(false)
-  const [gifts, setGifts] = useState(0)
+  const [totalGifts, setTotalGifts] = useState({
+    gifts: 0,
+    withdraw_gifts: 0
+  })
 
   const chainId = import.meta.env.VITE_APP_ENV === 'production' ? 56 : 97
   const contractAddress  = import.meta.env.VITE_APP_ENV === 'production' ? `0xF165cFb92441544cF9DEF72427028Db85b0aDEe2` : `0xF165cFb92441544cF9DEF72427028Db85b0aDEe2`
@@ -149,7 +152,7 @@ const Earnings = () => {
     await verifyWithdraw({
       from: address  as `0x${string}`,
       chain_id: chainId,
-      amount: gifts,
+      amount: totalGifts.gifts,
       hash: hash  as `0x${string}`
     })
     load()
@@ -183,8 +186,8 @@ const Earnings = () => {
   }, [error, receiptError])
 
   const load = async () => {
-    const {withdraw_gifts} = await getTotalGifts()
-    setGifts(withdraw_gifts)
+    const totalRes = await getTotalGifts()
+    setTotalGifts(totalRes)
     const res = await totalAvailableInvoice()
     setData(res)
   }
@@ -226,7 +229,7 @@ const Earnings = () => {
             </p>
           </li>
           <li>
-            <p className="text-[#999] text-[12px]">Total stars earned</p>
+            <p className="text-[#999] text-[12px]">Available to convert</p>
             <h5 className="text-[#000] text-[22px] my-4">
               ${formatNumber(data.available * data.exchange_rate)}
             </h5>
@@ -255,15 +258,23 @@ const Earnings = () => {
       </div>
       <div className='mt-7'>
         <div className="flex justify-between items-center">
-          <h4 className="text-[#333] text-[16px]">Tomo wallet</h4>
+          <h4 className="text-[#333] text-[16px]">Cryptos</h4>
           <div className='flex gap-2'>
             <p className="text-[#666] text-[14px]">History</p>
             <img className="mt-[2px]" src={RightIcon} />
           </div>
         </div>
         <div className="bg-[#F7F9FC] px-5 py-5 mt-3 rounded-lg">
-          <p className='text-[#999] text-[12px]'>Cryptos received</p>
-          <h3 className='text-[#000] text-[22px] my-4'>${formatNumber(gifts)}</h3>
+          <ul className='flex justify-between items-center'>
+            <li>
+              <p className='text-[#999] text-[12px]'>Cryptos received</p>
+              <h3 className='text-[#000] text-[22px] my-4'>${formatNumber(totalGifts.gifts)}</h3>
+            </li>
+            <li>
+              <p className='text-[#999] text-[12px]'>Available to withdraw</p>
+              <h3 className='text-[#000] text-[22px] my-4'>${formatNumber(totalGifts.withdraw_gifts)}</h3>
+            </li>
+          </ul>
           <p className='text-[#666] text-[12px]'>This shows the estimated total value of crypto you received from others, subject to market fluctuations.</p>
           <div className='px-3'>
             {status === 'disconnected' ? <BaseButton

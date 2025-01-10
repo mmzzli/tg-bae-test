@@ -17,12 +17,13 @@ import { supportEVMTokenList } from '@/config/wagmi-config'
 
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { StarsIcon, RightIcon } from '@/assets/icons'
-import { totalAvailableInvoice, giftSign, verifyWithdraw, getTotalGifts } from '@/api'
+import { totalAvailableInvoice, giftSign, verifyWithdraw, getTotalGifts, approveEvent } from '@/api'
 import { useStore } from '@/store/store'
 import { totalAvailable } from '@/types'
 import { formatNumber } from '@/utils/utils'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import ConnectModal from '@/components/Wallet/ConnectModal'
+import { useRequest } from 'ahooks'
 
 interface RewardItem {
   amount: string | number
@@ -55,13 +56,34 @@ const Earnings = () => {
     gifts: 0,
     withdraw_gifts: 0,
   })
+  const [writeContractSuccess, setWriteContractSuccess] = useState(false)
+  const [writeContractError, setWriteContractError] = useState<any>(null)
+
+  const { run: pollStatus, cancel: stopPolling } = useRequest(
+    async () => {
+      const res = await approveEvent({ hash: hash as `0x${string}`, chain_id: chainId })
+      if (res.status === 1) {
+        stopPolling()
+        setWriteContractSuccess(true)
+      } else if (res.status === 2) {
+        setWriteContractError(res)
+        stopPolling()
+      }
+      return res
+    },
+    {
+      pollingInterval: 600,
+      manual: true,
+      pollingWhenHidden: false,
+    }
+  )
 
   // 都先用主网
-  const chainId = import.meta.env.VITE_APP_ENV === 'production' ? 56 : 56
+  const chainId = import.meta.env.VITE_APP_ENV === 'production' ? 56 : 97
   const contractAddress =
     import.meta.env.VITE_APP_ENV === 'production'
       ? `0x359E9Ef12132ea2a49701F838B5CdFbc13771AaF`
-      : `0x359E9Ef12132ea2a49701F838B5CdFbc13771AaF`
+      : `0xF165cFb92441544cF9DEF72427028Db85b0aDEe2`
 
   const { data: rewardByUidList, refetch } = useReadContract({
     abi,
@@ -74,7 +96,7 @@ const Earnings = () => {
     return supportEVMTokenList.filter((token) => token.chainId === chainId)
   }
 
-  const { isSuccess: isConfirmed, error: receiptError } = useWaitForTransactionReceipt({
+  const { error: receiptError } = useWaitForTransactionReceipt({
     hash,
   })
 
@@ -84,59 +106,48 @@ const Earnings = () => {
     if (!(rewardByUidList && rewardByUidList.length)) return
     const token = rewardByUidList[0].token
     const amount = rewardByUidList[0].amount
-    switchChain(
-      {
-        chainId: chainId,
-      },
-      {
-        onSuccess: async () => {
-          setLiading(true)
-          const { signature, deadline } = await giftSign({
-            receiver: `${address}` as `0x${string}`,
-            token: token as `0x${string}`,
-            chainid: chainId,
-            amount: Number(amount),
-          })
-          const args1 = [
-            BigInt(current_uid),
-            `${address}` as `0x${string}`,
-            token as `0x${string}`,
-            amount,
-            BigInt(deadline),
-            signature as `0x${string}`,
-          ]
-          console.log(args1)
 
-          const gasConfig =
-            import.meta.env.VITE_APP_ENV === 'production'
-              ? {}
-              : {
-                  gas: BigInt(Number(gasLimit) * 3),
-                  maxFeePerGas: feesPerGas?.maxFeePerGas,
-                  maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
-                }
+    setLiading(true)
+    const { signature, deadline } = await giftSign({
+      receiver: `${address}` as `0x${string}`,
+      token: token as `0x${string}`,
+      chainid: chainId,
+      amount: Number(amount),
+    })
+    const args1 = [
+      BigInt(current_uid),
+      `${address}` as `0x${string}`,
+      token as `0x${string}`,
+      amount,
+      BigInt(deadline),
+      signature as `0x${string}`,
+    ]
+    console.log(args1)
 
-          writeContract({
-            address: contractAddress as `0x${string}`,
-            abi,
-            functionName: 'withdrawToken',
-            args: [
-              BigInt(current_uid),
-              `${address}` as `0x${string}`,
-              token as `0x${string}`,
-              amount,
-              BigInt(deadline),
-              signature as `0x${string}`,
-            ],
-            ...gasConfig,
-          })
-        },
-        onError: (e) => {
-          console.log(e)
-          setLiading(false)
-        },
-      }
-    )
+    const gasConfig =
+      import.meta.env.VITE_APP_ENV === 'production'
+        ? {}
+        : {
+            gas: BigInt(Number(gasLimit) * 3),
+            maxFeePerGas: feesPerGas?.maxFeePerGas,
+            maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
+          }
+
+    writeContract({
+      address: contractAddress as `0x${string}`,
+      abi,
+      functionName: 'withdrawToken',
+      chainId,
+      args: [
+        BigInt(current_uid),
+        `${address}` as `0x${string}`,
+        token as `0x${string}`,
+        amount,
+        BigInt(deadline),
+        signature as `0x${string}`,
+      ],
+      ...gasConfig,
+    })
   }
 
   const handleAfterConnect = () => {
@@ -177,17 +188,19 @@ const Earnings = () => {
       position: 'bottom',
     })
     setLiading(false)
+    setWriteContractSuccess(false)
+    setWriteContractError(null)
   }
 
   useEffect(() => {
-    if (isConfirmed) {
+    if (writeContractSuccess) {
       verifyWithdrawEve()
     }
-  }, [isConfirmed])
+  }, [writeContractSuccess])
 
   useEffect(() => {
-    if (error || receiptError) {
-      console.log(error || receiptError)
+    if (error || receiptError || writeContractError) {
+      console.log(error || receiptError || writeContractError)
       toast({
         render: () => {
           return <CustomToast title={'Failed'} type={typeOptions.error} />
@@ -196,7 +209,7 @@ const Earnings = () => {
       })
       setLiading(false)
     }
-  }, [error, receiptError])
+  }, [error, receiptError, writeContractError])
 
   const load = async () => {
     const totalRes = await getTotalGifts()
@@ -209,6 +222,12 @@ const Earnings = () => {
     if (!token) return
     load()
   }, [token])
+
+  useEffect(() => {
+    if (hash) {
+      pollStatus()
+    }
+  }, [hash])
   return (
     <div
       className="px-4 fixed w-screen h-screen bg-[#fff] z-10 overflow-auto scrollbar-hide pb-10 pt-6"

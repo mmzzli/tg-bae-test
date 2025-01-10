@@ -22,11 +22,11 @@ export const ChainToken: { [key: number]: { symbol: string; name: string } } = {
     name: 'Tether USD',
   },
   3: {
-    symbol: 'BSC',
+    symbol: 'BNB',
     name: 'BNB Chain',
   },
   4: {
-    symbol: 'BscUSDT',
+    symbol: 'BUSD',
     name: 'BSC-USDT',
   },
   5: {
@@ -128,12 +128,3 @@ export const getAddressLink = (chainId: number, address: string): string => {
   return `${chain.browserURL}${chain.addressPath}/${address}`
 }
 
-interface TokenInfo {
-  symbol: string
-  name: string
-}
-
-// 使用示例:
-// const tokenInfo = getTokenInfo(ChainTokenId.ETH);
-// console.log(tokenInfo.symbol); // 输出: "ETH"
-// console.log(tokenInfo.name);   // 输出: "Ethereum"

@@ -79,11 +79,11 @@ const Earnings = () => {
   )
 
   // 都先用主网
-  const chainId = import.meta.env.VITE_APP_ENV === 'production' ? 56 : 56
+  const chainId = import.meta.env.VITE_APP_ENV === 'production' ? 56 : 97
   const contractAddress =
     import.meta.env.VITE_APP_ENV === 'production'
       ? `0x359E9Ef12132ea2a49701F838B5CdFbc13771AaF`
-      : `0x359E9Ef12132ea2a49701F838B5CdFbc13771AaF`
+      : `0xF165cFb92441544cF9DEF72427028Db85b0aDEe2`
 
   const { data: rewardByUidList, refetch } = useReadContract({
     abi,
@@ -107,20 +107,38 @@ const Earnings = () => {
     const token = rewardByUidList[0].token
     const amount = rewardByUidList[0].amount
 
-    setLiading(true)
-    const { signature, deadline } = await giftSign({
-      receiver: `${address}` as `0x${string}`,
-      token: token as `0x${string}`,
-      chainid: chainId,
-      amount: Number(amount),
+    const signatures: `0x${string}`[] = []
+    const tokenAmounts: { token: `0x${string}`; amount: bigint }[] = []
+    let _deadline = 0
+
+    rewardByUidList.forEach(async (item) => {
+      const { signature, deadline } = await giftSign({
+        receiver: `${address}` as `0x${string}`,
+        token: item.token as `0x${string}`,
+        chainid: chainId,
+        amount: Number(item.amount),
+      })
+      signatures.push(signature as `0x${string}`)
+      tokenAmounts.push({
+        token: item.token as `0x${string}`,
+        amount: item.amount,
+      })
+      _deadline = deadline
     })
+
+    setLiading(true)
+    // const { signature, deadline } = await giftSign({
+    //   receiver: `${address}` as `0x${string}`,
+    //   token: token as `0x${string}`,
+    //   chainid: chainId,
+    //   amount: Number(amount),
+    // })
     const args1 = [
       BigInt(current_uid),
       `${address}` as `0x${string}`,
-      token as `0x${string}`,
-      amount,
-      BigInt(deadline),
-      signature as `0x${string}`,
+      tokenAmounts,
+      BigInt(_deadline),
+      signatures,
     ]
     console.log(args1)
 
@@ -136,15 +154,16 @@ const Earnings = () => {
     writeContract({
       address: contractAddress as `0x${string}`,
       abi,
-      functionName: 'withdrawToken',
+      functionName: 'withdrawMultiToken',
       chainId,
       args: [
         BigInt(current_uid),
         `${address}` as `0x${string}`,
-        token as `0x${string}`,
-        amount,
-        BigInt(deadline),
-        signature as `0x${string}`,
+        // token as `0x${string}`,
+        // amount,
+        tokenAmounts,
+        BigInt(_deadline),
+        signatures,
       ],
       ...gasConfig,
     })

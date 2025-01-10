@@ -133,6 +133,15 @@ video {
   --height: 12px !important;
 }
 
+.adm-tabs-tab {
+  font-family: 'Switzer';
+}
+
+.adm-tabs {
+  --active-line-color: #6254ff;
+  --active-title-color: #0f1233;
+}
+
 .adm-tabs-tab-active {
   font-weight: 500;
 }

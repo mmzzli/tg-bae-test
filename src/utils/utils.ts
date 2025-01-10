@@ -1,5 +1,6 @@
 import { WrappedMessage } from '@/components/Chat/types'
 import { FormattedMessage } from '@/components/SDK/BaeimSDK'
+import BigNumber from 'bignumber.js'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -298,3 +299,55 @@ export const formatNumber = (num: number): string => {
   return num.toString()
 }
 export default formatNumber
+
+
+export function splitNumberParts(num: number) {
+  const bigNum = new BigNumber(num)
+  const numStr = bigNum.toFixed() // 保持原始数字格式，不转科学计数法
+
+  // 如果是整数或小数点后 <= 6 位，直接返回
+  if (!numStr.includes('.') || numStr.split('.')[1].length <= 6) {
+    return {
+      integerPart: numStr,
+      dot: null,
+      zeros: null,
+      decimalPart: null
+    }
+  }
+
+  const [integerPart, decimalPart] = numStr.split('.')
+
+  // 匹配小数点后连续的 0
+  const zeroMatch = decimalPart.match(/^(0+)/)
+
+  if (zeroMatch) {
+    const zerosCount = zeroMatch[1].length
+    const remainingPart = decimalPart.slice(zerosCount) || null
+
+    return {
+      integerPart,
+      dot: '.0',
+      zeros: zerosCount,
+      decimalPart: remainingPart
+    }
+  }
+
+  // 没有连续 0 的情况
+  return {
+    integerPart: numStr,
+    dot: null,
+    zeros: null,
+    decimalPart: null
+  }
+}
+
+
+export const formatDecimal = (num: number): number => {
+  // 如果是0或整数，直接返回
+  if (Number.isInteger(num)) {
+    return num;
+  }
+
+  // 处理小数，保留2位
+  return Math.floor(num * 100) / 100;
+}

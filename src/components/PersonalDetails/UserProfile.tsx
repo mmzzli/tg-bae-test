@@ -31,8 +31,8 @@ const UserProfile: FC = () => {
   useEffect(()=>{
     const load = async()=>{
       const {withdraw_gifts} = await getTotalGifts()
-      const {total, exchange_rate} = await totalAvailableInvoice()
-      setGifts(total * exchange_rate + withdraw_gifts)
+      const {available, exchange_rate} = await totalAvailableInvoice()
+      setGifts(available * exchange_rate + withdraw_gifts)
     }
     if(token){
       load()
@@ -92,7 +92,7 @@ const UserProfile: FC = () => {
 
       <MoreText text={userInfo.bio} className={'leading-4'}></MoreText>
 
-      <HStack p="24px 0" gap="56px">
+      <HStack p="24px 0" gap="56px" className='justify-between'>
         <Box textAlign="center">
           <Heading
             fontSize="20px"

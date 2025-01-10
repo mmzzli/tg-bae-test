@@ -40,13 +40,23 @@ export const createIMSlice: StateCreator<IMSlice> = (set) => ({
   messageWindowList: [],
   setMessageWindowList: (messageList) => set({ messageWindowList: messageList }),
   addMessageWindowListItem: (item, merge = false) =>
-    set((state) => ({
-      messageWindowList: merge
-        ? state.messageWindowList.map((item) =>
-            item.channel.channelID === item.channel.channelID ? item : item
-          )
-        : [...state.messageWindowList, item],
-    })),
+    set((state) => {
+      if (!merge) {
+        return { messageWindowList: [...state.messageWindowList, item] }
+      }
+
+      const existingIndex = state.messageWindowList.findIndex(
+        (existingItem) => existingItem.channel.channelID === item.channel.channelID
+      )
+
+      if (existingIndex !== -1 && merge) {
+        const newList = [...state.messageWindowList]
+        newList[existingIndex] = item
+        return { messageWindowList: newList }
+      }
+
+      return { messageWindowList: [...state.messageWindowList, item] }
+    }),
   updateMessageWindowListItem: (messageWindow) =>
     set((state) => ({
       messageWindowList: state.messageWindowList.map((item) =>

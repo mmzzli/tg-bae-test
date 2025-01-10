@@ -14,7 +14,7 @@ import { useToast } from '@chakra-ui/react'
 import { CustomToast, typeOptions } from '../comm/Toast'
 import { parseUnits } from 'viem'
 import { rewardEvent } from '@/api'
-import { MessageType, WrappedMessage } from '../Chat/types'
+import { MessageType } from '../Chat/types'
 import { useFormatMessage } from '@/hooks/useFormatMessage'
 import { useIM } from '@/store/hook/userIM'
 
@@ -55,7 +55,38 @@ export const SendRewardButton = ({
   const { data: feesPerGas } = useEstimateFeesPerGas()
 
   const [isApproving, setIsApproving] = useState(false)
+  const { isSuccess: isConfirmed, error: receiptError } = useWaitForTransactionReceipt({
+    hash,
+  })
+  const gasConfig =
+    import.meta.env.VITE_APP_ENV === 'production'
+      ? {}
+      : {
+          gas: gasLimit ? BigInt(Number(gasLimit) * 3) : 0n,
+          maxFeePerGas: feesPerGas?.maxFeePerGas,
+          maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
+        }
 
+  const reward = () => {
+    writeContract({
+      address: contractAddress as `0x${string}`,
+      chainId,
+      abi,
+      functionName: 'reward',
+      args: [
+        parseUnits('0', decimals),
+        tokenAddress as `0x${string}`,
+        parseUnits(amount, decimals),
+        BigInt(current_uid),
+        BigInt(toUid),
+      ],
+      value:
+        tokenAddress === '0x0000000000000000000000000000000000000000'
+          ? parseUnits(amount, decimals)
+          : 0n,
+      ...gasConfig,
+    })
+  }
   const handleSendReward = () => {
     console.log('handleSendReward', amount, tokenAddress, contractAddress, current_uid)
     if (!contractAddress) {
@@ -67,89 +98,25 @@ export const SendRewardButton = ({
     }
 
     if (tokenAddress !== '0x0000000000000000000000000000000000000000') {
-      switchChain(
-        {
-          chainId,
-        },
-        {
-          onSuccess: async () => {
-            console.log(
-              'writeContract approve',
-              tokenAddress as `0x${string}`,
-              parseUnits(amount, decimals)
-            )
-
-            setIsApproving(true)
-            const gasConfig =
-              import.meta.env.VITE_APP_ENV === 'production'
-                ? {}
-                : {
-                    gas: BigInt(Number(gasLimit) * 3),
-                    maxFeePerGas: feesPerGas?.maxFeePerGas,
-                    maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
-                  }
-            writeContract({
-              address: tokenAddress as `0x${string}`,
-              abi: approveAbi,
-              functionName: 'approve',
-              args: [contractAddress as `0x${string}`, parseUnits(amount, decimals)],
-              ...gasConfig,
-            })
-          },
-        }
+      console.log(
+        'writeContract approve',
+        tokenAddress as `0x${string}`,
+        parseUnits(amount, decimals)
       )
+      setIsApproving(true)
+      writeContract({
+        address: tokenAddress as `0x${string}`,
+        chainId,
+        abi: approveAbi,
+        functionName: 'approve',
+        args: [contractAddress as `0x${string}`, parseUnits(amount, decimals)],
+        ...gasConfig,
+      })
       return
     }
 
-    switchChain(
-      {
-        chainId,
-      },
-      {
-        onSuccess: async () => {
-          console.log(
-            'writeContract onSuccess',
-            parseUnits('0', decimals),
-            tokenAddress as `0x${string}`,
-            parseUnits(amount, decimals),
-            BigInt(current_uid),
-            BigInt(toUid)
-          )
-
-          const gasConfig =
-            import.meta.env.VITE_APP_ENV === 'production'
-              ? {}
-              : {
-                  gas: BigInt(Number(gasLimit) * 3),
-                  maxFeePerGas: feesPerGas?.maxFeePerGas,
-                  maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
-                }
-
-          writeContract({
-            address: contractAddress as `0x${string}`,
-            abi,
-            functionName: 'reward',
-            args: [
-              parseUnits('0', decimals),
-              tokenAddress as `0x${string}`,
-              parseUnits(amount, decimals),
-              BigInt(current_uid),
-              BigInt(toUid),
-            ],
-            value:
-              tokenAddress === '0x0000000000000000000000000000000000000000'
-                ? parseUnits(amount, decimals)
-                : 0n,
-            ...gasConfig,
-          })
-        },
-      }
-    )
+    reward()
   }
-
-  const { isSuccess: isConfirmed, error: receiptError } = useWaitForTransactionReceipt({
-    hash,
-  })
 
   useEffect(() => {
     if (error || receiptError) {
@@ -197,50 +164,7 @@ export const SendRewardButton = ({
     } else if (isConfirmed && isApproving) {
       setIsApproving(false)
       // 开始打赏
-      switchChain(
-        {
-          chainId,
-        },
-        {
-          onSuccess: async () => {
-            console.log(
-              'writeContract onSuccess',
-              parseUnits('0', decimals),
-              tokenAddress as `0x${string}`,
-              parseUnits(amount, decimals),
-              BigInt(current_uid),
-              BigInt(toUid)
-            )
-
-            const gasConfig =
-              import.meta.env.VITE_APP_ENV === 'production'
-                ? {}
-                : {
-                    gas: BigInt(Number(gasLimit) * 3),
-                    maxFeePerGas: feesPerGas?.maxFeePerGas,
-                    maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
-                  }
-
-            writeContract({
-              address: contractAddress as `0x${string}`,
-              abi,
-              functionName: 'reward',
-              args: [
-                parseUnits('0', decimals),
-                tokenAddress as `0x${string}`,
-                parseUnits(amount, decimals),
-                BigInt(current_uid),
-                BigInt(toUid),
-              ],
-              value:
-                tokenAddress === '0x0000000000000000000000000000000000000000'
-                  ? parseUnits(amount, decimals)
-                  : 0n,
-              ...gasConfig,
-            })
-          },
-        }
-      )
+      reward()
     }
   }, [isConfirmed, isApproving])
 

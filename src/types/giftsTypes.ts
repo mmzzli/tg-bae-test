@@ -15,3 +15,10 @@ export interface GiftsRes {
   gifts: number
   withdraw_gifts: number
 }
+
+export interface WithdrawReq {
+  from: string
+  chain_id: number
+  amount: number
+  hash: string
+}

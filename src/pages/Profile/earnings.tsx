@@ -2,27 +2,27 @@ import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useBoolean, useToast } from '@chakra-ui/react'
 import { parseUnits } from 'viem'
-import { useAccount, useReadContract, useSwitchChain, useWriteContract, useEstimateFeesPerGas, useEstimateGas } from 'wagmi'
+import { useAccount, useReadContract, useSwitchChain, useWriteContract, useEstimateFeesPerGas, useEstimateGas, useWaitForTransactionReceipt } from 'wagmi'
 import { abi } from '@/config/abi'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
-// import {
-//   useEstimateFeesPerGas,
-//   useEstimateGas,
-//   useSwitchChain,
-//   useWaitForTransactionReceipt,
-//   useWriteContract,
-// } from 'wagmi'
+import { supportEVMTokenList } from '@/config/wagmi-config'
 
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { StarsIcon, RightIcon } from '@/assets/icons'
-import { totalAvailableInvoice, giftSign } from '@/api'
+import { totalAvailableInvoice, giftSign, verifyWithdraw, getTotalGifts } from '@/api'
 import { useStore } from '@/store/store'
 import { totalAvailable } from '@/types'
 import { formatNumber } from '@/utils/utils'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import ConnectModal from '@/components/Wallet/ConnectModal'
 
+
+interface RewardItem {
+  amount: string | number;
+}
+
 const Earnings = () => {
+  console.log(supportEVMTokenList)
   const navigate = useNavigate()
   const toast = useToast()
   const { token } = useStore((state) => ({
@@ -43,31 +43,55 @@ const Earnings = () => {
 
   const { data: gasLimit } = useEstimateGas()
   const { data: feesPerGas } = useEstimateFeesPerGas()
+  const [loading, setLiading] = useState(false)
+  const [gifts, setGifts] = useState(0)
+  const [chainId, setChainId] = useState(97)
 
-  const { data: rewardByUid } = useReadContract({
+  const { data: rewardByUidList, refetch } = useReadContract({
     abi,
     address: `0xF165cFb92441544cF9DEF72427028Db85b0aDEe2` as `0x${string}`,
     functionName: 'getRewardByUid',
     args:[BigInt(current_uid)]
   })
-  console.log(rewardByUid)
+
+  const getTokenInfoByChainId = (chainId: number) => {
+    return supportEVMTokenList.filter(token => token.chainId === chainId);
+  };
+
+
+
+  const { isSuccess: isConfirmed, error: receiptError } = useWaitForTransactionReceipt({
+    hash,
+  })
 
   const walletWithdraw = async () => {
-    console.log(parseUnits("2", 18))
+    const tokenInfo = getTokenInfoByChainId(chainId)
+    console.log(tokenInfo)
+    if(!(rewardByUidList && rewardByUidList.length)) return
+    const token = rewardByUidList[0].token
+    const amount = rewardByUidList[0].amount
     switchChain(
       {
-        chainId: 97,
+        chainId: chainId,
       },
       {
         onSuccess: async () => {
-
+          setLiading(true)
           const {signature, deadline} = await giftSign({
             receiver: `${address}` as `0x${string}`,
-            token:  `0x0000000000000000000000000000000000000000` as `0x${string}`,
-            chainid:  97,
-            amount:  Number(parseUnits("2", 18))
+            token:  token as `0x${string}`,
+            chainid:  chainId,
+            amount:  Number(amount)
           })
-
+          const args1 = [
+            BigInt(current_uid),
+            `${address}` as `0x${string}`,
+            token as `0x${string}`,
+            amount,
+            BigInt(deadline),
+            signature as `0x${string}`
+          ]
+          console.log(args1)
           writeContract({
             address: `0xF165cFb92441544cF9DEF72427028Db85b0aDEe2` as `0x${string}`,
             abi,
@@ -75,16 +99,20 @@ const Earnings = () => {
             args:[
               BigInt(current_uid),
               `${address}` as `0x${string}`,
-              `0x0000000000000000000000000000000000000000` as `0x${string}`,
-              parseUnits("2", 18),
+              token as `0x${string}`,
+              amount,
               BigInt(deadline),
               signature as `0x${string}`
             ],
-            gas: gasLimit,
+            gas: BigInt(Number(gasLimit) * 3),
             maxFeePerGas: feesPerGas?.maxFeePerGas,
             maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
           })
 
+        },
+        onError:(e)=>{
+          console.log(e)
+          setLiading(false)
         }
       }
     )
@@ -113,11 +141,56 @@ const Earnings = () => {
     }
   }
 
+
+  const verifyWithdrawEve = async()=>{
+
+    await verifyWithdraw({
+      from: address  as `0x${string}`,
+      chain_id: chainId,
+      amount: gifts,
+      hash: hash  as `0x${string}`
+    })
+    load()
+
+    toast({
+      render: () => {
+        return <CustomToast title={'success'} type={typeOptions.success} />
+      },
+      position: 'bottom',
+    })
+    setLiading(false)
+  }
+
+  useEffect(()=>{
+    if(isConfirmed){
+      verifyWithdrawEve()
+    }
+  },[isConfirmed])
+
+  useEffect(() => {
+    if (error || receiptError) {
+      console.log(error || receiptError)
+      toast({
+        render: () => {
+          return <CustomToast title={'Failed'} type={typeOptions.error} />
+        },
+        position: 'bottom',
+      })
+      setLiading(false)
+    }
+  }, [error, receiptError])
+
+  const load = async () => {
+    const {withdraw_gifts} = await getTotalGifts()
+    setGifts(withdraw_gifts)
+    const res = await totalAvailableInvoice()
+    setData(res)
+  }
+
   useEffect(() => {
     if (!token) return
-    const load = async () => {
-      const res = await totalAvailableInvoice()
-      setData(res)
+    if(import.meta.env.VITE_APP_ENV === 'production'){
+      setChainId(56)
     }
     load()
   }, [token])
@@ -191,7 +264,7 @@ const Earnings = () => {
         </div>
         <div className="bg-[#F7F9FC] px-5 py-5 mt-3 rounded-lg">
           <p className='text-[#999] text-[12px]'>Cryptos received</p>
-          <h3 className='text-[#000] text-[22px] my-4'>$0.00</h3>
+          <h3 className='text-[#000] text-[22px] my-4'>${formatNumber(gifts)}</h3>
           <p className='text-[#666] text-[12px]'>This shows the estimated total value of crypto you received from others, subject to market fluctuations.</p>
           <div className='px-3'>
             {status === 'disconnected' ? <BaseButton
@@ -208,6 +281,7 @@ const Earnings = () => {
                 text="Lauch wallet to withdraw"
                 width="100%"
                 height="40px"
+                loading={loading}
                 handler={() => {
                   // toast({
                   //   render: () => {

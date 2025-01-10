@@ -48,7 +48,7 @@ const Earnings = () => {
   const { data: hash, error, writeContract } = useWriteContract()
   const { getCurrentUid } = useTMAUtils()
   const current_uid = getCurrentUid()
-
+  const setNeedUpdateEarnings = useStore((state) => state.setNeedUpdateEarnings)
   const { data: gasLimit } = useEstimateGas()
   const { data: feesPerGas } = useEstimateFeesPerGas()
   const [loading, setLiading] = useState(false)
@@ -216,6 +216,7 @@ const Earnings = () => {
     setTotalGifts(totalRes)
     const res = await totalAvailableInvoice()
     setData(res)
+    setNeedUpdateEarnings()
   }
 
   useEffect(() => {

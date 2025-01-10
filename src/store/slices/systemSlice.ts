@@ -63,6 +63,9 @@ export interface SystemSlice {
   setPaidStars: (stars: number) => void
   paidStarsPoints: number
   setPaidStarsPoints: (points: number) => void
+
+  needUpdateEarnings: number
+  setNeedUpdateEarnings: () => void
 }
 
 export const createSystemSlice: StateCreator<SystemSlice> = (set) => ({
@@ -143,5 +146,11 @@ export const createSystemSlice: StateCreator<SystemSlice> = (set) => ({
   totalFollowTaskPoints: 0,
   setTotalFollowTaskPoints: (points) => {
     set({ totalFollowTaskPoints: points })
+  },
+  needUpdateEarnings: 1,
+  setNeedUpdateEarnings: () => {
+    set((state) => {
+      return { needUpdateEarnings: state.needUpdateEarnings + 1 }
+    })
   },
 })

@@ -13,10 +13,11 @@ import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useToast } from '@chakra-ui/react'
 import { CustomToast, typeOptions } from '../comm/Toast'
 import { parseUnits } from 'viem'
-import { rewardEvent } from '@/api'
+import { approveEvent, rewardEvent } from '@/api'
 import { MessageType } from '../Chat/types'
 import { useFormatMessage } from '@/hooks/useFormatMessage'
 import { useIM } from '@/store/hook/userIM'
+import { useRequest } from 'ahooks'
 
 export const SendRewardButton = ({
   amount,
@@ -43,7 +44,6 @@ export const SendRewardButton = ({
 
   const { data: hash, error, writeContract } = useWriteContract()
   const { address } = useAccount()
-  const { switchChain } = useSwitchChain()
 
   const { getCurrentUid } = useTMAUtils()
   const current_uid = getCurrentUid()
@@ -55,9 +55,34 @@ export const SendRewardButton = ({
   const { data: feesPerGas } = useEstimateFeesPerGas()
 
   const [isApproving, setIsApproving] = useState(false)
-  const { isSuccess: isConfirmed, error: receiptError } = useWaitForTransactionReceipt({
+  const [writeContractSuccess, setWriteContractSuccess] = useState(false)
+  const [writeContractError, setWriteContractError] = useState<any>(null)
+  const { error: receiptError } = useWaitForTransactionReceipt({
     hash,
   })
+
+  const { run: pollStatus, cancel: stopPolling } = useRequest(
+    async () => {
+      const res = await approveEvent({ hash: hash as `0x${string}`, chain_id: chainId })
+      if (res.status === 1) {
+        setWriteContractSuccess(true)
+        stopPolling()
+        setTimeout(() => {
+          handleSuccess()
+        }, 0)
+      } else if (res.status === 2) {
+        setWriteContractError(res)
+        stopPolling()
+      }
+      return res
+    },
+    {
+      pollingInterval: 600,
+      manual: true,
+      pollingWhenHidden: false,
+    }
+  )
+
   const gasConfig =
     import.meta.env.VITE_APP_ENV === 'production'
       ? {}
@@ -119,7 +144,7 @@ export const SendRewardButton = ({
   }
 
   useEffect(() => {
-    if (error || receiptError) {
+    if (error || receiptError || writeContractError) {
       toast({
         render: () => {
           return <CustomToast title={'Failed'} type={typeOptions.error} />
@@ -129,10 +154,10 @@ export const SendRewardButton = ({
       setIsApproving(false)
       slideButtonRef.current?.reset()
     }
-  }, [error, receiptError])
+  }, [error, receiptError, writeContractError])
 
-  useEffect(() => {
-    if (isConfirmed && !isApproving) {
+  const handleSuccess = () => {
+    if (!isApproving) {
       rewardEvent({
         from: address as `0x${string}`,
         to_uid: toUid,
@@ -161,15 +186,59 @@ export const SendRewardButton = ({
       })
       setIsApproving(false)
       slideButtonRef.current?.reset()
-    } else if (isConfirmed && isApproving) {
+    } else if (isApproving) {
       setIsApproving(false)
       // 开始打赏
       reward()
     }
-  }, [isConfirmed, isApproving])
+  }
+
+  // useEffect(() => {
+  //   console.log('writeContractSuccess', writeContractSuccess, isApproving)
+  //   if (writeContractSuccess && !isApproving) {
+  //     rewardEvent({
+  //       from: address as `0x${string}`,
+  //       to_uid: toUid,
+  //       chain_id: chainId,
+  //       amount: parseFloat(amount),
+  //       hash: hash as `0x${string}`,
+  //     })
+  //     // send card
+  //     const newMessage = formatMessage({
+  //       type: MessageType.REWARD,
+  //       to: toUid,
+  //       metadata: {
+  //         chain_id: chainId,
+  //         token,
+  //         token_address: tokenAddress,
+  //         chain_name: chainName,
+  //         amount,
+  //         to_uid: toUid,
+  //         hash: hash as `0x${string}`,
+  //       },
+  //     })
+  //     sendMessage(newMessage)
+  //     toast({
+  //       render: () => <CustomToast title="Sent" type={typeOptions.success} />,
+  //       position: 'bottom',
+  //     })
+  //     setIsApproving(false)
+  //     slideButtonRef.current?.reset()
+  //   } else if (writeContractSuccess && isApproving) {
+  //     setIsApproving(false)
+  //     // 开始打赏
+  //     reward()
+  //   }
+  // }, [writeContractSuccess, isApproving])
 
   useEffect(() => {
     console.log('hash', hash)
+    if (hash) {
+      pollStatus() // 有新的 hash 时开始轮询
+    }
+    return () => {
+      stopPolling() // 组件卸载时停止轮询
+    }
   }, [hash])
   return (
     <SlideButton

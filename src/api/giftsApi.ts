@@ -3,7 +3,8 @@ import { del, get, post } from './base'
 import {
   SignReq,
   SignRes,
-  GiftsRes
+  GiftsRes,
+  WithdrawReq
 } from '@/types'
 
 export const getTotalGifts = () => {
@@ -14,3 +15,13 @@ export const getTotalGifts = () => {
 export const giftSign = (params:SignReq) => {
   return post<SignRes>(`/api/v1/sign`,params)
 }
+// type WithdrawHashReq struct {
+//   From    string  json:"from" validate:"required"
+//   ChainID int     json:"chain_id" validate:"required"
+//   Amount  float64 json:"amount" validate:"required"
+//   Hash    string  json:"hash" validate:"required"
+// }
+export const verifyWithdraw = (params:WithdrawReq) => {
+  return post(`/api/v1/verify_withdraw`,params)
+}
+

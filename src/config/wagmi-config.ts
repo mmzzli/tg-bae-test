@@ -19,7 +19,7 @@ const duckChainTestnet = defineChain({
   blockExplorers: {
     default: {
       name: 'DuckScan Testnet',
-      url: 'https://testnet-scan.duckchain.io/',
+      url: 'https://testnet-scan.duckchain.io',
     },
   },
   testnet: true,
@@ -41,7 +41,7 @@ const bscTestnet = defineChain({
   blockExplorers: {
     default: {
       name: 'BscScan Testnet',
-      url: 'https://testnet.bscscan.com/',
+      url: 'https://testnet.bscscan.com',
     },
   },
   testnet: true,

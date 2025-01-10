@@ -181,10 +181,9 @@ const EarningsHistory = () => {
           ))}
         </InfiniteScroll>
         {!starsLoading && data.accounts.length === 0 && (
-          <Icon
-            name="icon-search"
-            style={{ width: '164px', height: '164px', margin: 'auto', marginTop: '30px' }}
-          />
+          <div className="h-full flex items-center justify-center">
+            <Icon name="icon-search" style={{ width: '164px', height: '164px' }} />
+          </div>
         )}
       </div>
     )
@@ -245,10 +244,9 @@ const EarningsHistory = () => {
           ))}
         </InfiniteScroll>
         {!cryptoLoading && giftData.length === 0 && (
-          <Icon
-            name="icon-search"
-            style={{ width: '164px', height: '164px', margin: 'auto', marginTop: '30px' }}
-          />
+          <div className="h-full flex items-center justify-center">
+            <Icon name="icon-Empty_white_purchase" style={{ width: '164px', height: '164px' }} />
+          </div>
         )}
       </div>
     )

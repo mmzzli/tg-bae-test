@@ -250,123 +250,125 @@ const Earnings = () => {
   }, [hash])
   return (
     <div
-      className="px-4 fixed w-screen h-screen bg-[#fff] z-10 overflow-auto scrollbar-hide pb-10 pt-6"
+      className="px-4 fixed w-screen bg-[#fff] z-10 scrollbar-hide pt-6"
       id="scrollable"
+      style={{ height: 'calc(100vh - 3rem - var(--tg-safe-area-inset-top))' }}
     >
       <h3 className="text-[#333] text-[20px]">Earnings</h3>
-      <div className="text-center mt-12">
+      <div className="text-center mt-12 mb-2">
         <h2 className="text-[#12122A] text-[40px]">
           ${formatNumber(data.total * data.exchange_rate + totalGifts.gifts)}
         </h2>
         <p className="text-[#999] text-[14px] mt-2">Total earnings</p>
       </div>
-      <div className="flex justify-between items-center mt-12">
-        <h4 className="text-[#333] text-[16px]">Telegram stars</h4>
-        <div
-          className="flex gap-2"
-          onClick={() => navigate(`/profile/earningsHistory?exchange_rate=${data.exchange_rate}`)}
-        >
-          <p className="text-[#666] text-[14px]">History</p>
-          <img className="mt-[2px]" src={RightIcon} />
-        </div>
-      </div>
-      <div className="bg-[#F7F9FC] px-6 pt-9 pb-6 mt-3 rounded-lg">
-        <ul className="flex justify-between items-center">
-          <li>
-            <p className="text-[#999] text-[12px]">Total stars earned</p>
-            <h5 className="text-[#000] text-[22px] my-4">
-              ${formatNumber(data.total * data.exchange_rate)}
-            </h5>
-            <p className="flex gap-1">
-              <span className="text-[#888] text-[14px]">{data.total}</span>
-              <img src={StarsIcon} />
-            </p>
-          </li>
-          <li>
-            <p className="text-[#999] text-[12px]">Available to convert</p>
-            <h5 className="text-[#000] text-[22px] my-4">
-              ${formatNumber(data.available * data.exchange_rate)}
-            </h5>
-            <p className="flex gap-1">
-              <span className="text-[#888] text-[14px]">{data.available}</span>
-              <img src={StarsIcon} />
-            </p>
-          </li>
-        </ul>
-        <div className="px-3">
-          <BaseButton
-            className="mt-5"
-            text="Withdraw"
-            width="100%"
-            height="40px"
-            handler={() => {
-              toast({
-                render: () => {
-                  return <CustomToast title="coming soon" type={typeOptions.warning} />
-                },
-                position: 'bottom',
-              })
-              // toggle()
-            }}
-          />
-        </div>
-      </div>
-      <div className="mt-7">
-        <div className="flex justify-between items-center">
-          <h4 className="text-[#333] text-[16px]">Cryptos</h4>
+      <div className="overflow-y-auto pb-10" style={{ height: 'calc(100vh - 18rem)' }}>
+        <div className="flex justify-between items-center mt-12">
+          <h4 className="text-[#333] text-[16px]">Telegram stars</h4>
           <div
             className="flex gap-2"
-            onClick={() =>
-              navigate(`/profile/earningsHistory?exchange_rate=${data.exchange_rate}&type=cryptos`)
-            }
+            onClick={() => navigate(`/profile/earningsHistory?exchange_rate=${data.exchange_rate}`)}
           >
             <p className="text-[#666] text-[14px]">History</p>
             <img className="mt-[2px]" src={RightIcon} />
           </div>
         </div>
-        <div className="bg-[#F7F9FC] px-5 py-5 mt-3 rounded-lg">
+        <div className="bg-[#F7F9FC] px-6 pt-9 pb-6 mt-3 rounded-lg">
           <ul className="flex justify-between items-center">
             <li>
-              <p className="text-[#999] text-[12px]">Cryptos received</p>
-              <h3 className="text-[#000] text-[22px] my-4">${formatNumber(totalGifts.gifts)}</h3>
+              <p className="text-[#999] text-[12px]">Total stars earned</p>
+              <h5 className="text-[#000] text-[22px] my-4">
+                ${formatNumber(data.total * data.exchange_rate)}
+              </h5>
+              <p className="flex gap-1">
+                <span className="text-[#888] text-[14px]">{data.total}</span>
+                <img src={StarsIcon} />
+              </p>
             </li>
             <li>
-              <p className="text-[#999] text-[12px]">Available to withdraw</p>
-              <h3 className="text-[#000] text-[22px] my-4">
-                ${formatNumber(totalGifts.withdraw_gifts)}
-              </h3>
+              <p className="text-[#999] text-[12px]">Available to convert</p>
+              <h5 className="text-[#000] text-[22px] my-4">
+                ${formatNumber(data.available * data.exchange_rate)}
+              </h5>
+              <p className="flex gap-1">
+                <span className="text-[#888] text-[14px]">{data.available}</span>
+                <img src={StarsIcon} />
+              </p>
             </li>
           </ul>
-          <p className="text-[#666] text-[12px]">
-            This shows the estimated total value of crypto you received from others, subject to
-            market fluctuations.
-          </p>
           <div className="px-3">
-            {status === 'disconnected' ? (
-              <BaseButton
-                className="mt-5"
-                text="Connect wallet"
-                width="100%"
-                height="40px"
-                handler={() => {
-                  handleReward()
-                }}
-              />
-            ) : (
-              <BaseButton
-                className="mt-5"
-                text="Launch wallet to withdraw"
-                width="100%"
-                height="40px"
-                loading={loading}
-                handler={() => {
-                  walletWithdraw()
-                }}
-              />
-            )}
+            <BaseButton
+              className="mt-5"
+              text="Withdraw"
+              width="100%"
+              height="40px"
+              handler={() => {
+                toast({
+                  render: () => {
+                    return <CustomToast title="coming soon" type={typeOptions.warning} />
+                  },
+                  position: 'bottom',
+                })
+                // toggle()
+              }}
+            />
+          </div>
+        </div>
+        <div className="mt-7">
+          <div className="flex justify-between items-center">
+            <h4 className="text-[#333] text-[16px]">Cryptos</h4>
+            <div
+              className="flex gap-2"
+              onClick={() =>
+                navigate(
+                  `/profile/earningsHistory?exchange_rate=${data.exchange_rate}&type=cryptos`
+                )
+              }
+            >
+              <p className="text-[#666] text-[14px]">History</p>
+              <img className="mt-[2px]" src={RightIcon} />
+            </div>
+          </div>
+          <div className="bg-[#F7F9FC] px-5 py-5 mt-3 rounded-lg">
+            <ul className="flex justify-between items-center">
+              <li>
+                <p className="text-[#999] text-[12px]">Cryptos received</p>
+                <h3 className="text-[#000] text-[22px] my-4">${formatNumber(totalGifts.gifts)}</h3>
+              </li>
+              <li>
+                <p className="text-[#999] text-[12px]">Available to withdraw</p>
+                <h3 className="text-[#000] text-[22px] my-4">
+                  ${formatNumber(totalGifts.withdraw_gifts)}
+                </h3>
+              </li>
+            </ul>
+            <div className="px-3">
+              {status === 'disconnected' ? (
+                <BaseButton
+                  className="mt-5"
+                  text="Connect wallet"
+                  width="100%"
+                  height="40px"
+                  handler={() => {
+                    handleReward()
+                  }}
+                />
+              ) : (
+                <BaseButton
+                  className="mt-5"
+                  text="Launch wallet to withdraw"
+                  width="100%"
+                  height="40px"
+                  loading={loading}
+                  handler={() => {
+                    walletWithdraw()
+                  }}
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>
+
       <ConnectModal ref={connectModalRef} afterConnect={handleAfterConnect} />
     </div>
   )

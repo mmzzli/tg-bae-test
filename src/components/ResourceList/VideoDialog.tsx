@@ -220,14 +220,9 @@ const VideoDialog = () => {
       hls.attachMedia(video)
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        video.muted = true
-        video.play().then(() => {
-          setTimeout(() => {
-            video.muted = false
-          }, 200)
-        }).catch((error) => {
-          console.log(error, 'error====jacob')
-          console.log('自动播放失败')
+        video.muted = false
+        video.play().catch((error) => {
+          console.log('视频自动播放失败', error)
           video.muted = true
           video.play()
           setTimeout(() => {
@@ -260,12 +255,8 @@ const VideoDialog = () => {
       return () => clearTimeout(timer)
     } else {
       if (video?.paused) {
-        video.muted = true
-        video.play().then(() => {
-          setTimeout(() => {
-            video.muted = false
-          }, 200)
-        }).catch((error) => {
+        video.muted = false
+        video.play().catch((error) => {
           console.log(error, 'error====jacob')
           console.log('自动播放失败')
           video.muted = true
@@ -284,6 +275,7 @@ const VideoDialog = () => {
       if (playing) {
         videoRef.current.pause()
       } else {
+        videoRef.current.muted = false
         videoRef.current.play()
       }
       setPlaying((prev) => !prev)

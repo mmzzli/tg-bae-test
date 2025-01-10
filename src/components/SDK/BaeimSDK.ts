@@ -238,6 +238,10 @@ class BaeimSDK {
     this.connect()
   }
 
+  public disconnect() {
+    WKSDK.shared().connectManager.disconnect()
+  }
+
   public stop() {
     WKSDK.shared().connectManager.removeConnectStatusListener(this.handleConnectStatus)
     this.removeMessageListener()

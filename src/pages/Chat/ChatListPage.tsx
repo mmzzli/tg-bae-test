@@ -138,43 +138,43 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
           setStatus(status)
           console.warn('-----ConnectionStatusListener------', status)
           const isChatListLoadedStateFormStore = useStore.getState().isChatListLoaded
-          if (status === ConnectStatus.Connected && !isChatListLoadedStateFormStore) {
+          if (status === ConnectStatus.Connected) {
             setRetryCount(0)
             try {
+              if (!isChatListLoadedStateFormStore) {
+                setIsChatListLoaded(true)
+                removeSyncConversationListener = sdk.addConversationListener(
+                  (conversation, action) => {
+                    if (action === ConversationAction.add) {
+                      console.warn('addConversationListener add conversation', conversation)
+                      const repeat = conversationIds.some(
+                        (id) => id === conversation.channel.channelID
+                      )
+                      if (!repeat) {
+                        addConversation(conversation)
+                        addMessageWindowListItem({
+                          channel: conversation.channel,
+                          messages: conversation.recents?.map(getWrappedMessage) ?? [],
+                        })
+                      }
+                    } else if (action === ConversationAction.update) {
+                      console.warn('addConversationListener update conversation', conversation)
+                      updateConversation(conversation)
+                    } else if (action === ConversationAction.remove) {
+                      console.warn('addConversationListener remove conversation', conversation)
+                      deleteConversation(conversation.channel.channelID)
+                    }
+                  }
+                )
+              }
               const res = await sdk.getAllConversation()
-              setIsChatListLoaded(true)
               setConversation(sortConversations(res))
-              console.warn('res', res)
               res.forEach((conversation) => {
                 addMessageWindowListItem({
                   channel: conversation.channel,
                   messages: conversation.recents?.map(getWrappedMessage).reverse() ?? [],
                 })
               })
-
-              removeSyncConversationListener = sdk.addConversationListener(
-                (conversation, action) => {
-                  if (action === ConversationAction.add) {
-                    console.warn('addConversationListener add conversation', conversation)
-                    const repeat = conversationIds.some(
-                      (id) => id === conversation.channel.channelID
-                    )
-                    if (!repeat) {
-                      addConversation(conversation)
-                      addMessageWindowListItem({
-                        channel: conversation.channel,
-                        messages: conversation.recents?.map(getWrappedMessage) ?? [],
-                      })
-                    }
-                  } else if (action === ConversationAction.update) {
-                    console.warn('addConversationListener update conversation', conversation)
-                    updateConversation(conversation)
-                  } else if (action === ConversationAction.remove) {
-                    console.warn('addConversationListener remove conversation', conversation)
-                    deleteConversation(conversation.channel.channelID)
-                  }
-                }
-              )
               console.warn('getAllConversation', res)
             } catch (error) {
               console.warn('getAllConversation error', error)
@@ -199,6 +199,7 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
     return () => {
       sdk?.stop()
       removeConnectionStatusListener?.()
+      removeSyncConversationListener?.()
     }
   }, [token])
 

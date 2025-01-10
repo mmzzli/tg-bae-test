@@ -31,8 +31,8 @@ const UserProfile: FC = () => {
   useEffect(()=>{
     const load = async()=>{
       const {withdraw_gifts} = await getTotalGifts()
-      const {total, exchange_rate} = await totalAvailableInvoice()
-      setGifts(total * exchange_rate + withdraw_gifts)
+      const {available, exchange_rate} = await totalAvailableInvoice()
+      setGifts(available * exchange_rate + withdraw_gifts)
     }
     if(token){
       load()

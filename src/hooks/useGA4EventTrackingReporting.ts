@@ -123,8 +123,7 @@ export const useGA4EventTrackingReporting = (): GA4TrackingMethods => {
     }>;
   }) => {
     console.log('trackPurchase', params)
-    // 当前追踪的purchase_user事件是purchase的副本，需要配置在GA4中
-    trackEvent('purchase_user', {
+    trackEvent('purchase', {
       currency: params.currency || 'STRTS',
       ...params,
     });

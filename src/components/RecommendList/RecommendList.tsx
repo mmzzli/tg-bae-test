@@ -14,6 +14,7 @@ interface PostListProps {
 }
 interface ChildRef {
   refresh?: () => void
+  scrollToIndex?: (index: number) => void
 }
 
 const RecommendList = forwardRef<ChildRef, PostListProps>((props, ref) => {
@@ -43,6 +44,7 @@ const RecommendList = forwardRef<ChildRef, PostListProps>((props, ref) => {
 
   useImperativeHandle(ref, () => ({
     refresh: () => refresh(),
+    scrollToIndex: (index: number) => virtualizer.scrollToIndex(index),
   }))
 
   useEffect(() => {

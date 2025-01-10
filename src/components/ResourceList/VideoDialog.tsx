@@ -194,13 +194,28 @@ const VideoDialog = () => {
 
     if (info?.media && info.media[0]) {
       setUrl(info.media[0])
+      setTimeout(() => {
+        if (videoRef.current && !playing) {
+          videoRef.current.muted = true;
+          videoRef.current.play().then(() => {
+            videoRef.current!.muted = false;
+          }).catch((error) => {
+            console.log('强制播放失败', error);
+            videoRef.current!.muted = true;
+            videoRef.current!.play();
+            setTimeout(() => {
+              videoRef.current!.muted = false;
+            }, 1000);
+          });
+        }
+      }, 1000);
     }
     if (!info && videoRef?.current) {
       setTimeout(() => {
         setVideoResource(null)
       }, 100)
     }
-  }, [info])
+  }, [info, playing])
 
   useEffect(() => {
     const video = videoRef.current

@@ -43,7 +43,6 @@ const Earnings = () => {
 
   const { data: gasLimit } = useEstimateGas()
   const { data: feesPerGas } = useEstimateFeesPerGas()
-  const [receivedNum, setReceivednum] = useState(0)
   const [loading, setLiading] = useState(false)
 
   const { data: rewardByUidList, refetch } = useReadContract({
@@ -57,21 +56,11 @@ const Earnings = () => {
     return supportEVMTokenList.filter(token => token.chainId === chainId);
   };
 
-  useEffect(()=>{
-    console.log(rewardByUidList, 123)
-    if(rewardByUidList){
-      rewardEve(rewardByUidList)
-    }
-  },[rewardByUidList])
+
 
   const { isSuccess: isConfirmed, error: receiptError } = useWaitForTransactionReceipt({
     hash,
   })
-
-  const rewardEve = (rewardByUidList: RewardItem[])=>{
-    const total = rewardByUidList.reduce((sum, item) => sum + Number(item.amount), 0);
-    setReceivednum(total/1e18)
-  }
 
   const walletWithdraw = async () => {
     const tokenInfo = getTokenInfoByChainId(97)
@@ -79,7 +68,6 @@ const Earnings = () => {
     if(!(rewardByUidList && rewardByUidList.length)) return
     const token = rewardByUidList[0].token
     const amount = rewardByUidList[0].amount
-    console.log(token, amount)
     switchChain(
       {
         chainId: 97,
@@ -102,7 +90,6 @@ const Earnings = () => {
             signature as `0x${string}`
           ]
           console.log(args1)
-          console.log(parseUnits('0.000001', 18))
           writeContract({
             address: `0xF165cFb92441544cF9DEF72427028Db85b0aDEe2` as `0x${string}`,
             abi,
@@ -162,8 +149,6 @@ const Earnings = () => {
       hash: ""
     })
 
-    const {data} = await refetch()
-    rewardEve(data)
     toast({
       render: () => {
         return <CustomToast title={'success'} type={typeOptions.success} />

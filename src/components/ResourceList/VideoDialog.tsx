@@ -225,9 +225,6 @@ const VideoDialog = () => {
           console.log('视频自动播放失败', error)
           video.muted = true
           video.play()
-          setTimeout(() => {
-            video.muted = false
-          }, 1000)
         })
       })
 

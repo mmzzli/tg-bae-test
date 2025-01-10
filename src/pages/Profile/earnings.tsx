@@ -217,7 +217,7 @@ const Earnings = () => {
       <h3 className="text-[#333] text-[20px]">Earnings</h3>
       <div className="text-center mt-12">
         <h2 className="text-[#12122A] text-[40px]">
-          ${formatNumber(data.total * data.exchange_rate)}
+          ${formatNumber(data.total * data.exchange_rate + totalGifts.gifts)}
         </h2>
         <p className="text-[#999] text-[14px] mt-2">Total earnings</p>
       </div>
@@ -238,14 +238,20 @@ const Earnings = () => {
             <h5 className="text-[#000] text-[22px] my-4">
               ${formatNumber(data.total * data.exchange_rate)}
             </h5>
-            <p className="text-[#888] text-[12px]">{data.total}⭐️</p>
+            <p className='flex gap-1'>
+              <span className="text-[#888] text-[14px]">{data.total}</span>
+              <img src={StarsIcon} />
+            </p>
           </li>
           <li>
             <p className="text-[#999] text-[12px]">Available to convert</p>
             <h5 className="text-[#000] text-[22px] my-4">
               ${formatNumber(data.available * data.exchange_rate)}
             </h5>
-            <p className="text-[#888] text-[12px]">{data.available}⭐️</p>
+            <p className='flex gap-1'>
+              <span className="text-[#888] text-[14px]">{data.available}</span>
+              <img src={StarsIcon} />
+            </p>
           </li>
         </ul>
         <div className="px-3">

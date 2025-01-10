@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { Heading, HStack, Box, Text, Link } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '@/store'
@@ -11,13 +11,34 @@ import ProfileSkeleton from '../Skeketon/ProfileSkeleton'
 import Notification from './Notification/Notification'
 import MoreText from '@/components/More/MoreText'
 import ProfileConnectButton from '../Wallet/ProfileConnectButton'
+import { getTotalGifts, totalAvailableInvoice } from '@/api'
+import { formatNumber } from '@/utils/utils'
+
 // import ConnectButton from '../Wallet/ConnectButton'
 
 const UserProfile: FC = () => {
   const { launchParams } = useTMAUtils()
   const userId = launchParams.initData?.user?.id ?? 0
   const userInfo = useStore((state) => state.userInfo)
+  const [gifts, setGifts] = useState(0)
+
+  const { token } = useStore((state) => ({
+    token: state.token,
+  }))
+
   const navigate = useNavigate()
+
+  useEffect(()=>{
+    const load = async()=>{
+      const {withdraw_gifts} = await getTotalGifts()
+      const {total, exchange_rate} = await totalAvailableInvoice()
+      setGifts(total * exchange_rate + withdraw_gifts)
+    }
+    if(token){
+      load()
+    }
+  },[token])
+
   return !userInfo.avatar ? (
     <ProfileSkeleton />
   ) : (
@@ -54,7 +75,7 @@ const UserProfile: FC = () => {
           />
         </div>
         <Box display="flex" alignItems="center">
-          <EarningsPage />
+          {/* <EarningsPage /> */}
           <Notification />
           <ShareUser userInfo={userInfo} />
         </Box>
@@ -100,7 +121,7 @@ const UserProfile: FC = () => {
             Following
           </Text>
         </Box>
-        {/* <Box textAlign="center">
+        <Box textAlign="center">
           <Heading
             fontSize="20px"
             color="#0F1233"
@@ -108,12 +129,12 @@ const UserProfile: FC = () => {
             cursor="pointer"
             onClick={() => navigate(`/profile/earnings`)}
           >
-            $123
+            ${formatNumber(gifts)}
           </Heading>
           <Text color="#8A8C91" fontSize="12px" lineHeight="14px">
             Earnings
           </Text>
-        </Box> */}
+        </Box>
       </HStack>
       <div>
         <ProfileConnectButton />

@@ -43,7 +43,6 @@
     "@types/scheduler": "^0.23.0",
     "@ankr.com/ankr.js": "0.5.2",
     "ahooks": "^3.8.1",
-    "antd": "^5.22.7",
     "antd-mobile": "^5.36.1",
     "axios": "^1.7.2",
     "bignumber.js": "^9.1.2",

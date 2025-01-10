@@ -50,7 +50,7 @@ const BaseButton = ({
           </div>
         )}
         {!loading && icon}
-        {!loading && text && <span className="font-medium !important">{text}</span>}
+        {!loading && text && <span className="font-medium font-[600]">{text}</span>}
         {!loading && iconRight}
       </div>
     </div>

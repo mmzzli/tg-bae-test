@@ -44,7 +44,7 @@ export default defineConfig(({ mode }) => {
             'lottie-react': ['lottie-react'],
             'lottie-web': ['lottie-web'],
             viem: ['viem'],
-            antd: ['antd', 'antd-mobile'],
+            antd: ['antd-mobile'],
             ton: ['ton', 'ton-core', 'ton-crypto', 'tonweb'],
             swiper: ['swiper'],
             axios: ['axios'],

@@ -9,6 +9,7 @@ import { throttle } from '@/utils/chat/schedulers'
 import { PullToRefresh } from 'antd-mobile'
 interface ChildRef {
   refresh: () => void
+  scrollToIndex: (index: number) => void
 }
 
 const SCROLL_THRESHOLD = 35
@@ -59,13 +60,14 @@ const HomePage: FC = () => {
   // 双击触发的逻辑
   const handleDoubleTap = (): void => {
     console.log('Double-tap detected!')
-    const element = document.getElementById('recommendScrollableDiv')
-    if (element) {
-      element.scrollTo({
-        top: 0,
-        behavior: 'smooth',
-      })
-    }
+    // const element = document.getElementById('recommendScrollableDiv')
+    // if (element) {
+    //   element.scrollTo({
+    //     top: 0,
+    //     behavior: 'smooth',
+    //   })
+    // }
+    childRef.current?.scrollToIndex(0)
   }
 
   const handleSingleClick = (): void => {

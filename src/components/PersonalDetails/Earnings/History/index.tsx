@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import { useSearchParams } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { Tabs } from 'antd';
-const { TabPane } = Tabs;
+import { Tabs } from 'antd-mobile';
+const { Tab } = Tabs;
 
 import { accountdetailList } from '@/api';
 import { useStore } from '@/store/store';
@@ -79,7 +79,7 @@ const EarningsHistory = () => {
       </div>
       <div className='mt-10'>
         <Tabs defaultActiveKey="1" onChange={key => console.log(key)}>
-          <TabPane tab="Telegram stars" key="1">
+          <Tab title="Telegram stars" key="1">
             <div className="pt-[16px]">
               <InfiniteScroll
                 dataLength={data.accounts.length}
@@ -119,10 +119,10 @@ const EarningsHistory = () => {
                 />
               )}
             </div>
-          </TabPane>
-          <TabPane tab="Cryptos" key="2">
+          </Tab>
+          <Tab title="Cryptos" key="2">
             <Cryptos/>
-          </TabPane>
+          </Tab>
         </Tabs>
       </div>
     </div>

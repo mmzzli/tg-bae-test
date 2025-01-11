@@ -72,7 +72,7 @@ const Earnings = () => {
       return res
     },
     {
-      pollingInterval: 600,
+      pollingInterval: 1200,
       manual: true,
       pollingWhenHidden: false,
     }

@@ -101,6 +101,15 @@ const Earnings = () => {
   })
 
   const walletWithdraw = async () => {
+    try {
+      await switchChain({ chainId })
+    } catch (error) {
+      toast({
+        render: () => <CustomToast title="Switch chain failed" type={typeOptions.error} />,
+        position: 'bottom',
+      })
+      return
+    }
     const tokenInfo = getTokenInfoByChainId(chainId)
     console.log(tokenInfo, rewardByUidList)
     if (!(rewardByUidList && rewardByUidList.length)) {
@@ -117,7 +126,7 @@ const Earnings = () => {
     const tokenAmounts: { token: `0x${string}`; amount: bigint }[] = []
     let _deadline = 0
 
-    rewardByUidList.forEach(async (item) => {
+    for (const item of rewardByUidList) {
       const { signature, deadline } = await giftSign({
         receiver: `${address}` as `0x${string}`,
         token: item.token as `0x${string}`,
@@ -130,7 +139,7 @@ const Earnings = () => {
         amount: item.amount,
       })
       _deadline = deadline
-    })
+    }
 
     setLiading(true)
     // const { signature, deadline } = await giftSign({
@@ -139,6 +148,7 @@ const Earnings = () => {
     //   chainid: chainId,
     //   amount: Number(amount),
     // })
+    console.log('deadline', _deadline)
     const args1 = [
       BigInt(current_uid),
       `${address}` as `0x${string}`,

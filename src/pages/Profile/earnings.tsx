@@ -254,6 +254,10 @@ const Earnings = () => {
       pollStatus()
     }
   }, [hash])
+
+  useEffect(() => {
+    switchChain({ chainId })
+  }, [])
   return (
     <div
       className="px-4 fixed w-screen bg-[#fff] z-10 scrollbar-hide pt-6"

@@ -102,10 +102,16 @@ const Earnings = () => {
 
   const walletWithdraw = async () => {
     const tokenInfo = getTokenInfoByChainId(chainId)
-    console.log(tokenInfo)
-    if (!(rewardByUidList && rewardByUidList.length)) return
-    const token = rewardByUidList[0].token
-    const amount = rewardByUidList[0].amount
+    console.log(tokenInfo, rewardByUidList)
+    if (!(rewardByUidList && rewardByUidList.length)) {
+      toast({
+        render: () => {
+          return <CustomToast title="No balance" type={typeOptions.info} />
+        },
+        position: 'bottom',
+      })
+      return
+    }
 
     const signatures: `0x${string}`[] = []
     const tokenAmounts: { token: `0x${string}`; amount: bigint }[] = []

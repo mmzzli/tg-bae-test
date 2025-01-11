@@ -160,7 +160,11 @@ const Earnings = () => {
 
     const gasConfig =
       import.meta.env.VITE_APP_ENV === 'production'
-        ? {}
+        ? {
+            gas: BigInt(Number(gasLimit) * 3),
+            maxFeePerGas: feesPerGas?.maxFeePerGas,
+            maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
+          }
         : {
             gas: BigInt(Number(gasLimit) * 3),
             maxFeePerGas: feesPerGas?.maxFeePerGas,

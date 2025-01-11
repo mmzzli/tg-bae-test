@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { SlideButton, SlideButtonHandle } from '../BaseButton/SlideButton'
 import {
   useAccount,
+  useChainId,
   useEstimateFeesPerGas,
   useEstimateGas,
   useSwitchChain,
@@ -61,6 +62,9 @@ export const SendRewardButton = ({
     hash,
   })
 
+  const currentChainId = useChainId()
+  const { switchChainAsync } = useSwitchChain()
+
   const { run: pollStatus, cancel: stopPolling } = useRequest(
     async () => {
       const res = await approveEvent({ hash: hash as `0x${string}`, chain_id: chainId })
@@ -92,6 +96,18 @@ export const SendRewardButton = ({
           maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
         }
 
+  const switchChain = async () => {
+    if (currentChainId !== chainId) {
+      try {
+        await switchChainAsync({ chainId })
+      } catch (error) {
+        toast({
+          render: () => <CustomToast title="Switch chain failed" type={typeOptions.error} />,
+          position: 'bottom',
+        })
+      }
+    }
+  }
   const reward = () => {
     writeContract({
       address: contractAddress as `0x${string}`,
@@ -112,7 +128,7 @@ export const SendRewardButton = ({
       ...gasConfig,
     })
   }
-  const handleSendReward = () => {
+  const handleSendReward = async () => {
     console.log('handleSendReward', amount, tokenAddress, contractAddress, current_uid)
     if (!contractAddress) {
       toast({
@@ -121,6 +137,8 @@ export const SendRewardButton = ({
       })
       return slideButtonRef.current?.reset()
     }
+
+    await switchChain()
 
     if (tokenAddress !== '0x0000000000000000000000000000000000000000') {
       console.log(
@@ -241,6 +259,13 @@ export const SendRewardButton = ({
       stopPolling() // 组件卸载时停止轮询
     }
   }, [hash])
+
+  useEffect(() => {
+    if (currentChainId !== chainId) {
+      console.log('need chainId changed')
+      switchChain()
+    }
+  }, [currentChainId])
   return (
     <SlideButton
       ref={slideButtonRef}

@@ -145,6 +145,7 @@ export const SendRewardButton = ({
 
   useEffect(() => {
     if (error || receiptError || writeContractError) {
+      console.log('error', error, receiptError, writeContractError)
       toast({
         render: () => {
           return <CustomToast title={'Failed'} type={typeOptions.error} />

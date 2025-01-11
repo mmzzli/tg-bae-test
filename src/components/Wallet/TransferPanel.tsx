@@ -187,6 +187,10 @@ export const TransferPanel = ({
           token={symbol}
           toUid={toUid}
           disabled={!!error || amount === '' || parseFloat(amount) === 0}
+          afterReward={() => {
+            setAmount('')
+            onAmountChange('')
+          }}
         />
       </div>
     </div>

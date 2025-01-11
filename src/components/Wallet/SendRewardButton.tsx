@@ -29,6 +29,7 @@ export const SendRewardButton = ({
   token,
   disabled = false,
   toUid,
+  afterReward,
 }: {
   amount: string
   decimals: number
@@ -39,6 +40,7 @@ export const SendRewardButton = ({
   token: string
   toUid: number
   disabled: boolean
+  afterReward?: () => void
 }) => {
   const slideButtonRef = useRef<SlideButtonHandle>(null)
 
@@ -227,6 +229,7 @@ export const SendRewardButton = ({
         position: 'bottom',
       })
       setIsApproving(false)
+      afterReward?.()
       slideButtonRef.current?.reset()
     } else if (isApproving) {
       setIsApproving(false)

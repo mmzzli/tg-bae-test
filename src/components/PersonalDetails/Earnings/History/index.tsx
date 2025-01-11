@@ -159,7 +159,7 @@ const EarningsHistory = () => {
         >
           {data.accounts.map((item, key) => (
             <div
-              className="flex justify-between py-[20px] border-b border-[#EBEBF4] last:border-b-0"
+              className="flex justify-between py-[20px] px-[5px] border-b border-[#EBEBF4] last:border-b-0"
               key={key}
             >
               <div>
@@ -213,7 +213,7 @@ const EarningsHistory = () => {
           {giftData.map((item, index) => (
             <div
               key={index}
-              className="py-[20px] border-b border-[#EBEBF4] last:border-b-0"
+              className="py-[20px] px-[8px] border-b border-[#EBEBF4] last:border-b-0"
               onClick={() => handleClick(item.chain_id, item.hash)}
             >
               <ul className="flex justify-between items-center">

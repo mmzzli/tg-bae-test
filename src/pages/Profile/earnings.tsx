@@ -79,11 +79,11 @@ const Earnings = () => {
   )
 
   // 都先用主网
-  const chainId = import.meta.env.VITE_APP_ENV === 'production' ? 56 : 97
+  const chainId = import.meta.env.VITE_APP_ENV === 'production' ? 56 : 56
   const contractAddress =
     import.meta.env.VITE_APP_ENV === 'production'
       ? `0x359E9Ef12132ea2a49701F838B5CdFbc13771AaF`
-      : `0xF165cFb92441544cF9DEF72427028Db85b0aDEe2`
+      : `0x359E9Ef12132ea2a49701F838B5CdFbc13771AaF`
 
   const { data: rewardByUidList, refetch } = useReadContract({
     abi,
@@ -258,7 +258,10 @@ const Earnings = () => {
     <div
       className="px-4 fixed w-screen bg-[#fff] z-10 scrollbar-hide pt-6"
       id="scrollable"
-      style={{ height: 'calc(100vh - 3rem - var(--tg-safe-area-inset-top))' }}
+      style={{
+        height:
+          'calc(100vh - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top))',
+      }}
     >
       <h3 className="text-[#333] text-[20px]">Earnings</h3>
       <div className="text-center mt-12 mb-2">

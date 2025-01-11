@@ -18,7 +18,6 @@ import { approveEvent, rewardEvent } from '@/api'
 import { MessageType } from '../Chat/types'
 import { useFormatMessage } from '@/hooks/useFormatMessage'
 import { useIM } from '@/store/hook/userIM'
-import { useRequest } from 'ahooks'
 
 export const SendRewardButton = ({
   amount,
@@ -55,37 +54,59 @@ export const SendRewardButton = ({
   const { data: gasLimit } = useEstimateGas()
   const { data: feesPerGas } = useEstimateFeesPerGas()
 
+  const isPollingRef = useRef(false)
+  const isHandledRef = useRef(false)
+
+  const setIsPolling = (value: boolean) => {
+    isPollingRef.current = value
+  }
+
+  const setIsHandled = (value: boolean) => {
+    isHandledRef.current = value
+  }
+  const pollingTimeoutRef = useRef<NodeJS.Timeout>()
+
   const [isApproving, setIsApproving] = useState(false)
-  const [writeContractSuccess, setWriteContractSuccess] = useState(false)
   const [writeContractError, setWriteContractError] = useState<any>(null)
-  const { error: receiptError } = useWaitForTransactionReceipt({
+  const { error: receiptError, isSuccess: receiptSuccess } = useWaitForTransactionReceipt({
     hash,
   })
 
   const currentChainId = useChainId()
   const { switchChainAsync } = useSwitchChain()
 
-  const { run: pollStatus, cancel: stopPolling } = useRequest(
-    async () => {
+  const stopPolling = () => {
+    setIsPolling(false)
+    pollingTimeoutRef.current && clearTimeout(pollingTimeoutRef.current)
+  }
+  const pollStatus = async () => {
+    console.log('pollStatus', hash, isPollingRef.current, isHandledRef.current)
+    if (!hash || !isPollingRef.current || isHandledRef.current) return
+    pollingTimeoutRef.current && clearTimeout(pollingTimeoutRef.current)
+    try {
       const res = await approveEvent({ hash: hash as `0x${string}`, chain_id: chainId })
+
       if (res.status === 1) {
-        setWriteContractSuccess(true)
         stopPolling()
-        setTimeout(() => {
+        if (!isHandledRef.current) {
+          setIsHandled(true)
           handleSuccess()
-        }, 0)
+        }
       } else if (res.status === 2) {
-        setWriteContractError(res)
         stopPolling()
+        setWriteContractError(res)
+      } else if (res.status === 0) {
+        pollingTimeoutRef.current = setTimeout(() => {
+          pollStatus()
+        }, 1200)
+      } else {
+        throw new Error('Unknown status')
       }
-      return res
-    },
-    {
-      pollingInterval: 600,
-      manual: true,
-      pollingWhenHidden: false,
+    } catch (error) {
+      stopPolling()
+      console.error('Polling error:', error)
     }
-  )
+  }
 
   const gasConfig =
     import.meta.env.VITE_APP_ENV === 'production'
@@ -128,6 +149,7 @@ export const SendRewardButton = ({
       ...gasConfig,
     })
   }
+
   const handleSendReward = async () => {
     console.log('handleSendReward', amount, tokenAddress, contractAddress, current_uid)
     if (!contractAddress) {
@@ -170,6 +192,7 @@ export const SendRewardButton = ({
         },
         position: 'bottom',
       })
+      stopPolling()
       setIsApproving(false)
       slideButtonRef.current?.reset()
     }
@@ -212,51 +235,26 @@ export const SendRewardButton = ({
     }
   }
 
-  // useEffect(() => {
-  //   console.log('writeContractSuccess', writeContractSuccess, isApproving)
-  //   if (writeContractSuccess && !isApproving) {
-  //     rewardEvent({
-  //       from: address as `0x${string}`,
-  //       to_uid: toUid,
-  //       chain_id: chainId,
-  //       amount: parseFloat(amount),
-  //       hash: hash as `0x${string}`,
-  //     })
-  //     // send card
-  //     const newMessage = formatMessage({
-  //       type: MessageType.REWARD,
-  //       to: toUid,
-  //       metadata: {
-  //         chain_id: chainId,
-  //         token,
-  //         token_address: tokenAddress,
-  //         chain_name: chainName,
-  //         amount,
-  //         to_uid: toUid,
-  //         hash: hash as `0x${string}`,
-  //       },
-  //     })
-  //     sendMessage(newMessage)
-  //     toast({
-  //       render: () => <CustomToast title="Sent" type={typeOptions.success} />,
-  //       position: 'bottom',
-  //     })
-  //     setIsApproving(false)
-  //     slideButtonRef.current?.reset()
-  //   } else if (writeContractSuccess && isApproving) {
-  //     setIsApproving(false)
-  //     // 开始打赏
-  //     reward()
-  //   }
-  // }, [writeContractSuccess, isApproving])
+  useEffect(() => {
+    if (receiptSuccess && !isHandledRef.current) {
+      console.log('receiptSuccess', receiptSuccess, isHandledRef.current)
+      stopPolling()
+      setIsHandled(true)
+      handleSuccess()
+    }
+  }, [receiptSuccess])
 
   useEffect(() => {
     console.log('hash', hash)
     if (hash) {
-      pollStatus() // 有新的 hash 时开始轮询
+      setIsHandled(false)
+      setIsPolling(true)
+      setTimeout(() => {
+        pollStatus()
+      }, 0)
     }
     return () => {
-      stopPolling() // 组件卸载时停止轮询
+      stopPolling()
     }
   }, [hash])
 

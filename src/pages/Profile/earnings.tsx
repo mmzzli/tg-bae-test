@@ -101,6 +101,15 @@ const Earnings = () => {
   })
 
   const walletWithdraw = async () => {
+    try {
+      await switchChain({ chainId })
+    } catch (error) {
+      toast({
+        render: () => <CustomToast title="Switch chain failed" type={typeOptions.error} />,
+        position: 'bottom',
+      })
+      return
+    }
     const tokenInfo = getTokenInfoByChainId(chainId)
     console.log(tokenInfo, rewardByUidList)
     if (!(rewardByUidList && rewardByUidList.length)) {

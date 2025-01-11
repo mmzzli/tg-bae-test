@@ -112,8 +112,6 @@ const Earnings = () => {
       })
       return
     }
-    const token = rewardByUidList[0].token
-    const amount = rewardByUidList[0].amount
 
     const signatures: `0x${string}`[] = []
     const tokenAmounts: { token: `0x${string}`; amount: bigint }[] = []

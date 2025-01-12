@@ -219,11 +219,11 @@ const EarningsHistory = () => {
     }
   }
 
-  useEffect(() => {
-    if (token) {
-      fetchAccounts(1)
-    }
-  }, [token])
+  // useEffect(() => {
+  //   if (token) {
+  //     fetchAccounts(1)
+  //   }
+  // }, [token])
 
   const handleChange = (key: string) => {
     setActiveKey(key)

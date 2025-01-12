@@ -21,7 +21,7 @@ const UserProfile: FC = () => {
   const userId = launchParams.initData?.user?.id ?? 0
   const userInfo = useStore((state) => state.userInfo)
   const needUpdateEarnings = useStore((state) => state.needUpdateEarnings)
-  const [gifts, setGifts] = useState(0)
+  const [gifts, setGifts] = useState<number | string>('')
 
   const { token } = useStore((state) => ({
     token: state.token,
@@ -31,10 +31,21 @@ const UserProfile: FC = () => {
 
   useEffect(() => {
     const load = async () => {
-      const { withdraw_gifts, gifts } = await getTotalGifts()
-      const { available, exchange_rate } = await totalAvailableInvoice()
-      setGifts(gifts)
+      try {
+        const [giftsResponse, invoiceResponse] = await Promise.all([
+          getTotalGifts(),
+          totalAvailableInvoice()
+        ])
+
+        const { gifts } = giftsResponse
+        const { exchange_rate, total } = invoiceResponse
+        setGifts(total * exchange_rate + gifts)
+      } catch (error) {
+        console.error('Failed to load gifts and invoice:', error)
+        setGifts(0) // 设置一个默认值以防加载失败
+      }
     }
+
     if (token && needUpdateEarnings) {
       load()
     }

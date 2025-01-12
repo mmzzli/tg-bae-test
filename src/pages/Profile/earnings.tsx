@@ -30,7 +30,6 @@ interface RewardItem {
 }
 
 const Earnings = () => {
-  console.log(supportEVMTokenList)
   const navigate = useNavigate()
   const toast = useToast()
   const { token } = useStore((state) => ({
@@ -58,6 +57,9 @@ const Earnings = () => {
   })
   const [writeContractSuccess, setWriteContractSuccess] = useState(false)
   const [writeContractError, setWriteContractError] = useState<any>(null)
+  const { needUpdateEarnings } = useStore((state) => ({
+    needUpdateEarnings: state.needUpdateEarnings,
+  }))
 
   const { run: pollStatus, cancel: stopPolling } = useRequest(
     async () => {
@@ -218,8 +220,6 @@ const Earnings = () => {
       amount: totalGifts.gifts,
       hash: hash as `0x${string}`,
     })
-    load()
-
     toast({
       render: () => {
         return <CustomToast title={'success'} type={typeOptions.success} />
@@ -229,6 +229,7 @@ const Earnings = () => {
     setLiading(false)
     setWriteContractSuccess(false)
     setWriteContractError(null)
+    load()
   }
 
   useEffect(() => {
@@ -251,11 +252,15 @@ const Earnings = () => {
   }, [error, receiptError, writeContractError])
 
   const load = async () => {
+    await updateEarnings()
+    setNeedUpdateEarnings()
+  }
+
+  const updateEarnings = async () => {
     const totalRes = await getTotalGifts()
     setTotalGifts(totalRes)
     const res = await totalAvailableInvoice()
     setData(res)
-    setNeedUpdateEarnings()
   }
 
   useEffect(() => {
@@ -268,6 +273,12 @@ const Earnings = () => {
       pollStatus()
     }
   }, [hash])
+
+  useEffect(() => {
+    if (needUpdateEarnings) {
+      updateEarnings()
+    }
+  }, [needUpdateEarnings])
 
   useEffect(() => {
     switchChain({ chainId })

@@ -120,16 +120,16 @@ export const SendRewardButton = ({
         }
 
   const switchChain = async () => {
-    if (currentChainId !== chainId) {
-      try {
-        await switchChainAsync({ chainId })
-      } catch (error) {
-        toast({
-          render: () => <CustomToast title="Switch chain failed" type={typeOptions.error} />,
-          position: 'bottom',
-        })
-      }
+    // if (currentChainId !== chainId) {
+    try {
+      await switchChainAsync({ chainId })
+    } catch (error) {
+      toast({
+        render: () => <CustomToast title="Switch chain failed" type={typeOptions.error} />,
+        position: 'bottom',
+      })
     }
+    // }
   }
   const reward = () => {
     writeContract({

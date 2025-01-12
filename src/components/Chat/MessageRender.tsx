@@ -469,8 +469,18 @@ const MessagePart: React.FC<{ part: ParsedContent }> = ({ part }) => {
 const RewardCard: React.FC<{ message: WrappedMessage }> = ({ message }) => {
   const { chain_name, token, amount, hash, chain_id } = message.metadata as RewardMetadata
   const price = PriceService.getInstance().getPrice(token)
-  const usdValue = price ? new BigNumber(amount || '0').multipliedBy(price).toFixed(2) : '0.00'
+  const formatToUsd = (value: string, price: number) => {
+    const usdValue = new BigNumber(value || '0').multipliedBy(price)
+    if (usdValue.eq(0)) {
+      return '0'
+    }
+    if (usdValue.lt(0.01)) {
+      return '<0.01'
+    }
+    return usdValue.toFixed(2)
+  }
 
+  const usdValue = price ? formatToUsd(amount, price) : '0'
   const { openLink } = useTMAUtils()
   const handleClick = () => {
     if (!hash || !chain_id) return

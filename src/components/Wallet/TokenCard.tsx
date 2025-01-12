@@ -4,6 +4,7 @@ import { formatUnits } from 'viem'
 import { useBalance } from 'wagmi'
 import { useAccount } from 'wagmi'
 import TokenIcon from './TokenIcon'
+import BigNumber from 'bignumber.js'
 
 interface TokenCardProps {
   token: (typeof supportEVMTokenList)[0]
@@ -39,12 +40,24 @@ export const TokenCard = ({ token, onTokenSelect }: TokenCardProps) => {
 
   const price = PriceService.getInstance().getPrice(token.token) || 0
 
-  const usdValue = +balanceValue * price
-  const usdValueFormat = usdValue
-    ? Number(usdValue).toString().split('.')[1]?.length > 2
-      ? Number(usdValue).toFixed(2)
-      : Number(usdValue)
-    : 0
+  // const usdValue = +balanceValue * price
+  // const usdValueFormat = usdValue
+  //   ? Number(usdValue).toString().split('.')[1]?.length > 2
+  //     ? Number(usdValue).toFixed(2)
+  //     : Number(usdValue)
+  //   : 0
+  const formatToUsd = (value: string, price: number) => {
+    const usdValue = new BigNumber(value || '0').multipliedBy(price)
+    if (usdValue.eq(0)) {
+      return '0'
+    }
+    if (usdValue.lt(0.01)) {
+      return '<0.01'
+    }
+    return usdValue.toFixed(2)
+  }
+
+  const usdValueFormat = price ? formatToUsd(balanceValue.toString(), price) : '0'
 
   return (
     <div

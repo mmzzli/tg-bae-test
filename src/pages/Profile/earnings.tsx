@@ -20,7 +20,7 @@ import { StarsIcon, RightIcon } from '@/assets/icons'
 import { totalAvailableInvoice, giftSign, verifyWithdraw, getTotalGifts, approveEvent } from '@/api'
 import { useStore } from '@/store/store'
 import { totalAvailable } from '@/types'
-import { formatNumber } from '@/utils/utils'
+import { formatNumber, formatUSD } from '@/utils/utils'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import ConnectModal from '@/components/Wallet/ConnectModal'
 import { useRequest } from 'ahooks'
@@ -299,7 +299,7 @@ const Earnings = () => {
         </h2>
         <p className="text-[#999] text-[14px] mt-2">Total earnings</p>
       </div>
-      <div className="overflow-y-auto pb-10" style={{ height: 'calc(100vh - 18rem)' }}>
+      <div className="overflow-y-auto pb-10 scrollbar-hide" style={{ height: 'calc(100vh - 18rem)' }}>
         <div className="flex justify-between items-center mt-12">
           <h4 className="text-[#333] text-[16px]">Telegram stars</h4>
           <div
@@ -370,12 +370,14 @@ const Earnings = () => {
             <ul className="flex justify-between items-center">
               <li>
                 <p className="text-[#999] text-[12px]">Cryptos received</p>
-                <h3 className="text-[#000] text-[22px] my-4">${formatNumber(totalGifts.gifts)}</h3>
+                <h3 className="text-[#000] text-[22px] my-4">
+                  {formatUSD(totalGifts.gifts, true)}
+                </h3>
               </li>
               <li>
                 <p className="text-[#999] text-[12px]">Available to withdraw</p>
                 <h3 className="text-[#000] text-[22px] my-4">
-                  ${formatNumber(totalGifts.withdraw_gifts)}
+                  {formatUSD(totalGifts.withdraw_gifts, true)}
                 </h3>
               </li>
             </ul>

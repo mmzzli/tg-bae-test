@@ -295,11 +295,14 @@ const Earnings = () => {
       <h3 className="text-[#333] text-[20px]">Earnings</h3>
       <div className="text-center mt-12 mb-2">
         <h2 className="text-[#12122A] text-[40px]">
-          ${formatNumber(data.total * data.exchange_rate + totalGifts.gifts)}
+          {formatUSD(data.total * data.exchange_rate + totalGifts.gifts, true)}
         </h2>
         <p className="text-[#999] text-[14px] mt-2">Total earnings</p>
       </div>
-      <div className="overflow-y-auto pb-10 scrollbar-hide" style={{ height: 'calc(100vh - 18rem)' }}>
+      <div
+        className="overflow-y-auto pb-10 scrollbar-hide"
+        style={{ height: 'calc(100vh - 18rem)' }}
+      >
         <div className="flex justify-between items-center mt-12">
           <h4 className="text-[#333] text-[16px]">Telegram stars</h4>
           <div
@@ -315,7 +318,7 @@ const Earnings = () => {
             <li>
               <p className="text-[#999] text-[12px]">Total stars earned</p>
               <h5 className="text-[#000] text-[22px] my-4">
-                ${formatNumber(data.total * data.exchange_rate)}
+                {formatUSD(data.total * data.exchange_rate, true)}
               </h5>
               <p className="flex gap-1">
                 <span className="text-[#888] text-[14px]">{data.total}</span>
@@ -325,7 +328,7 @@ const Earnings = () => {
             <li>
               <p className="text-[#999] text-[12px]">Available to convert</p>
               <h5 className="text-[#000] text-[22px] my-4">
-                ${formatNumber(data.available * data.exchange_rate)}
+                {formatUSD(data.available * data.exchange_rate, true)}
               </h5>
               <p className="flex gap-1">
                 <span className="text-[#888] text-[14px]">{data.available}</span>

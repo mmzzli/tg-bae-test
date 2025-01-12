@@ -151,7 +151,7 @@ const Cryptos = ({
                 >
                   {item.source === 'Withdraw' ? '-' : '+'}
                   <SubscriptCounting className="pl-[5px]" amount={item.amount} />
-                  <span className="pl-[5px]">{ChainToken[item.currency].symbol}</span>
+                  <span className="pl-[5px]">{ChainToken[item.currency]?.symbol}</span>
                 </h3>
                 <p className="text-[#666] text-[12px]">{formatUSD(item.dollar, false)}</p>
               </li>

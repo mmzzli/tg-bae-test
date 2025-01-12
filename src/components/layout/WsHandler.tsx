@@ -6,6 +6,11 @@ import { useRequest } from 'ahooks'
 import { memo, useEffect } from 'react'
 
 const WsHandler = memo(() => {
+  let rewardInterval: NodeJS.Timeout | null = null
+  const { setNeedUpdateEarnings } = useStore((state) => ({
+    setNeedUpdateEarnings: state.setNeedUpdateEarnings,
+  }))
+
   const { onMessage, isConnected, connect, token, setUnreadNotificationCount, setUserInfo } =
     useStore((state) => ({
       onMessage: state.onMessage,
@@ -18,6 +23,16 @@ const WsHandler = memo(() => {
 
   const { getCurrentUid } = useTMAUtils()
   const current_uid = getCurrentUid()
+
+  const updateRewardInterval = () => {
+    if (rewardInterval) {
+      clearInterval(rewardInterval)
+    }
+    rewardInterval = setInterval(() => {
+      setNeedUpdateEarnings()
+      console.log('rewardInterval run')
+    }, 10000)
+  }
 
   const handleMessage = (data: any) => {
     console.warn('ws msg', data)
@@ -34,7 +49,7 @@ const WsHandler = memo(() => {
   const { run: runGetUnreadNotificationCount, cancel: cancelPolling } = useRequest(
     getUnreadNotificationCount,
     {
-      pollingInterval: 6000,
+      pollingInterval: 100000,
       manual: true,
       pollingWhenHidden: false,
       pollingErrorRetryCount: 6,
@@ -43,8 +58,8 @@ const WsHandler = memo(() => {
       },
     }
   )
-
   useEffect(() => {
+    updateRewardInterval()
     const cleanup = onMessage(handleMessage)
     return () => {
       cleanup()

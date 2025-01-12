@@ -298,7 +298,6 @@ export const formatNumber = (num: number): string => {
 
   return num.toString()
 }
-export default formatNumber
 
 export const splitNumberParts = (num: number) => {
   const bigNum = new BigNumber(num)
@@ -352,26 +351,45 @@ export const formatDecimal = (num: number, decimalPlaces = 2) => {
   return truncated.toFixed(decimalPlaces)
 }
 
-export const formatUSD = (input: number) => {
-  const minValue = new BigNumber(0.00001) // 最小值
-  const num = new BigNumber(input) // 将输入转换为 BigNumber 对象
+export const formatUSD = (
+  input: number | null | undefined,
+  useUnit: boolean = false // 默认使用单位
+): string => {
+  // 处理空值或非数字的情况
+  if (input === null || input === undefined || isNaN(input)) {
+    return '-'
+  }
 
-  // 如果数字小于最小值，返回 '<0.00001'
-  if (num.isLessThan(minValue)) {
+  const num = new BigNumber(input)
+
+  // 输入为 0 时，返回 '0'
+  if (num.isEqualTo(0)) {
+    return '0'
+  }
+
+  // 小于 0.00001 显示 '<$0.00001'
+  if (num.isLessThan(0.00001) && num.isGreaterThan(0)) {
     return '<$0.00001'
   }
 
-  // 如果是整数，直接返回
-  if (num.isInteger()) {
-    return `$${num.toString()}`
+  const units = [
+    { value: 1_000_000_000, symbol: 'B' },
+    { value: 1_000_000, symbol: 'M' },
+    { value: 1_000, symbol: 'K' },
+  ]
+
+  // 如果使用单位
+  if (useUnit) {
+    for (const unit of units) {
+      if (num.isGreaterThanOrEqualTo(unit.value)) {
+        const formatted = num.dividedBy(unit.value).toFixed(1, BigNumber.ROUND_DOWN) // 不四舍五入，向下取整
+        return formatted.endsWith('.0')
+          ? `$${formatted.slice(0, -2)}${unit.symbol}`
+          : `$${formatted}${unit.symbol}`
+      }
+    }
   }
 
-  // 如果小数位不超过 4 位，直接返回
-  const decimalPlaces = num.decimalPlaces()
-  if (decimalPlaces && decimalPlaces <= 4) {
-    return `$${num.toString()}`
-  }
-
-  // 截取到四位小数而不进行四舍五入
-  return `$${num.toFixed(4, BigNumber.ROUND_DOWN)}`
+  // 不使用单位或小于 1,000 时，保留千分位
+  return `$${num.toFormat()}`
 }

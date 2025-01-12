@@ -475,9 +475,12 @@ const RewardCard: React.FC<{ message: WrappedMessage }> = ({ message }) => {
   const handleClick = () => {
     if (!hash || !chain_id) return
 
-    const explorerUrl = evmChainList.find((chain) => chain.id === chain_id)?.blockExplorers?.default
+    let explorerUrl = evmChainList.find((chain) => chain.id === chain_id)?.blockExplorers?.default
       ?.url
     if (explorerUrl) {
+      if (!explorerUrl.endsWith('/')) {
+        explorerUrl += '/'
+      }
       openLink(explorerUrl + `tx/${hash}`)
     }
   }

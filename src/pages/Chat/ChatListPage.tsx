@@ -190,6 +190,7 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
             status === ConnectStatus.Disconnect ||
             status === ConnectStatus.ConnectFail
           ) {
+            sdk.disconnect()
             if (retryCount < MAX_RETRY_COUNT) {
               setTimeout(() => {
                 sdk.reconnect()

@@ -101,6 +101,20 @@ export const TransferPanel = ({
     }
   }
 
+  const formatToUsd = (value: string, price: number) => {
+    if (!price) {
+      return '$0'
+    }
+    const usdValue = new BigNumber(value || '0').multipliedBy(price)
+    if (usdValue.eq(0)) {
+      return '$0'
+    }
+    if (usdValue.lt(0.01)) {
+      return '<$0.01'
+    }
+    return `$${usdValue.toFixed(2, 1)}`
+  }
+
   const handlePercentageClick = (percentage: number) => {
     const balanceBN = new BigNumber(formattedBalance)
     const newAmount = balanceBN
@@ -109,7 +123,7 @@ export const TransferPanel = ({
     handleAmountChange(newAmount.toString())
   }
 
-  const usdValue = new BigNumber(amount || '0').multipliedBy(price).toFixed(2)
+  const usdValue = formatToUsd(amount, price)
 
   useEffect(() => {
     if (measureRef.current) {
@@ -160,7 +174,7 @@ export const TransferPanel = ({
         </div>
       </div>
 
-      <div className="text-center text-base text-[#616184]">${usdValue}</div>
+      <div className="text-center text-base text-[#616184]">{usdValue}</div>
 
       <div className="text-center text-xs text-[#EB4B6D] h-[18px] mt-2">{error}</div>
 

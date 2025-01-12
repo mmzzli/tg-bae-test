@@ -356,45 +356,49 @@ export const formatDecimal = (num: number, decimalPlaces = 2) => {
 }
 
 export const formatUSD = (
-  input: number | null | undefined,
+  input: number | string | null | undefined,
   useUnit: boolean = false
 ): string => {
-  if (input === null || input === undefined || isNaN(input)) {
-    return '-'
+  if (input === null || input === undefined || input === '' || isNaN(Number(input))) {
+    return '-';
   }
 
-  const num = new BigNumber(input)
+  const num = new BigNumber(input);
 
   if (num.isEqualTo(0)) {
-    return '0'
+    return '$0';
   }
 
-  if (num.isLessThan(0.00001) && num.isGreaterThan(0)) {
-    return '<$0.00001'
+  if (num.isLessThan(0.01) && num.isGreaterThan(0)) {
+    return '<$0.01';
   }
 
   const units = [
     { value: 1_000_000_000, symbol: 'B' },
     { value: 1_000_000, symbol: 'M' },
     { value: 1_000, symbol: 'K' },
-  ]
+  ];
 
   if (useUnit) {
     for (const unit of units) {
       if (num.isGreaterThanOrEqualTo(unit.value)) {
-        const formatted = num.dividedBy(unit.value).toFixed(1, BigNumber.ROUND_DOWN)
+        const formatted = num.dividedBy(unit.value).toFixed(1, BigNumber.ROUND_DOWN);
         return formatted.endsWith('.0')
           ? `$${formatted.slice(0, -2)}${unit.symbol}`
-          : `$${formatted}${unit.symbol}`
+          : `$${formatted}${unit.symbol}`;
       }
     }
   }
 
-  // 新增逻辑：整数部分大于 1 时保留 2 位小数（不四舍五入）
-  if (num.integerValue(BigNumber.ROUND_DOWN).isGreaterThan(1)) {
-    return `$${num.toFixed(2, BigNumber.ROUND_DOWN)}`
+  if (num.isGreaterThanOrEqualTo(1) && num.isInteger()) {
+    return `$${num.toFixed(0)}`;
   }
 
-  // 默认情况，保留千分位格式
-  return `$${num.toFormat()}`
-}
+  if (num.isGreaterThanOrEqualTo(1)) {
+    return `$${num.toFixed(2, BigNumber.ROUND_DOWN)}`;
+  }
+
+  // 修改：去掉多余的 0（如 0.30 => 0.3）
+  return `$${num.toFixed(2, BigNumber.ROUND_DOWN).replace(/\.0+$/, '').replace(/(\.[1-9]*)0+$/, '$1')}`;
+};
+

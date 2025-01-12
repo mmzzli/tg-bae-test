@@ -257,10 +257,18 @@ const Earnings = () => {
   }
 
   const updateEarnings = async () => {
-    const totalRes = await getTotalGifts()
-    setTotalGifts(totalRes)
-    const res = await totalAvailableInvoice()
-    setData(res)
+    try {
+      const [totalGiftsRes, availableInvoiceRes] = await Promise.all([
+        getTotalGifts(),
+        totalAvailableInvoice()
+      ])
+
+      setTotalGifts(totalGiftsRes)
+      setData(availableInvoiceRes)
+    } catch (error) {
+      console.error('Failed to fetch earnings data:', error)
+      // 这里您可以添加错误处理，比如显示错误提示等
+    }
   }
 
   useEffect(() => {

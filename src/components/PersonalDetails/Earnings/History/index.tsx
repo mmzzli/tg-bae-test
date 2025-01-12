@@ -81,7 +81,7 @@ const TelegramStars = ({
                 <img src={StarsIcon} alt="Stars Icon" />
               </div>
               <p className="text-[12px] text-[#666] text-right">
-                ${item.coin_amount * exchangeRate}
+                {formatUSD(item.coin_amount * exchangeRate, true)}
               </p>
             </div>
           </div>

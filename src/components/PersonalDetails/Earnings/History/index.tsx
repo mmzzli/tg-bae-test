@@ -39,9 +39,9 @@ const EarningsHistory = () => {
   const [giftData, setGiftData] = useState<any[]>([])
   const [giftHasMore, setGiftHasMore] = useState(true)
   const [giftPage, setGiftPage] = useState(1)
-  const [activeKey,setActiveKey] = useState(()=>type === 'cryptos' ? '2':'1')
+  const [activeKey, setActiveKey] = useState(() => (type === 'cryptos' ? '2' : '1'))
 
-  console.log(activeKey);
+  console.log(activeKey)
 
   useEffect(() => {
     if (rate) {
@@ -55,7 +55,7 @@ const EarningsHistory = () => {
     try {
       const res = await accountdetailList({
         page_num: pageNum,
-        records: 20,
+        records: 50,
         type: 1,
       })
       if (res.accounts.length === 0) {
@@ -85,7 +85,7 @@ const EarningsHistory = () => {
   }
 
   useEffect(() => {
-    console.log(activeKey,'activeKey999999999');
+    console.log(activeKey, 'activeKey999999999')
     if (activeKey === '1') {
       setPage(1)
       setHasMore(true)
@@ -97,13 +97,13 @@ const EarningsHistory = () => {
       setGiftHasMore(true)
       fetchGiftHistory(1)
     }
-  }, [activeKey]);
+  }, [activeKey])
 
   const fetchGiftHistory = async (pageNum: number) => {
     if (cryptoLoading) return
     setCryptoLoading(true)
     try {
-      const res = await getGiftHistory({ page_num: pageNum, records: 10 })
+      const res = await getGiftHistory({ page_num: pageNum, records: 50 })
       if (res.gifts?.length === 0) {
         setGiftHasMore(false)
       } else {
@@ -117,6 +117,7 @@ const EarningsHistory = () => {
   }
 
   const fetchMoreGiftData = () => {
+    console.log('fetchMoreGiftData', giftHasMore, cryptoLoading)
     if (giftHasMore && !cryptoLoading) {
       const nextPage = giftPage + 1
       setGiftPage(nextPage)
@@ -140,9 +141,9 @@ const EarningsHistory = () => {
   const TelegramStars = () => {
     return (
       <div
-        className="overflow-y-auto"
+        className="relative overflow-y-auto"
         style={{
-          height: 'calc(100vh - 164px)',
+          height: `calc(100vh - 164px - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top) - var(--tg-safe-area-inset-bottom) - var(--tg-content-safe-area-inset-bottom) )`,
         }}
         id="starsScrollableDiv"
       >
@@ -156,10 +157,14 @@ const EarningsHistory = () => {
             </Box>
           }
           scrollableTarget="starsScrollableDiv"
+          scrollThreshold={0.8}
+          style={{
+            overflow: 'visible',
+          }}
         >
           {data.accounts.map((item, key) => (
             <div
-              className="flex justify-between py-[20px] px-[5px] border-b border-[#EBEBF4] last:border-b-0"
+              className="flex justify-between py-[20px] px-[24px] border-b border-[#EBEBF4] last:border-b-0"
               key={key}
             >
               <div>
@@ -192,9 +197,9 @@ const EarningsHistory = () => {
   const Cryptos = () => {
     return (
       <div
-        className="overflow-y-auto"
+        className="relative overflow-y-auto"
         style={{
-          height: 'calc(100vh - 164px)',
+          height: `calc(100vh - 164px - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top) - var(--tg-safe-area-inset-bottom) - var(--tg-content-safe-area-inset-bottom) )`,
         }}
         id="cryptoScrollableDiv"
       >
@@ -209,11 +214,14 @@ const EarningsHistory = () => {
           }
           scrollableTarget="cryptoScrollableDiv"
           scrollThreshold={0.8}
+          style={{
+            overflow: 'visible',
+          }}
         >
           {giftData.map((item, index) => (
             <div
               key={index}
-              className="py-[20px] px-[8px] border-b border-[#EBEBF4] last:border-b-0"
+              className="py-[20px] px-[24px] border-b border-[#EBEBF4] last:border-b-0"
               onClick={() => handleClick(item.chain_id, item.hash)}
             >
               <ul className="flex justify-between items-center">
@@ -252,21 +260,28 @@ const EarningsHistory = () => {
     )
   }
 
-
   return (
     <div
       id="earningsScrollableDiv"
-      className="fixed w-screen h-screen bg-[#FFF] z-10 scrollbar-hide px-[16px]"
+      className="fixed top-0 left-0 bottom-0 right-0 bg-[#FFF] z-10 scrollbar-hide"
+      style={{
+        paddingTop: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
+      }}
     >
-      <div className="flex justify-between">
+      <div className="flex justify-between px-[16px]">
         <h3 className="text-[20px] text-[#333] font-[700] mt-[24px]">History</h3>
       </div>
       <div className="mt-10">
-        <Tabs defaultActiveKey="1" activeKey={activeKey} onChange={(key) => handleChange(key)} activeLineMode="fixed">
-          <Tabs.Tab title="Telegram stars" key="1">
+        <Tabs
+          defaultActiveKey="1"
+          activeKey={activeKey}
+          onChange={(key) => handleChange(key)}
+          activeLineMode="fixed"
+        >
+          <Tabs.Tab title="Telegram stars" key="1" className="px-[16px]">
             <TelegramStars />
           </Tabs.Tab>
-          <Tabs.Tab title="Cryptos" key="2">
+          <Tabs.Tab title="Cryptos" key="2" className="px-[16px]">
             <Cryptos />
           </Tabs.Tab>
         </Tabs>

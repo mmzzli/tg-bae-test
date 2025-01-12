@@ -40,7 +40,7 @@ const MyTokensModal = forwardRef<ChildMethods, { userInfo: OthersUserInfo }>(
         //   },
         //   position: 'bottom',
         // })
-        return
+        // return
       }
       setVirtualRoutePage({
         name: 'SendRewardPage',

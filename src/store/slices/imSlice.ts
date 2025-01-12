@@ -11,7 +11,7 @@ export interface IMSlice {
   setIsChatListLoaded: (loaded: boolean) => void
   messageWindowList: MessageWindowListItem[]
   setMessageWindowList: (messageList: MessageWindowListItem[]) => void
-  addMessageWindowListItem: (item: MessageWindowListItem) => void
+  addMessageWindowListItem: (item: MessageWindowListItem, merge: boolean) => void
   updateMessageWindowListItem: (item: MessageWindowListItem) => void
   deleteMessageWindowListItem: (chatId: string) => void
   chatPeopleInfoList: OthersUserInfo[]
@@ -39,8 +39,24 @@ export const createIMSlice: StateCreator<IMSlice> = (set) => ({
   setIsChatListLoaded: (loaded) => set({ isChatListLoaded: loaded }),
   messageWindowList: [],
   setMessageWindowList: (messageList) => set({ messageWindowList: messageList }),
-  addMessageWindowListItem: (item) =>
-    set((state) => ({ messageWindowList: [...state.messageWindowList, item] })),
+  addMessageWindowListItem: (item, merge = false) =>
+    set((state) => {
+      if (!merge) {
+        return { messageWindowList: [...state.messageWindowList, item] }
+      }
+
+      const existingIndex = state.messageWindowList.findIndex(
+        (existingItem) => existingItem.channel.channelID === item.channel.channelID
+      )
+
+      if (existingIndex !== -1 && merge) {
+        const newList = [...state.messageWindowList]
+        newList[existingIndex] = item
+        return { messageWindowList: newList }
+      }
+
+      return { messageWindowList: [...state.messageWindowList, item] }
+    }),
   updateMessageWindowListItem: (messageWindow) =>
     set((state) => ({
       messageWindowList: state.messageWindowList.map((item) =>

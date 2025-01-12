@@ -1,5 +1,6 @@
 import { WrappedMessage } from '@/components/Chat/types'
 import { FormattedMessage } from '@/components/SDK/BaeimSDK'
+import BigNumber from 'bignumber.js'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -288,13 +289,146 @@ export const formatNumber = (num: number): string => {
 
   for (const unit of units) {
     if (num >= unit.value) {
-      const formatted = (num / unit.value).toFixed(1)
-      return formatted.endsWith('.0')
-        ? `${formatted.slice(0, -2)}${unit.symbol}`
-        : `${formatted}${unit.symbol}`
+      // 不四舍五入，保留 2 位小数
+      const formatted = Math.floor((num / unit.value) * 100) / 100
+      const formattedStr = formatted.toString()
+
+      return formattedStr.endsWith('.0')
+        ? `${formattedStr.slice(0, -2)}${unit.symbol}`
+        : `${formattedStr}${unit.symbol}`
     }
   }
 
   return num.toString()
 }
-export default formatNumber
+
+
+export const splitNumberParts = (num: number) => {
+  const bigNum = new BigNumber(num)
+  const numStr = bigNum.toFixed() // 保持原始数字格式，不转科学计数法
+
+  // 如果是整数或小数点后 <= 6 位，直接返回
+  if (!numStr.includes('.') || numStr.split('.')[1].length <= 6) {
+    return {
+      integerPart: numStr,
+      dot: null,
+      zeros: null,
+      decimalPart: null,
+    }
+  }
+
+  const [integerPart, decimalPart] = numStr.split('.')
+
+  // 匹配小数点后连续的 0
+  const zeroMatch = decimalPart.match(/^(0+)/)
+
+  if (zeroMatch) {
+    const zerosCount = zeroMatch[1].length
+    const remainingPart = decimalPart.slice(zerosCount) || null
+
+    return {
+      integerPart,
+      dot: '.0',
+      zeros: zerosCount,
+      decimalPart: remainingPart,
+    }
+  }
+
+  // 没有连续 0 的情况
+  return {
+    integerPart: numStr,
+    dot: null,
+    zeros: null,
+    decimalPart: null,
+  }
+}
+
+export const formatDecimal = (num: number, decimalPlaces = 2) => {
+  const bigNum = new BigNumber(num)
+
+  // 使用 toFixed 截取小数位，但默认会四舍五入
+  const factor = new BigNumber(10).pow(decimalPlaces)
+
+  // 通过乘法、取整、再除法实现截取（不会四舍五入）
+  const truncated = bigNum.multipliedBy(factor).integerValue(BigNumber.ROUND_DOWN).dividedBy(factor)
+
+  return truncated.toFixed(decimalPlaces)
+}
+
+/**
+ * 将数字格式化为美元字符串表示，可选择是否使用单位格式化（K/M/B）
+ *
+ * @param {number | string | null | undefined} input - 需要格式化的数字
+ * @param {boolean} [useUnit=false] - 是否对大数使用 K/M/B 单位格式化
+ * @returns {string} 格式化后的美元字符串
+ *
+ * @example
+ * // 基本用法
+ * formatUSD(1234.56)        // '$1234.56'
+ * formatUSD(1234.56123123)        // '$1234.56'
+ * formatUSD(0.003)          // '<$0.01'
+ * formatUSD(0)              // '$0'
+ *
+ * // 使用单位格式化
+ * formatUSD(1234567, true)  // '$1.2M'
+ * formatUSD(1500, true)     // '$1.5K'
+ *
+ * // 整数值
+ * formatUSD(100)            // '$100'
+ *
+ * // 小数处理
+ * formatUSD(0.3)            // '$0.3'
+ * formatUSD(0.30)           // '$0.3'  // 自动移除末尾的0
+ *
+ * // 无效输入处理
+ * formatUSD(null)           // '-'
+ * formatUSD(undefined)      // '-'
+ * formatUSD('')             // '-'
+ */
+export const formatUSD = (
+  input: number | string | null | undefined,
+  useUnit: boolean = false
+): string => {
+  if (input === null || input === undefined || input === '' || isNaN(Number(input))) {
+    return '-';
+  }
+
+  const num = new BigNumber(input);
+
+  if (num.isEqualTo(0)) {
+    return '$0';
+  }
+
+  if (num.isLessThan(0.01) && num.isGreaterThan(0)) {
+    return '<$0.01';
+  }
+
+  const units = [
+    { value: 1_000_000_000, symbol: 'B' },
+    { value: 1_000_000, symbol: 'M' },
+    { value: 1_000, symbol: 'K' },
+  ];
+
+  if (useUnit) {
+    for (const unit of units) {
+      if (num.isGreaterThanOrEqualTo(unit.value)) {
+        const formatted = num.dividedBy(unit.value).toFixed(1, BigNumber.ROUND_DOWN);
+        return formatted.endsWith('.0')
+          ? `$${formatted.slice(0, -2)}${unit.symbol}`
+          : `$${formatted}${unit.symbol}`;
+      }
+    }
+  }
+
+  if (num.isGreaterThanOrEqualTo(1) && num.isInteger()) {
+    return `$${num.toFixed(0)}`;
+  }
+
+  if (num.isGreaterThanOrEqualTo(1)) {
+    return `$${num.toFixed(2, BigNumber.ROUND_DOWN)}`;
+  }
+
+  // 修改：去掉多余的 0（如 0.30 => 0.3）
+  return `$${num.toFixed(2, BigNumber.ROUND_DOWN).replace(/\.0+$/, '').replace(/(\.[1-9]*)0+$/, '$1')}`;
+};
+

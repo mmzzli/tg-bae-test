@@ -31,8 +31,8 @@ a:hover {
   --Light-T2: #333;
 }
 
-
-ul,li{
+ul,
+li {
   list-style: none;
 }
 img {
@@ -91,12 +91,14 @@ video {
 }
 
 .chakra-checkbox__control[data-checked] {
-  background: #6254FF !important;
-  border-color: #6254FF !important;
+  background: #6254ff !important;
+  border-color: #6254ff !important;
 }
 
 #chakra-toast-manager-top {
-  padding-top: calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top)) !important;
+  padding-top: calc(
+    var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top)
+  ) !important;
 }
 
 #chakra-toast-manager-bottom {
@@ -110,15 +112,15 @@ video {
 .border-1::after {
   content: ''; /* 创建伪元素 */
   position: absolute;
-  width:200%;
+  width: 200%;
   height: 200%;
   left: -50%;
   top: -50%;
   right: 0;
   bottom: 0;
-  border: 1px solid #CDCDD4; /* 设置伪元素边框 */
+  border: 1px solid #cdcdd4; /* 设置伪元素边框 */
   border-radius: 100px;
-  transform:  scale(0.5); /* 伪元素的大小是容器的两倍 */
+  transform: scale(0.5); /* 伪元素的大小是容器的两倍 */
   transform-origin: center; /* 缩放的原点设置为元素中心 */
   box-sizing: border-box; /* 确保伪元素的尺寸包括边框 */
 }
@@ -131,3 +133,15 @@ video {
   --height: 12px !important;
 }
 
+.adm-tabs-tab {
+  font-family: 'Switzer';
+}
+
+.adm-tabs {
+  --active-line-color: #6254ff;
+  --active-title-color: #0f1233;
+}
+
+.adm-tabs-tab-active {
+  font-weight: 500;
+}

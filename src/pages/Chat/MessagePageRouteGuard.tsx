@@ -35,10 +35,13 @@ const MessagePageRouteGuard: FC = () => {
                 .conversationIds.some((id) => id === res.channel.channelID)
               if (!repeat) {
                 addConversation(res)
-                addMessageWindowListItem({
-                  channel: res.channel,
-                  messages: [],
-                })
+                addMessageWindowListItem(
+                  {
+                    channel: res.channel,
+                    messages: [],
+                  },
+                  false
+                )
               }
               setReady(true)
             })

@@ -222,13 +222,9 @@ const VideoDialog = () => {
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         video.muted = false
         video.play().catch((error) => {
-          console.log(error, 'error====jacob')
-          console.log('自动播放失败')
+          console.log('视频自动播放失败', error)
           video.muted = true
           video.play()
-          setTimeout(() => {
-            video.muted = false
-          }, 1000)
         })
       })
 
@@ -250,9 +246,23 @@ const VideoDialog = () => {
   }, [url])
 
   useEffect(() => {
+    const video = videoRef.current
     if (isLoading) {
       const timer = setTimeout(() => setShowLoader(true), 500)
       return () => clearTimeout(timer)
+    } else {
+      if (video?.paused) {
+        video.muted = false
+        video.play().catch((error) => {
+          console.log(error, 'error====jacob')
+          console.log('自动播放失败')
+          video.muted = true
+          video.play()
+          setTimeout(() => {
+            video.muted = false
+          }, 1000)
+        })
+      }
     }
     setShowLoader(false)
   }, [isLoading])
@@ -262,6 +272,7 @@ const VideoDialog = () => {
       if (playing) {
         videoRef.current.pause()
       } else {
+        videoRef.current.muted = false
         videoRef.current.play()
       }
       setPlaying((prev) => !prev)

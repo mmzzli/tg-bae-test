@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { Heading, HStack, Box, Text, Link } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '@/store'
@@ -11,13 +11,46 @@ import ProfileSkeleton from '../Skeketon/ProfileSkeleton'
 import Notification from './Notification/Notification'
 import MoreText from '@/components/More/MoreText'
 import ProfileConnectButton from '../Wallet/ProfileConnectButton'
+import { getTotalGifts, totalAvailableInvoice } from '@/api'
+import { formatUSD } from '@/utils/utils'
+
 // import ConnectButton from '../Wallet/ConnectButton'
 
 const UserProfile: FC = () => {
   const { launchParams } = useTMAUtils()
   const userId = launchParams.initData?.user?.id ?? 0
   const userInfo = useStore((state) => state.userInfo)
+  const needUpdateEarnings = useStore((state) => state.needUpdateEarnings)
+  const [gifts, setGifts] = useState<number | string>('')
+
+  const { token } = useStore((state) => ({
+    token: state.token,
+  }))
+
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const [giftsResponse, invoiceResponse] = await Promise.all([
+          getTotalGifts(),
+          totalAvailableInvoice()
+        ])
+
+        const { gifts } = giftsResponse
+        const { exchange_rate, total } = invoiceResponse
+        setGifts(total * exchange_rate + gifts)
+      } catch (error) {
+        console.error('Failed to load gifts and invoice:', error)
+        setGifts(0) // 设置一个默认值以防加载失败
+      }
+    }
+
+    if (token && needUpdateEarnings) {
+      load()
+    }
+  }, [token, needUpdateEarnings])
+
   return !userInfo.avatar ? (
     <ProfileSkeleton />
   ) : (
@@ -54,7 +87,7 @@ const UserProfile: FC = () => {
           />
         </div>
         <Box display="flex" alignItems="center">
-          <EarningsPage />
+          {/* <EarningsPage /> */}
           <Notification />
           <ShareUser userInfo={userInfo} />
         </Box>
@@ -71,7 +104,7 @@ const UserProfile: FC = () => {
 
       <MoreText text={userInfo.bio} className={'leading-4'}></MoreText>
 
-      <HStack p="24px 0" gap="56px">
+      <HStack p="24px 0" gap="56px" className="justify-between">
         <Box textAlign="center">
           <Heading
             fontSize="20px"
@@ -100,7 +133,7 @@ const UserProfile: FC = () => {
             Following
           </Text>
         </Box>
-        {/* <Box textAlign="center">
+        <Box textAlign="center">
           <Heading
             fontSize="20px"
             color="#0F1233"
@@ -108,12 +141,12 @@ const UserProfile: FC = () => {
             cursor="pointer"
             onClick={() => navigate(`/profile/earnings`)}
           >
-            $123
+            {formatUSD(gifts, true)}
           </Heading>
           <Text color="#8A8C91" fontSize="12px" lineHeight="14px">
             Earnings
           </Text>
-        </Box> */}
+        </Box>
       </HStack>
       <div>
         <ProfileConnectButton />

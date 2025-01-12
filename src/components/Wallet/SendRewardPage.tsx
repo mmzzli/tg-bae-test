@@ -51,7 +51,7 @@ const SendRewardPage = () => {
               className="w-[32px] h-[32px] rounded-full"
             />
           </div>
-          <span className="dark:text-white text-[#333] text-lg ml-2">{username}</span>
+          <span className="dark:text-white text-[#333] text-lg ml-2">to {username}</span>
 
           {!isMobileDevice() && (
             <div

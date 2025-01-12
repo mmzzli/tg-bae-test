@@ -2,7 +2,7 @@ class PriceService {
   private static instance: PriceService
   private prices: { [key: string]: number } = {}
   private updateTimer?: NodeJS.Timer
-  private readonly UPDATE_INTERVAL = 120000
+  private readonly UPDATE_INTERVAL = 30000
 
   private constructor() {
     this.startAutoUpdate()
@@ -11,14 +11,13 @@ class PriceService {
   private async updatePrices() {
     try {
       const response = await fetch(
-        'https://api.coingecko.com/api/v3/simple/price?ids=ethereum,tether,duck,binancecoin&vs_currencies=usd'
+        'https://api.coingecko.com/api/v3/simple/price?ids=usd-coin,tether,binancecoin&vs_currencies=usd'
       )
       const data = await response.json()
 
       this.prices = {
-        ETH: data.ethereum.usd,
+        USDC: data['usd-coin'].usd,
         USDT: data.tether.usd,
-        TON: data.duck.usd,
         BNB: data.binancecoin.usd,
       }
     } catch (error) {

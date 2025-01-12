@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { SlideButton, SlideButtonHandle } from '../BaseButton/SlideButton'
 import {
   useAccount,
+  useChainId,
   useEstimateFeesPerGas,
   useEstimateGas,
   useSwitchChain,
@@ -13,8 +14,8 @@ import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useToast } from '@chakra-ui/react'
 import { CustomToast, typeOptions } from '../comm/Toast'
 import { parseUnits } from 'viem'
-import { rewardEvent } from '@/api'
-import { MessageType, WrappedMessage } from '../Chat/types'
+import { approveEvent, rewardEvent } from '@/api'
+import { MessageType } from '../Chat/types'
 import { useFormatMessage } from '@/hooks/useFormatMessage'
 import { useIM } from '@/store/hook/userIM'
 
@@ -28,6 +29,7 @@ export const SendRewardButton = ({
   token,
   disabled = false,
   toUid,
+  afterReward,
 }: {
   amount: string
   decimals: number
@@ -38,12 +40,12 @@ export const SendRewardButton = ({
   token: string
   toUid: number
   disabled: boolean
+  afterReward?: () => void
 }) => {
   const slideButtonRef = useRef<SlideButtonHandle>(null)
 
   const { data: hash, error, writeContract } = useWriteContract()
   const { address } = useAccount()
-  const { switchChain } = useSwitchChain()
 
   const { getCurrentUid } = useTMAUtils()
   const current_uid = getCurrentUid()
@@ -54,9 +56,103 @@ export const SendRewardButton = ({
   const { data: gasLimit } = useEstimateGas()
   const { data: feesPerGas } = useEstimateFeesPerGas()
 
-  const [isApproving, setIsApproving] = useState(false)
+  const isPollingRef = useRef(false)
+  const isHandledRef = useRef(false)
 
-  const handleSendReward = () => {
+  const setIsPolling = (value: boolean) => {
+    isPollingRef.current = value
+  }
+
+  const setIsHandled = (value: boolean) => {
+    isHandledRef.current = value
+  }
+  const pollingTimeoutRef = useRef<NodeJS.Timeout>()
+
+  const [isApproving, setIsApproving] = useState(false)
+  const [writeContractError, setWriteContractError] = useState<any>(null)
+  const { error: receiptError, isSuccess: receiptSuccess } = useWaitForTransactionReceipt({
+    hash,
+  })
+
+  const currentChainId = useChainId()
+  const { switchChainAsync } = useSwitchChain()
+
+  const stopPolling = () => {
+    setIsPolling(false)
+    pollingTimeoutRef.current && clearTimeout(pollingTimeoutRef.current)
+  }
+  const pollStatus = async () => {
+    console.log('pollStatus', hash, isPollingRef.current, isHandledRef.current)
+    if (!hash || !isPollingRef.current || isHandledRef.current) return
+    pollingTimeoutRef.current && clearTimeout(pollingTimeoutRef.current)
+    try {
+      const res = await approveEvent({ hash: hash as `0x${string}`, chain_id: chainId })
+
+      if (res.status === 1) {
+        stopPolling()
+        if (!isHandledRef.current) {
+          setIsHandled(true)
+          handleSuccess()
+        }
+      } else if (res.status === 2) {
+        stopPolling()
+        setWriteContractError(res)
+      } else if (res.status === 0) {
+        pollingTimeoutRef.current = setTimeout(() => {
+          pollStatus()
+        }, 1200)
+      } else {
+        throw new Error('Unknown status')
+      }
+    } catch (error) {
+      stopPolling()
+      console.error('Polling error:', error)
+    }
+  }
+
+  const gasConfig =
+    import.meta.env.VITE_APP_ENV === 'production'
+      ? {}
+      : {
+          gas: gasLimit ? BigInt(Number(gasLimit) * 3) : 0n,
+          maxFeePerGas: feesPerGas?.maxFeePerGas,
+          maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
+        }
+
+  const switchChain = async () => {
+    // if (currentChainId !== chainId) {
+    try {
+      await switchChainAsync({ chainId })
+    } catch (error) {
+      toast({
+        render: () => <CustomToast title="Switch chain failed" type={typeOptions.error} />,
+        position: 'bottom',
+      })
+    }
+    // }
+  }
+  const reward = () => {
+    writeContract({
+      address: contractAddress as `0x${string}`,
+      chainId,
+      abi,
+      functionName: 'reward',
+      args: [
+        parseUnits('0', decimals),
+        tokenAddress as `0x${string}`,
+        parseUnits(amount, decimals),
+        BigInt(current_uid),
+        BigInt(toUid),
+      ],
+      value:
+        tokenAddress === '0x0000000000000000000000000000000000000000'
+          ? parseUnits(amount, decimals)
+          : 0n,
+      ...gasConfig,
+    })
+  }
+
+  const handleSendReward = async () => {
     console.log('handleSendReward', amount, tokenAddress, contractAddress, current_uid)
     if (!contractAddress) {
       toast({
@@ -66,94 +162,46 @@ export const SendRewardButton = ({
       return slideButtonRef.current?.reset()
     }
 
+    await switchChain()
+
     if (tokenAddress !== '0x0000000000000000000000000000000000000000') {
-      switchChain(
-        {
-          chainId,
-        },
-        {
-          onSuccess: async () => {
-            console.log(
-              'writeContract approve',
-              tokenAddress as `0x${string}`,
-              parseUnits(amount, decimals)
-            )
-
-            setIsApproving(true)
-
-            writeContract({
-              address: tokenAddress as `0x${string}`,
-              abi: approveAbi,
-              functionName: 'approve',
-              args: [contractAddress as `0x${string}`, parseUnits(amount, decimals)],
-              gas: gasLimit,
-              maxFeePerGas: feesPerGas?.maxFeePerGas,
-              maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
-            })
-          },
-        }
+      console.log(
+        'writeContract approve',
+        tokenAddress as `0x${string}`,
+        parseUnits(amount, decimals)
       )
+      setIsApproving(true)
+      writeContract({
+        address: tokenAddress as `0x${string}`,
+        chainId,
+        abi: approveAbi,
+        functionName: 'approve',
+        args: [contractAddress as `0x${string}`, parseUnits(amount, decimals)],
+        ...gasConfig,
+      })
       return
     }
 
-    switchChain(
-      {
-        chainId,
-      },
-      {
-        onSuccess: async () => {
-          console.log(
-            'writeContract onSuccess',
-            parseUnits('0', decimals),
-            tokenAddress as `0x${string}`,
-            parseUnits(amount, decimals),
-            BigInt(current_uid),
-            BigInt(toUid)
-          )
-
-          writeContract({
-            address: contractAddress as `0x${string}`,
-            abi,
-            functionName: 'reward',
-            args: [
-              parseUnits('0', decimals),
-              tokenAddress as `0x${string}`,
-              parseUnits(amount, decimals),
-              BigInt(current_uid),
-              BigInt(toUid),
-            ],
-            value:
-              tokenAddress === '0x0000000000000000000000000000000000000000'
-                ? parseUnits(amount, decimals)
-                : 0n,
-            gas: gasLimit,
-            maxFeePerGas: feesPerGas?.maxFeePerGas,
-            maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
-          })
-        },
-      }
-    )
+    reward()
   }
 
-  const { isSuccess: isConfirmed, error: receiptError } = useWaitForTransactionReceipt({
-    hash,
-  })
-
   useEffect(() => {
-    if (error || receiptError) {
+    if (error || receiptError || writeContractError) {
+      console.log('error', error, receiptError, writeContractError)
       toast({
         render: () => {
           return <CustomToast title={'Failed'} type={typeOptions.error} />
         },
         position: 'bottom',
       })
+      stopPolling()
       setIsApproving(false)
       slideButtonRef.current?.reset()
     }
-  }, [error, receiptError])
+  }, [error, receiptError, writeContractError])
 
-  useEffect(() => {
-    if (isConfirmed && !isApproving) {
+  const handleSuccess = () => {
+    if (!isApproving) {
       rewardEvent({
         from: address as `0x${string}`,
         to_uid: toUid,
@@ -181,53 +229,44 @@ export const SendRewardButton = ({
         position: 'bottom',
       })
       setIsApproving(false)
+      afterReward?.()
       slideButtonRef.current?.reset()
-    } else if (isConfirmed && isApproving) {
+    } else if (isApproving) {
       setIsApproving(false)
       // 开始打赏
-      switchChain(
-        {
-          chainId,
-        },
-        {
-          onSuccess: async () => {
-            console.log(
-              'writeContract onSuccess',
-              parseUnits('0', decimals),
-              tokenAddress as `0x${string}`,
-              parseUnits(amount, decimals),
-              BigInt(current_uid),
-              BigInt(toUid)
-            )
-
-            writeContract({
-              address: contractAddress as `0x${string}`,
-              abi,
-              functionName: 'reward',
-              args: [
-                parseUnits('0', decimals),
-                tokenAddress as `0x${string}`,
-                parseUnits(amount, decimals),
-                BigInt(current_uid),
-                BigInt(toUid),
-              ],
-              value:
-                tokenAddress === '0x0000000000000000000000000000000000000000'
-                  ? parseUnits(amount, decimals)
-                  : 0n,
-              gas: gasLimit,
-              maxFeePerGas: feesPerGas?.maxFeePerGas,
-              maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
-            })
-          },
-        }
-      )
+      reward()
     }
-  }, [isConfirmed, isApproving])
+  }
+
+  useEffect(() => {
+    if (receiptSuccess && !isHandledRef.current) {
+      console.log('receiptSuccess', receiptSuccess, isHandledRef.current)
+      stopPolling()
+      setIsHandled(true)
+      handleSuccess()
+    }
+  }, [receiptSuccess])
 
   useEffect(() => {
     console.log('hash', hash)
+    if (hash) {
+      setIsHandled(false)
+      setIsPolling(true)
+      setTimeout(() => {
+        pollStatus()
+      }, 0)
+    }
+    return () => {
+      stopPolling()
+    }
   }, [hash])
+
+  useEffect(() => {
+    if (currentChainId !== chainId) {
+      console.log('need chainId changed')
+      switchChain()
+    }
+  }, [currentChainId])
   return (
     <SlideButton
       ref={slideButtonRef}

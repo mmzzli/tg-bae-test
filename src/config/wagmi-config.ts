@@ -58,6 +58,14 @@ const usdtAddressOnEvm = {
   [duckChainTestnet.id]: '',
   [bscTestnet.id]: '0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee',
 }
+const usdcAddressOnEvm = {
+  [arbitrum.id]: '',
+  [bsc.id]: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
+  [mainnet.id]: '',
+  [optimism.id]: '',
+  [duckChainTestnet.id]: '',
+  [bscTestnet.id]: '',
+}
 const contractAddress = {
   [duckChainTestnet.id]: '0x84868afcC4Ba758a4ae2aca141D2fF0ECD8C5fac',
   [bscTestnet.id]: '0xF165cFb92441544cF9DEF72427028Db85b0aDEe2',
@@ -96,6 +104,14 @@ export const supportEVMTokenList = evmChainList
       address: usdtAddressOnEvm[chain.id],
       rewardContractAddress: contractAddress[chain.id as keyof typeof contractAddress],
     },
+    {
+      chainId: chain.id,
+      chainName: chain.name,
+      token: 'USDC',
+      icon: tokenIconMap['USDC'],
+      address: usdcAddressOnEvm[chain.id],
+      rewardContractAddress: contractAddress[chain.id as keyof typeof contractAddress],
+    },
   ])
   .flat()
-  .filter((token) => !(token.token === 'USDT' && !token.address))
+  .filter((token) => token.isNative || token.address)

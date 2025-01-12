@@ -114,7 +114,12 @@ const Earnings = () => {
     }
     const tokenInfo = getTokenInfoByChainId(chainId)
     console.log(tokenInfo, rewardByUidList)
-    if (!(rewardByUidList && rewardByUidList.length)) {
+    if (
+      !(rewardByUidList && rewardByUidList.length) ||
+      (rewardByUidList &&
+        rewardByUidList.length === 1 &&
+        rewardByUidList[0].token === '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d')
+    ) {
       toast({
         render: () => {
           return <CustomToast title="No balance" type={typeOptions.info} />

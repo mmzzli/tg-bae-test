@@ -4,6 +4,7 @@ import { formatUnits } from 'viem'
 import { useBalance } from 'wagmi'
 import { useAccount } from 'wagmi'
 import TokenIcon from './TokenIcon'
+import BigNumber from 'bignumber.js'
 
 interface TokenCardProps {
   token: (typeof supportEVMTokenList)[0]
@@ -39,12 +40,27 @@ export const TokenCard = ({ token, onTokenSelect }: TokenCardProps) => {
 
   const price = PriceService.getInstance().getPrice(token.token) || 0
 
-  const usdValue = +balanceValue * price
-  const usdValueFormat = usdValue
-    ? Number(usdValue).toString().split('.')[1]?.length > 2
-      ? Number(usdValue).toFixed(2)
-      : Number(usdValue)
-    : 0
+  // const usdValue = +balanceValue * price
+  // const usdValueFormat = usdValue
+  //   ? Number(usdValue).toString().split('.')[1]?.length > 2
+  //     ? Number(usdValue).toFixed(2)
+  //     : Number(usdValue)
+  //   : 0
+  const formatToUsd = (value: string, price: number) => {
+    if (!price) {
+      return '$0'
+    }
+    const usdValue = new BigNumber(value || '0').multipliedBy(price)
+    if (usdValue.eq(0)) {
+      return '$0'
+    }
+    if (usdValue.lt(0.01)) {
+      return '<$0.01'
+    }
+    return `$${usdValue.toFixed(2, 1)}`
+  }
+
+  const usdValueFormat = formatToUsd(balanceValue.toString(), price)
 
   return (
     <div
@@ -59,7 +75,7 @@ export const TokenCard = ({ token, onTokenSelect }: TokenCardProps) => {
         </div>
       </div>
 
-      <div className="text-[16px] font-medium text-[#12122A]">${usdValueFormat}</div>
+      <div className="text-[16px] font-medium text-[#12122A]">{usdValueFormat}</div>
     </div>
   )
 }

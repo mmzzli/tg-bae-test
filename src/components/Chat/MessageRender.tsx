@@ -470,17 +470,20 @@ const RewardCard: React.FC<{ message: WrappedMessage }> = ({ message }) => {
   const { chain_name, token, amount, hash, chain_id } = message.metadata as RewardMetadata
   const price = PriceService.getInstance().getPrice(token)
   const formatToUsd = (value: string, price: number) => {
+    if (!price) {
+      return '$0'
+    }
     const usdValue = new BigNumber(value || '0').multipliedBy(price)
     if (usdValue.eq(0)) {
-      return '0'
+      return '$0'
     }
     if (usdValue.lt(0.01)) {
-      return '<0.01'
+      return '<$0.01'
     }
-    return usdValue.toFixed(2)
+    return `$${usdValue.toFixed(2, 1)}`
   }
 
-  const usdValue = price ? formatToUsd(amount, price) : '0'
+  const usdValue = formatToUsd(amount, price)
   const { openLink } = useTMAUtils()
   const handleClick = () => {
     if (!hash || !chain_id) return
@@ -501,7 +504,7 @@ const RewardCard: React.FC<{ message: WrappedMessage }> = ({ message }) => {
     >
       <TokenIcon token={token} chainName={chain_name} size="36px" />
       <div className="flex flex-col justify-between ml-3">
-        <div className="text-[18px] text-[#333] font-bold">${usdValue || '0.00'}</div>
+        <div className="text-[18px] text-[#333] font-bold">{usdValue}</div>
         <div className="text-[13px] text-[#999]">
           {amount} {token}
         </div>

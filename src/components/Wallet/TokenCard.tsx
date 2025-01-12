@@ -47,17 +47,20 @@ export const TokenCard = ({ token, onTokenSelect }: TokenCardProps) => {
   //     : Number(usdValue)
   //   : 0
   const formatToUsd = (value: string, price: number) => {
+    if (!price) {
+      return '$0'
+    }
     const usdValue = new BigNumber(value || '0').multipliedBy(price)
     if (usdValue.eq(0)) {
-      return '0'
+      return '$0'
     }
     if (usdValue.lt(0.01)) {
-      return '<0.01'
+      return '<$0.01'
     }
-    return usdValue.toFixed(2)
+    return `$${usdValue.toFixed(2, 1)}`
   }
 
-  const usdValueFormat = price ? formatToUsd(balanceValue.toString(), price) : '0'
+  const usdValueFormat = formatToUsd(balanceValue.toString(), price)
 
   return (
     <div
@@ -72,7 +75,7 @@ export const TokenCard = ({ token, onTokenSelect }: TokenCardProps) => {
         </div>
       </div>
 
-      <div className="text-[16px] font-medium text-[#12122A]">${usdValueFormat}</div>
+      <div className="text-[16px] font-medium text-[#12122A]">{usdValueFormat}</div>
     </div>
   )
 }

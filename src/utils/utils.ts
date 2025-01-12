@@ -355,6 +355,36 @@ export const formatDecimal = (num: number, decimalPlaces = 2) => {
   return truncated.toFixed(decimalPlaces)
 }
 
+/**
+ * 将数字格式化为美元字符串表示，可选择是否使用单位格式化（K/M/B）
+ *
+ * @param {number | string | null | undefined} input - 需要格式化的数字
+ * @param {boolean} [useUnit=false] - 是否对大数使用 K/M/B 单位格式化
+ * @returns {string} 格式化后的美元字符串
+ *
+ * @example
+ * // 基本用法
+ * formatUSD(1234.56)        // '$1234.56'
+ * formatUSD(1234.56123123)        // '$1234.56'
+ * formatUSD(0.003)          // '<$0.01'
+ * formatUSD(0)              // '$0'
+ *
+ * // 使用单位格式化
+ * formatUSD(1234567, true)  // '$1.2M'
+ * formatUSD(1500, true)     // '$1.5K'
+ *
+ * // 整数值
+ * formatUSD(100)            // '$100'
+ *
+ * // 小数处理
+ * formatUSD(0.3)            // '$0.3'
+ * formatUSD(0.30)           // '$0.3'  // 自动移除末尾的0
+ *
+ * // 无效输入处理
+ * formatUSD(null)           // '-'
+ * formatUSD(undefined)      // '-'
+ * formatUSD('')             // '-'
+ */
 export const formatUSD = (
   input: number | string | null | undefined,
   useUnit: boolean = false

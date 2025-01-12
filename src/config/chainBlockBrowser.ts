@@ -81,6 +81,14 @@ export const ChainToken: { [key: number]: { symbol: string; name: string } } = {
     symbol: 'Dogechain',
     name: 'Dogechain',
   },
+  18: {
+    symbol: 'DogechainUSDT',
+    name: 'Dogechain-USDT',
+  },
+  19: {
+    symbol: 'USDC',
+    name: 'Bsc-USDC',
+  },
 }
 
 interface ChainBrowserConfig {
@@ -127,4 +135,3 @@ export const getAddressLink = (chainId: number, address: string): string => {
   if (!chain) return ''
   return `${chain.browserURL}${chain.addressPath}/${address}`
 }
-

@@ -289,15 +289,19 @@ export const formatNumber = (num: number): string => {
 
   for (const unit of units) {
     if (num >= unit.value) {
-      const formatted = (num / unit.value).toFixed(1)
-      return formatted.endsWith('.0')
-        ? `${formatted.slice(0, -2)}${unit.symbol}`
-        : `${formatted}${unit.symbol}`
+      // 不四舍五入，保留 2 位小数
+      const formatted = Math.floor((num / unit.value) * 100) / 100
+      const formattedStr = formatted.toString()
+
+      return formattedStr.endsWith('.0')
+        ? `${formattedStr.slice(0, -2)}${unit.symbol}`
+        : `${formattedStr}${unit.symbol}`
     }
   }
 
   return num.toString()
 }
+
 
 export const splitNumberParts = (num: number) => {
   const bigNum = new BigNumber(num)
@@ -353,21 +357,18 @@ export const formatDecimal = (num: number, decimalPlaces = 2) => {
 
 export const formatUSD = (
   input: number | null | undefined,
-  useUnit: boolean = false // 默认使用单位
+  useUnit: boolean = false
 ): string => {
-  // 处理空值或非数字的情况
   if (input === null || input === undefined || isNaN(input)) {
     return '-'
   }
 
   const num = new BigNumber(input)
 
-  // 输入为 0 时，返回 '0'
   if (num.isEqualTo(0)) {
     return '0'
   }
 
-  // 小于 0.00001 显示 '<$0.00001'
   if (num.isLessThan(0.00001) && num.isGreaterThan(0)) {
     return '<$0.00001'
   }
@@ -378,11 +379,10 @@ export const formatUSD = (
     { value: 1_000, symbol: 'K' },
   ]
 
-  // 如果使用单位
   if (useUnit) {
     for (const unit of units) {
       if (num.isGreaterThanOrEqualTo(unit.value)) {
-        const formatted = num.dividedBy(unit.value).toFixed(1, BigNumber.ROUND_DOWN) // 不四舍五入，向下取整
+        const formatted = num.dividedBy(unit.value).toFixed(1, BigNumber.ROUND_DOWN)
         return formatted.endsWith('.0')
           ? `$${formatted.slice(0, -2)}${unit.symbol}`
           : `$${formatted}${unit.symbol}`
@@ -390,6 +390,11 @@ export const formatUSD = (
     }
   }
 
-  // 不使用单位或小于 1,000 时，保留千分位
+  // 新增逻辑：整数部分大于 1 时保留 2 位小数（不四舍五入）
+  if (num.integerValue(BigNumber.ROUND_DOWN).isGreaterThan(1)) {
+    return `$${num.toFixed(2, BigNumber.ROUND_DOWN)}`
+  }
+
+  // 默认情况，保留千分位格式
   return `$${num.toFormat()}`
 }

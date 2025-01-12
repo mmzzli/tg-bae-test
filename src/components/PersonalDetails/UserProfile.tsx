@@ -12,7 +12,7 @@ import Notification from './Notification/Notification'
 import MoreText from '@/components/More/MoreText'
 import ProfileConnectButton from '../Wallet/ProfileConnectButton'
 import { getTotalGifts, totalAvailableInvoice } from '@/api'
-import { formatNumber } from '@/utils/utils'
+import { formatUSD } from '@/utils/utils'
 
 // import ConnectButton from '../Wallet/ConnectButton'
 
@@ -31,9 +31,9 @@ const UserProfile: FC = () => {
 
   useEffect(() => {
     const load = async () => {
-      const { withdraw_gifts } = await getTotalGifts()
+      const { withdraw_gifts, gifts } = await getTotalGifts()
       const { available, exchange_rate } = await totalAvailableInvoice()
-      setGifts(available * exchange_rate + withdraw_gifts)
+      setGifts(gifts)
     }
     if (token && needUpdateEarnings) {
       load()
@@ -130,7 +130,7 @@ const UserProfile: FC = () => {
             cursor="pointer"
             onClick={() => navigate(`/profile/earnings`)}
           >
-            ${formatNumber(gifts)}
+            {formatUSD(gifts, true)}
           </Heading>
           <Text color="#8A8C91" fontSize="12px" lineHeight="14px">
             Earnings

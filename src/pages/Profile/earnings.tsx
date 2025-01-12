@@ -129,6 +129,12 @@ const Earnings = () => {
     let _deadline = 0
 
     for (const item of rewardByUidList) {
+      // 0x55d398326f99059fF775485246999027B3197955  usdt
+      // 0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d  usdc
+      // 0x0000000000000000000000000000000000000000  gas
+      // if (item.token === '0x0000000000000000000000000000000000000000') continue
+      if (item.token === '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d') continue
+      // if (item.token === '0x55d398326f99059fF775485246999027B3197955') continue
       const { signature, deadline } = await giftSign({
         receiver: `${address}` as `0x${string}`,
         token: item.token as `0x${string}`,
@@ -151,13 +157,7 @@ const Earnings = () => {
     //   amount: Number(amount),
     // })
     console.log('deadline', _deadline)
-    const args1 = [
-      BigInt(current_uid),
-      `${address}` as `0x${string}`,
-      tokenAmounts,
-      BigInt(_deadline),
-      signatures,
-    ]
+    const args1 = [current_uid, `${address}` as `0x${string}`, tokenAmounts, _deadline, signatures]
     console.log(args1)
 
     const gasConfig =
@@ -260,7 +260,7 @@ const Earnings = () => {
     try {
       const [totalGiftsRes, availableInvoiceRes] = await Promise.all([
         getTotalGifts(),
-        totalAvailableInvoice()
+        totalAvailableInvoice(),
       ])
 
       setTotalGifts(totalGiftsRes)

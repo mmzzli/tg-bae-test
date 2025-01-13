@@ -40,7 +40,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
   const renderFrameToCanvas = (): void => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
-
+    console.log(video, canvas, 'talk1')
     if (video && canvas) {
       const ctx = canvas.getContext("2d");
       if (ctx) {
@@ -71,23 +71,35 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
     const video = videoRef.current;
     if (video) {
       const handleLoadedMetadata = () => {
+        console.log("Metadata loaded");
         setDuration(video.duration);
         setCurrentTime(0);
+        renderFrameToCanvas();
       };
 
       const handleCanPlay = () => {
+        console.log("Video can play");
         renderFrameToCanvas();
       };
 
       video.addEventListener("loadedmetadata", handleLoadedMetadata);
       video.addEventListener("canplay", handleCanPlay);
+      video.addEventListener("loadeddata", handleCanPlay);
+
+      if (video.readyState >= 3) {
+        handleCanPlay();
+      } else {
+        video.play().then(() => video.pause()).catch(console.error);
+      }
 
       return () => {
         video.removeEventListener("loadedmetadata", handleLoadedMetadata);
         video.removeEventListener("canplay", handleCanPlay);
+        video.removeEventListener("loadeddata", handleCanPlay);
       };
     }
   }, [videoUrl]);
+
 
   const handleSliderChange = (value: React.FormEvent<HTMLInputElement>): void => {
     const video = videoRef.current;

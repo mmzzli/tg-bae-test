@@ -113,12 +113,12 @@ export const SendRewardButton = ({
   const gasConfig =
     import.meta.env.VITE_APP_ENV === 'production'
       ? {
-          gas: gasLimit ? BigInt(Number(gasLimit) * 4) : 0n,
+          gas: gasLimit ? BigInt(Number(gasLimit) * 4) : 1030000n,
           maxFeePerGas: feesPerGas?.maxFeePerGas,
           maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
         }
       : {
-          gas: gasLimit ? BigInt(Number(gasLimit) * 4) : 0n,
+          gas: gasLimit ? BigInt(Number(gasLimit) * 4) : 1030000n,
           maxFeePerGas: feesPerGas?.maxFeePerGas,
           maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
         }

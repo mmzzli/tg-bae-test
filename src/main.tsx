@@ -7,14 +7,16 @@ const m3u8Worker = new Worker(new URL('./utils/Worker/loadm3u8.ts', import.meta.
 
 window.m3u8Worker = m3u8Worker
 
-import('vconsole').then((VConsole) => {
-  window.vConsole = VConsole
-  window.vConsoleInstance = new window.vConsole.default()
-  window.vConsoleInstance.hideSwitch()
-  if (import.meta.env.MODE !== 'dev') {
-    window.vConsoleInstance.showSwitch()
-  }
-})
+if (import.meta.env.MODE !== 'production') {
+  import('vconsole').then((VConsole) => {
+    window.vConsole = VConsole
+    window.vConsoleInstance = new window.vConsole.default()
+    window.vConsoleInstance.hideSwitch()
+    if (import.meta.env.MODE !== 'dev') {
+      window.vConsoleInstance.showSwitch()
+    }
+  })
+}
 
 if (import.meta.env.MODE === 'production') {
   const gaScript = document.createElement('script')

@@ -296,13 +296,27 @@ export const SendRewardButton = ({
   }, [currentChainId])
 
   useEffect(() => {
+    let lastTap = 0
+    const handleTouchStart = (e: TouchEvent) => {
+      const currentTime = new Date().getTime()
+      const tapLength = currentTime - lastTap
+      if (tapLength < 300 && tapLength > 0) {
+        setShowAllowance(!showAllowance)
+        e.preventDefault()
+      }
+      lastTap = currentTime
+    }
+
     const handleDoubleClick = () => {
       setShowAllowance(!showAllowance)
     }
 
+    // 同时监听触摸和鼠标事件
+    document.addEventListener('touchstart', handleTouchStart)
     document.addEventListener('dblclick', handleDoubleClick)
 
     return () => {
+      document.removeEventListener('touchstart', handleTouchStart)
       document.removeEventListener('dblclick', handleDoubleClick)
     }
   }, [showAllowance])

@@ -122,7 +122,7 @@ const Earnings = () => {
     ) {
       toast({
         render: () => {
-          return <CustomToast title="No balance" type={typeOptions.info} />
+          return <CustomToast title="Withdrawal in progress, please wait." type={typeOptions.info} />
         },
         position: 'bottom',
       })

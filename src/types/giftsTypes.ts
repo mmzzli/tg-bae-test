@@ -3,12 +3,16 @@ export interface SignReq {
   receiver: string
   token: string
   chainid: number
-  amount: number
+  amount: string
 }
 
-export interface SignRes {
+interface SignaturesRes {
   signature: string
   deadline: number
+}
+export interface SignRes {
+  signatures: SignaturesRes[]
+  // deadline: number
 }
 
 export interface GiftsRes {

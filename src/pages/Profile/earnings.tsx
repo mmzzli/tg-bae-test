@@ -103,6 +103,7 @@ const Earnings = () => {
   })
 
   const walletWithdraw = async () => {
+    console.log(BigInt(Number(gasLimit) * 10) || 0)
     try {
       await switchChain({ chainId })
     } catch (error) {
@@ -115,44 +116,58 @@ const Earnings = () => {
     const tokenInfo = getTokenInfoByChainId(chainId)
     console.log(tokenInfo, rewardByUidList)
     if (
-      !(rewardByUidList && rewardByUidList.length) ||
-      (rewardByUidList &&
-        rewardByUidList.length === 1 &&
-        rewardByUidList[0].token === '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d')
+      !(rewardByUidList && rewardByUidList.length)
+      // ||
+      // (rewardByUidList &&
+      //   rewardByUidList.length === 1 &&
+      //   rewardByUidList[0].token === '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d')
     ) {
       toast({
         render: () => {
-          return <CustomToast title="No balance" type={typeOptions.info} />
+          return <CustomToast title="Withdrawal in progress, please wait." type={typeOptions.info} />
         },
         position: 'bottom',
       })
       return
     }
 
-    const signatures: `0x${string}`[] = []
+    // let signatures: `0x${string}`[] = []
     const tokenAmounts: { token: `0x${string}`; amount: bigint }[] = []
     let _deadline = 0
 
-    for (const item of rewardByUidList) {
-      // 0x55d398326f99059fF775485246999027B3197955  usdt
-      // 0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d  usdc
-      // 0x0000000000000000000000000000000000000000  gas
-      // if (item.token === '0x0000000000000000000000000000000000000000') continue
-      if (item.token === '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d') continue
-      // if (item.token === '0x55d398326f99059fF775485246999027B3197955') continue
-      const { signature, deadline } = await giftSign({
-        receiver: `${address}` as `0x${string}`,
-        token: item.token as `0x${string}`,
-        chainid: chainId,
-        amount: Number(item.amount),
-      })
-      signatures.push(signature as `0x${string}`)
-      tokenAmounts.push({
-        token: item.token as `0x${string}`,
-        amount: item.amount,
-      })
-      _deadline = deadline
-    }
+    console.log(rewardByUidList)
+    const token = rewardByUidList.map(item => item.token);
+    const amount = rewardByUidList.map(item => Number(item.amount));
+    const { signatures:sigRes } = await giftSign({
+      receiver: `${address}` as `0x${string}`,
+      token: token.join(','),
+      chainid: chainId,
+      amount: amount.join(',')
+    })
+    const signatures:any = sigRes.map(item => item.signature);
+    console.log(signatures)
+    _deadline = sigRes[0]?.deadline
+
+    // for (const item of rewardByUidList) {
+    //   // 0x55d398326f99059fF775485246999027B3197955  usdt
+    //   // 0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d  usdc
+    //   // 0x0000000000000000000000000000000000000000  gas
+    //   // if (item.token === '0x0000000000000000000000000000000000000000') continue
+    //   // if (item.token === '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d') continue
+    //   // if (item.token === '0x55d398326f99059fF775485246999027B3197955') continue
+    //   const { signature, deadline } = await giftSign({
+    //     receiver: `${address}` as `0x${string}`,
+    //     token: item.token as `0x${string}`,
+    //     chainid: chainId,
+    //     amount: Number(item.amount),
+    //   })
+    //   signatures.push(signature as `0x${string}`)
+    //   tokenAmounts.push({
+    //     token: item.token as `0x${string}`,
+    //     amount: item.amount,
+    //   })
+    //   _deadline = deadline
+    // }
 
     setLiading(true)
     // const { signature, deadline } = await giftSign({
@@ -161,23 +176,29 @@ const Earnings = () => {
     //   chainid: chainId,
     //   amount: Number(amount),
     // })
-    console.log('deadline', _deadline)
-    const args1 = [current_uid, `${address}` as `0x${string}`, tokenAmounts, _deadline, signatures]
-    console.log(args1)
 
     const gasConfig =
       import.meta.env.VITE_APP_ENV === 'production'
         ? {
-            gas: BigInt(Number(gasLimit) * 10),
-            maxFeePerGas: feesPerGas?.maxFeePerGas,
-            maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
+            gas: BigInt(Number(gasLimit) * 10) || 530000n,
+            maxFeePerGas: feesPerGas?.maxFeePerGas || 530000n,
+            maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas || 530000n,
           }
         : {
-            gas: BigInt(Number(gasLimit) * 10),
-            maxFeePerGas: feesPerGas?.maxFeePerGas,
-            maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
+            gas: BigInt(Number(gasLimit) * 10) || 530000n,
+            maxFeePerGas: feesPerGas?.maxFeePerGas || 530000n,
+            maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas || 530000n,
           }
 
+    console.log([
+      BigInt(current_uid),
+      `${address}` as `0x${string}`,
+      // token as `0x${string}`,
+      // amount,
+      rewardByUidList,
+      BigInt(_deadline),
+      signatures,
+    ])
     writeContract({
       address: contractAddress as `0x${string}`,
       abi,
@@ -188,7 +209,7 @@ const Earnings = () => {
         `${address}` as `0x${string}`,
         // token as `0x${string}`,
         // amount,
-        tokenAmounts,
+        rewardByUidList,
         BigInt(_deadline),
         signatures,
       ],
@@ -282,6 +303,7 @@ const Earnings = () => {
   }, [token])
 
   useEffect(() => {
+    console.log(hash, 'talk')
     if (hash) {
       pollStatus()
     }

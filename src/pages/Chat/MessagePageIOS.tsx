@@ -74,9 +74,21 @@ const MessagePageIOS = () => {
   }
 
   const handleSendText = () => {
-    if (message.trim()) {
+    const text = message.trim()
+    if (text === '##debug##') {
+      console.log('###### debug ######', text)
+      if (window.vConsoleInstance) {
+        if (window.vConsoleInstance.compInstance.showSwitchButton) {
+          window.vConsoleInstance.hideSwitch()
+        } else {
+          window.vConsoleInstance.showSwitch()
+        }
+      }
+      return
+    }
+    if (text) {
       runDailyChat()
-      handleSend({ type: MessageType.TEXT, text: message.trim() })
+      handleSend({ type: MessageType.TEXT, text })
       setMessage('')
     }
   }

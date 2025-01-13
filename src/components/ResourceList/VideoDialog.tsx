@@ -103,7 +103,7 @@ const UserInfo = memo(
           bottom: `${bottom}px`,
         }}
       >
-        <div className="flex items-center">
+        <div className="flex items-center justify-between">
           <Image
             rect={true}
             type="avatar"

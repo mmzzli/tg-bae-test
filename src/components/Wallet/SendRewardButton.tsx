@@ -45,6 +45,7 @@ export const SendRewardButton = ({
   afterReward?: () => void
 }) => {
   const slideButtonRef = useRef<SlideButtonHandle>(null)
+  const [showAllowance, setShowAllowance] = useState(false)
 
   const { data: hash, error, writeContract } = useWriteContract()
   const { address } = useAccount()
@@ -293,6 +294,18 @@ export const SendRewardButton = ({
       switchChain()
     }
   }, [currentChainId])
+
+  useEffect(() => {
+    const handleDoubleClick = () => {
+      setShowAllowance(!showAllowance)
+    }
+
+    document.addEventListener('dblclick', handleDoubleClick)
+
+    return () => {
+      document.removeEventListener('dblclick', handleDoubleClick)
+    }
+  }, [showAllowance])
   return (
     <div>
       <SlideButton
@@ -302,7 +315,10 @@ export const SendRewardButton = ({
           handleSendReward()
         }}
       />
-      <div className="text-sm text-[#999] text-right">
+      <div
+        className="text-sm text-[#ccc] text-right mt-1 mr-1"
+        style={{ display: showAllowance ? 'block' : 'none' }}
+      >
         Allowance:{' '}
         {allowanceLoading
           ? 'Loading...'

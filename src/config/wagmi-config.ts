@@ -60,8 +60,8 @@ const usdtAddressOnEvm = {
 }
 const usdcAddressOnEvm = {
   [arbitrum.id]: '',
-  // [bsc.id]: '',
-  [bsc.id]: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
+  [bsc.id]: '',
+  // [bsc.id]: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
   [mainnet.id]: '',
   [optimism.id]: '',
   [duckChainTestnet.id]: '',

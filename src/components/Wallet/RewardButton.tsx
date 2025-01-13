@@ -6,6 +6,7 @@ import MyTokensModal from './MyTokensModal'
 import { useToast } from '@chakra-ui/react'
 import { CustomToast, typeOptions } from '../comm/Toast'
 import { OthersUserInfo } from '@/types'
+import { GiftIcon } from '@/assets/icons'
 
 const RewardButton = ({
   className,
@@ -44,11 +45,7 @@ const RewardButton = ({
   return (
     <div>
       <div className={cn('flex items-center justify-center', className)}>
-        <i
-          className="iconfont icon-bit-coin-line"
-          style={{ fontSize: '28px' }}
-          onClick={() => handleReward()}
-        ></i>
+        <img src={GiftIcon} alt="gift" className="w-[29px] h-[29px]" onClick={() => handleReward()} />
       </div>
       <ConnectModal ref={connectModalRef} afterConnect={handleAfterConnect} />
       {status === 'connected' && address && (

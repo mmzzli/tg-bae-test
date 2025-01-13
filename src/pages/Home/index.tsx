@@ -163,7 +163,7 @@ const HomePage: FC = () => {
             className={`ml-auto flex gap-[13px] z-[111] ${showTopTitle ? 'absolute right-[16px]' : 'fixed right-[16px]'}`}
           >
             <div
-              className="w-[48px] h-[48px] p-[12px] bg-[#F5F3F3] rounded-[50px] flex items-center justify-center cursor-pointer"
+              className="w-[48px] h-[48px] p-[12px] flex items-center justify-center cursor-pointer"
               onClick={() => navigate('/searching')}
             >
               <i className="iconfont icon-search-line text-[#333333] text-[24px]"></i>

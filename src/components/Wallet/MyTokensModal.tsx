@@ -55,8 +55,6 @@ const MyTokensModal = forwardRef<ChildMethods, { userInfo: OthersUserInfo }>(
 
     const [isBaseModalOpen, { toggle, off }] = useBoolean(false)
 
-    console.log('MyTokensModal', isBaseModalOpen)
-
     return (
       <>
         <BaseModal

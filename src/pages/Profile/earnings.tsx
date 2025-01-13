@@ -103,6 +103,7 @@ const Earnings = () => {
   })
 
   const walletWithdraw = async () => {
+    console.log(BigInt(Number(gasLimit) * 10) || 0)
     try {
       await switchChain({ chainId })
     } catch (error) {
@@ -122,7 +123,7 @@ const Earnings = () => {
     ) {
       toast({
         render: () => {
-          return <CustomToast title="No balance" type={typeOptions.info} />
+          return <CustomToast title="Withdrawal in progress, please wait." type={typeOptions.info} />
         },
         position: 'bottom',
       })
@@ -164,18 +165,17 @@ const Earnings = () => {
     console.log('deadline', _deadline)
     const args1 = [current_uid, `${address}` as `0x${string}`, tokenAmounts, _deadline, signatures]
     console.log(args1)
-
     const gasConfig =
       import.meta.env.VITE_APP_ENV === 'production'
         ? {
-            gas: BigInt(Number(gasLimit) * 10),
-            maxFeePerGas: feesPerGas?.maxFeePerGas,
-            maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
+            gas: BigInt(Number(gasLimit) * 10) || 530000n,
+            maxFeePerGas: feesPerGas?.maxFeePerGas || 530000n,
+            maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas || 530000n,
           }
         : {
-            gas: BigInt(Number(gasLimit) * 10),
-            maxFeePerGas: feesPerGas?.maxFeePerGas,
-            maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
+            gas: BigInt(Number(gasLimit) * 10) || 530000n,
+            maxFeePerGas: feesPerGas?.maxFeePerGas || 530000n,
+            maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas || 530000n,
           }
 
     writeContract({

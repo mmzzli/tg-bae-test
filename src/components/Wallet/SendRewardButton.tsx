@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { SlideButton, SlideButtonHandle } from '../BaseButton/SlideButton'
 import {
   useAccount,
   useChainId,
   useEstimateFeesPerGas,
   useEstimateGas,
+  useReadContract,
   useSwitchChain,
   useWaitForTransactionReceipt,
   useWriteContract,
@@ -13,11 +14,12 @@ import { abi, approveAbi } from '@/config/abi'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useToast } from '@chakra-ui/react'
 import { CustomToast, typeOptions } from '../comm/Toast'
-import { parseUnits } from 'viem'
+import { parseEther, parseUnits } from 'viem'
 import { approveEvent, rewardEvent } from '@/api'
 import { MessageType } from '../Chat/types'
 import { useFormatMessage } from '@/hooks/useFormatMessage'
 import { useIM } from '@/store/hook/userIM'
+import BigNumber from 'bignumber.js'
 
 export const SendRewardButton = ({
   amount,
@@ -43,6 +45,7 @@ export const SendRewardButton = ({
   afterReward?: () => void
 }) => {
   const slideButtonRef = useRef<SlideButtonHandle>(null)
+  const [showAllowance, setShowAllowance] = useState(false)
 
   const { data: hash, error, writeContract } = useWriteContract()
   const { address } = useAccount()
@@ -77,12 +80,35 @@ export const SendRewardButton = ({
   const currentChainId = useChainId()
   const { switchChainAsync } = useSwitchChain()
 
+  const {
+    data: allowance,
+    isLoading: allowanceLoading,
+    refetch: refetchAllowance,
+  } = useReadContract({
+    address: tokenAddress as `0x${string}`,
+    abi: approveAbi,
+    functionName: 'allowance',
+    args: [address as `0x${string}`, contractAddress as `0x${string}`],
+    query: {
+      enabled: tokenAddress !== '0x0000000000000000000000000000000000000000',
+    },
+  })
+
+  const needApprove = useMemo(() => {
+    if (tokenAddress === '0x0000000000000000000000000000000000000000') {
+      return false
+    }
+    if (!allowance) {
+      return true
+    }
+    return BigInt(allowance) < parseUnits(amount, decimals)
+  }, [allowance, amount, decimals, tokenAddress])
+
   const stopPolling = () => {
     setIsPolling(false)
     pollingTimeoutRef.current && clearTimeout(pollingTimeoutRef.current)
   }
   const pollStatus = async () => {
-    console.log('pollStatus', hash, isPollingRef.current, isHandledRef.current)
     if (!hash || !isPollingRef.current || isHandledRef.current) return
     pollingTimeoutRef.current && clearTimeout(pollingTimeoutRef.current)
     try {
@@ -112,9 +138,13 @@ export const SendRewardButton = ({
 
   const gasConfig =
     import.meta.env.VITE_APP_ENV === 'production'
-      ? {}
+      ? {
+          gas: gasLimit ? BigInt(Number(gasLimit) * 4) : 1030000n,
+          maxFeePerGas: feesPerGas?.maxFeePerGas,
+          maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
+        }
       : {
-          gas: gasLimit ? BigInt(Number(gasLimit) * 3) : 0n,
+          gas: gasLimit ? BigInt(Number(gasLimit) * 4) : 1030000n,
           maxFeePerGas: feesPerGas?.maxFeePerGas,
           maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
         }
@@ -153,7 +183,6 @@ export const SendRewardButton = ({
   }
 
   const handleSendReward = async () => {
-    console.log('handleSendReward', amount, tokenAddress, contractAddress, current_uid)
     if (!contractAddress) {
       toast({
         render: () => <CustomToast title="Coming soon" type={typeOptions.info} />,
@@ -164,12 +193,8 @@ export const SendRewardButton = ({
 
     await switchChain()
 
-    if (tokenAddress !== '0x0000000000000000000000000000000000000000') {
-      console.log(
-        'writeContract approve',
-        tokenAddress as `0x${string}`,
-        parseUnits(amount, decimals)
-      )
+    if (tokenAddress !== '0x0000000000000000000000000000000000000000' && needApprove) {
+      console.warn('Approve:', tokenAddress as `0x${string}`, parseUnits(amount, decimals))
       setIsApproving(true)
       writeContract({
         address: tokenAddress as `0x${string}`,
@@ -230,9 +255,11 @@ export const SendRewardButton = ({
       })
       setIsApproving(false)
       afterReward?.()
+      refetchAllowance()
       slideButtonRef.current?.reset()
     } else if (isApproving) {
       setIsApproving(false)
+      refetchAllowance()
       // 开始打赏
       reward()
     }
@@ -248,8 +275,8 @@ export const SendRewardButton = ({
   }, [receiptSuccess])
 
   useEffect(() => {
-    console.log('hash', hash)
     if (hash) {
+      console.warn(`${isApproving ? 'Approve' : 'Reward'} hash:`, hash)
       setIsHandled(false)
       setIsPolling(true)
       setTimeout(() => {
@@ -267,13 +294,38 @@ export const SendRewardButton = ({
       switchChain()
     }
   }, [currentChainId])
+
+  useEffect(() => {
+    const handleDoubleClick = () => {
+      setShowAllowance(!showAllowance)
+    }
+
+    document.addEventListener('dblclick', handleDoubleClick)
+
+    return () => {
+      document.removeEventListener('dblclick', handleDoubleClick)
+    }
+  }, [showAllowance])
   return (
-    <SlideButton
-      ref={slideButtonRef}
-      disabled={disabled}
-      onConfirm={() => {
-        handleSendReward()
-      }}
-    />
+    <div>
+      <SlideButton
+        ref={slideButtonRef}
+        disabled={disabled}
+        onConfirm={() => {
+          handleSendReward()
+        }}
+      />
+      <div
+        className="text-sm text-[#ccc] text-right mt-1 mr-1"
+        style={{ display: showAllowance ? 'block' : 'none' }}
+      >
+        Allowance:{' '}
+        {allowanceLoading
+          ? 'Loading...'
+          : allowance
+            ? new BigNumber(allowance.toString()).div(10 ** decimals).toString()
+            : '0'}
+      </div>
+    </div>
   )
 }

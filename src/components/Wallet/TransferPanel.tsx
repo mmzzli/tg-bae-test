@@ -137,6 +137,16 @@ export const TransferPanel = ({
       const width = unitMeasureRef.current.offsetWidth
       setUnitMeasureWidth(Math.max(0, width))
     }
+
+    const preventScroll = (event: TouchEvent) => {
+      event.preventDefault()
+    }
+
+    document.body.addEventListener('touchmove', preventScroll, { passive: false })
+    return () => {
+      window.scrollTo(0, 0)
+      document.body.removeEventListener('touchmove', preventScroll)
+    }
   }, [])
 
   return (
@@ -156,6 +166,7 @@ export const TransferPanel = ({
           style={{ width: `${inputWidth + unitMeasureWidth}px` }}
         >
           <input
+            autoFocus
             type="text"
             inputMode="decimal"
             pattern="[0-9]*[.,]?[0-9]*"

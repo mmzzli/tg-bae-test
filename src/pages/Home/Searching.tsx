@@ -11,6 +11,7 @@ import Image from '@/components/Image/Image'
 import FollowButton from '@/components/PersonalDetails/FollowButton'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import GeneralSkeleton from '@/components/Skeketon/GeneralSkeleton'
+import { SearchCloseIcon } from '@/assets/icons'
 const Searching = () => {
   const navigate = useNavigate()
   const inputRef = useRef<HTMLInputElement>(null)
@@ -98,7 +99,7 @@ const Searching = () => {
           />
           {field.length > 0 && (
             <div
-              className="w-[24px] h-[24px] p-[12px] bg-[#A0A3BD] rounded-[50px] flex items-center justify-center cursor-pointer"
+              className="w-[24px] h-[24px] p-[12px] rounded-[50px] flex items-center justify-center cursor-pointer"
               onClick={() => {
                 setField('')
                 setDebouncedField('')
@@ -107,7 +108,7 @@ const Searching = () => {
                 setIsLoading(false)
               }}
             >
-              <i className="iconfont icon-icon_close text-[#fff] text-[24px]"></i>
+              <img src={SearchCloseIcon} alt="searchClose" className="w-[24px] h-[24px]" />
             </div>
           )}
         </div>

@@ -94,11 +94,13 @@ export const SlideButton = forwardRef<SlideButtonHandle, SlideButtonProps>(
         <motion.div
           drag={disabled ? false : 'x'}
           dragConstraints={containerRef}
+          dragDirectionLock
           dragElastic={0}
           dragMomentum={false}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
           animate={controls}
+          whileTap={{ cursor: 'grabbing' }}
           style={{
             x,
             width: height,

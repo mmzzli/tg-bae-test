@@ -88,10 +88,15 @@ const TaskButton: React.FC<{
   claim?: (task: DailyTaskItem) => void
 }> = ({ task, onClick, afterClaim, claim }) => {
   const { runGetDailyTask } = useGetDailyTask()
-  const { updateDailyTask } = useStore((state) => ({
+  const { updateDailyTask, dailyTaskList } = useStore((state) => ({
     updateDailyTask: state.updateDailyTask,
+    dailyTaskList: state.dailyTaskList,
   }))
+
+
   const { isAllTasksCompleted } = useDailyTaskStatus()
+  const dailyTaskCount = dailyTaskList.filter(task => task.task_type !== TaskType.ClaimAll).length
+  const completedTaskCount = dailyTaskList.filter(task => task.status === DailyTaskStatusEnum.CLAIMED).length
 
   const onClaimSuccess = () => {
     updateDailyTask({
@@ -150,7 +155,11 @@ const TaskButton: React.FC<{
     } else if (task.status === DailyTaskStatusEnum.CLAIMED) {
       return <ClaimedButton />
     }
-    return <span className="text-sm text-[#999999] font-medium">In progress</span>
+    return <BaseButton
+        text={`${completedTaskCount} / ${dailyTaskCount}`}
+        handler={onClick}
+        className="w-[79px] h-[34px] text-black bg-transparent border border-[#CDCDD4]"
+    />
   }
 
   switch (status) {
@@ -163,7 +172,11 @@ const TaskButton: React.FC<{
         />
       )
     case DailyTaskStatusEnum.IN_PROGRESS:
-      return <span className="text-sm text-[#999999] font-medium">In progress</span>
+      return <BaseButton
+        text={`${task.detail?.split(':')?.length} / ${task.total_amount}`}
+        handler={onClick}
+        className="w-[79px] h-[34px] text-black bg-transparent border border-[#CDCDD4]"
+      />
     case DailyTaskStatusEnum.CLAIM:
       return (
         <BaseButton

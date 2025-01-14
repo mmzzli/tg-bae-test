@@ -28,6 +28,8 @@ export interface DailyTaskItem {
   task_type: number
   index: number
   points: number
+  detail?: string
+  total_amount: number
 }
 
 const followTaskId = [13, 14]

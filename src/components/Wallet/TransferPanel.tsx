@@ -137,6 +137,16 @@ export const TransferPanel = ({
       const width = unitMeasureRef.current.offsetWidth
       setUnitMeasureWidth(Math.max(0, width))
     }
+
+    const preventScroll = (event: TouchEvent) => {
+      event.preventDefault()
+    }
+
+    document.body.addEventListener('touchmove', preventScroll, { passive: false })
+    return () => {
+      window.scrollTo(0, 0)
+      document.body.removeEventListener('touchmove', preventScroll)
+    }
   }, [])
 
   return (
@@ -156,12 +166,13 @@ export const TransferPanel = ({
           style={{ width: `${inputWidth + unitMeasureWidth}px` }}
         >
           <input
+            autoFocus
             type="text"
             inputMode="decimal"
             pattern="[0-9]*[.,]?[0-9]*"
             value={amount}
             onChange={(e) => handleAmountChange(e.target.value)}
-            className=" h-[58px] w-full bg-transparent border-none outline-none text-[#12122A] font-bold"
+            className=" h-[58px] w-full bg-transparent border-none outline-none text-[#12122A] placeholder:text-[#333] font-bold"
             placeholder="0"
             style={{ paddingRight: `${unitMeasureWidth}px` }}
           />

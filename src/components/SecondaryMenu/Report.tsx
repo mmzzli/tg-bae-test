@@ -12,10 +12,10 @@ interface ReportProps {
 const options = [
   'I don’t like this post',
   'Violates terms of service',
-  'Contains copyrighted material(DMCA)',
-  'Child sexual abuse material(CSAM)',
+  'Contains copyrighted material (DMCA)',
+  'Child sexual abuse material (CSAM)',
   'Report spam',
-  'Report Abuse',
+  'Report abuse',
 ]
 
 const Report: React.FC<ReportProps> = ({ isOpen, onClose }) => {

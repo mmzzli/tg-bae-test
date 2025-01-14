@@ -148,34 +148,7 @@ const Earnings = () => {
     console.log(signatures)
     _deadline = sigRes[0]?.deadline
 
-    // for (const item of rewardByUidList) {
-    //   // 0x55d398326f99059fF775485246999027B3197955  usdt
-    //   // 0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d  usdc
-    //   // 0x0000000000000000000000000000000000000000  gas
-    //   // if (item.token === '0x0000000000000000000000000000000000000000') continue
-    //   // if (item.token === '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d') continue
-    //   // if (item.token === '0x55d398326f99059fF775485246999027B3197955') continue
-    //   const { signature, deadline } = await giftSign({
-    //     receiver: `${address}` as `0x${string}`,
-    //     token: item.token as `0x${string}`,
-    //     chainid: chainId,
-    //     amount: Number(item.amount),
-    //   })
-    //   signatures.push(signature as `0x${string}`)
-    //   tokenAmounts.push({
-    //     token: item.token as `0x${string}`,
-    //     amount: item.amount,
-    //   })
-    //   _deadline = deadline
-    // }
-
     setLiading(true)
-    // const { signature, deadline } = await giftSign({
-    //   receiver: `${address}` as `0x${string}`,
-    //   token: token as `0x${string}`,
-    //   chainid: chainId,
-    //   amount: Number(amount),
-    // })
 
     const gasConfig =
       import.meta.env.VITE_APP_ENV === 'production'

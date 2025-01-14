@@ -429,7 +429,7 @@ const ResourceList = ({
   }
   return (
     <>
-      <div className="pt-[24px]">
+      <div className="pt-[24px] bg-white">
         {resources.map((data, index: number) => {
           return (
             <Box key={`resource-${data.id}-${index}`} pb={10}>

@@ -57,25 +57,25 @@ const UserProfile: FC = () => {
     <Box
       padding="0 16px"
       className="no-tap"
-      mt="16px"
-      style={{
-        paddingTop: `calc(${
-          window
-            .getComputedStyle(document.documentElement)
-            .getPropertyValue('--tg-safe-area-inset-top') &&
-          parseInt(
-            window
-              .getComputedStyle(document.documentElement)
-              .getPropertyValue('--tg-safe-area-inset-top'),
-            10
-          ) !== 0
-            ? '8px'
-            : '30px '
-        })`,
-      }}
+      mt="-16px"
+      // style={{
+      //   paddingTop: `calc(${
+      //     window
+      //       .getComputedStyle(document.documentElement)
+      //       .getPropertyValue('--tg-safe-area-inset-top') &&
+      //     parseInt(
+      //       window
+      //         .getComputedStyle(document.documentElement)
+      //         .getPropertyValue('--tg-safe-area-inset-top'),
+      //       10
+      //     ) !== 0
+      //       ? '8px'
+      //       : '30px '
+      //   })`,
+      // }}
     >
-      <HStack paddingLeft="0" justifyContent="space-between">
-        <div className="w-[64px] h-[64px] overflow-hidden rounded-[50%]">
+      <HStack paddingLeft="0" justifyContent="space-between" >
+        <div className="w-[74px] h-[74px] overflow-hidden rounded-[50%] bg-white flex items-center justify-center">
           <Image
             rect
             type="avatar"
@@ -86,7 +86,7 @@ const UserProfile: FC = () => {
             alt={userInfo.username}
           />
         </div>
-        <Box display="flex" alignItems="center">
+        <Box className='mt-[10px]' display="flex" alignItems="center">
           {/* <EarningsPage /> */}
           <Notification />
           <ShareUser userInfo={userInfo} />

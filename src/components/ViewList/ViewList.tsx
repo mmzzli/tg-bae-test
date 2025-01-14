@@ -109,7 +109,7 @@ const MyPosts = () => {
     return (
       <Empty
         title="No post yet."
-        className="w-full fixed top-[63%] left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+        className="w-full mt-10"
         icon={
           <Icon name="icon-Empty_white_post" style={{ width: '164px', height: '164px' }}></Icon>
         }
@@ -154,7 +154,7 @@ const FavList = () => {
     return (
       <Empty
         title="No post yet."
-        className="w-full fixed top-[63%] left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+        className="w-full mt-10"
         icon={
           <Icon name="icon-Empty_white_post" style={{ width: '164px', height: '164px' }}></Icon>
         }
@@ -198,7 +198,7 @@ const OrderList = () => {
     return (
       <Empty
         title="You haven't purchased any post yet."
-        className="w-full fixed top-[63%] left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+        className="w-full mt-10"
         icon={
           <Icon name="icon-Empty_white_purchase" style={{ width: '164px', height: '164px' }}></Icon>
         }

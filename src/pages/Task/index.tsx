@@ -145,7 +145,7 @@ const TaskButton: React.FC<{
   const handleClaimAllTask = () => {
     haptic()
     setIsConfetti?.(true)
-    // runClaimAllTask()
+    runClaimAllTask()
   }
 
   const handleClaimTask = () => {

@@ -252,7 +252,6 @@ const Tasks: FC = () => {
   const toast = useToast()
   const toastIdRef = useRef<string | number | undefined>()
   const tooltipRef = useRef<HTMLDivElement>(null)
-  const { shareLink } = useTMAUtils()
 
   const isAllFollowTasksClaimed = followTaskList.every(
     (task) => task.status === DailyTaskStatusEnum.CLAIMED
@@ -285,8 +284,6 @@ const Tasks: FC = () => {
       const action = goToAction(task)
       if (action) {
         navigate(action)
-      } else if (task.task_type === TaskType.NewPost) {
-        shareLink(COMMUNITY_LINK)
       }
     }
   }
@@ -413,7 +410,7 @@ const Tasks: FC = () => {
 }
 
 const FollowTask: React.FC<{ successToast: () => void }> = ({ successToast }) => {
-  const { openLink } = useTMAUtils()
+  const { openLink, shareLink } = useTMAUtils()
 
   const { runGetFollowTask } = useGetFollowTask()
   const { followTaskList, updateFollowTask } = useStore((state) => ({
@@ -432,6 +429,8 @@ const FollowTask: React.FC<{ successToast: () => void }> = ({ successToast }) =>
       followX()
     } else if (task.task_type === 14) {
       followInstagram()
+    } else if (task.task_type === POST_CHANNEL) {
+      shareLink(COMMUNITY_LINK)
     }
   }
 

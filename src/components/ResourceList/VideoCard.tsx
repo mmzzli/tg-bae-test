@@ -125,7 +125,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
                 p="4px 10px"
                 gap="4px"
                 rounded="20px"
-                zIndex={2}
+                zIndex={4}
               >
                 <i className="iconfont icon-a-Frame2085661742 text-[12px] text-white"></i>
                 <Text color="white" fontSize="14px">

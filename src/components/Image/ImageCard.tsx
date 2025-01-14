@@ -89,12 +89,12 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
         {data.uid !== getCurrentUid() && !data.is_pay && data.price > 0 && (
           <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} />
         )}
-        {data && data.pic_num && data.pic_num > 1 ? (
+        {data && data.type === 1 ? (
           <div className={'absolute z-10 top-0 right-0'}>
             <HStack
               borderRadius="4px"
               bg="rgba(0, 0, 0, 0.40)"
-              zIndex={2}
+              zIndex={4}
               position="absolute"
               top="12px"
               right="12px"

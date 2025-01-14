@@ -133,7 +133,7 @@ const SendRewardPage = () => {
                 whileTap={{ cursor: 'grabbing' }}
               >
                 <span ref={textRef} className="whitespace-nowrap">
-                  {balanceFormat}123123
+                  {balanceFormat}
                 </span>
               </motion.div>
             </div>

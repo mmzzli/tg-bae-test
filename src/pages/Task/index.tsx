@@ -13,6 +13,7 @@ import { useTMAUtils } from '@/hooks/useTMAUtils'
 import BottomCloseModal from '@/components/TaskPointsDialog'
 import PointsAlertIcon from '@/assets/image/task/points-alert-icon.png'
 import { getTaskPoints } from '@/api/list'
+import { COMMUNITY_LINK } from '@/utils/constants'
 
 enum TaskType {
   ClaimAll = 11,
@@ -21,6 +22,8 @@ enum TaskType {
 }
 
 const FOLLOW_X = 13
+const FOLLOW_INS = 14
+const POST_CHANNEL = 16
 
 const goToAction = (task: DailyTaskItem) => {
   switch (task.task_type) {
@@ -46,6 +49,7 @@ const getTaskIcon = (task: DailyTaskItem) => {
   const dateIcon = <i className="iconfont icon-icon_daily  text-[20px]"></i>
   const unlockIcon = <i className="iconfont icon-icon_money  text-[20px]"></i>
   const claimAllIcon = <i className="iconfont icon-Frame1  text-[20px]"></i>
+  const postChannelIcon = <i className="iconfont icon-post  text-[20px]"></i>
 
   const xIcon = <i className="iconfont icon-icon_x text-[20px]"></i>
   const insIcon = <i className="iconfont icon-ins text-[20px]"></i>
@@ -76,6 +80,8 @@ const getTaskIcon = (task: DailyTaskItem) => {
       return xIcon
     case 14:
       return insIcon
+    case 16:
+      return postChannelIcon
     default:
       return null
   }
@@ -246,6 +252,7 @@ const Tasks: FC = () => {
   const toast = useToast()
   const toastIdRef = useRef<string | number | undefined>()
   const tooltipRef = useRef<HTMLDivElement>(null)
+  const { shareLink } = useTMAUtils()
 
   const isAllFollowTasksClaimed = followTaskList.every(
     (task) => task.status === DailyTaskStatusEnum.CLAIMED
@@ -278,6 +285,8 @@ const Tasks: FC = () => {
       const action = goToAction(task)
       if (action) {
         navigate(action)
+      } else if (task.task_type === TaskType.NewPost) {
+        shareLink(COMMUNITY_LINK)
       }
     }
   }
@@ -447,7 +456,8 @@ const FollowTask: React.FC<{ successToast: () => void }> = ({ successToast }) =>
 
   const handleTaskToClaimed = (task: DailyTaskItem) => {
     handleTaskAction(task)
-    runFollowTaskToClaimed(task.task_type === FOLLOW_X ? 'x' : 'ins')
+    const taskName = task.task_type === FOLLOW_X ? 'x' : task.task_type === FOLLOW_INS ? 'ins' : 'channel'
+    runFollowTaskToClaimed(taskName)
   }
 
   const handleClaimTask = (task: DailyTaskItem) => {

@@ -32,7 +32,7 @@ export interface DailyTaskItem {
   total_amount: number
 }
 
-const followTaskId = [13, 14]
+const followTaskId = [13, 14, 16]
 
 export interface SystemSlice {
   virtualRoutePage: RoutePage | null

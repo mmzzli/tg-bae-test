@@ -1,14 +1,16 @@
+import { FC, useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { claimTask, claimAllTasks, setFollowTaskToClaimed, claimFollowTask } from '@/api'
+import Confetti from 'react-confetti'
+import { Box, useToast } from '@chakra-ui/react'
+import { postEvent } from '@telegram-apps/sdk'
+import { useRequest } from 'ahooks'
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import { useGetDailyTask, useDailyTaskStatus, useGetFollowTask } from '@/hooks/useDailyTask'
 import { useStore } from '@/store'
 import { DailyTaskItem, DailyTaskStatusEnum } from '@/store/slices/systemSlice'
-import { Box, useToast } from '@chakra-ui/react'
-import { postEvent } from '@telegram-apps/sdk'
-import { useRequest } from 'ahooks'
-import { FC, useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import BottomCloseModal from '@/components/TaskPointsDialog'
 import PointsAlertIcon from '@/assets/image/task/points-alert-icon.png'
@@ -92,7 +94,8 @@ const TaskButton: React.FC<{
   onClick: () => void
   afterClaim?: () => void
   claim?: (task: DailyTaskItem) => void
-}> = ({ task, onClick, afterClaim, claim }) => {
+  setIsConfetti?: (show: boolean) => void
+}> = ({ task, onClick, afterClaim, claim, setIsConfetti }) => {
   const { runGetDailyTask } = useGetDailyTask()
   const { updateDailyTask, dailyTaskList } = useStore((state) => ({
     updateDailyTask: state.updateDailyTask,
@@ -113,6 +116,12 @@ const TaskButton: React.FC<{
     afterClaim?.()
   }
 
+  const onClaimAllSuccess = () => {
+    runGetDailyTask()
+    afterClaim?.()
+    setIsConfetti?.(true)
+  }
+
   const { run: runClaimTask, loading: claimTaskLoading } = useRequest(claimTask, {
     manual: true,
     onSuccess() {
@@ -123,7 +132,7 @@ const TaskButton: React.FC<{
   const { run: runClaimAllTask, loading: claimAllTaskLoading } = useRequest(claimAllTasks, {
     manual: true,
     onSuccess() {
-      onClaimSuccess()
+      onClaimAllSuccess()
     },
   })
 
@@ -135,7 +144,8 @@ const TaskButton: React.FC<{
   }
   const handleClaimAllTask = () => {
     haptic()
-    runClaimAllTask()
+    setIsConfetti?.(true)
+    // runClaimAllTask()
   }
 
   const handleClaimTask = () => {
@@ -202,7 +212,8 @@ const TaskItem: React.FC<{
   onTaskAction: (task: DailyTaskItem) => void
   afterClaim?: () => void
   claim?: (task: DailyTaskItem) => void
-}> = ({ task, onTaskAction, afterClaim, claim }) => {
+  setIsConfetti?: (show: boolean) => void
+}> = ({ task, onTaskAction, afterClaim, claim, setIsConfetti }) => {
   return (
     <div className="flex items-center justify-between bg-[#F7F9FC] p-4 rounded-lg transform transition-transform duration-500">
       <div className="flex items-center">
@@ -219,6 +230,7 @@ const TaskItem: React.FC<{
         onClick={() => onTaskAction(task)}
         afterClaim={afterClaim}
         claim={claim}
+        setIsConfetti={setIsConfetti}
       />
     </div>
   )
@@ -227,6 +239,7 @@ const TaskItem: React.FC<{
 const Tasks: FC = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [taskPoints, setTaskPoints] = useState(0)
+  const [isConfetti, setIsConfetti] = useState(false)
   const navigate = useNavigate()
   const {
     dailyTaskList,
@@ -319,6 +332,15 @@ const Tasks: FC = () => {
     }
   }, [])
 
+  useEffect(() => {
+    if (isConfetti) {
+      const timer = setTimeout(() => {
+        setIsConfetti(false)
+      }, 10000)
+      return () => clearTimeout(timer)
+    }
+  }, [isConfetti])
+
   return (
     <div className="p-6 bg-white overflow-auto h-full scrollbar-hide">
       {/* title */}
@@ -326,11 +348,30 @@ const Tasks: FC = () => {
       <BottomCloseModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <Box className="flex items-center justify-center flex-col">
           <img src={PointsAlertIcon} alt="points" className="w-[168px] h-[136px]" />
-          <p className="text-center font-[Switzer] text-[20px] font-[700] leading-[130%] text-[#121212] capitalize my-[12px]">congrats !</p>
-          <p className="text-center font-[Switzer] text-[16px] font-[400] leading-[120%] text-[#666)] mb-[24px]">
-            You have won <span style={{ color: '#6254FF', fontFamily: 'Roboto', fontSize: '16px', fontStyle: 'normal', fontWeight: '600', lineHeight: '120%' }}>{taskPoints}</span> Bae points.
+          <p className="text-center font-[Switzer] text-[20px] font-[700] leading-[130%] text-[#121212] capitalize my-[12px]">
+            congrats !
           </p>
-          <BaseButton text="Got it" handler={() => setIsOpen(false)} className="w-[270px] h-[48px]" />
+          <p className="text-center font-[Switzer] text-[16px] font-[400] leading-[120%] text-[#666)] mb-[24px]">
+            You have won{' '}
+            <span
+              style={{
+                color: '#6254FF',
+                fontFamily: 'Roboto',
+                fontSize: '16px',
+                fontStyle: 'normal',
+                fontWeight: '600',
+                lineHeight: '120%',
+              }}
+            >
+              {taskPoints}
+            </span>{' '}
+            Bae points.
+          </p>
+          <BaseButton
+            text="Got it"
+            handler={() => setIsOpen(false)}
+            className="w-[270px] h-[48px]"
+          />
         </Box>
       </BottomCloseModal>
       <div className="mb-4 flex flex-col items-center justify-center">
@@ -400,11 +441,12 @@ const Tasks: FC = () => {
             task={task}
             onTaskAction={handleTaskAction}
             afterClaim={successToast}
+            setIsConfetti={setIsConfetti}
           />
         ))}
       </div>
-
       {isAllFollowTasksClaimed && <FollowTask successToast={successToast} />}
+      {isConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} recycle={false} tweenDuration={7000}/>}
     </div>
   )
 }

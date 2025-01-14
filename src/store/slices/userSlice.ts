@@ -49,6 +49,11 @@ const initialUserInfo: IUserInfo = {
   follower: 0,
   fans: 0,
   api_token: '',
+  background_img: {
+    url: '',
+    width: 0,
+    height: 0
+  }
 }
 
 const initialOthersUserInfo: OthersUserInfo & { user_id: number } = {

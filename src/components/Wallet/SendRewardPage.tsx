@@ -4,8 +4,9 @@ import { TransferPanel } from './TransferPanel'
 import { isMobileDevice } from '@/utils/utils'
 import TokenIcon from './TokenIcon'
 import PriceService from '@/utils/wallet/PriceService'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useAccount, useBalance } from 'wagmi'
+import { motion } from 'framer-motion'
 const SendRewardPage = () => {
   const { virtualRoutePage, resetVirtualRoutePage } = useStore((state) => ({
     virtualRoutePage: state.virtualRoutePage,
@@ -23,6 +24,10 @@ const SendRewardPage = () => {
     chainName,
     uid,
   } = virtualRoutePage?.params || {}
+
+  const textRef = useRef<HTMLSpanElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [dragConstraints, setDragConstraints] = useState({ left: 0, right: 0 })
 
   const { address: account } = useAccount()
 
@@ -58,9 +63,25 @@ const SendRewardPage = () => {
   }, [accountBalance])
 
   useEffect(() => {
+    setTimeout(() => {
+      if (textRef.current && containerRef.current) {
+        const textWidth = textRef.current.offsetWidth
+        const containerWidth = containerRef.current.offsetWidth
+        const overflow = textWidth - containerWidth
+        console.log('textWidth', textWidth)
+        console.log('containerWidth', containerWidth)
+        if (overflow > 0) {
+          setDragConstraints({ left: -overflow, right: 0 })
+        } else {
+          setDragConstraints({ left: 0, right: 0 })
+        }
+      }
+    }, 0)
+  }, [balanceFormat])
+
+  useEffect(() => {
     refetchBalance()
   }, [])
-
   const price = PriceService.getInstance().getPrice(token)
   return (
     <div
@@ -103,10 +124,21 @@ const SendRewardPage = () => {
             <TokenIcon token={token} chainName={chainName} size="32px" />
           </div>
           <span className="text-[#616184] text-nowrap">Balance :&nbsp;</span>
-          <span className="dark:text-white text-[#12122A] flex-1 text-nowrap overflow-hidden">
-            {balanceFormat} &nbsp;
-            {token}
-          </span>
+          <div className="dark:text-white text-[#12122A] flex-1 text-nowrap overflow-hidden flex">
+            <div ref={containerRef} className="flex-1 overflow-x-auto no-scrollbar">
+              <motion.div
+                drag="x"
+                dragConstraints={dragConstraints}
+                dragElastic={0.2}
+                whileTap={{ cursor: 'grabbing' }}
+              >
+                <span ref={textRef} className="whitespace-nowrap">
+                  {balanceFormat}123123
+                </span>
+              </motion.div>
+            </div>
+            <span className="whitespace-nowrap">&nbsp;{token}</span>
+          </div>
         </div>
 
         <TransferPanel

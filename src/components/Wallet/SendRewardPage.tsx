@@ -4,6 +4,8 @@ import { TransferPanel } from './TransferPanel'
 import { isMobileDevice } from '@/utils/utils'
 import TokenIcon from './TokenIcon'
 import PriceService from '@/utils/wallet/PriceService'
+import { useEffect, useMemo } from 'react'
+import { useAccount, useBalance } from 'wagmi'
 const SendRewardPage = () => {
   const { virtualRoutePage, resetVirtualRoutePage } = useStore((state) => ({
     virtualRoutePage: state.virtualRoutePage,
@@ -22,14 +24,44 @@ const SendRewardPage = () => {
     uid,
   } = virtualRoutePage?.params || {}
 
+  const { address: account } = useAccount()
+
+  const { data: accountBalance, refetch: refetchBalance } = useBalance({
+    query: {
+      enabled: false,
+      retry: 3,
+      retryDelay: 1000,
+      refetchOnWindowFocus: false,
+      refetchOnMount: true,
+      refetchOnReconnect: false,
+      refetchInterval: 20000,
+    },
+    address: account,
+    ...(token.isNative
+      ? { chainId: token.chainId }
+      : { token: address as `0x${string}`, chainId: token.chainId }),
+  })
+
   const handleAmountChange = (amount: string) => {
-    console.log('Amount changed:', amount, balance)
+    if (amount === '') {
+      refetchBalance()
+    }
   }
 
+  const balanceFormat = useMemo(() => {
+    console.log('accountBalance', accountBalance)
+    return accountBalance?.formatted
+      ? Number(accountBalance.formatted).toString().split('.')[1]?.length > 6
+        ? Number(accountBalance.formatted).toFixed(6)
+        : Number(accountBalance.formatted).toString()
+      : '0'
+  }, [accountBalance])
+
+  useEffect(() => {
+    refetchBalance()
+  }, [])
+
   const price = PriceService.getInstance().getPrice(token)
-
-  console.log('price', price)
-
   return (
     <div
       className="fixed top-0 left-0 bottom-0 right-0 bg-white z-[9999] px-[20px]"
@@ -66,18 +98,13 @@ const SendRewardPage = () => {
         </div>
 
         {/* Token Balance */}
-        <div className="flex items-center justify-center h-[48px] mt-8 w-[205px] rounded-full overflow-hidden bg-[#F5F5FA] text-sm mb-7">
-          <div className="w-8 h-8 overflow-hidden mr-2">
+        <div className="flex items-center justify-center h-[48px] mt-8 w-[210px] rounded-full overflow-hidden bg-[#F5F5FA] text-sm mb-7 pl-2 pr-4">
+          <div className="w-8 h-8 overflow-hidden mr-2 min-w-8">
             <TokenIcon token={token} chainName={chainName} size="32px" />
           </div>
-          <span className="text-[#616184]">Balance :&nbsp;</span>
-          <span className="dark:text-white text-[#12122A]">
-            {balance?.formatted
-              ? Number(balance.formatted).toString().split('.')[1]?.length > 6
-                ? Number(balance.formatted).toFixed(6)
-                : Number(balance.formatted).toString()
-              : '0.00'}
-            &nbsp;
+          <span className="text-[#616184] text-nowrap">Balance :&nbsp;</span>
+          <span className="dark:text-white text-[#12122A] flex-1 text-nowrap overflow-hidden">
+            {balanceFormat} &nbsp;
             {token}
           </span>
         </div>

@@ -4,9 +4,8 @@ import { TransferPanel } from './TransferPanel'
 import { isMobileDevice } from '@/utils/utils'
 import TokenIcon from './TokenIcon'
 import PriceService from '@/utils/wallet/PriceService'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useAccount, useBalance } from 'wagmi'
-import { motion } from 'framer-motion'
 const SendRewardPage = () => {
   const { virtualRoutePage, resetVirtualRoutePage } = useStore((state) => ({
     virtualRoutePage: state.virtualRoutePage,

@@ -87,11 +87,11 @@ export const MainLayout: React.FC = () => {
   const { run: runLogin } = useRequest(logIn, {
     manual: true,
     onSuccess({ token, api_token, user_info }) {
-      const ageGate = localStorage.getItem(`temp-ageGate-${current_uid}`)
-      localStorage.clear()
-      if(ageGate){
-        localStorage.setItem(`temp-ageGate-${current_uid}`,`${ageGate}`)
-      }
+      // const ageGate = localStorage.getItem(`temp-ageGate-${current_uid}`)
+      // localStorage.clear()
+      // if(ageGate){
+      //   localStorage.setItem(`temp-ageGate-${current_uid}`,`${ageGate}`)
+      // }
       setToken(token)
       setUserInfo({ ...user_info, api_token })
       updateMyFollow()

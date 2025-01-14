@@ -104,25 +104,27 @@ const UserInfo = memo(
         }}
       >
         <div className="flex items-center justify-between">
-          <Image
-            rect={true}
-            type="avatar"
-            src={avatar}
-            alt="avatar"
-            className="w-12 h-12 rounded-full"
-            onClick={handleToProfilePage}
-          />
-          <div className=" flex-col pl-2">
-            <span className="text-white text-[16px]" onClick={handleToProfilePage}>
-              {username}
-            </span>
-            <div className="text-white text-[12px] flex">
-              {created_at && (
-                <span>{getTimeStringAutoShort(new Date(created_at).getTime(), true)}</span>
-              )}
-              {!is_follow && current_uid !== uid && (
-                <div className="pl-1.5 text-white text-[12px]">Bae selected</div>
-              )}
+          <div className="flex items-center">
+            <Image
+              rect={true}
+              type="avatar"
+              src={avatar}
+              alt="avatar"
+              className="w-12 h-12 rounded-full"
+              onClick={handleToProfilePage}
+            />
+            <div className=" flex-col pl-2">
+              <span className="text-white text-[16px]" onClick={handleToProfilePage}>
+                {username}
+              </span>
+              <div className="text-white text-[12px] flex">
+                {created_at && (
+                  <span>{getTimeStringAutoShort(new Date(created_at).getTime(), true)}</span>
+                )}
+                {!is_follow && current_uid !== uid && (
+                  <div className="pl-1.5 text-white text-[12px]">Bae selected</div>
+                )}
+              </div>
             </div>
           </div>
           <div className="pl-4">

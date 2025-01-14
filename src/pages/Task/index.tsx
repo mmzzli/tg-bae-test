@@ -425,11 +425,13 @@ const FollowTask: React.FC<{ successToast: () => void }> = ({ successToast }) =>
   }
 
   const handleTaskAction = (task: DailyTaskItem) => {
+    console.log('handleTaskAction....', task)
     if (task.task_type === 13) {
       followX()
     } else if (task.task_type === 14) {
       followInstagram()
     } else if (task.task_type === POST_CHANNEL) {
+      console.log('shareLink....', COMMUNITY_LINK)
       shareLink(COMMUNITY_LINK)
     }
   }
@@ -454,6 +456,7 @@ const FollowTask: React.FC<{ successToast: () => void }> = ({ successToast }) =>
   })
 
   const handleTaskToClaimed = (task: DailyTaskItem) => {
+    console.log('handleTaskToClaimed....', task)
     handleTaskAction(task)
     const taskName = task.task_type === FOLLOW_X ? 'x' : task.task_type === FOLLOW_INS ? 'ins' : 'channel'
     runFollowTaskToClaimed(taskName)

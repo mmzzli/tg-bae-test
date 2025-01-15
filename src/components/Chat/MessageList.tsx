@@ -10,6 +10,8 @@ import { OthersUserInfo } from '@/types/postTypes'
 import { PullMode } from '../SDK/BaeimSDK'
 import { useStore } from '@/store'
 import { useIM } from '@/store/hook/userIM'
+import Tooltip from '@/components/LoogPressToolTip'
+
 interface MessageListProps {
   messages: WrappedMessage[]
   loadMore?: () => void
@@ -25,6 +27,7 @@ export const MessageList = ({ messages, className, channelInfo }: MessageListPro
   const { updateMessage } = useIM()
   const [hasMore, setHasMore] = useState(true)
   const prevMessagesLengthRef = useRef(messages.length)
+
 
   const maintainScrollPosition = useCallback(() => {
     if (scrollRef.current && messages.length > prevMessagesLengthRef.current) {
@@ -107,14 +110,16 @@ export const MessageList = ({ messages, className, channelInfo }: MessageListPro
             />
           </div>
         )}
-        <div
-          className={`overflow-hidden rounded-lg max-w-[255px]
+        <Tooltip content={message} delay={800}>
+          <div
+            className={`overflow-hidden rounded-lg max-w-[255px]
             ${isCurrentUser && message.type === MessageType.TEXT ? 'bg-[#6254ff] dark:bg-[#4A3AFF] text-white' : 'dark:bg-[#303030] bg-[#F1F1F1] text-[#333333] dark:text-white'}
             ${message.type === MessageType.TEXT ? 'p-3' : 'inline-block'}
           `}
         >
-          <MessageRender message={message} />
-        </div>
+            <MessageRender message={message} />
+          </div>
+        </Tooltip>
       </div>
     )
   )

@@ -264,7 +264,7 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
         {getStatusText()}
       </div>
       {isChatListLoaded && conversationIds.length > 0 && (
-        <div className="flex-1 overflow-auto scrollbar-hide">
+        <div className="flex-1 overflow-auto scrollbar-hide pt-9">
           <ConversationList ids={conversationIds} resetTrigger={resetTrigger} />
           <div className="h-[40px]"></div>
         </div>

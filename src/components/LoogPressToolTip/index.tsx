@@ -39,7 +39,7 @@ const Tooltip: React.FC<TooltipProps> = ({ content, children, delay = 500 }) => 
   }, [visible])
 
   const showTooltip = () => {
-    if (targetRef.current) {
+    if (targetRef.current && !content.url) {
       const rect = targetRef.current.getBoundingClientRect()
       setPosition({
         top: rect.top - 36, // 向上偏移多一点，为箭头留空间

@@ -20,6 +20,7 @@ import { MessageType } from '../Chat/types'
 import { useFormatMessage } from '@/hooks/useFormatMessage'
 import { useIM } from '@/store/hook/userIM'
 import BigNumber from 'bignumber.js'
+import { useDailyTaskActions } from '@/hooks/useDailyTask'
 
 export const SendRewardButton = ({
   amount,
@@ -46,6 +47,8 @@ export const SendRewardButton = ({
 }) => {
   const slideButtonRef = useRef<SlideButtonHandle>(null)
   const [showAllowance, setShowAllowance] = useState(false)
+
+  const { runDailyChat } = useDailyTaskActions()
 
   const { data: hash, error, writeContract } = useWriteContract()
   const { address } = useAccount()
@@ -249,6 +252,7 @@ export const SendRewardButton = ({
         },
       })
       sendMessage(newMessage)
+      runDailyChat()
       toast({
         render: () => <CustomToast title="Sent" type={typeOptions.success} />,
         position: 'bottom',

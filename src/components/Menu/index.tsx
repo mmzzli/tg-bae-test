@@ -1,8 +1,9 @@
-import { memo, useCallback, type FC } from 'react'
+import { memo, type FC } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import MenuItem from './MenuItem'
 import ChatMenuItem from './ChatMenuItem'
+import { PostProgressBar } from '../NewPost/PostProgressBar'
 
 interface NavItem {
   icon: string
@@ -53,6 +54,7 @@ const Menu: FC = () => {
   console.log('menu render')
   return (
     <div className="fixed bottom-0 left-0 w-full p-0 h-[84px] pt-3 border-t bg-white dark:bg-[#0D0D0D] border-[#DEDEDE] dar:border-[#212121] z-[9]">
+      <PostProgressBar />
       <div className="flex justify-around items-center">
         {navList.map((item, index) => {
           const ItemComponent = item.component || MenuItem

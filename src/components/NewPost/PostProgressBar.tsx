@@ -60,7 +60,7 @@ export const PostProgressBar = () => {
   if (uploadThreads.length === 0) return null
 
   return (
-    <div className="fixed top-0 left-0 right-0" style={{ height: '2px', zIndex: 999 }}>
+    <div className="absolute left-0 right-0" style={{ height: '2px', top: '-1px' }}>
       <div
         className="h-full bg-[#6254FF] transition-all duration-300 ease-in-out"
         style={{ width: `${progress * 100}%` }}

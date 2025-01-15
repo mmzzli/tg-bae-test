@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom'
 import axios, { AxiosResponse } from 'axios'
 import { postResources, postReq } from '@/api'
 import StarsPage from '@/components/NewPost/Stars'
+import AddPreview from '@/components/NewPost/AddPreview'
 import { PostIcon, PostAddIcon, RemoveIcon, VideoSwitchIcon } from '@/assets/icons'
 import { useStore } from '@/store'
 import VideoFrameSelector from '@/components/NewPost/VideoFrameSelector1'
@@ -637,6 +638,7 @@ export const NewPost: FC = () => {
             setIsFocused={setIsFocused}
             />
         </Box>
+        {price && price > 0 && <AddPreview videoRef={videoRefCover} setCover={setCover} videoSrc={videoSrc || ""} />}
         <StarsPage setPrice={setPrice} price={price || 0} />
       </Box>
       <Box h={`${isFocused ? '700px' : ''}`}></Box>

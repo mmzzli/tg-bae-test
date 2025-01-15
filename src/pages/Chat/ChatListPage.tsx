@@ -64,9 +64,9 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
       case ConnectStatus.Connected:
         return ''
       case ConnectStatus.ConnectKick:
-        return 'kick'
+        return 'kicked'
       case ConnectStatus.Disconnect:
-        return 'connecting...'
+        return 'disconnected'
       case ConnectStatus.Connecting:
         return 'connecting...'
       case ConnectStatus.ConnectFail:
@@ -133,6 +133,19 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
         })
         sdk.start()
         setConnection(sdk)
+
+        // setIsChatListLoaded(true)
+        // const res = await sdk.getAllConversation()
+        // setConversation(sortConversations(res))
+        // res.forEach((conversation) => {
+        //   addMessageWindowListItem(
+        //     {
+        //       channel: conversation.channel,
+        //       messages: conversation.recents?.map(getWrappedMessage).reverse() ?? [],
+        //     },
+        //     true
+        //   )
+        // })
 
         removeConnectionStatusListener = sdk.addConnectionStatusListener(async (status) => {
           setStatus(status)
@@ -239,14 +252,13 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
       )}
       onClick={handleContainerClick}
       style={{
-        paddingTop:
-          'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 36px)',
+        paddingTop: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
       }}
     >
       <div
-        className="absolute left-0 right-0 h-[32px] pl-6 text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-black flex items-center justify-center"
+        className="absolute left-0 right-0 h-[32px] pl-6 text-sm text-gray-400 dark:text-gray-200 bg-white dark:bg-black flex items-center justify-center"
         style={{
-          top: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
+          top: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) - 32px)',
         }}
       >
         {getStatusText()}

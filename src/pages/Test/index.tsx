@@ -1,165 +1,109 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useRef } from 'react';
 
-const VideoCoverSelector: React.FC = () => {
-  const videoRef = useRef<HTMLVideoElement | null>(null); // 视频引用
-  const canvasRef = useRef<HTMLCanvasElement | null>(null); // Canvas 引用
-  const [videoUrl, setVideoUrl] = useState<string | null>(null); // 视频 URL
-  const [selectedFrame, setSelectedFrame] = useState<string | null>(null); // 已选封面
-  const [duration, setDuration] = useState<number>(0); // 视频总时长
-  const [currentTime, setCurrentTime] = useState<number>(0); // 当前播放时间
+const TransparentSlider = () => {
+  const [selectedTime, setSelectedTime] = useState(0);
+  const sliderRef = useRef<HTMLDivElement | null>(null);
+  const isDraggingRef = useRef<boolean>(false); // 判断是否正在拖动
 
-  // 上传视频
-  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setVideoUrl(url);
+  const videoDuration = 120; // 视频总时长（秒）
+
+  // 计算滑块当前的时间
+  const getSelectedTime = (clientX: number) => {
+    const slider = sliderRef.current;
+    if (slider) {
+      const rect = slider.getBoundingClientRect();
+      const offsetX = Math.min(Math.max(clientX - rect.left, 0), rect.width);
+      return (offsetX / rect.width) * videoDuration;
     }
+    return 0;
   };
 
-  // 渲染视频帧到 Canvas
-  const renderFrameToCanvas = (): void => {
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
+  const handleMove = (e: MouseEvent | TouchEvent) => {
+    if (!isDraggingRef.current) return;
 
-    if (video && canvas) {
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        // 获取 Canvas 的显示区域宽高
-        const displayWidth = canvas.clientWidth;
-        const displayHeight = canvas.clientHeight;
-
-        // 获取视频的宽高
-        const videoWidth = video.videoWidth;
-        const videoHeight = video.videoHeight;
-
-        // 计算视频的宽高比
-        const videoRatio = videoWidth / videoHeight;
-        const canvasRatio = displayWidth / displayHeight;
-
-        let renderWidth, renderHeight;
-
-        if (canvasRatio > videoRatio) {
-          // 如果 Canvas 宽高比大于视频宽高比，宽度为 Canvas 宽度，高度按比例调整
-          renderWidth = displayWidth;
-          renderHeight = displayWidth / videoRatio;
-        } else {
-          // 如果 Canvas 宽高比小于视频宽高比，高度为 Canvas 高度，宽度按比例调整
-          renderHeight = displayHeight;
-          renderWidth = displayHeight * videoRatio;
-        }
-
-        // 清空画布并渲染视频帧
-        ctx.clearRect(0, 0, canvas.width, canvas.height); // 清空画布
-
-        // 使视频帧填充整个 Canvas
-        ctx.drawImage(video, 0, 0, videoWidth, videoHeight,
-                      (displayWidth - renderWidth) / 2,
-                      (displayHeight - renderHeight) / 2,
-                      renderWidth, renderHeight);
-      }
-    }
+    const clientX = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
+    const time = getSelectedTime(clientX);
+    setSelectedTime(time);
   };
 
-  // 初始化视频和时长
-  useEffect(() => {
-    const video = videoRef.current;
-    if (video) {
-      const handleLoadedMetadata = () => {
-        setDuration(video.duration);
-        setCurrentTime(0);
-      };
-
-      const handleCanPlay = () => {
-        renderFrameToCanvas(); // 渲染视频的第一帧
-      };
-
-      video.addEventListener("loadedmetadata", handleLoadedMetadata);
-      video.addEventListener("canplay", handleCanPlay);
-
-      return () => {
-        video.removeEventListener("loadedmetadata", handleLoadedMetadata);
-        video.removeEventListener("canplay", handleCanPlay);
-      };
-    }
-  }, [videoUrl]);
-
-  // 同步滑块和视频播放时间
-  const handleSliderChange = (value: React.FormEvent<HTMLInputElement>): void => {
-    const video = videoRef.current;
-    if (video) {
-      video.currentTime = Number(value);
-      setCurrentTime(Number(value));
-      renderFrameToCanvas(); // 渲染当前帧
-    }
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    isDraggingRef.current = true;
+    document.addEventListener('mousemove', handleMove);
+    document.addEventListener('mouseup', handleMouseUp);
   };
 
-  // 捕获当前帧作为封面
-  const captureFrame = (): void => {
-    const canvas = canvasRef.current;
-    if (canvas) {
-      const frameData = canvas.toDataURL("image/png");
-      setSelectedFrame(frameData);
-    }
+  const handleTouchStart = (e: React.TouchEvent) => {
+    e.preventDefault();
+    isDraggingRef.current = true;
+    document.addEventListener('touchmove', handleMove);
+    document.addEventListener('touchend', handleTouchEnd);
+  };
+
+  const handleMouseUp = () => {
+    isDraggingRef.current = false;
+    document.removeEventListener('mousemove', handleMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleTouchEnd = () => {
+    isDraggingRef.current = false;
+    document.removeEventListener('touchmove', handleMove);
+    document.removeEventListener('touchend', handleTouchEnd);
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
+    const clientX = e.clientX;
+    const time = getSelectedTime(clientX);
+    setSelectedTime(time);
   };
 
   return (
-    <div>
-      {/* 上传视频 */}
-      <input type="file" accept="video/*" onChange={handleVideoUpload} />
-
-      {videoUrl && (
-        <div>
-          {/* 视频元素 */}
-          <video
-            ref={videoRef}
-            src={videoUrl}
-            style={{ display: "none", width: "243px", height: "315px" }} // 固定尺寸
-            preload="auto" // 改为 'auto' 以便加载完整视频数据
-            playsInline // 移动端内联播放
-          />
-
-          {/* 显示视频帧的 Canvas */}
-          <canvas
-            ref={canvasRef}
-            width={243} // 固定宽度
-            height={315} // 固定高度
-            style={{
-              border: "1px solid black",
-              marginTop: "10px",
-              display: "block",
-              backgroundColor: "#000", // 提供黑色背景
-              width: "243px", // 固定宽度
-              height: "315px", // 固定高度
-            }}
-          ></canvas>
-
-          {/* 时间滑块 */}
-          <div style={{ marginTop: "10px" }}>
-            <input
-              type="range"
-              min="0"
-              max={duration || 0}
-              step="0.1"
-              value={currentTime}
-              onInput={(e: any) => handleSliderChange(e.target.value)} // 即时响应滑动
-            />
-          </div>
-
-          {/* 捕获按钮 */}
-          <button onClick={captureFrame}>选择当前帧作为封面</button>
-        </div>
-      )}
-
-      {/* 显示选定的封面 */}
-      {selectedFrame && (
-        <div style={{ marginTop: "20px" }}>
-          <h3>选定的封面</h3>
-          <img src={selectedFrame} alt="Selected Frame" style={{ width: "200px" }} />
-        </div>
-      )}
+    <div
+      style={{
+        padding: '20px',
+        textAlign: 'center',
+        background: 'url(https://via.placeholder.com/800x400) no-repeat center',
+        backgroundSize: 'cover',
+        height: '400px',
+      }}
+    >
+      <h1 style={{ color: '#000' }}>视频封面选择器</h1>
+      <div
+        ref={sliderRef}
+        onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
+        onClick={handleClick} // 点击区域直接跳到时间
+        style={{
+          position: 'relative',
+          width: '80%',
+          height: '10px',
+          background: 'rgba(0, 0, 0, 0.2)', // 背景改为黑色
+          borderRadius: '5px',
+          margin: '20px auto',
+          cursor: 'pointer',
+        }}
+      >
+        {/* 滑块 */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '-25px',
+            left: `${(selectedTime / videoDuration) * 100}%`,
+            width: '50px',
+            height: '50px',
+            border: '2px solid #00f', // 边框颜色保持不变
+            backgroundColor: 'rgba(0, 0, 0, 0.5)', // 背景色改为黑色
+            borderRadius: '10px',
+            transform: 'translate(-50%, 0)',
+            boxShadow: '0 0 10px rgba(0, 0, 255, 0.5)',
+            pointerEvents: 'none',
+          }}
+        />
+      </div>
+      <p style={{ color: '#000' }}>选中时间：{selectedTime.toFixed(1)} 秒</p>
     </div>
   );
 };
 
-export default VideoCoverSelector;
+export default TransparentSlider;

@@ -118,7 +118,7 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsF
         fontSize="14px"
         border="none"
         placeholder="Say something ..."
-        h="80px"
+        h="280px"
       />
       {featureBoll && showMentionList && filteredCandidates.length > 0 && (
         <ul

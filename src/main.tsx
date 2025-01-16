@@ -30,7 +30,15 @@ if (import.meta.env.MODE === 'production') {
     gtag('config', 'G-XPKLLC0SSN');
   `
   document.head.appendChild(inlineScript)
+
+  // Add Umami Analytics
+  const umamiScript = document.createElement('script')
+  umamiScript.setAttribute('defer', '')
+  umamiScript.src = 'https://cloud.umami.is/script.js'
+  umamiScript.setAttribute('data-website-id', '9895842a-d518-414e-80b4-6d1f8166d9f4')
+  document.head.appendChild(umamiScript)
 }
+
 Sentry.init({
   dsn: 'https://0201b69ad2e7cf4be3c444e2782ed79f@o4508635704590336.ingest.us.sentry.io/4508635707211776',
   integrations: [Sentry.browserTracingIntegration(), Sentry.replayIntegration()],

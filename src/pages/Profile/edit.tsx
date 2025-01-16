@@ -151,7 +151,6 @@ const ProfileEdit: FC = () => {
             Authorization: `Bearer ${token}`,
           },
         })
-        console.log(response.data)
         setInitLoading(false)
         setProfileData((prevData) => ({
           ...prevData,
@@ -189,7 +188,6 @@ const ProfileEdit: FC = () => {
             Authorization: `Bearer ${token}`,
           },
         })
-        console.log(response.data)
         setInitLoading(false)
         setProfileData((prevData) => ({
           ...prevData,
@@ -282,8 +280,6 @@ const ProfileEdit: FC = () => {
     }
   }, [isFocused])
 
-  console.log(profileData, '=========')
-  console.log(showTopTitle, '======>')
   return (
     <div
       className="relative  w-screen  bg-[#fff] overflow-auto scrollbar-hide"
@@ -331,13 +327,16 @@ const ProfileEdit: FC = () => {
           }`,
         }}
       >
-        {userInfo?.username}
+        Profile
       </h3>
       <div
         ref={titleRef}
         className="content-area absolute top-[134px] pt-[24px] px-[16px] pb-[63px] left-0 w-full h-full  bg-white dark:bg-black"
       >
-        <h2 className="text-[20px] text-[#0F1233] font-[500]">Profile</h2>
+        <div className={`text-[20px] text-[#0F1233] font-[500] ${showTopTitle ? 'opacity-0' : ''}`}>
+          Profile
+        </div>
+
         {profileData.avatar ? (
           <>
             <div className="mt-[38px]">

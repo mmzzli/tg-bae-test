@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { Box, Flex, Text, IconButton, useBoolean } from '@chakra-ui/react'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useGA4EventTrackingReporting } from '@/hooks/useGA4EventTrackingReporting'
@@ -10,7 +10,7 @@ import { useStore } from '@/store/store'
 
 import { LockIcon, StarsIcon } from '@/assets/icons'
 import { FrostedGlassImg } from '@/assets/image'
-import { botInvoice, logIn, viewPid } from '@/api'
+import { botInvoice, logIn, totalAvailableInvoice, viewPid } from '@/api'
 
 type FrostedGlassProps = {
   price: number
@@ -24,7 +24,16 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
   const { initData } = launchParams
   const [loading, setLoading] = useState<boolean>(false)
   const [isPay, setIsPay] = useState<boolean>(true)
+  const [exchange_rate, setExchangeRate] = useState<number>(0)
   const { trackPurchase } = useGA4EventTrackingReporting()
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await totalAvailableInvoice()
+      setExchangeRate(response.exchange_rate)
+    }
+    fetchData()
+  }, [])
 
   const invoiceEve = async () => {
     setLoading(true)
@@ -67,17 +76,32 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
             trackPurchase({
               transaction_id: `${initData?.user?.id}_${post_id}_${timestamp}`,
               value: price,
+              price: price,
               tg_user_id: String(initData?.user?.id),
               bae_user_name: userInfo.username,
               tg_user_name: initData?.user?.username,
               items: [
                 {
                   item_id: String(post_id),
-                  name: String(post_id),
+                  item_name: String(post_id),
                   price: price,
                   quantity: 1,
                 },
               ],
+            })
+
+            window.umami.track('purchase', {
+              value: price * exchange_rate,
+              price: price * exchange_rate,
+              currency: 'USD',
+              transaction_id: `${initData?.user?.id}_${post_id}_${timestamp}`,
+              item_id: String(post_id),
+              item_name: String(post_id),
+              amount: 1,
+              count: 1,
+              tg_user_id: String(initData?.user?.id),
+              bae_user_name: userInfo.username,
+              tg_user_name: initData?.user?.username,
             })
           } else {
             setLoading(false)

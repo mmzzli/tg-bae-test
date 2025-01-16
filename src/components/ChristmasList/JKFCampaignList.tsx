@@ -6,6 +6,7 @@ import { useStore } from '@/store';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { debounce } from '@/utils/chat/schedulers';
 import { getVoteDetail } from '@/api';
+import { cn } from '@/utils/utils'
 
 interface PostListProps {
   containerRef: React.RefObject<HTMLDivElement>;
@@ -129,18 +130,23 @@ const Campaign = ({ voteDetail }: { voteDetail: VoteDetail }) => {
           {voteDetail.vote?.map((item, index) => (
             <li
               key={index}
-              className={`bg-[${voteNum === index ? '#EDEEFF' : '#F7F9FC'}] px-4 py-4 mt-1 rounded-[6px] relative overflow-hidden`}
+              className={`bg-[#F7F9FC] px-4 py-4 mt-1 rounded-[6px] relative overflow-hidden`}
               onClick={() => voteEve(index)}
             >
-              <div className="flex justify-between relative">
+              <div className={cn(`absolute w-[22%] h-[100%] left-0 top-0 rounded-[6px]`)}
+                style={{ background: voteNum === index ? '#EDEEFF' : '#F0F2F5' }}
+              ></div>
+              <div className={cn(`flex justify-between relative`)}
+                style={{ color: voteNum === index ? '#6254FF' : '#333' }}
+              >
                 <div className="flex gap-2 relative">
-                  <h4 className="text-[14px] text-[#333]">{item.sort}</h4>
-                  <span className="text-[14px] text-[#333]">{item.username}</span>
+                  <h4 className="text-[14px]">{item.sort}</h4>
+                  <span className="text-[14px]">{item.username}</span>
                   {voteNum === index && (
                     <i className="iconfont icon-a-check-line1 text-[22px] text-[#6254FF] absolute right-[-30px] top-[-7px]"></i>
                   )}
                 </div>
-                <span className="text-[14px] text-[#333]">{item.amount}</span>
+                <span className="text-[14px]">{item.amount}</span>
               </div>
             </li>
           ))}

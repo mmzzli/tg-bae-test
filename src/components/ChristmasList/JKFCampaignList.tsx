@@ -3,7 +3,9 @@ import useCacheVideo, { useAllFeaturedList } from '@/store/hook/useResourceList'
 import PostSkeleton from '../Skeketon/PostSkeleton';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom'
+import { Box, HStack, IconButton, useBoolean, Text, useToast } from '@chakra-ui/react'
 
+import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import { useStore } from '@/store';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { debounce } from '@/utils/chat/schedulers';
@@ -116,13 +118,24 @@ const JKFCampaignList = ({ containerRef }: PostListProps) => {
 
 const Campaign = ({ voteDetail, loadVoteDetail }: { voteDetail: VoteDetail, loadVoteDetail: () => void }) => {
   const navigate = useNavigate()
+  const toast = useToast()
+
   const [voteNum, setVoteNum] = useState<number | null>(null);
   const [totalAmount, setTotalAmount] = useState(0)
   const [hasVote, setHasVote] = useState(false)
   const [boll, setBoll] = useState(false)
 
-  const voteEve = async (item: any, index: number) => {
 
+  const voteEve = async (item: any, index: number) => {
+    if(voteDetail.is_end){
+      toast({
+        render: () => {
+          return <CustomToast title="Vote ended" type={typeOptions.warning} />
+        },
+        position: 'bottom',
+      })
+      return
+    }
     if (boll) return
     setBoll(true)
     setVoteNum(index === voteNum ? null : index);

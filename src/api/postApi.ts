@@ -12,6 +12,8 @@ import {
   LinkMetadata,
   totalAvailable,
   AccountdetailRes,
+  VoteReq,
+  VoteRes
 } from '@/types'
 
 export const postResources = (params: PostResourceReq) => {
@@ -119,4 +121,11 @@ export const featured = (params: any) => {
 }
 export const allFeatured = (params: { page_num: number; records: number; type: number }) => {
   return post<FeaturedListRes>(`/api/v1/all_featured`, params)
+}
+
+export const getVoteDetail = () => {
+  return get<any>(`/api/v1/vote_detail`)
+}
+export const postVote = (params:VoteReq) => {
+  return get<VoteRes>(`/api/v1/vote`)
 }

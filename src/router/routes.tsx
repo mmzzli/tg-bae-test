@@ -15,6 +15,7 @@ import { NewPost } from '@/pages/NewPost'
 import ProfileEdit from '@/pages/Profile/edit'
 import Searching from '@/pages/Home/Searching'
 import Christmas from '@/pages/Home/Christmas'
+import JKFCampaign from '@/pages/Home/JKFCampaign'
 import OthersProfile from '@/pages/OthersProfile'
 import ProfileGuard from '@/pages/OthersProfile/routeGuard'
 import MessagePageRouteGuard from '@/pages/Chat/MessagePageRouteGuard'
@@ -42,6 +43,7 @@ export const routes = [
       },
       { path: 'searching', element: <Searching /> },
       { path: 'christmas', element: <Christmas /> },
+      { path: 'jkf-campaign', element: <JKFCampaign /> },
       { path: 'post', element: <NewPost /> },
       { path: 'shares', element: <Shares /> },
       { path: 'test', element: <Test /> },

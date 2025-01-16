@@ -22,7 +22,7 @@ export const getSingleMedia = (ref: string) => {
 export const getRecommendMedia = (params: RecommendListReq) => {
   return post<ListRes>(`/api/v1/recommend`, params)
 }
-export const recommendFeatured = (type:number) => {
+export const recommendFeatured = (type:string) => {
   return get<FeaturedListRes>(`/api/v1/recommend_featured/${type}`)
 }
 

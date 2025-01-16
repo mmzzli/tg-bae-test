@@ -34,7 +34,8 @@ interface VoteDetail {
 
 
 const JKFCampaignList = ({ containerRef }: PostListProps) => {
-  const { list, hasMore, fetchMoreData, isLoading } = useAllFeaturedList();
+  const { list, hasMore, fetchMoreData } = useAllFeaturedList();
+  const [isLoading, setIsLoading] = useState(true)
   const token = useStore((state) => state.token);
 
   const [voteDetail, setVoteDetail] = useState<VoteDetail>({});
@@ -77,6 +78,7 @@ const JKFCampaignList = ({ containerRef }: PostListProps) => {
             : [post.media],
       }));
     }
+    setIsLoading(false)
     setVoteDetail(res);
   };
   useEffect(() => {
@@ -86,7 +88,7 @@ const JKFCampaignList = ({ containerRef }: PostListProps) => {
     }
   }, [token]);
 
-  if (isLoading && list.length === 0) {
+  if (isLoading) {
     return (
       <div className="mt-12">
         <PostSkeleton />

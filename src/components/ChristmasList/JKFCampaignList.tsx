@@ -5,8 +5,9 @@ import { useEffect, useRef, useState } from 'react';
 import { useStore } from '@/store';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { debounce } from '@/utils/chat/schedulers';
-import { getVoteDetail } from '@/api';
+import { getVoteDetail, postVote } from '@/api';
 import { cn } from '@/utils/utils'
+import{ VoteReq } from '@/types'
 
 interface PostListProps {
   containerRef: React.RefObject<HTMLDivElement>;
@@ -110,12 +111,18 @@ const JKFCampaignList = ({ containerRef }: PostListProps) => {
 const Campaign = ({ voteDetail }: { voteDetail: VoteDetail }) => {
   const [voteNum, setVoteNum] = useState<number | null>(null);
 
-  const voteEve = (index: number) => {
-    setVoteNum(index);
+  const voteEve = async(item:any,index: number) => {
+    console.log(item)
+    setVoteNum(index === voteNum ? null : index);
+    await postVote({
+      post_id: 728,
+      vote_uid: item.uid,
+      act_type: 2
+    })
   };
 
   return (
-    <div className="px-4">
+    <div className="px-4 mb-10">
       <ul>
         {voteDetail.vote?.map((item, index) => (
           <li className="mb-2" key={index}>
@@ -131,7 +138,7 @@ const Campaign = ({ voteDetail }: { voteDetail: VoteDetail }) => {
             <li
               key={index}
               className={`bg-[#F7F9FC] px-4 py-4 mt-1 rounded-[6px] relative overflow-hidden`}
-              onClick={() => voteEve(index)}
+              onClick={() => voteEve(item, index)}
             >
               <div className={cn(`absolute w-[22%] h-[100%] left-0 top-0 rounded-[6px]`)}
                 style={{ background: voteNum === index ? '#EDEEFF' : '#F0F2F5' }}

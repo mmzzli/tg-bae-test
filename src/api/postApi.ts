@@ -126,6 +126,6 @@ export const allFeatured = (params: { page_num: number; records: number; type: n
 export const getVoteDetail = () => {
   return get<any>(`/api/v1/vote_detail`)
 }
-export const postVote = (params:VoteReq) => {
-  return get<VoteRes>(`/api/v1/vote`)
+export const postVote = (params: VoteReq) => {
+  return post<VoteRes>(`/api/v1/vote`, params)
 }

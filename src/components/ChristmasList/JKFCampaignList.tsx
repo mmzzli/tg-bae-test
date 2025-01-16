@@ -2,12 +2,14 @@ import ResourceList from '../ResourceList/ResourceList';
 import useCacheVideo, { useAllFeaturedList } from '@/store/hook/useResourceList';
 import PostSkeleton from '../Skeketon/PostSkeleton';
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom'
+
 import { useStore } from '@/store';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { debounce } from '@/utils/chat/schedulers';
 import { getVoteDetail, postVote } from '@/api';
 import { cn } from '@/utils/utils'
-import{ VoteReq } from '@/types'
+import { VoteReq } from '@/types'
 
 interface PostListProps {
   containerRef: React.RefObject<HTMLDivElement>;
@@ -112,35 +114,22 @@ const JKFCampaignList = ({ containerRef }: PostListProps) => {
   );
 };
 
-const Campaign = ({ voteDetail, loadVoteDetail }: { voteDetail: VoteDetail,loadVoteDetail:() => void }) => {
+const Campaign = ({ voteDetail, loadVoteDetail }: { voteDetail: VoteDetail, loadVoteDetail: () => void }) => {
+  const navigate = useNavigate()
   const [voteNum, setVoteNum] = useState<number | null>(null);
   const [totalAmount, setTotalAmount] = useState(0)
   const [hasVote, setHasVote] = useState(false)
-  const [boll,setBoll] = useState(false)
+  const [boll, setBoll] = useState(false)
 
-  const voteEve = async(item:any,index: number) => {
+  const voteEve = async (item: any, index: number) => {
 
-    if(!(voteDetail && voteDetail.vote) || boll)return
+    if (boll) return
     setBoll(true)
-    const num = voteNum && voteNum <= 0 ? 0 : voteNum || 0
-    const uid = voteDetail.vote[num].uid
     setVoteNum(index === voteNum ? null : index);
     try {
       await postVote({
         post_id: 728,
-        vote_uid: uid,
-        act_type: 2
-      })
-      // 如果用户取消了
-      if(index === voteNum){
-        loadVoteDetail()
-        setBoll(false)
-        return
-      }
-      await postVote({
-        post_id: 728,
-        vote_uid: item.uid,
-        act_type: 1
+        vote_uid: item.uid
       })
     } catch (error) {
 
@@ -149,8 +138,8 @@ const Campaign = ({ voteDetail, loadVoteDetail }: { voteDetail: VoteDetail,loadV
     setBoll(false)
   };
 
-  useEffect(()=>{
-    if(voteDetail && voteDetail.vote){
+  useEffect(() => {
+    if (voteDetail && voteDetail.vote) {
       // 总票数
       const totalAmount = voteDetail.vote.reduce((sum, item) => sum + item.amount, 0);
       setTotalAmount(totalAmount)
@@ -162,7 +151,7 @@ const Campaign = ({ voteDetail, loadVoteDetail }: { voteDetail: VoteDetail,loadV
       console.log(voteDetail.vote, index)
       setVoteNum(index)
     }
-  },[voteDetail])
+  }, [voteDetail])
 
   return (
     <div className="px-4 mb-10">
@@ -170,7 +159,9 @@ const Campaign = ({ voteDetail, loadVoteDetail }: { voteDetail: VoteDetail,loadV
         {voteDetail.vote?.map((item, index) => (
           <li className="mb-2" key={index}>
             <span className="text-[#0F1419] text-[14px]">Pick {item.sort}</span>
-            <a className="text-[#6254FF] text-[14px] ml-2">@{item.username}</a>
+            <a className="text-[#6254FF] text-[14px] ml-2"
+              onClick={()=>navigate(`/profile/${item.uid}`)}
+            >@{item.username}</a>
           </li>
         ))}
       </ul>
@@ -186,7 +177,7 @@ const Campaign = ({ voteDetail, loadVoteDetail }: { voteDetail: VoteDetail,loadV
               <div className={cn(`absolute h-[100%] left-0 top-0 rounded-[6px]`)}
                 style={{
                   background: voteNum === index ? '#EDEEFF' : '#F0F2F5',
-                  width: ((item.amount/totalAmount)*100) + '%'
+                  width: ((item.amount / totalAmount) * 100) + '%'
                 }}
               ></div>
               <div className={cn(`flex justify-between relative`)}
@@ -206,16 +197,16 @@ const Campaign = ({ voteDetail, loadVoteDetail }: { voteDetail: VoteDetail,loadV
         </ul>
         {
           voteDetail.is_end ?
-          <p className="text-[12px] text-[#999] mt-3">Vote ended</p>
-          :
-          <>
-            {
-              hasVote ?
-              <p className="text-[12px] text-[#999] mt-3">{totalAmount} votes</p>
-              :
-              <p className="text-[12px] text-[#999] mt-3">Vote to see the ranking. You can only cast 1 vote.</p>
-            }
-          </>
+            <p className="text-[12px] text-[#999] mt-3">Vote ended</p>
+            :
+            <>
+              {
+                hasVote ?
+                  <p className="text-[12px] text-[#999] mt-3">{totalAmount} votes</p>
+                  :
+                  <p className="text-[12px] text-[#999] mt-3">Vote to see the ranking. You can only cast 1 vote.</p>
+              }
+            </>
         }
       </div>
     </div>

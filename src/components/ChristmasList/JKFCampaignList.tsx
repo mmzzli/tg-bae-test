@@ -195,7 +195,7 @@ const Campaign = ({ voteDetail, loadVoteDetail }: { voteDetail: VoteDetail, load
               <div className={cn(`absolute h-[100%] left-0 top-0 rounded-[6px]`)}
                 style={{
                   background: voteNum === index ? '#EDEEFF' : '#F0F2F5',
-                  width: ((item.amount / totalAmount) * 100) + '%'
+                  width: (hasVote || voteDetail.is_end) ? ((item.amount / totalAmount) * 100) : 0 + '%'
                 }}
               ></div>
               <div className={cn(`flex justify-between relative`)}

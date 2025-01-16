@@ -17,13 +17,17 @@ interface VoteItem {
   sort: string;
   username: string;
   amount: number;
+  is_vote: boolean
+  uid: number
 }
 
 interface VoteDetail {
   title?: string;
   vote?: VoteItem[];
   media?: any[];
+  is_end?: boolean
 }
+
 
 const JKFCampaignList = ({ containerRef }: PostListProps) => {
   const { list, hasMore, fetchMoreData, isLoading } = useAllFeaturedList();
@@ -57,21 +61,21 @@ const JKFCampaignList = ({ containerRef }: PostListProps) => {
     };
   }, [containerRef, fetchMoreData]);
 
+  const loadVoteDetail = async () => {
+    const res = await getVoteDetail();
+    if (res.media) {
+      res.media = res.media.map(({ post, user }: any) => ({
+        ...user,
+        ...post,
+        media:
+          post.type === 1 && typeof post.media === 'string'
+            ? post.media.split(',')
+            : [post.media],
+      }));
+    }
+    setVoteDetail(res);
+  };
   useEffect(() => {
-    const loadVoteDetail = async () => {
-      const res = await getVoteDetail();
-      if (res.media) {
-        res.media = res.media.map(({ post, user }: any) => ({
-          ...user,
-          ...post,
-          media:
-            post.type === 1 && typeof post.media === 'string'
-              ? post.media.split(',')
-              : [post.media],
-        }));
-      }
-      setVoteDetail(res);
-    };
 
     if (token) {
       loadVoteDetail();
@@ -97,7 +101,7 @@ const JKFCampaignList = ({ containerRef }: PostListProps) => {
         }}
       >
         <ResourceList resources={voteDetail?.media || []} />
-        <Campaign voteDetail={voteDetail} />
+        <Campaign voteDetail={voteDetail} loadVoteDetail={loadVoteDetail} />
       </div>
       {isLoading && hasMore && (
         <div className="mt-12">
@@ -108,18 +112,55 @@ const JKFCampaignList = ({ containerRef }: PostListProps) => {
   );
 };
 
-const Campaign = ({ voteDetail }: { voteDetail: VoteDetail }) => {
+const Campaign = ({ voteDetail, loadVoteDetail }: { voteDetail: VoteDetail,loadVoteDetail:() => void }) => {
   const [voteNum, setVoteNum] = useState<number | null>(null);
+  const [totalAmount, setTotalAmount] = useState(0)
+  const [hasVote, setHasVote] = useState(false)
+  const [boll,setBoll] = useState(false)
 
   const voteEve = async(item:any,index: number) => {
-    console.log(item)
+
+    if(!(voteDetail && voteDetail.vote) || boll)return
+    setBoll(true)
+    const num = voteNum && voteNum <= 0 ? 0 : voteNum || 0
+    const uid = voteDetail.vote[num].uid
     setVoteNum(index === voteNum ? null : index);
-    await postVote({
-      post_id: 728,
-      vote_uid: item.uid,
-      act_type: 2
-    })
+    try {
+      await postVote({
+        post_id: 728,
+        vote_uid: uid,
+        act_type: 2
+      })
+      // 如果用户取消了
+      if(index === voteNum){
+        setBoll(false)
+        return
+      }
+      await postVote({
+        post_id: 728,
+        vote_uid: item.uid,
+        act_type: 1
+      })
+    } catch (error) {
+
+    }
+    loadVoteDetail()
+    setBoll(false)
   };
+
+  useEffect(()=>{
+    if(voteDetail && voteDetail.vote){
+      // 总票数
+      const totalAmount = voteDetail.vote.reduce((sum, item) => sum + item.amount, 0);
+      setTotalAmount(totalAmount)
+      // 是否已经投票
+      const hasVote = voteDetail.vote.some(item => item.is_vote === true);
+      setHasVote(hasVote)
+      // 已经投了几号
+      const index = voteDetail.vote.findIndex(item => item.is_vote === true);
+      setVoteNum(index)
+    }
+  },[voteDetail])
 
   return (
     <div className="px-4 mb-10">
@@ -140,8 +181,11 @@ const Campaign = ({ voteDetail }: { voteDetail: VoteDetail }) => {
               className={`bg-[#F7F9FC] px-4 py-4 mt-1 rounded-[6px] relative overflow-hidden`}
               onClick={() => voteEve(item, index)}
             >
-              <div className={cn(`absolute w-[22%] h-[100%] left-0 top-0 rounded-[6px]`)}
-                style={{ background: voteNum === index ? '#EDEEFF' : '#F0F2F5' }}
+              <div className={cn(`absolute h-[100%] left-0 top-0 rounded-[6px]`)}
+                style={{
+                  background: voteNum === index ? '#EDEEFF' : '#F0F2F5',
+                  width: ((item.amount/totalAmount)*100) + '%'
+                }}
               ></div>
               <div className={cn(`flex justify-between relative`)}
                 style={{ color: voteNum === index ? '#6254FF' : '#333' }}
@@ -158,7 +202,19 @@ const Campaign = ({ voteDetail }: { voteDetail: VoteDetail }) => {
             </li>
           ))}
         </ul>
-        <p className="text-[12px] text-[#999] mt-3">Vote to see the ranking. You can only cast 1 vote.</p>
+        {
+          voteDetail.is_end ?
+          <p className="text-[12px] text-[#999] mt-3">Vote ended</p>
+          :
+          <>
+            {
+              hasVote ?
+              <p className="text-[12px] text-[#999] mt-3">{totalAmount} votes</p>
+              :
+              <p className="text-[12px] text-[#999] mt-3">Vote to see the ranking. You can only cast 1 vote.</p>
+            }
+          </>
+        }
       </div>
     </div>
   );

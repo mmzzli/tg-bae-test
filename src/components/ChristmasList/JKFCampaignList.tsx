@@ -141,11 +141,11 @@ const Campaign = ({ voteDetail, loadVoteDetail }: { voteDetail: VoteDetail, load
     setVoteNum(index === voteNum ? null : index);
     try {
       await postVote({
-        post_id: 728,
+        post_id: voteDetail.media && voteDetail.media[0].id,
         vote_uid: item.uid
       })
     } catch (error) {
-
+      console.log(error)
     }
     loadVoteDetail()
     setBoll(false)

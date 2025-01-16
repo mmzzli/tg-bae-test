@@ -220,7 +220,7 @@ const Campaign = ({ voteDetail, loadVoteDetail }: { voteDetail: VoteDetail, load
             <>
               {
                 hasVote ?
-                  <p className="text-[12px] text-[#999] mt-3">{totalAmount} votes</p>
+                  <p className="text-[12px] text-[#999] mt-3">{totalAmount} participants</p>
                   :
                   <p className="text-[12px] text-[#999] mt-3">Vote to see the ranking. You can only cast 1 vote.</p>
               }

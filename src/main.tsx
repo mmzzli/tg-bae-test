@@ -19,7 +19,7 @@ import('vconsole').then((VConsole) => {
 if (import.meta.env.MODE === 'production') {
   const gaScript = document.createElement('script')
   gaScript.setAttribute('async', '')
-  gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=	G-L44V06RV4R'
+  gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-XPKLLC0SSN'
   document.head.appendChild(gaScript)
 
   const inlineScript = document.createElement('script')

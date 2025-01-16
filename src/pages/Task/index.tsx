@@ -376,7 +376,7 @@ const Tasks: FC = () => {
       </BottomCloseModal>
       <div className="mb-4 flex flex-col items-center justify-center">
         <h1 className="text-[40px] leading-[42px] font-bold text-[#333333]">
-          <AnimatedNumber value={totalTaskPoints + totalFollowTaskPoints} />
+          <AnimatedNumber value={totalTaskPoints + totalFollowTaskPoints + taskPoints} />
         </h1>
         <p className="pt-[10px] text-[12px] leading-[16px] text-[#999999]">My Bae points</p>
       </div>

@@ -14,6 +14,12 @@ export const AgeGateWrapper = ({ children }: { children: React.ReactNode }) => {
       return
     }
 
+    if (location.pathname === '/profile') {
+      window.Telegram?.WebApp?.setHeaderColor("#000000")
+    } else {
+      window.Telegram?.WebApp?.setHeaderColor("#ffffff")
+    }
+
     const isAgeVerified = localStorage.getItem(`ageGate-${current_uid}`) === '1'
     const tempAgeVerified = sessionStorage.getItem(`temp-ageGate-${current_uid}`) === '1'
 

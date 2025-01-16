@@ -25,7 +25,7 @@ const MoreText: React.FC<MoreTextProps> = ({
 
   const [isExpanded, setIsExpanded] = useState(false)
   const [isTextClipped, setIsTextClipped] = useState(false)
-  const processedText = text//.replace(/\n/g, ' ').trim()
+  const processedText = text.replace(/\n/g, ' ').trim()
   const [displayText, setDisplayText] = useState(processedText)
   const textRef = useRef<HTMLDivElement | null>(null)
 

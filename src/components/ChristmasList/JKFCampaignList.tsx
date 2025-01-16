@@ -196,14 +196,14 @@ const Campaign = ({ voteDetail, loadVoteDetail }: { voteDetail: VoteDetail, load
               <div className={cn(`flex justify-between relative`)}
                 style={{ color: voteNum === index ? '#6254FF' : '#333' }}
               >
-                <div className="flex gap-2 relative">
+                <div className="flex gap-2 relative z-9">
                   <h4 className="text-[14px]">{item.sort}</h4>
                   <span className="text-[14px]">{item.username}</span>
                   {voteNum === index && (
                     <i className="iconfont icon-a-check-line1 text-[22px] text-[#6254FF] absolute right-[-30px] top-[-7px]"></i>
                   )}
                 </div>
-                <span className="text-[14px]">{item.amount}</span>
+                {(hasVote || voteDetail.is_end) && <span className="text-[14px]">{item.amount}</span>}
               </div>
             </li>
           ))}

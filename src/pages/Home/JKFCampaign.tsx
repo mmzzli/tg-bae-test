@@ -131,7 +131,7 @@ const JKFCampaign: FC = () => {
                 }`,
               }}
             >
-              {titleTextRef.current}
+              {titleTextRef.current.slice(0, titleTextRef.current.length - 8)} ...
             </h3>
           </div>
         </div>

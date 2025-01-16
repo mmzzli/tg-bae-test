@@ -127,6 +127,9 @@ const Campaign = ({ voteDetail, loadVoteDetail }: { voteDetail: VoteDetail, load
 
 
   const voteEve = async (item: any, index: number) => {
+    if(voteNum && voteNum > 0){
+      return
+    }
     if(voteDetail.is_end){
       toast({
         render: () => {
@@ -171,7 +174,7 @@ const Campaign = ({ voteDetail, loadVoteDetail }: { voteDetail: VoteDetail, load
       <ul>
         {voteDetail.vote?.map((item, index) => (
           <li className="mb-2" key={index}>
-            <span className="text-[#0F1419] text-[14px]">Pick {item.sort}</span>
+            <span className="text-[#0F1419] text-[14px]">Pic {item.sort}</span>
             <a className="text-[#6254FF] text-[14px] ml-2"
               onClick={()=>navigate(`/profile/${item.uid}`)}
             >@{item.username}</a>

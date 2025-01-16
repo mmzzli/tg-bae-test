@@ -133,6 +133,7 @@ const Campaign = ({ voteDetail, loadVoteDetail }: { voteDetail: VoteDetail,loadV
       })
       // 如果用户取消了
       if(index === voteNum){
+        loadVoteDetail()
         setBoll(false)
         return
       }
@@ -158,6 +159,7 @@ const Campaign = ({ voteDetail, loadVoteDetail }: { voteDetail: VoteDetail,loadV
       setHasVote(hasVote)
       // 已经投了几号
       const index = voteDetail.vote.findIndex(item => item.is_vote === true);
+      console.log(voteDetail.vote, index)
       setVoteNum(index)
     }
   },[voteDetail])

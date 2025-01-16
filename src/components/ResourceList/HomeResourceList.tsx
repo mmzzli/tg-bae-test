@@ -441,7 +441,7 @@ const ResourceList = ({
                       <HStack p="3px 16px" justifyContent="space-between" bg="rgba(0, 0, 0, 0.5)">
                         <Text fontSize={14} color="#fff">
                           {' '}
-                          Explore more
+                          {data.act_type === 1 ? "Explore more" : "Vote now"}
                         </Text>
                         <i className="iconfont icon-icon_arrow_right text-[#fff] text-[20px]"></i>
                       </HStack>

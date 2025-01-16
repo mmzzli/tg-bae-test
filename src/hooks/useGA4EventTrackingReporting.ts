@@ -18,6 +18,8 @@ interface GA4TrackingMethods {
     transaction_id: string;
     /** 购买金额 */
     value: number;
+    /** 购买价格 */
+    price: number;
     /** 货币代码，默认为 'STRTS' */
     currency?: string;
     /** BAE用户名 */
@@ -31,7 +33,7 @@ interface GA4TrackingMethods {
       /** 商品ID */
       item_id: string;
       /** 商品名称 */
-      name: string;
+      item_name: string;
       /** 商品数量 */
       quantity?: number;
       /** 其他可选属性 */
@@ -111,13 +113,14 @@ export const useGA4EventTrackingReporting = (): GA4TrackingMethods => {
   const trackPurchase = useCallback((params: {
     transaction_id: string;
     value: number;
+    price: number;
     currency?: string;
     bae_user_name?: string;
     tg_user_name?: string;
     tg_user_id?: string;
     items?: Array<{
       item_id: string;
-      name: string;
+      item_name: string;
       [key: string]: any;
       quantity?: number;
     }>;

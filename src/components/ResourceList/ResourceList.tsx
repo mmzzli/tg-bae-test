@@ -427,6 +427,15 @@ const ResourceList = ({
       ></Empty>
     )
   }
+  const getUrl = (act_type:number)=>{
+    switch(act_type){
+      case 1:
+        return '/christmas'
+      case 2:
+        return '/jkf-campaign'
+    }
+    return '/christmas'
+  }
   return (
     <>
       <div className="pt-[24px] bg-white">
@@ -440,18 +449,18 @@ const ResourceList = ({
                 type={type}
               />
               <Box position="relative">
-                {data.act_type === 1 && type === 'recommend' && (
+                {(data.act_type === 1 || data.act_type === 2) && type === 'recommend' && (
                   <Box
                     position="absolute"
                     bottom="0px"
                     w="100%"
                     zIndex={11}
-                    onClick={() => navigate('/home/christmas')}
+                    onClick={() => navigate(getUrl(data.act_type || 1))}
                   >
                     <HStack p="3px 16px" justifyContent="space-between" bg="rgba(0, 0, 0, 0.5)">
                       <Text fontSize={14} color="#fff">
                         {' '}
-                        Explore more
+                        {data.act_type === 1 ? "Explore more" : "Vote now"}
                       </Text>
                       <i className="iconfont icon-icon_arrow_right text-[#fff] text-[20px]"></i>
                     </HStack>

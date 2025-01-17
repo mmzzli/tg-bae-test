@@ -100,7 +100,7 @@ const Tooltip: React.FC<TooltipProps> = ({
         const windowWidth = window.innerWidth
 
         // 计算tooltip的垂直位置（在目标元素上方80px）
-        let top = rect.top - 90
+        let top = rect.top - 85
         let tooltipLeft
         let triangleLeft
         let tooltipRight
@@ -219,42 +219,42 @@ const Tooltip: React.FC<TooltipProps> = ({
           >
             {config.enableReply && (content.text || content.url) && (
               <motion.div
-                className="flex flex-col items-center cursor-pointer"
+                className="flex flex-col items-center cursor-pointer text-[12px]"
                 onClick={handleReply}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <i
                   className="iconfont icon-reply-line"
-                  style={{ color: '#fff', fontSize: '24px' }}
+                  style={{ color: '#fff', fontSize: '20px' }}
                 />
                 <span>Reply</span>
               </motion.div>
             )}
             {config.enableCopy && content.text && (
               <motion.div
-                className="flex flex-col items-center cursor-pointer"
+                className="flex flex-col items-center cursor-pointer text-[12px]"
                 onClick={handleCopy}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <i
                   className="iconfont icon-file-copy-line"
-                  style={{ color: '#fff', fontSize: '24px' }}
+                  style={{ color: '#fff', fontSize: '20px' }}
                 />
                 <span>Copy</span>
               </motion.div>
             )}
             {config.enableDownload && content.url && isIOSDevice && (
               <motion.div
-                className="flex flex-col items-center cursor-pointer"
+                className="flex flex-col items-center cursor-pointer text-[12px]"
                 onClick={handleDownload}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <i
                   className="iconfont icon-download-line"
-                  style={{ color: '#fff', fontSize: '24px' }}
+                  style={{ color: '#fff', fontSize: '20px' }}
                 />
                 <span>Save</span>
               </motion.div>

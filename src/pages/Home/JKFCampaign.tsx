@@ -14,7 +14,7 @@ const JKFCampaign: FC = () => {
   const [showTopTitle, setShowTopTitle] = useState(false)
   const [showList, setShowList] = useState(false)
   const titleRef = useRef<HTMLHeadingElement>(null)
-  const titleTextRef = useRef<string>('JKF special weekly campaign')
+  const titleTextRef = useRef<string>('JKF Special Weekly Campaign')
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {

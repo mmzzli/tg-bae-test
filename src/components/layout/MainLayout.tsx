@@ -190,13 +190,20 @@ export const MainLayout: React.FC = () => {
       setExpanded(window.Telegram.WebApp.isExpanded)
       console.log(window.Telegram.WebApp.isExpanded, 'window.Telegram.WebApp.isExpanded')
     }
-    initTelegramApp()
-    onLogin()
+    try {
+      initTelegramApp()
+      onLogin()
+    } catch (error) {
+      console.log('MainLayout error', error)
+      setTimeout(() => {
+        onLogin()
+      }, 2500)
+    }
     // remove page loading
     setTimeout(() => {
       window.loading = false
       document.getElementById('splash_video')?.remove()
-    }, 4200)
+    }, 2500)
   }, [])
 
   useEffect(() => {

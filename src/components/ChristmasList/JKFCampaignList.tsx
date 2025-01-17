@@ -192,10 +192,18 @@ const Campaign = ({ voteDetail, loadVoteDetail }: { voteDetail: VoteDetail, load
               className={`bg-[#F7F9FC] px-4 py-4 mt-1 rounded-[6px] relative overflow-hidden`}
               onClick={() => voteEve(item, index)}
             >
-              <div className={cn(`absolute h-[100%] left-0 top-0 rounded-[6px]`)}
+              <div
+                className={cn(
+                  `absolute h-[100%] left-0 top-0 rounded-[6px] transition-all duration-300 ease-in-out`
+                )}
                 style={{
-                  background: voteNum === index ? '#EDEEFF' : '#F0F2F5',
-                  width: (hasVote || voteDetail.is_end) ? ((item.amount / totalAmount) * 100) : 0 + '%'
+                  background: voteNum === index
+                    ? 'linear-gradient(90deg, #EDEEFF, #D6DFFF)'
+                    : '#F0F2F5',
+                  width: (hasVote || voteDetail.is_end)
+                    ? `${(item.amount / totalAmount) * 100}%`
+                    : '0%',
+                  transition: 'width 0.5s ease-in-out',
                 }}
               ></div>
               <div className={cn(`flex justify-between relative`)}
@@ -208,7 +216,16 @@ const Campaign = ({ voteDetail, loadVoteDetail }: { voteDetail: VoteDetail, load
                     <i className="iconfont icon-a-check-line1 text-[22px] text-[#6254FF] absolute right-[-30px] top-[-7px]"></i>
                   )}
                 </div>
-                {(hasVote || voteDetail.is_end) && <span className="text-[14px]">{item.amount}</span>}
+                <span
+                  className="text-[14px]"
+                  style={{
+                    opacity: (hasVote || voteDetail.is_end) ? 1 : 0,
+                    transition: "opacity 0.5s ease-in-out",
+                    pointerEvents: (hasVote || voteDetail.is_end) ? 'auto' : 'none',
+                  }}
+                >
+                  {item.amount}
+                </span>
               </div>
             </li>
           ))}

@@ -91,14 +91,12 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve }) =
             })
 
             window.umami.track('purchase', {
-              value: price * exchange_rate,
-              price: price * exchange_rate,
+              revenue: price * exchange_rate,
               currency: 'USD',
               transaction_id: `${initData?.user?.id}_${post_id}_${timestamp}`,
               item_id: String(post_id),
               item_name: String(post_id),
               amount: 1,
-              count: 1,
               tg_user_id: String(initData?.user?.id),
               bae_user_name: userInfo.username,
               tg_user_name: initData?.user?.username,

@@ -3,7 +3,7 @@ import {
   Input
 } from '@chakra-ui/react'
 
-const Trailer = ()=>{
+const Trailer = () => {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [videoSrc, setVideoSrc] = useState("")
 
@@ -16,7 +16,7 @@ const Trailer = ()=>{
 
   }
 
-  const handleChooseFile = ()=>{
+  const handleChooseFile = () => {
     inputRef.current?.click()
   }
 
@@ -24,41 +24,41 @@ const Trailer = ()=>{
     <div>
       {
         !videoSrc ?
-        <p className='h-[64px] w-[64px] bg-[#F7F9FC] rounded-md flex-none' onClick={handleChooseFile}></p>
-        :
-        <div className='rounded-md border-2 border-[#6254FF]'>
-        <video
-          // ref={videoRef}
-          className={`h-[64px] min-w-[64px] rounded-md`}
-          src={videoSrc}
-          // onLoadedMetadata={(e) => {
-          //   const video = e.currentTarget
-          //   setDuration(video.duration)
-          // }}
-          // onTimeUpdate={(e) => {
-          //   const video = e.currentTarget
-          //   if (!isDragging) {
-          //     setCurrentTime(video.currentTime)
-          //     setProgress((video.currentTime / video.duration) * 100)
-          //   }
-          // }}
-          // onEnded={() => {
-          //   setPlaying(false)
-          // }}
-          // onPause={() => setPlaying(false)}
-          // onPlay={() => setPlaying(true)}
-          // onWaiting={() => setIsLoading(true)}
-          // onPlaying={() => setIsLoading(false)}
-          controls={false}
-          playsInline
-          webkit-playsinline="true"
-          x5-playsinline="true"
-          x5-video-player-type="h5"
-          x5-video-player-fullscreen="false"
-          preload="auto"
-          x-webkit-airplay="allow"
-        />
-        </div>
+          <p className='h-[64px] w-[64px] bg-[#F7F9FC] rounded-md flex-none' onClick={handleChooseFile}></p>
+          :
+          <div className='rounded-md border-2 border-[#6254FF]'>
+            <video
+              // ref={videoRef}
+              className={`h-[64px] min-w-[64px] rounded-md`}
+              src={videoSrc}
+              // onLoadedMetadata={(e) => {
+              //   const video = e.currentTarget
+              //   setDuration(video.duration)
+              // }}
+              // onTimeUpdate={(e) => {
+              //   const video = e.currentTarget
+              //   if (!isDragging) {
+              //     setCurrentTime(video.currentTime)
+              //     setProgress((video.currentTime / video.duration) * 100)
+              //   }
+              // }}
+              // onEnded={() => {
+              //   setPlaying(false)
+              // }}
+              // onPause={() => setPlaying(false)}
+              // onPlay={() => setPlaying(true)}
+              // onWaiting={() => setIsLoading(true)}
+              // onPlaying={() => setIsLoading(false)}
+              controls={false}
+              playsInline
+              webkit-playsinline="true"
+              x5-playsinline="true"
+              x5-video-player-type="h5"
+              x5-video-player-fullscreen="false"
+              preload="auto"
+              x-webkit-airplay="allow"
+            />
+          </div>
       }
       <Input
         type="file"

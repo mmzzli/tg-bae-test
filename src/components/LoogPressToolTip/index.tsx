@@ -149,12 +149,7 @@ const Tooltip: React.FC<TooltipProps> = ({
   const handleDownload = useCallback(async () => {
     try {
       if (content.url) {
-        window.Telegram?.WebApp?.share(content.url)
-        // Add haptic feedback
-        // postEvent('web_app_trigger_haptic_feedback', {
-        //   type: 'impact',
-        //   impact_style: 'light',
-        // })
+        window.Telegram?.WebApp?.downloadFile({ url: content.url, file_name: `pic-${id}` })
       }
     } catch (error) {
       console.error('Failed to download:', error)

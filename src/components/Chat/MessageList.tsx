@@ -113,7 +113,7 @@ export const MessageList = ({ messages, className, channelInfo }: MessageListPro
           content={message}
           delay={800}
           id={message.id}
-          config={{ enableReply: false, enableCopy: true, enableDownload: false }}
+          config={{ enableReply: false, enableCopy: true, enableDownload: true }}
         >
           <div
             className={`overflow-hidden rounded-lg max-w-[255px]

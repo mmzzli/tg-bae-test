@@ -21,12 +21,18 @@ const Trailer = () => {
   }
 
   return (
-    <div>
+    <div className='relative'>
       {
         !videoSrc ?
           <p className='h-[64px] w-[64px] bg-[#F7F9FC] rounded-md flex-none' onClick={handleChooseFile}></p>
           :
           <div className='rounded-md border-2 border-[#6254FF]'>
+
+            <div className='w-[20px] h-[20px] right-[-6px] top-[-6px] z-10 rounded-[50px] bg-[#666] absolute'
+              onClick={()=>setVideoSrc("")}
+            >
+            </div>
+
             <video
               // ref={videoRef}
               className={`h-[64px] min-w-[64px] rounded-md`}

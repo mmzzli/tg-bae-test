@@ -1,18 +1,21 @@
+import { FC, useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { claimTask, claimAllTasks, setFollowTaskToClaimed, claimFollowTask } from '@/api'
+import Confetti from 'react-confetti'
+import { Box, useToast } from '@chakra-ui/react'
+import { postEvent } from '@telegram-apps/sdk'
+import { useRequest } from 'ahooks'
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import { useGetDailyTask, useDailyTaskStatus, useGetFollowTask } from '@/hooks/useDailyTask'
 import { useStore } from '@/store'
 import { DailyTaskItem, DailyTaskStatusEnum } from '@/store/slices/systemSlice'
-import { Box, useToast } from '@chakra-ui/react'
-import { postEvent } from '@telegram-apps/sdk'
-import { useRequest } from 'ahooks'
-import { FC, useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import BottomCloseModal from '@/components/TaskPointsDialog'
 import PointsAlertIcon from '@/assets/image/task/points-alert-icon.png'
 import { getTaskPoints } from '@/api/list'
+import { COMMUNITY_LINK } from '@/utils/constants'
 
 enum TaskType {
   ClaimAll = 11,
@@ -21,6 +24,8 @@ enum TaskType {
 }
 
 const FOLLOW_X = 13
+const FOLLOW_INS = 14
+const POST_CHANNEL = 16
 
 const goToAction = (task: DailyTaskItem) => {
   switch (task.task_type) {
@@ -46,6 +51,7 @@ const getTaskIcon = (task: DailyTaskItem) => {
   const dateIcon = <i className="iconfont icon-icon_daily  text-[20px]"></i>
   const unlockIcon = <i className="iconfont icon-icon_money  text-[20px]"></i>
   const claimAllIcon = <i className="iconfont icon-Frame1  text-[20px]"></i>
+  const postChannelIcon = <i className="iconfont icon-post  text-[20px]"></i>
 
   const xIcon = <i className="iconfont icon-icon_x text-[20px]"></i>
   const insIcon = <i className="iconfont icon-ins text-[20px]"></i>
@@ -76,6 +82,8 @@ const getTaskIcon = (task: DailyTaskItem) => {
       return xIcon
     case 14:
       return insIcon
+    case 16:
+      return postChannelIcon
     default:
       return null
   }
@@ -86,12 +94,18 @@ const TaskButton: React.FC<{
   onClick: () => void
   afterClaim?: () => void
   claim?: (task: DailyTaskItem) => void
-}> = ({ task, onClick, afterClaim, claim }) => {
+  setIsConfetti?: (show: boolean) => void
+}> = ({ task, onClick, afterClaim, claim, setIsConfetti }) => {
   const { runGetDailyTask } = useGetDailyTask()
-  const { updateDailyTask } = useStore((state) => ({
+  const { updateDailyTask, dailyTaskList } = useStore((state) => ({
     updateDailyTask: state.updateDailyTask,
+    dailyTaskList: state.dailyTaskList,
   }))
+
+
   const { isAllTasksCompleted } = useDailyTaskStatus()
+  const dailyTaskCount = dailyTaskList.filter(task => task.task_type !== TaskType.ClaimAll).length
+  const completedTaskCount = dailyTaskList.filter(task => task.status === DailyTaskStatusEnum.CLAIMED).length
 
   const onClaimSuccess = () => {
     updateDailyTask({
@@ -100,6 +114,12 @@ const TaskButton: React.FC<{
     } as DailyTaskItem)
     runGetDailyTask()
     afterClaim?.()
+  }
+
+  const onClaimAllSuccess = () => {
+    runGetDailyTask()
+    afterClaim?.()
+    setIsConfetti?.(true)
   }
 
   const { run: runClaimTask, loading: claimTaskLoading } = useRequest(claimTask, {
@@ -112,7 +132,7 @@ const TaskButton: React.FC<{
   const { run: runClaimAllTask, loading: claimAllTaskLoading } = useRequest(claimAllTasks, {
     manual: true,
     onSuccess() {
-      onClaimSuccess()
+      onClaimAllSuccess()
     },
   })
 
@@ -124,6 +144,7 @@ const TaskButton: React.FC<{
   }
   const handleClaimAllTask = () => {
     haptic()
+    setIsConfetti?.(true)
     runClaimAllTask()
   }
 
@@ -150,7 +171,11 @@ const TaskButton: React.FC<{
     } else if (task.status === DailyTaskStatusEnum.CLAIMED) {
       return <ClaimedButton />
     }
-    return <span className="text-sm text-[#999999] font-medium">In progress</span>
+    return <BaseButton
+        text={`${completedTaskCount} / ${dailyTaskCount}`}
+        handler={onClick}
+        className="w-[79px] h-[34px] text-black bg-transparent border border-[#CDCDD4]"
+    />
   }
 
   switch (status) {
@@ -163,7 +188,11 @@ const TaskButton: React.FC<{
         />
       )
     case DailyTaskStatusEnum.IN_PROGRESS:
-      return <span className="text-sm text-[#999999] font-medium">In progress</span>
+      return <BaseButton
+        text={`${task.detail?.split(':')?.length} / ${task.total_amount}`}
+        handler={onClick}
+        className="w-[79px] h-[34px] text-black bg-transparent border border-[#CDCDD4]"
+      />
     case DailyTaskStatusEnum.CLAIM:
       return (
         <BaseButton
@@ -183,7 +212,8 @@ const TaskItem: React.FC<{
   onTaskAction: (task: DailyTaskItem) => void
   afterClaim?: () => void
   claim?: (task: DailyTaskItem) => void
-}> = ({ task, onTaskAction, afterClaim, claim }) => {
+  setIsConfetti?: (show: boolean) => void
+}> = ({ task, onTaskAction, afterClaim, claim, setIsConfetti }) => {
   return (
     <div className="flex items-center justify-between bg-[#F7F9FC] p-4 rounded-lg transform transition-transform duration-500">
       <div className="flex items-center">
@@ -200,6 +230,7 @@ const TaskItem: React.FC<{
         onClick={() => onTaskAction(task)}
         afterClaim={afterClaim}
         claim={claim}
+        setIsConfetti={setIsConfetti}
       />
     </div>
   )
@@ -208,6 +239,7 @@ const TaskItem: React.FC<{
 const Tasks: FC = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [taskPoints, setTaskPoints] = useState(0)
+  const [isConfetti, setIsConfetti] = useState(false)
   const navigate = useNavigate()
   const {
     dailyTaskList,
@@ -300,6 +332,15 @@ const Tasks: FC = () => {
     }
   }, [])
 
+  useEffect(() => {
+    if (isConfetti) {
+      const timer = setTimeout(() => {
+        setIsConfetti(false)
+      }, 10000)
+      return () => clearTimeout(timer)
+    }
+  }, [isConfetti])
+
   return (
     <div className="p-6 bg-white overflow-auto h-full scrollbar-hide">
       {/* title */}
@@ -307,16 +348,35 @@ const Tasks: FC = () => {
       <BottomCloseModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <Box className="flex items-center justify-center flex-col">
           <img src={PointsAlertIcon} alt="points" className="w-[168px] h-[136px]" />
-          <p className="text-center font-[Switzer] text-[20px] font-[700] leading-[130%] text-[#121212] capitalize my-[12px]">congrats !</p>
-          <p className="text-center font-[Switzer] text-[16px] font-[400] leading-[120%] text-[#666)] mb-[24px]">
-            You have won <span style={{ color: '#6254FF', fontFamily: 'Roboto', fontSize: '16px', fontStyle: 'normal', fontWeight: '600', lineHeight: '120%' }}>{taskPoints}</span> Bae points.
+          <p className="text-center font-[Switzer] text-[20px] font-[700] leading-[130%] text-[#121212] capitalize my-[12px]">
+            congrats !
           </p>
-          <BaseButton text="Got it" handler={() => setIsOpen(false)} className="w-[270px] h-[48px]" />
+          <p className="text-center font-[Switzer] text-[16px] font-[400] leading-[120%] text-[#666)] mb-[24px]">
+            You have won{' '}
+            <span
+              style={{
+                color: '#6254FF',
+                fontFamily: 'Roboto',
+                fontSize: '16px',
+                fontStyle: 'normal',
+                fontWeight: '600',
+                lineHeight: '120%',
+              }}
+            >
+              {taskPoints}
+            </span>{' '}
+            Bae points.
+          </p>
+          <BaseButton
+            text="Got it"
+            handler={() => setIsOpen(false)}
+            className="w-[270px] h-[48px]"
+          />
         </Box>
       </BottomCloseModal>
       <div className="mb-4 flex flex-col items-center justify-center">
         <h1 className="text-[40px] leading-[42px] font-bold text-[#333333]">
-          <AnimatedNumber value={totalTaskPoints + totalFollowTaskPoints} />
+          <AnimatedNumber value={totalTaskPoints + totalFollowTaskPoints + taskPoints} />
         </h1>
         <p className="pt-[10px] text-[12px] leading-[16px] text-[#999999]">My Bae points</p>
       </div>
@@ -381,17 +441,18 @@ const Tasks: FC = () => {
             task={task}
             onTaskAction={handleTaskAction}
             afterClaim={successToast}
+            setIsConfetti={setIsConfetti}
           />
         ))}
       </div>
-
       {isAllFollowTasksClaimed && <FollowTask successToast={successToast} />}
+      {isConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} recycle={false} tweenDuration={7000}/>}
     </div>
   )
 }
 
 const FollowTask: React.FC<{ successToast: () => void }> = ({ successToast }) => {
-  const { openLink } = useTMAUtils()
+  const { openLink, shareLink } = useTMAUtils()
 
   const { runGetFollowTask } = useGetFollowTask()
   const { followTaskList, updateFollowTask } = useStore((state) => ({
@@ -406,10 +467,14 @@ const FollowTask: React.FC<{ successToast: () => void }> = ({ successToast }) =>
   }
 
   const handleTaskAction = (task: DailyTaskItem) => {
+    console.log('handleTaskAction....', task)
     if (task.task_type === 13) {
       followX()
     } else if (task.task_type === 14) {
       followInstagram()
+    } else if (task.task_type === POST_CHANNEL) {
+      console.log('shareLink....', COMMUNITY_LINK)
+      shareLink(COMMUNITY_LINK)
     }
   }
 
@@ -433,8 +498,10 @@ const FollowTask: React.FC<{ successToast: () => void }> = ({ successToast }) =>
   })
 
   const handleTaskToClaimed = (task: DailyTaskItem) => {
+    console.log('handleTaskToClaimed....', task)
     handleTaskAction(task)
-    runFollowTaskToClaimed(task.task_type === FOLLOW_X ? 'x' : 'ins')
+    const taskName = task.task_type === FOLLOW_X ? 'x' : task.task_type === FOLLOW_INS ? 'ins' : 'channel'
+    runFollowTaskToClaimed(taskName)
   }
 
   const handleClaimTask = (task: DailyTaskItem) => {

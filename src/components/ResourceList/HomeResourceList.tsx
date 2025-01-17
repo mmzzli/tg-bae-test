@@ -161,7 +161,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               text="Copy link"
               height="48px"
               icon={<i className="iconfont icon-link-m text-[22px]" />}
-              handler={async() => {
+              handler={async () => {
                 copy(links.copyLink)
                 toast({
                   render: () => {
@@ -385,6 +385,15 @@ const ResourceList = ({
     )
   }
   const [reportVisible, setReportVisible] = useState(false)
+  const getUrl = (act_type:number)=>{
+    switch(act_type){
+      case 1:
+        return '/christmas'
+      case 2:
+        return '/jkf-campaign'
+    }
+    return '/christmas'
+  }
   return (
     <>
       {reportVisible && <Report isOpen={reportVisible} onClose={setReportVisible} />}
@@ -421,18 +430,18 @@ const ResourceList = ({
                   setReportVisible={setReportVisible}
                 />
                 <Box position="relative">
-                  {data.act_type === 1 && type === 'recommend' && (
+                  {(data.act_type === 1 || data.act_type === 2) && type === 'recommend' && (
                     <Box
                       position="absolute"
                       bottom="0px"
                       w="100%"
                       zIndex={11}
-                      onClick={() => navigate('/christmas')}
+                      onClick={() => navigate(getUrl(data.act_type || 1))}
                     >
                       <HStack p="3px 16px" justifyContent="space-between" bg="rgba(0, 0, 0, 0.5)">
                         <Text fontSize={14} color="#fff">
                           {' '}
-                          Explore more
+                          {data.act_type === 1 ? "Explore more" : "Vote now"}
                         </Text>
                         <i className="iconfont icon-icon_arrow_right text-[#fff] text-[20px]"></i>
                       </HStack>
@@ -482,7 +491,7 @@ interface ResourceHeaderProps {
   data: FormatterListItem
   currentUid: number
   onProfileClick: (data: FormatterListItem) => void
-  setReportVisible:(boll:boolean)=>void
+  setReportVisible: (boll: boolean) => void
   type?: string
 }
 

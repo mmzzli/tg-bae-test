@@ -1,0 +1,10 @@
+.bg-area {
+  height: 240px;
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+}
+
+.content-area {
+  border-radius: 16px 16px 0 0;
+}

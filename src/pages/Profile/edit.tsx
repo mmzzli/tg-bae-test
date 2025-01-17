@@ -4,15 +4,18 @@ import axios from 'axios'
 import { Button, useToast } from '@chakra-ui/react'
 import { profileEdit, putProfile } from '@/api'
 import Skeleton from '@/components/Skeketon/Skeleton'
-import { isMobileDevice } from '@/utils/utils'
+import { isMobileDevice, throttle } from '@/utils/utils'
 
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useStore } from '@/store/store'
 import { UserInfoProfile } from '@/types'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
+import BaseButton from '@/components/BaseButton/BaseButton'
+const SCROLL_THRESHOLD = 130
 
 const ProfileEdit: FC = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const fileInput1Ref = useRef<HTMLInputElement | null>(null)
   const navigate = useNavigate()
   const token = useStore((state) => state.token)
   const { launchParams } = useTMAUtils()
@@ -21,13 +24,21 @@ const ProfileEdit: FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isFocused, setIsFocused] = useState<boolean>(false)
   const setUserInfo = useStore((state) => state.setUserInfo)
+  const userInfo = useStore((state) => state.userInfo)
   const [initLoading, setInitLoading] = useState<boolean>(false)
   const [errBoll, setErrBoll] = useState<boolean>(false)
+  const titleRef = useRef<HTMLHeadingElement>(null)
+  const [showTopTitle, setShowTopTitle] = useState(false)
 
   const [profileData, setProfileData] = useState<UserInfoProfile>({
     username: '',
     bio: '',
     avatar: '',
+    background_img: {
+      url: '',
+      width: 0,
+      height: 0,
+    },
   })
   const changeEve = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -52,6 +63,7 @@ const ProfileEdit: FC = () => {
         username: res.username,
         bio: res.bio,
         avatar: res.avatar,
+        background_img: res.background_img,
       })
     }
     if (token) {
@@ -139,7 +151,6 @@ const ProfileEdit: FC = () => {
             Authorization: `Bearer ${token}`,
           },
         })
-        console.log(response.data)
         setInitLoading(false)
         setProfileData((prevData) => ({
           ...prevData,
@@ -151,11 +162,53 @@ const ProfileEdit: FC = () => {
       }
     }
   }
+
+  const handleBgImgChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      try {
+        setInitLoading(true)
+        const url = await compressImage(file)
+
+        setProfileData((prevData) => ({
+          ...prevData,
+          ['background_img']: {
+            url: url,
+            width: 0,
+            height: 0,
+          },
+        }))
+        const imageBlob = base64ToBlob(url, 'image/jpeg')
+        const upFileUrl = `${import.meta.env.VITE_APP_UPLOAD_URL}upload/${file.name}`
+        const formData = new FormData()
+        formData.append('file', imageBlob, file.name)
+        const response = await axios.put(upFileUrl, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        setInitLoading(false)
+        setProfileData((prevData) => ({
+          ...prevData,
+          ['background_img']: {
+            url: response.data,
+            width: 0,
+            height: 0,
+          },
+        }))
+      } catch (error) {
+        setInitLoading(false)
+        console.error(`Error uploading ${file.name}:`, error)
+      }
+    }
+  }
+
   const doneEve = async () => {
-    if(initLoading){
+    if (initLoading) {
       return
     }
-    if(!profileData.username){
+    if (!profileData.username) {
       toast({
         position: 'bottom',
         render: () => {
@@ -192,6 +245,21 @@ const ProfileEdit: FC = () => {
       },
     })
   }
+
+  useEffect(() => {
+    const scrollDiv = document.getElementById('profileScrollableDiv')
+    if (!titleRef.current) return
+
+    const handleScroll = throttle(() => {
+      if (!scrollDiv) return
+      const shouldShowTitle = scrollDiv.scrollTop >= SCROLL_THRESHOLD
+      setShowTopTitle(shouldShowTitle)
+    }, 40)
+
+    scrollDiv?.addEventListener('scroll', handleScroll)
+    return () => scrollDiv?.removeEventListener('scroll', handleScroll)
+  }, [showTopTitle])
+
   useEffect(() => {
     const handleKeyboardHide = () => {
       window.scrollTo(0, 0)
@@ -214,85 +282,140 @@ const ProfileEdit: FC = () => {
 
   return (
     <div
-      className="pt-[24px] px-[16px] fixed w-screen h-screen bg-[#fff] z-10 overflow-auto scrollbar-hide"
-      id="scrollable"
+      className="relative  w-screen  bg-[#fff] overflow-auto scrollbar-hide"
+      id="profileScrollableDiv"
+      style={{
+        height:
+          'calc(100vh - 84px - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top))',
+      }}
     >
-      <h2 className="text-[20px] text-[#0F1233] font-[500]">Profile</h2>
-      {profileData.avatar ? (
-        <>
-          <div className="mt-[38px]">
-            <p className="w-[88px] h-[88px] m-[auto] rounded-[50px] relative">
-              <img
-                src={profileData?.avatar}
-                className="w-[100%] h-[100%] rounded-[50px] object-cover overflow-hidden"
-              />
-              <div className="bg-[#fff] p-[3px] absolute bottom-[0px] right-[-14px] rounded-[50px]">
-                <p
-                  className="bg-[#19191E] w-[28px] h-[28px] flex items-center justify-center rounded-[50px]"
-                  onClick={handleDivClick}
-                >
-                  <i className="iconfont icon-camera-ai-line text-white"></i>
-                </p>
-              </div>
-            </p>
-          </div>
-          <input
-            type="file"
-            ref={fileInputRef}
-            style={{ display: 'none' }}
-            accept="image/*"
-            onChange={handleFileChange}
-          />
-          <div className="px-[8px] mt-[48px]">
-            <div className="flex justify-between items-center mb-[16px]">
-              <h3 className="text-[16px] text-[#0F1233] font-[500]">* Name</h3>
-              <p className="text-[#888] text-[12px]">{profileData?.username.length}/20</p>
+      <div
+        className="bg-area fixed top-0 left-0 items-center justify-center"
+        style={{
+          backgroundImage: `url(${profileData.background_img.url ? profileData.background_img.url : '/src/assets/image/profile/bg-header.png'})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          display: showTopTitle ? 'none' : 'flex',
+        }}
+      >
+        <BaseButton
+          handler={() => {
+            fileInput1Ref.current?.click()
+          }}
+          text="Cover"
+          icon={<i className="iconfont icon-camera-ai-line text-white"></i>}
+          className="cover-btn bg-[rgba(0,0,0,0.26)] w-[86px] h-[36px] "
+        />
+        <input
+          type="file"
+          ref={fileInput1Ref}
+          style={{ display: 'none' }}
+          accept="image/*"
+          onChange={handleBgImgChange}
+        />
+      </div>
+      <h3
+        className="fixed text-black dark:text-[#E0E2F6] text-[20px] flex items-center duration-300 ease-out"
+        style={{
+          opacity: showTopTitle ? 1 : 0,
+          transform: `translateX(-50%)`,
+          left: '50%',
+          top: `${
+            showTopTitle
+              ? 'calc(var(--tg-safe-area-inset-top) + 10px)'
+              : 'calc(var(--tg-safe-area-inset-top) + 24px)'
+          }`,
+        }}
+      >
+        Profile
+      </h3>
+      <div
+        ref={titleRef}
+        className="content-area absolute top-[134px] pt-[24px] px-[16px] pb-[63px] left-0 w-full h-full  bg-white dark:bg-black"
+      >
+        <div className={`text-[20px] text-[#0F1233] font-[500] ${showTopTitle ? 'opacity-0' : ''}`}>
+          Profile
+        </div>
+
+        {profileData.avatar ? (
+          <>
+            <div className="mt-[38px]">
+              <p className="w-[88px] h-[88px] m-[auto] rounded-[50px] relative">
+                <img
+                  src={profileData?.avatar}
+                  className="w-[100%] h-[100%] rounded-[50px] object-cover overflow-hidden"
+                />
+                <div className="bg-[#fff] p-[3px] absolute bottom-[0px] right-[-14px] rounded-[50px]">
+                  <p
+                    className="bg-[#19191E] w-[28px] h-[28px] flex items-center justify-center rounded-[50px]"
+                    onClick={handleDivClick}
+                  >
+                    <i className="iconfont icon-camera-ai-line text-white"></i>
+                  </p>
+                </div>
+              </p>
             </div>
             <input
-              className="w-[100%] rounded-[10px] text-[#333] text-[14px] bg-[#F5F5FA] px-[16px] py-[15px]"
-              value={profileData?.username}
-              onChange={(e) => {changeEve(e, 'username');setErrBoll(false)}}
+              type="file"
+              ref={fileInputRef}
+              style={{ display: 'none' }}
+              accept="image/*"
+              onChange={handleFileChange}
             />
-            { errBoll && <p className='text-[#FF684A] text-3 mt-1'>This name is already taken.</p>}
-            <div className="mt-[24px]">
+            <div className="px-[8px] mt-[48px]">
               <div className="flex justify-between items-center mb-[16px]">
-                <h3 className="text-[16px] text-[#0F1233] font-[500]">Bio</h3>
-                <p className="text-[#888] text-[12px]">{profileData?.bio.length}/500</p>
+                <h3 className="text-[16px] text-[#0F1233] font-[500]">* Name</h3>
+                <p className="text-[#888] text-[12px]">{profileData?.username.length}/20</p>
               </div>
-              <textarea
-                className="w-[100%] h-[218px] rounded-[10px] text-[#333] text-[14px] bg-[#F5F5FA] px-[16px] py-[15px]"
-                value={profileData?.bio}
-                onChange={(e) => changeEve(e, 'bio')}
-                onFocus={() => {
-                  isMobileDevice() && setIsFocused(true)
-                }}
-                onBlur={() => {
-                  isMobileDevice() && setIsFocused(false)
+              <input
+                className="w-[100%] rounded-[10px] text-[#333] text-[14px] bg-[#F5F5FA] px-[16px] py-[15px]"
+                value={profileData?.username}
+                onChange={(e) => {
+                  changeEve(e, 'username')
+                  setErrBoll(false)
                 }}
               />
+              {errBoll && <p className="text-[#FF684A] text-3 mt-1">This name is already taken.</p>}
+              <div className="mt-[24px]">
+                <div className="flex justify-between items-center mb-[16px]">
+                  <h3 className="text-[16px] text-[#0F1233] font-[500]">Bio</h3>
+                  <p className="text-[#888] text-[12px]">{profileData?.bio.length}/500</p>
+                </div>
+                <textarea
+                  className="w-[100%] h-[218px] rounded-[10px] text-[#333] text-[14px] bg-[#F5F5FA] px-[16px] py-[15px]"
+                  value={profileData?.bio}
+                  onChange={(e) => changeEve(e, 'bio')}
+                  onFocus={() => {
+                    isMobileDevice() && setIsFocused(true)
+                  }}
+                  onBlur={() => {
+                    isMobileDevice() && setIsFocused(false)
+                  }}
+                />
+              </div>
             </div>
-          </div>
-          <div
-            className={`pt-[28px] px-[18px] pb-[43px]`}
-            style={{ height: `${isFocused ? '400px' : ''}` }}
-          >
-            <Button
-              variant="primary-dark"
-              w="100%"
-              h="48px"
-              isLoading={isLoading}
-              onClick={doneEve}
+            <div
+              className={`pt-[28px] px-[18px] pb-[43px]`}
+              style={{ height: `${isFocused ? '400px' : ''}` }}
             >
-              Done
-            </Button>
+              <Button
+                variant="primary-dark"
+                w="100%"
+                h="48px"
+                isLoading={isLoading}
+                onClick={doneEve}
+              >
+                Done
+              </Button>
+            </div>
+          </>
+        ) : (
+          <div className="mt-[38px]">
+            <Skeleton childClassName="w-[88px] h-[88px] m-[auto] rounded-full" />
+            <Skeleton childClassName="w-[100%] h-[188px] m-[auto] rounded-[4px] mt-[48px]" />
           </div>
-        </>
-      ) : (
-        <div className="mt-[38px]">
-          <Skeleton childClassName="w-[88px] h-[88px] m-[auto] rounded-full" />
-          <Skeleton childClassName="w-[100%] h-[188px] m-[auto] rounded-[4px] mt-[48px]" />
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }

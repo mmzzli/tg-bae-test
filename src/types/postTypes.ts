@@ -106,3 +106,16 @@ export type AccountdetailItem = {
 }
 
 export type AccountdetailRes = { accounts: Array<AccountdetailItem> }
+
+export type VoteReq = {
+  post_id: number
+  vote_uid: number
+  // act_type: number
+}
+
+export type VoteRes = {
+  post_id: number
+  vote_uid: number
+  act_type: number
+}
+

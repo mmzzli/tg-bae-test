@@ -15,6 +15,11 @@ export interface UserInfoProfile {
   username: string
   bio: string
   avatar: string
+  background_img: {
+    url: string
+    width: number
+    height: number
+  }
 }
 
 export interface Follow {

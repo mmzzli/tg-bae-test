@@ -9,7 +9,6 @@ import { Outlet } from 'react-router-dom'
 import { log } from 'console'
 import Menu from '../Menu'
 import { postEvent } from '@telegram-apps/sdk'
-import { PostProgressBar } from '../NewPost/PostProgressBar'
 import VideoDialog from '@/components/ResourceList/VideoDialog'
 import ImageDialog from '@/components/ResourceList/ImageDialog'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
@@ -305,7 +304,6 @@ export const MainLayout: React.FC = () => {
       >
         <Outlet />
       </div>
-      <PostProgressBar />
       <Menu />
       <VideoDialog></VideoDialog>
       <ImageDialog></ImageDialog>

@@ -563,6 +563,7 @@ export const NewPost: FC = () => {
                       top="8px"
                       right="8px"
                       src={RemoveIcon}
+                      borderRadius="8px"
                       alt="img"
                     />
                   </Box>
@@ -588,7 +589,7 @@ export const NewPost: FC = () => {
                       objectFit="cover"
                       w="100%"
                       h="100%"
-                      borderRadius="2px"
+                      borderRadius="8px"
                       src={url}
                       alt="img"
                     />

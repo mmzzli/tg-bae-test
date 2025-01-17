@@ -28,7 +28,6 @@ export const MessageList = ({ messages, className, channelInfo }: MessageListPro
   const [hasMore, setHasMore] = useState(true)
   const prevMessagesLengthRef = useRef(messages.length)
 
-
   const maintainScrollPosition = useCallback(() => {
     if (scrollRef.current && messages.length > prevMessagesLengthRef.current) {
       const newMessages = messages.length - prevMessagesLengthRef.current
@@ -110,13 +109,18 @@ export const MessageList = ({ messages, className, channelInfo }: MessageListPro
             />
           </div>
         )}
-        <Tooltip content={message} delay={800}>
+        <Tooltip
+          content={message}
+          delay={800}
+          id={message.id}
+          config={{ enableReply: false, enableCopy: true, enableDownload: true }}
+        >
           <div
             className={`overflow-hidden rounded-lg max-w-[255px]
             ${isCurrentUser && message.type === MessageType.TEXT ? 'bg-[#6254ff] dark:bg-[#4A3AFF] text-white' : 'dark:bg-[#303030] bg-[#F1F1F1] text-[#333333] dark:text-white'}
             ${message.type === MessageType.TEXT ? 'p-3' : 'inline-block'}
           `}
-        >
+          >
             <MessageRender message={message} />
           </div>
         </Tooltip>

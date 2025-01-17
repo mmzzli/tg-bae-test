@@ -92,7 +92,7 @@ const Profile: FC = () => {
       >
         {userInfo?.username}
       </h3>
-      <div ref={titleRef} className="content-area absolute top-[128px] left-0 w-full h-full  bg-white dark:bg-black">
+      <div ref={titleRef} className="content-area absolute top-[113px] left-0 w-full h-full  bg-white dark:bg-black">
         <UserProfile />
         <ViewList />
       </div>

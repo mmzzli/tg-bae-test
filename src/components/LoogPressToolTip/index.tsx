@@ -4,6 +4,8 @@ import { Message } from '../Chat/types'
 import useCopy from '@/hooks/useCopy'
 import { motion, AnimatePresence } from 'framer-motion'
 import { TooltipConfig, defaultTooltipConfig } from '@/config/tooltip'
+import { useToast } from '@chakra-ui/react'
+import { CustomToast, typeOptions } from '../comm/Toast'
 // import { postEvent } from '@telegram-apps/sdk'
 
 // 静态变量，用于跟踪当前活动的tooltip
@@ -34,6 +36,8 @@ const Tooltip: React.FC<TooltipProps> = ({
   const targetRef = useRef<HTMLDivElement>(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
   const { copy } = useCopy()
+  const toast = useToast()
+
   const isIOSDevice = isIOS()
   const [isLeftSide, setIsLeftSide] = useState(false)
 
@@ -171,6 +175,12 @@ const Tooltip: React.FC<TooltipProps> = ({
     try {
       if (content.text) {
         copy(content.text)
+        toast({
+          render: () => {
+            return <CustomToast title="Copied to clipboard!" type={typeOptions.success} />
+          },
+          position: 'bottom',
+        })
       }
     } catch (error) {
       console.error('Failed to copy:', error)

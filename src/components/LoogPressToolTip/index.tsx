@@ -82,8 +82,10 @@ const Tooltip: React.FC<TooltipProps> = ({
 
   const showTooltip = useCallback(() => {
     if (targetRef.current) {
-      // 只有在iOS设备上且有URL，或者有文本内容时才显示tooltip
-      if ((isIOSDevice && content.url) || content.text) {
+      // 只有在以下情况才显示tooltip:
+      // 1. 有文本内容
+      // 2. 或者在iOS设备上且有URL且enableDownload为true
+      if (content.text || (isIOSDevice && content.url && config.enableDownload)) {
         // 如果已经有其他tooltip在显示，发送事件通知它关闭
         if (activeTooltipId && activeTooltipId !== id) {
           const event = new CustomEvent('hideTooltip', { detail: { id: activeTooltipId } })
@@ -112,7 +114,7 @@ const Tooltip: React.FC<TooltipProps> = ({
         if (isLeftSide) {
           // 如果在左半边，tooltip左对齐目标元素
           tooltipLeft = rect.left + window.scrollX
-          triangleLeft = '20%'
+          triangleLeft = '32%'
         } else {
           // 如果在右半边，tooltip右对齐目标元素
           tooltipRight = window.innerWidth - rect.right
@@ -130,7 +132,7 @@ const Tooltip: React.FC<TooltipProps> = ({
         setVisible(true)
       }
     }
-  }, [content.url, content.text, isIOSDevice, id])
+  }, [content.url, content.text, isIOSDevice, id, config.enableDownload])
 
   const longPressEvent = useLongPress({
     delay: delay,

@@ -38,6 +38,11 @@ const Profile: FC = () => {
       const shouldShowTitle = scrollDiv.scrollTop >= SCROLL_THRESHOLD
       setShowTopTitle(shouldShowTitle)
     }, 40)
+    if (showTopTitle) {
+      window.Telegram?.WebApp?.setHeaderColor("#ffffff")
+    } else {
+      window.Telegram?.WebApp?.setHeaderColor("#000000")
+    }
 
     scrollDiv?.addEventListener('scroll', handleScroll)
     return () => scrollDiv?.removeEventListener('scroll', handleScroll)

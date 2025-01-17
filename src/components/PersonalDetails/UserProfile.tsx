@@ -57,36 +57,21 @@ const UserProfile: FC = () => {
     <Box
       padding="0 16px"
       className="no-tap"
-      mt="-16px"
-      // style={{
-      //   paddingTop: `calc(${
-      //     window
-      //       .getComputedStyle(document.documentElement)
-      //       .getPropertyValue('--tg-safe-area-inset-top') &&
-      //     parseInt(
-      //       window
-      //         .getComputedStyle(document.documentElement)
-      //         .getPropertyValue('--tg-safe-area-inset-top'),
-      //       10
-      //     ) !== 0
-      //       ? '8px'
-      //       : '30px '
-      //   })`,
-      // }}
+      mt="-26px"
     >
       <HStack paddingLeft="0" justifyContent="space-between" >
-        <div className="w-[74px] h-[74px] overflow-hidden rounded-[50%] bg-white flex items-center justify-center">
+        <div className="w-[82px] h-[82px] overflow-hidden rounded-[50%] bg-white flex items-center justify-center">
           <Image
             rect
             type="avatar"
-            width={64}
-            height={64}
+            width={72}
+            height={72}
             className="rounded-full"
             src={userInfo.avatar || profileImg}
             alt={userInfo.username}
           />
         </div>
-        <Box className='mt-[10px]' display="flex" alignItems="center">
+        <Box className='mt-[32px]' display="flex" alignItems="center">
           {/* <EarningsPage /> */}
           <Notification />
           <ShareUser userInfo={userInfo} />

@@ -100,7 +100,7 @@ const Tooltip: React.FC<TooltipProps> = ({
         const windowWidth = window.innerWidth
 
         // 计算tooltip的垂直位置（在目标元素上方80px）
-        let top = rect.top - 85
+        let top = rect.top - 82
         let tooltipLeft
         let triangleLeft
         let tooltipRight
@@ -118,7 +118,7 @@ const Tooltip: React.FC<TooltipProps> = ({
         } else {
           // 如果在右半边，tooltip右对齐目标元素
           tooltipRight = window.innerWidth - rect.right
-          triangleLeft = '70%'
+          triangleLeft = '68%'
         }
 
         // 更新tooltip的位置状态
@@ -206,7 +206,7 @@ const Tooltip: React.FC<TooltipProps> = ({
               left: isLeftSide ? position.left : 'unset',
               right: isLeftSide ? 'unset' : position.right,
               transform: 'translateX(-50%)',
-              backgroundColor: 'rgba(0, 0, 0, 0.8)',
+              backgroundColor: 'rgba(63, 61, 82)',
               backdropFilter: 'blur(10px)',
               color: '#fff',
               padding: '12px 20px',
@@ -269,7 +269,7 @@ const Tooltip: React.FC<TooltipProps> = ({
                 height: 0,
                 borderLeft: '8px solid transparent',
                 borderRight: '8px solid transparent',
-                borderTop: '8px solid rgba(0, 0, 0, 0.8)',
+                borderTop: '8px solid rgba(63, 61, 82)',
               }}
             />
           </motion.div>

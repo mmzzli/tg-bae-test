@@ -1,0 +1,11 @@
+export interface TooltipConfig {
+  enableCopy?: boolean;
+  enableReply?: boolean;
+  enableDownload?: boolean;
+}
+
+export const defaultTooltipConfig: TooltipConfig = {
+  enableCopy: true,
+  enableReply: true,
+  enableDownload: true,
+}

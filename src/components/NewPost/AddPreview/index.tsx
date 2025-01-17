@@ -8,6 +8,7 @@ import { useStore } from '@/store'
 import { uploadImgUrl } from '@/utils/env'
 
 import Trailer from '@/components/NewPost/AddPreview/Trailer'
+import Slider from '@/components/NewPost/AddPreview/Slider'
 
 interface Frame {
   url: string
@@ -106,6 +107,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
     const video = videoRef.current;
     if (video) {
       video.currentTime = Number(value);
+      console.log(value)
       setCurrentTime(Number(value));
       renderFrameToCanvas();
     }
@@ -239,9 +241,10 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
                   Select a clip from the video to use as a preview , or upload  a video from album.
                 </p>
 
-                <div className='mt-2 flex gap-2'>
+                <div className='mt-2 flex items-center gap-2'>
                   <Trailer/>
-                  <input
+                  <Slider duration={duration} handleSliderChange={handleSliderChange}/>
+                  {/* <input
                     className='w-[100%]'
                     type="range"
                     min="0"
@@ -249,7 +252,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
                     step="0.1"
                     value={currentTime}
                     onInput={(e: any) => handleSliderChange(e.target.value)}
-                  />
+                  /> */}
                 </div>
 
                 <div className="px-[20px] pt-[24px] pb-[20px]">

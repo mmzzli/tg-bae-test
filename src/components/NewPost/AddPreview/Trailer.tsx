@@ -21,7 +21,7 @@ const Trailer = ()=>{
   }
 
   return (
-    <>
+    <div>
       {
         !videoSrc ?
         <p className='h-[64px] w-[64px] bg-[#F7F9FC] rounded-md flex-none' onClick={handleChooseFile}></p>
@@ -68,7 +68,7 @@ const Trailer = ()=>{
         style={{ display: 'none' }}
         ref={inputRef}
       />
-    </>
+    </div>
   )
 }
 export default Trailer

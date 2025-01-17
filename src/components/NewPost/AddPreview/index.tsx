@@ -24,16 +24,18 @@ interface VideoPlayerProps {
 
 const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: videoUrl }) => {
   const [frames, setFrames] = useState<Frame[]>([])
-  // const [selectedFrame, setSelectedFrame] = useState<Frame | null>(null)
   const [isBaseModalOpen, { toggle, on, off }] = useBoolean(false)
   const token = useStore((state) => state.token)
   const [loading, setLoading] = useState(false)
-
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [selectedFrame, setSelectedFrame] = useState<Frame | null>(null);
   const [duration, setDuration] = useState<number>(0);
   const [currentTime, setCurrentTime] = useState<number>(0);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false); // New state to track if video is playing
+  // 设置播放时间
+  const [startTime, setStartTime] = useState<number>(0); // Set the start time for the video (in seconds)
+  const [endTime, setEndTime] = useState<number>(5);  // Set the end time for the video (in seconds)
 
   const isLandscape =
     selectedFrame?.width && selectedFrame?.height
@@ -46,41 +48,45 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
     if (video && canvas) {
       const ctx = canvas.getContext("2d");
       if (ctx) {
-        // Use the original size of the video for the canvas size
         const videoWidth = video.videoWidth;
         const videoHeight = video.videoHeight;
 
-        // Set canvas size to match the video size
         canvas.width = videoWidth;
         canvas.height = videoHeight;
 
-        // Clear the canvas before drawing the new frame
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Draw the current video frame onto the canvas at its original size
         ctx.drawImage(
           video,
-          0, 0, videoWidth, videoHeight, // Original video dimensions
-          0, 0, videoWidth, videoHeight  // Draw the frame at the same size as the video
+          0, 0, videoWidth, videoHeight,
+          0, 0, videoWidth, videoHeight
         );
       }
     }
   };
 
-
+  const handleVideoClick = () => {
+    const video = videoRef.current;
+    if (video) {
+      if (isPlaying) {
+        video.pause();
+      } else {
+        video.play();
+      }
+      setIsPlaying(!isPlaying); // Toggle the playing state
+    }
+  };
 
   useEffect(() => {
     const video = videoRef.current;
     if (video) {
       const handleLoadedMetadata = () => {
-        console.log("Metadata loaded");
         setDuration(video.duration);
         setCurrentTime(0);
         renderFrameToCanvas();
       };
 
       const handleCanPlay = () => {
-        console.log("Video can play");
         renderFrameToCanvas();
       };
 
@@ -102,12 +108,31 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
     }
   }, [videoUrl]);
 
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video) {
+      video.currentTime = startTime; // Set the initial time to the start time
+
+      const handleTimeUpdate = () => {
+        if (video.currentTime >= endTime) {
+          video.currentTime = startTime; // Reset to start time if it exceeds the end time
+        }
+        setCurrentTime(video.currentTime);
+        renderFrameToCanvas();
+      };
+
+      video.addEventListener("timeupdate", handleTimeUpdate);
+
+      return () => {
+        video.removeEventListener("timeupdate", handleTimeUpdate);
+      };
+    }
+  }, [startTime, endTime, videoRef]);
 
   const handleSliderChange = (value: React.FormEvent<HTMLInputElement>): void => {
     const video = videoRef.current;
     if (video) {
       video.currentTime = Number(value);
-      console.log(value)
       setCurrentTime(Number(value));
       renderFrameToCanvas();
     }
@@ -116,21 +141,18 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
   useEffect(() => {
     if (videoRef) {
       const timer = setTimeout(() => {
-        captureFrame()
-      }, 1000)
-      return () => clearTimeout(timer)
+        captureFrame();
+      }, 1000);
+      return () => clearTimeout(timer);
     }
-  }, [videoRef, videoUrl])
+  }, [videoRef, videoUrl]);
 
-  // 捕获当前帧作为封面
   const captureFrame = async () => {
     const canvas = canvasRef.current;
     off();
     if (canvas) {
-      // Get the frame as a PNG image at the video's full size
       const frameData = canvas.toDataURL("image/png", 1.0);
       const file = base64ToFile(frameData, 'image.png');
-      console.log(file);
 
       const timestamp: number = new Date().getTime();
       const url = `${import.meta.env.VITE_APP_UPLOAD_URL}upload/${timestamp}`;
@@ -151,7 +173,6 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
     }
   };
 
-
   const base64ToFile = (base64String: any, filename: string) => {
     const arr = base64String.split(',')
     const mime = arr[0].match(/:(.*?);/)[1]
@@ -166,45 +187,22 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
 
   return (
     <>
-      {/* <Text
-        color="#FFF"
-        fontSize="14px"
-        borderRadius="4px"
-        bg="rgba(0, 0, 0, 0.50)"
-        p="5px 9px 6px 10px"
-        position="absolute"
-        bottom="8px"
-        right="8px"
-        cursor="pointer"
-        onClick={() => toggle()}
-      >
-        Select cover
-      </Text> */}
-      <div className="fixed bottom-[200px] left-0 w-[100%]"
-        onClick={() => toggle()}
-      >
+      <div className="fixed bottom-[200px] left-0 w-[100%]" onClick={() => toggle()}>
         <div className="px-7 flex justify-between gap-2 flex-none">
           <div>
             <p className="text-[16px] text-[#000]">Add a preview</p>
             <p className="text-[12px] text-[#8E8E92]">You can add a preview to your locked video to entice viewers to unlock it.</p>
           </div>
-          <p className='h-[64px] w-[64px] bg-[#F7F9FC] rounded-md flex-none'>
-          </p>
+          <p className='h-[64px] w-[64px] bg-[#F7F9FC] rounded-md flex-none'></p>
         </div>
       </div>
+
       <BaseModal
         isOpen={isBaseModalOpen}
         onClose={off}
         height={isLandscape ? '70vh' : '85vh'}
-        animation={{
-          duration: 400,
-          timingFunction: 'ease-in-out',
-        }}
-        theme={{
-          darkBackgroundColor: '#1a1a1a',
-          lightBackgroundColor: '#ffffff',
-          handleColor: '#d1d5db',
-        }}
+        animation={{ duration: 400, timingFunction: 'ease-in-out' }}
+        theme={{ darkBackgroundColor: '#1a1a1a', lightBackgroundColor: '#ffffff', handleColor: '#d1d5db' }}
         closeOnBackdropClick={true}
         showHandle={false}
       >
@@ -213,16 +211,16 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
 
           {videoUrl && (
             <div>
-              {/* 视频元素 */}
+              {/* Video Element */}
               <video
                 ref={videoRef}
                 src={videoUrl}
-                style={{ display: "none", width: "243px", height: "315px" }}
+                style={{ display: "block", width: "243px", height: "315px" }}
                 preload="auto"
                 playsInline
+                onClick={handleVideoClick} // Add click handler to toggle play/pause
               />
-
-              <canvas
+              {/* <canvas
                 ref={canvasRef}
                 width={243}
                 height={315}
@@ -232,27 +230,16 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
                   width: "243px",
                   height: "315px",
                 }}
-              ></canvas>
-
-
+              ></canvas> */}
 
               <div className="bg-[#fff] rounded-tl-[16px] rounded-tr-[16px]">
                 <p className="text-center text-[#999] pt-[62px] pb-[15px]">
-                  Select a clip from the video to use as a preview , or upload  a video from album.
+                  Select a clip from the video to use as a preview, or upload a video from album.
                 </p>
 
                 <div className='mt-2 flex items-center gap-2'>
-                  <Trailer/>
-                  <Slider duration={duration} handleSliderChange={handleSliderChange}/>
-                  {/* <input
-                    className='w-[100%]'
-                    type="range"
-                    min="0"
-                    max={duration || 0}
-                    step="0.1"
-                    value={currentTime}
-                    onInput={(e: any) => handleSliderChange(e.target.value)}
-                  /> */}
+                  <Trailer />
+                  <Slider duration={duration} handleSliderChange={handleSliderChange} setStartTime={setStartTime} setEndTime={setEndTime}/>
                 </div>
 
                 <div className="px-[20px] pt-[24px] pb-[20px]">
@@ -264,34 +251,9 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
                     handler={() => captureFrame()}
                   />
                 </div>
-
               </div>
-
-              {/* 时间滑块 */}
-              {/* <div style={{ marginTop: "10px" }}>
-                <input
-                  type="range"
-                  min="0"
-                  max={duration || 0}
-                  step="0.1"
-                  value={currentTime}
-                  onInput={(e: any) => handleSliderChange(e.target.value)} // 即时响应滑动
-                />
-              </div> */}
-
-              {/* 捕获按钮 */}
-              {/* <button onClick={captureFrame}>选择当前帧作为封面</button> */}
             </div>
           )}
-
-          {/* 显示选定的封面 */}
-          {/* {selectedFrame && (
-            <div style={{ marginTop: "20px" }}>
-              <h3>选定的封面</h3>
-              <img src={selectedFrame} alt="Selected Frame" style={{ width: "200px" }} />
-            </div>
-          )} */}
-
         </div>
       </BaseModal>
     </>

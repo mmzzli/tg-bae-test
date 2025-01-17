@@ -4,11 +4,15 @@ import React, { useState, useRef } from 'react';
 interface SliderProps {
   duration: number
   handleSliderChange: (value:any)=>void
+  setStartTime:(num:number)=>void
+  setEndTime:(num:number)=>void
 }
 
 const TransparentSlider: React.FC<SliderProps> = ({
   duration,
-  handleSliderChange
+  handleSliderChange,
+  setStartTime,
+  setEndTime
 }) => {
   const [selectedTime, setSelectedTime] = useState(0);
   const sliderRef = useRef<HTMLDivElement | null>(null);
@@ -34,6 +38,15 @@ const TransparentSlider: React.FC<SliderProps> = ({
     const time = getSelectedTime(clientX);
     handleSliderChange(time.toFixed(1))
     setSelectedTime(time);
+    // 设置视频时长
+    // console.log(time)
+    if(time+5 >= videoDuration){
+      setStartTime(videoDuration-5)
+      setEndTime(videoDuration)
+    }else{
+      setStartTime(time)
+      setEndTime(time + 5)
+    }
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {

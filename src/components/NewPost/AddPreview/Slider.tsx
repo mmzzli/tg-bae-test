@@ -37,6 +37,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
     const clientX = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
     const time = getSelectedTime(clientX);
     handleSliderChange(time.toFixed(1))
+    console.log(time)
     setSelectedTime(time);
     // 设置视频时长
     // console.log(time)
@@ -96,6 +97,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
           borderRadius: '5px',
           // margin: '20px auto',
           cursor: 'pointer',
+          overflow: 'hidden'
         }}
       >
         {/* 滑块 */}

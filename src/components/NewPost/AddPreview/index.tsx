@@ -1,11 +1,12 @@
 import React, { useRef, useEffect, useState, RefObject, Dispatch, SetStateAction } from 'react'
-import { useBoolean, Text } from '@chakra-ui/react'
+import { useBoolean, Text, useToast } from '@chakra-ui/react'
 import axios, { AxiosResponse } from 'axios'
 
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { BaseModal } from '@/components/Modal/BaseModal'
 import { useStore } from '@/store'
 import { uploadImgUrl } from '@/utils/env'
+import { CustomToast, typeOptions } from '@/components/comm/Toast'
 
 import Trailer from '@/components/NewPost/AddPreview/Trailer'
 import Slider from '@/components/NewPost/AddPreview/Slider'
@@ -26,6 +27,7 @@ interface VideoPlayerProps {
 }
 
 const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: videoUrl, setTrailer, trailer }) => {
+  const toast = useToast()
   const [videoRefTrailer, setVideoRefTrailer] = useState<File | null>(null)
   const [frames, setFrames] = useState<Frame[]>([])
   const [isBaseModalOpen, { toggle, on, off }] = useBoolean(false)
@@ -235,6 +237,12 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
 
     const videoElement = videoRef.current as HTMLVideoElement & { captureStream?: () => MediaStream };
     if (!videoElement?.captureStream) {
+      toast({
+        render: () => {
+          return <CustomToast title="captureStream error" type={typeOptions.error} />
+        },
+        position: 'bottom',
+      })
       return
     }
 

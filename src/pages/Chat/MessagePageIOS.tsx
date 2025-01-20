@@ -217,11 +217,17 @@ const MessagePageIOS = () => {
     }
   }, [])
 
+  useEffect(() => {
+    if (replyMessage && replyMessage.channel === messageWindow?.channel.channelID) {
+      inputRef.current?.focus()
+    }
+  }, [replyMessage])
+
   console.log('MessagePage render', messageWindow, replyMessage)
   return (
     <div
       ref={containerRef}
-      className="absolute top-0 left-0 right-0 flex flex-col dark:bg-[#000000] bg-white z-[10] overflow-hidden slide-in-from-right"
+      className="absolute top-0 left-0 right-0 flex flex-col dark:bg-[#000000] bg-[#F5F7FC] z-[10] overflow-hidden slide-in-from-right"
       style={{
         WebkitOverflowScrolling: 'touch',
         transition: isIOS() ? 'height 0.3s ease-in-out' : '',

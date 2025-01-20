@@ -15,7 +15,6 @@ import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { debounce } from '@/utils/chat/schedulers'
 import RewardButton from '@/components/Wallet/RewardButton'
-import { width } from '@telegram-apps/sdk/dist/dts/scopes/components/viewport/signals'
 // const PAGE_SIZE = 20
 const isIOS = () => {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
@@ -39,6 +38,7 @@ const MessagePageIOS = () => {
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [zIndex, setZIndex] = useState(98)
+  const isIOSDevice = isIOS()
 
   const [initTgViewportHeight, setInitTgViewportHeight] = useState(0)
   const [initVisualViewportHeight, setInitVisualViewportHeight] = useState(0)
@@ -165,13 +165,15 @@ const MessagePageIOS = () => {
       console.log('###### TG viewportChanged ######')
       if (tg.viewportStableHeight < initTgViewportHeightRef.current) {
         console.log('keyboard up')
-        containerRef.current!.style.height = `${tg.viewportStableHeight}px`
+        containerRef.current!.style.height = `${isIOSDevice ? tg.viewportStableHeight : tg.viewportStableHeight - 26}px`
         keyboardUp()
+        setShowInput(true)
       } else {
         console.log('keyboard down')
         // containerRef.current!.style.height = `${initVisualViewportHeightRef.current - 84}px`
         containerRef.current!.style.height = `100vh`
         keyboardDown()
+        setShowInput(false)
       }
     }, 100)
 
@@ -189,7 +191,7 @@ const MessagePageIOS = () => {
       // 这个有时候会获取不到初始的高度
       if (tg.viewportStableHeight < initTgViewportHeightRef.current) {
         console.log('keyboard up 2')
-        containerRef.current!.style.height = `${tg.viewportStableHeight}px`
+        containerRef.current!.style.height = `${isIOSDevice ? tg.viewportStableHeight : tg.viewportStableHeight - 26}px`
         setShowInput(true)
       } else {
         console.log('keyboard down 2')
@@ -217,11 +219,17 @@ const MessagePageIOS = () => {
     }
   }, [])
 
+  useEffect(() => {
+    if (replyMessage && replyMessage.channel === messageWindow?.channel.channelID) {
+      inputRef.current?.focus()
+    }
+  }, [replyMessage])
+
   console.log('MessagePage render', messageWindow, replyMessage)
   return (
     <div
       ref={containerRef}
-      className="absolute top-0 left-0 right-0 flex flex-col dark:bg-[#000000] bg-white z-[10] overflow-hidden slide-in-from-right"
+      className="absolute top-0 left-0 right-0 flex flex-col dark:bg-[#000000] bg-[#F5F7FC] z-[10] overflow-hidden slide-in-from-right"
       style={{
         WebkitOverflowScrolling: 'touch',
         transition: isIOS() ? 'height 0.3s ease-in-out' : '',
@@ -268,15 +276,23 @@ const MessagePageIOS = () => {
         style={{
           marginBottom:
             replyMessage && replyMessage.channel === messageWindow?.channel.channelID
-              ? '136px'
-              : '68px',
+              ? showInput
+                ? '107px'
+                : '134px'
+              : showInput
+                ? '49px'
+                : '76px',
         }}
       />
 
       {/* Reply Message */}
       <div
         className={cn(
-          'items-center h-[58px] absolute left-0 right-0 bottom-[68px] dark:bg-black bg-[#ffffff] pl-6 pr-3'
+          'items-center h-[58px] absolute left-0 right-0 dark:bg-black bg-[#ffffff] pl-6 pr-3',
+          replyMessage && replyMessage.channel === messageWindow?.channel.channelID
+            ? 'border-t border-t-[#EBEBF4] dark:border-t-black'
+            : 'border-t-transparent',
+          showInput ? 'bottom-[49px]' : 'bottom-[76px]'
         )}
         style={{
           display:
@@ -320,9 +336,10 @@ const MessagePageIOS = () => {
 
       {/* FAKE INPUT */}
       <div
-        className={`'flex h-[68px] absolute border-t border-t-[#EBEBF4] dark:border-t-black bottom-0 left-0 right-0 dark:bg-black bg-white pl-[48px] ${
-          showInput ? 'hidden' : 'block'
-        }`}
+        className={`'flex h-[76px] absolute border-t bottom-0 left-0 right-0 dark:bg-black bg-white pl-[48px]
+          ${showInput ? 'hidden ' : 'block '}
+          ${replyMessage && replyMessage.channel === messageWindow?.channel.channelID ? 'border-t-transparent ' : 'border-t-[#EBEBF4] dark:border-t-black '}
+        `}
       >
         <div className="relative flex items-center w-full h-[46px] box-border">
           <div
@@ -336,7 +353,7 @@ const MessagePageIOS = () => {
             }}
           >
             <span className="flex-1 overflow-hidden whitespace-nowrap">
-              {message ? message : 'Type a Message...'}
+              {message ? message : 'Type a Message....'}
             </span>
           </div>
 
@@ -360,8 +377,11 @@ const MessagePageIOS = () => {
       {/* REAL INPUT */}
       <div
         className={cn(
-          'flex h-[68px] absolute left-0 right-0 dark:bg-black bg-[#ffffff] border-t dark:border-none border-t-[#F5F3F3] overflow-hidden pl-[48px]',
-          showInput ? 'bottom-0 opacity-100' : '-top-32 opacity-0'
+          'flex absolute h-[49px] left-0 right-0 dark:bg-black bg-[#ffffff] border-t dark:border-none overflow-hidden pl-[48px]',
+          showInput ? 'bottom-0 opacity-100' : '-top-32 opacity-0',
+          replyMessage && replyMessage.channel === messageWindow?.channel.channelID
+            ? 'border-t-transparent '
+            : 'border-t-[#EBEBF4] dark:border-t-black'
         )}
       >
         <div className="relative flex h-[46px] items-center w-full">
@@ -406,7 +426,10 @@ const MessagePageIOS = () => {
       </div>
 
       {/* SEND MEDIA */}
-      <div className="absolute left-[10px] bottom-[28px] w-[28px]" style={{ zIndex }}>
+      <div
+        className="absolute left-[10px] w-[28px]"
+        style={{ zIndex, bottom: showInput ? '8px' : '36px' }}
+      >
         <SendMediaModal
           tgid={Number(uid)}
           beforeOpen={() => {
@@ -418,7 +441,10 @@ const MessagePageIOS = () => {
           }}
         />
       </div>
-      <div className="absolute right-[2px] bottom-[25px] w-[48px]  flex items-center justify-center h-[36px] z-[98]">
+      <div
+        className="absolute right-[2px] w-[48px]  flex items-center justify-center h-[36px] z-[98]"
+        style={{ bottom: showInput ? '8px' : '35px' }}
+      >
         <RewardButton userInfo={chatPeople || ({} as OthersUserInfo)} />
       </div>
     </div>

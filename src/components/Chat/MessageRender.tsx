@@ -503,7 +503,7 @@ const RewardCard: React.FC<{ message: WrappedMessage }> = ({ message }) => {
   }
   return (
     <div
-      className="cursor-pointer flex items-center w-[255px] h-[72px] border-[0.5px] border-[#CDCDD4] rounded-lg px-4 bg-white"
+      className="cursor-pointer flex items-center w-[255px] h-[72px] border-[0.5px] border-[#CDCDD4] rounded-lg px-4 bg-[#F5F7FC]"
       onClick={handleClick}
     >
       <TokenIcon token={token} chainName={chain_name} size="36px" />
@@ -526,8 +526,8 @@ const ReplyCard: React.FC<{ reply: ReplyMessage }> = ({ reply }) => {
 
         <div className="flex flex-col flex-1 overflow-hidden text-sm">
           {/* Reply To */}
-          <div className="font-medium [.my-msg_&]:text-[#fff] [.other-msg_&]:text-[#999] ">
-            Reply to {reply.toUsername}
+          <div className="font-medium [.my-msg_&]:text-[#fff] [.other-msg_&]:text-[#333] ">
+            {reply.toUsername}
           </div>
           {/* Reply Content */}
           <div className="text-nowrap text-ellipsis overflow-hidden font-normal">

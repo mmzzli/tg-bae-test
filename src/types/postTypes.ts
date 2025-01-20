@@ -29,6 +29,7 @@ export type PostResourceReq = {
   duration?: number
   width?: string
   height?: string
+  trailer?: string
 }
 
 // like

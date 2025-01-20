@@ -16,8 +16,10 @@ import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import { UserItem } from '@/types'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useDrag } from 'react-use-gesture'
+import { HStack, Text } from '@chakra-ui/react'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import PurchaseButton from './PurchaseButton'
+import { ReplayTrangleIcon } from '@/assets/icons'
 
 const PlayButton = memo(({ onClick }: { onClick: () => void }) => (
   <div
@@ -26,6 +28,27 @@ const PlayButton = memo(({ onClick }: { onClick: () => void }) => (
   >
     <i className="iconfont icon-a-Frame2085661742 text-[24px] text-white"></i>
   </div>
+))
+
+const ReplayButton = memo(({ onClick }: { onClick: () => void }) => (
+    <HStack
+      position="fixed"
+      top="0"
+      left="0"
+      width="100%"
+      height="90%"
+      bg="rgba(0,0,0,.5)"
+      zIndex={13}
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
+    >
+    <Text color="#fff" fontSize="14px">Unlock now to view the full video.</Text>
+    <div className="flex items-center gap-1 bg-white px-[12px] py-[8px] rounded-[20px] mt-[12px]" onClick={onClick}>
+      <img src={ReplayTrangleIcon} alt="replay" className="w-[12px] h-[12px]" />
+      <Text color="#333" fontSize="14px">Replay</Text>
+    </div>
+  </HStack>
 ))
 
 const CloseButton = memo(({ onClose }: { onClose: () => void }) => (
@@ -48,6 +71,30 @@ const ProgressDisplay = memo(
     </div>
   )
 )
+
+const resourcesEve = (post_id: number, url: string, is_pay?: boolean) => {
+  const recommendList = useStore((state) => state.recommendList)
+  const setVideoResource = useStore((state) => state.setVideoResource)
+  const setRecommendList = useStore((state) => state.setRecommendList)
+  const updatedUsers = recommendList.list.map((item) => {
+    if (item.id === post_id) {
+      const options = is_pay ? { is_pay } : {}
+      if (item.act_type === 0) {
+        const medias = url.split(',')
+        const picUrl = medias.find((item) => !item.endsWith('.m3u8'))
+        const media = medias.find((item) => item.endsWith('.m3u8'))
+        // setCacheVideoIndex(item.id)
+        if (media) {
+          setVideoResource({ ...item, media: [media], mediaCover: picUrl ?? '', ...options })
+          return { ...item, media: [media], mediaCover: picUrl ?? '', ...options }
+        }
+      }
+      return { ...item, media: url.split(','), ...options }
+    }
+    return item
+  })
+  setRecommendList(updatedUsers)
+}
 
 const UserInfo = memo(
   ({
@@ -152,9 +199,9 @@ const UserInfo = memo(
           </div>
         </div>
         <MoreText textColor={'#fff'} text={content || ''} bgColor={'#000'} />
-        {!isPaid && (
+        {isPaid && (
           <div className="mt-2">
-            <PurchaseButton price={info?.price || 0} post_id={info?.id || 0 } resourcesEve={() => {}} setIsPaid={setIsPaid} />
+            <PurchaseButton price={info?.price || 0} post_id={info?.id || 0 } resourcesEve={resourcesEve} setIsPaid={setIsPaid} />
           </div>
         )}
       </div>
@@ -374,7 +421,9 @@ const VideoDialog = () => {
               <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin" />
             </div>
           )}
-          {!isLoading && !playing && <PlayButton onClick={togglePlay} />}
+          {
+            !isLoading && !playing ? info?.price && !info?.is_pay ? <ReplayButton onClick={togglePlay} /> : <PlayButton onClick={togglePlay} /> : null
+          }
           <div
             ref={progressBarRef}
             className="absolute bottom-[-6px] left-0 right-0  touch-none z-20"

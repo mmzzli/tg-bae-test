@@ -17,7 +17,7 @@ type FrostedGlassProps = {
   price: number
   post_id: number
   resourcesEve: (post_id: number, url: string, is_pay?: boolean) => void
-  maskOnClick: () => void
+  maskOnClick?: () => void
 }
 
 const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve, maskOnClick }) => {

@@ -9,6 +9,7 @@ import { uploadImgUrl } from '@/utils/env'
 
 import Trailer from '@/components/NewPost/AddPreview/Trailer'
 import Slider from '@/components/NewPost/AddPreview/Slider'
+import TrailerVideo from '@/components/NewPost/AddPreview/TrailerVideo'
 
 interface Frame {
   url: string
@@ -21,9 +22,10 @@ interface VideoPlayerProps {
   setCover: Dispatch<SetStateAction<string | null>>
   videoSrc: string
   setTrailer: (url:string)=>void
+  trailer: string | null
 }
 
-const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: videoUrl, setTrailer }) => {
+const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: videoUrl, setTrailer, trailer }) => {
   const [frames, setFrames] = useState<Frame[]>([])
   const [isBaseModalOpen, { toggle, on, off }] = useBoolean(false)
   const token = useStore((state) => state.token)
@@ -152,6 +154,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
 
   const captureFrame = async () => {
 
+
     if (!videoRef.current) return;
     setLoading(true)
 
@@ -265,7 +268,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
 
   return (
     <>
-      <div className="fixed bottom-[120px] left-0 w-[100%]" onClick={() => toggle()}>
+      <div className="fixed bottom-[120px] left-0 w-[100%]">
         <div className="px-7 flex justify-between gap-2 flex-none">
           <div>
             <p className="text-[16px] text-[#000]">Add a preview</p>
@@ -273,9 +276,14 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
           </div>
           {/* className="w-full h-full flex items-center justify-center border-dashed border border-[#CDCDD4] rounded-lg cursor-pointer" */}
 
-          <p className='h-[64px] w-[64px] bg-[#F7F9FC] rounded-md flex-none flex items-center justify-center'>
-            <i className="iconfont icon-add text-[#999999] text-[20px]"></i>
-          </p>
+          {
+            trailer ?
+            <TrailerVideo trailer={trailer} setTrailer={setTrailer}/>
+            :
+            <p className='h-[64px] w-[64px] bg-[#F7F9FC] rounded-md flex-none flex items-center justify-center' onClick={() => toggle()}>
+              <i className="iconfont icon-add text-[#999999] text-[20px]"></i>
+            </p>
+          }
         </div>
       </div>
 

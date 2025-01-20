@@ -55,7 +55,7 @@ const AgeGate = () => {
             alignItems="flex-start"
           >
             <p className="break-all text-left text-[#999] text-[12px]">
-              I have read and accept the
+              I have read and*accepted the
               <a
                 href="https://terms.bae.boo/terms.html"
                 target="_blank"

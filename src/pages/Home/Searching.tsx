@@ -91,7 +91,7 @@ const Searching = () => {
             <i className="iconfont icon-search-line text-[#999999] text-[24px]"></i>
           </div>
           <input
-            className="bg-[#F5F3F3] w-[100%] pr-[12px] text-[#333] text-[15px]"
+            className="bg-[#F5F3F3] w-[100%] pr-[12px] text-[#333] text-[15px] placeholder:text-[#999999]"
             value={field}
             placeholder="Search Users"
             onChange={(e) => setField(e.target.value)}

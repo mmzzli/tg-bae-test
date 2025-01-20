@@ -174,7 +174,7 @@ const TaskButton: React.FC<{
     }
     return (
       <BaseButton
-        text={`${completedTaskCount} / ${dailyTaskCount}`}
+        text={`${completedTaskCount}/${dailyTaskCount}`}
         handler={onClick}
         className="w-[79px] h-[34px] text-black bg-transparent border border-[#CDCDD4]"
       />
@@ -193,7 +193,7 @@ const TaskButton: React.FC<{
     case DailyTaskStatusEnum.IN_PROGRESS:
       return (
         <BaseButton
-          text={`${task.detail?.split(':')?.length} / ${task.total_amount}`}
+          text={`${task.detail?.split(':')?.length}/${task.total_amount}`}
           handler={onClick}
           className="w-[79px] h-[34px] text-black bg-transparent border border-[#CDCDD4]"
         />

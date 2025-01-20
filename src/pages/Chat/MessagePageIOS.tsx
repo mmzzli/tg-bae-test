@@ -150,9 +150,6 @@ const MessagePageIOS = () => {
   }, [initTgViewportHeight, initVisualViewportHeight])
 
   useEffect(() => {
-    setInterval(() => {
-      setShowInput(true)
-    }, 1000)
     if (!containerRef.current) return
     const tg = window.Telegram?.WebApp
     setInitTgViewportHeight(tg.viewportStableHeight)

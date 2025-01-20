@@ -274,15 +274,18 @@ const MessagePageIOS = () => {
         style={{
           marginBottom:
             replyMessage && replyMessage.channel === messageWindow?.channel.channelID
-              ? '136px'
-              : '68px',
+              ? '134px'
+              : '76px',
         }}
       />
 
       {/* Reply Message */}
       <div
         className={cn(
-          'items-center h-[58px] absolute left-0 right-0 bottom-[68px] dark:bg-black bg-[#ffffff] pl-6 pr-3'
+          'items-center h-[58px] absolute left-0 right-0 bottom-[68px] dark:bg-black bg-[#ffffff] pl-6 pr-3',
+          replyMessage && replyMessage.channel === messageWindow?.channel.channelID
+            ? 'border-t border-t-[#EBEBF4] dark:border-t-black'
+            : 'border-t-transparent'
         )}
         style={{
           display:
@@ -326,9 +329,10 @@ const MessagePageIOS = () => {
 
       {/* FAKE INPUT */}
       <div
-        className={`'flex h-[68px] absolute border-t border-t-[#EBEBF4] dark:border-t-black bottom-0 left-0 right-0 dark:bg-black bg-white pl-[48px] ${
-          showInput ? 'hidden' : 'block'
-        }`}
+        className={`'flex h-[68px] absolute border-t bottom-0 left-0 right-0 dark:bg-black bg-white pl-[48px]
+          ${showInput ? 'hidden ' : 'block '}
+          ${replyMessage && replyMessage.channel === messageWindow?.channel.channelID ? 'border-t-transparent ' : 'border-t-[#EBEBF4] dark:border-t-black '}
+        `}
       >
         <div className="relative flex items-center w-full h-[46px] box-border">
           <div
@@ -366,8 +370,11 @@ const MessagePageIOS = () => {
       {/* REAL INPUT */}
       <div
         className={cn(
-          'flex h-[68px] absolute left-0 right-0 dark:bg-black bg-[#ffffff] border-t dark:border-none border-t-[#F5F3F3] overflow-hidden pl-[48px]',
-          showInput ? 'bottom-0 opacity-100' : '-top-32 opacity-0'
+          'flex h-[68px] absolute left-0 right-0 dark:bg-black bg-[#ffffff] border-t dark:border-none overflow-hidden pl-[48px]',
+          showInput ? 'bottom-0 opacity-100' : '-top-32 opacity-0',
+          replyMessage && replyMessage.channel === messageWindow?.channel.channelID
+            ? 'border-t-transparent '
+            : 'border-t-[#EBEBF4] dark:border-t-black'
         )}
       >
         <div className="relative flex h-[46px] items-center w-full">

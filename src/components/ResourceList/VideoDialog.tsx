@@ -16,6 +16,8 @@ import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import { UserItem } from '@/types'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useDrag } from 'react-use-gesture'
+import { FormatterListItem } from '@/store/slices/resourceListSlice'
+import PurchaseButton from './PurchaseButton'
 
 const PlayButton = memo(({ onClick }: { onClick: () => void }) => (
   <div
@@ -57,6 +59,7 @@ const UserInfo = memo(
     is_follow,
     created_at,
     id,
+    info,
   }: {
     id: number | undefined
     avatar: string | undefined
@@ -66,6 +69,7 @@ const UserInfo = memo(
     bottom: number
     is_follow?: boolean
     created_at?: number | string
+    info: FormatterListItem | null
   }) => {
     const followResource = useStore((state) => state.followResource)
     const setFollowResource = useStore((state) => state.setFollowResource)
@@ -75,7 +79,7 @@ const UserInfo = memo(
     const userInfo = useStore((state) => state.userInfo)
     const { getCurrentUid } = useTMAUtils()
     const current_uid = getCurrentUid()
-
+    const [isPaid, setIsPaid] = useState<boolean>(false)
     const doFollow = async () => {
       if (!uid || !id) return
       setIsFollowLoading(true)
@@ -148,6 +152,11 @@ const UserInfo = memo(
           </div>
         </div>
         <MoreText textColor={'#fff'} text={content || ''} bgColor={'#000'} />
+        {!isPaid && (
+          <div className="mt-2">
+            <PurchaseButton price={info?.price || 0} post_id={info?.id || 0 } resourcesEve={() => {}} setIsPaid={setIsPaid} />
+          </div>
+        )}
       </div>
     )
   }
@@ -193,8 +202,9 @@ const VideoDialog = () => {
     setDuration(0)
     setCurrentTime(0)
     setProgress(0)
-
-    if (info?.media && info.media[0]) {
+    if (info?.trailer && info.price > 0 && !info.is_pay) {
+      setUrl(info.trailer)
+    } else if (info?.media && info.media[0]) {
       setUrl(info.media[0])
     }
     if (!info && videoRef?.current) {
@@ -377,7 +387,6 @@ const VideoDialog = () => {
           >
             <div className="relative group h-8 -my-2 flex items-center cursor-pointer no-tap">
               <div className="absolute inset-0" />
-
               <div
                 className={`w-full h-[2px] group-hover:h-2'}
                     bg-white/20 rounded-full transition-[height] duration-200`}
@@ -392,6 +401,7 @@ const VideoDialog = () => {
             username={info?.username}
             content={info?.title}
             uid={info?.uid}
+            info={info}
             bottom={bottom}
             is_follow={info?.is_follow}
             created_at={info?.created_at}

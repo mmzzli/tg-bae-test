@@ -1,19 +1,22 @@
 import Hls from 'hls.js'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import { useStore } from '@/store'
-const video = document.createElement('video')
-video.controls = false
-video.playsInline = true
-video.setAttribute('webkit-playsinline', 'true')
-video.setAttribute('x5-playsinline', 'true')
-video.setAttribute('x5-video-player-type', 'h5')
-video.setAttribute('x5-video-player-fullscreen', 'false')
-video.setAttribute('preload', 'auto')
-video.setAttribute('x-webkit-airplay', 'allow')
-video.id = 'default-video-player'
+  const video = document.createElement('video')
+  video.controls = false
+  video.playsInline = true
+  video.setAttribute('webkit-playsinline', 'true')
+  video.setAttribute('x5-playsinline', 'true')
+  video.setAttribute('x5-video-player-type', 'h5')
+  video.setAttribute('x5-video-player-fullscreen', 'false')
+  video.setAttribute('preload', 'auto')
+  video.setAttribute('x-webkit-airplay', 'allow')
+  video.id = 'default-video-player'
 
 export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLElement) => {
-  const url = videoCard.media[0]
+  let url = videoCard.media[0]
+  if (videoCard.price > 0 && !videoCard.is_pay && videoCard.trailer) {
+    url = videoCard.trailer
+  }
   const curVideo = videoCardContainer.querySelector('video')
 
   const homeVideoMuted = useStore.getState().homeVideoMuted

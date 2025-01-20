@@ -132,6 +132,21 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
                   {formatTime(Number(playVideoTime))}
                 </Text>
               </HStack>
+              {data.type=== 0 && data.price > 0 && !data.is_pay && (
+                <HStack
+                  borderRadius="4px"
+                  bg="rgba(0, 0, 0, 0.20)"
+                  position="absolute"
+                  top="16px"
+                  left="16px"
+                  p="6px 8px"
+                  zIndex={4}
+                >
+                  <Text color="white" fontSize="14px" fontWeight="500">
+                    Preview
+                  </Text>
+                </HStack>
+              )}
               <HStack
                 position="absolute"
                 bottom="40px"
@@ -139,7 +154,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
                 p="5px"
                 gap="4px"
                 rounded="full"
-                zIndex={2}
+                zIndex={4}
                 bg="rgba(0, 0, 0, 0.40)"
                 cursor="pointer"
                 onClick={() => {
@@ -154,28 +169,30 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
               </HStack>
               {data.uid !== getCurrentUid() && data.price > 0 && !data.is_pay && (
                 <>
-                  <Box
-                    position="absolute"
-                    top="0"
-                    left="0"
-                    w="100%"
-                    zIndex={3}
-                    style={{
-                      height: firImageHeight ? firImageHeight + 'px' : 'calc(1.5*100vw)',
-                      maxHeight: 'calc(62.8vh)',
-                    }}
-                    overflow="hidden"
-                  >
-                    <Image
-                      className="h-[100%] w-[100%]"
+                  {!data.trailer && (
+                    <Box
+                      position="absolute"
+                      top="0"
+                      left="0"
+                      w="100%"
+                      zIndex={3}
                       style={{
                         height: firImageHeight ? firImageHeight + 'px' : 'calc(1.5*100vw)',
                         maxHeight: 'calc(62.8vh)',
                       }}
-                      src={data.media[0]}
-                    />
-                  </Box>
-                  <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} />
+                      overflow="hidden"
+                    >
+                      <Image
+                        className="h-[100%] w-[100%]"
+                        style={{
+                          height: firImageHeight ? firImageHeight + 'px' : 'calc(1.5*100vw)',
+                          maxHeight: 'calc(62.8vh)',
+                        }}
+                        src={data.media[0]}
+                      />
+                    </Box>
+                  )}
+                  <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} maskOnClick={() => handleVideoClick(data)} />
                 </>
               )}
             </Box>

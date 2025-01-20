@@ -527,7 +527,7 @@ const ReplyCard: React.FC<{ reply: ReplyMessage }> = ({ reply }) => {
         <div className="flex flex-col flex-1 overflow-hidden text-sm">
           {/* Reply To */}
           <div className="font-medium [.my-msg_&]:text-[#fff] [.other-msg_&]:text-[#333] ">
-            Reply to {reply.toUsername}
+            {reply.toUsername}
           </div>
           {/* Reply Content */}
           <div className="text-nowrap text-ellipsis overflow-hidden font-normal">

@@ -200,6 +200,7 @@ const MessagePage = () => {
       <MemoizedMessageList
         messages={messages}
         channelInfo={chatPeople}
+        channelId={messageWindow?.channel.channelID || ''}
         className="flex-1 mb-[68px]"
       />
 

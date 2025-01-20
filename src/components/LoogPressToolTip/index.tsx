@@ -1,11 +1,13 @@
 import React, { ReactNode, useRef, useState, useEffect, useCallback } from 'react'
 import { useLongPress } from '@/hooks/useLoogPress'
-import { Message } from '../Chat/types'
+import { WrappedMessage } from '../Chat/types'
 import useCopy from '@/hooks/useCopy'
 import { motion, AnimatePresence } from 'framer-motion'
 import { TooltipConfig, defaultTooltipConfig } from '@/config/tooltip'
 import { useToast } from '@chakra-ui/react'
 import { CustomToast, typeOptions } from '../comm/Toast'
+import { useStore } from '@/store'
+import { IUserInfo, OthersUserInfo } from '@/types'
 // import { postEvent } from '@telegram-apps/sdk'
 
 // 静态变量，用于跟踪当前活动的tooltip
@@ -17,7 +19,9 @@ const isIOS = () => {
 }
 
 interface TooltipProps {
-  content: Message
+  content: WrappedMessage
+  user: OthersUserInfo | IUserInfo | null
+  channelId: string
   children: ReactNode
   delay?: number
   config?: TooltipConfig
@@ -26,6 +30,8 @@ interface TooltipProps {
 
 const Tooltip: React.FC<TooltipProps> = ({
   content,
+  user,
+  channelId,
   children,
   delay = 500,
   config = defaultTooltipConfig,
@@ -40,7 +46,7 @@ const Tooltip: React.FC<TooltipProps> = ({
 
   const isIOSDevice = isIOS()
   const [isLeftSide, setIsLeftSide] = useState(false)
-
+  const setReplyMessage = useStore((state) => state.setReplyMessage)
   const hideTooltip = useCallback(() => {
     if (activeTooltipId === id) {
       activeTooltipId = null
@@ -168,6 +174,16 @@ const Tooltip: React.FC<TooltipProps> = ({
     //   type: 'impact',
     //   impact_style: 'light',
     // })
+    setReplyMessage({
+      channel: channelId,
+      messageId: content.id,
+      messageSeq: content.messageSeq,
+      messageType: content.type,
+      message: content.text ?? '',
+      toUid: content.sender,
+      toUsername: user?.username || '',
+      revoke: false,
+    })
     hideTooltip()
   }, [hideTooltip])
 

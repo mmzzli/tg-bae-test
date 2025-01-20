@@ -34,6 +34,7 @@ export const useIM = () => {
         type: message.type,
         url: message.url,
         metadata: message.metadata,
+        reply: message.reply,
       }),
       String(message.receiver)
     )

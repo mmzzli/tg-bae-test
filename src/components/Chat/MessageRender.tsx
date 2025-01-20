@@ -6,6 +6,7 @@ import {
   MessageMetadata,
   MessageStatus,
   MessageType,
+  ReplyMessage,
   RewardMetadata,
   WrappedMessage,
 } from './types'
@@ -367,8 +368,11 @@ export const MessageRender: React.FC<MessageRenderProps> = ({
     return <RewardCard message={message} />
   }
 
+  console.log('message render', message)
+
   return (
     <div>
+      {message.reply && <ReplyCard reply={message.reply} />}
       <div className={clsx('whitespace-pre-wrap break-words', className)}>
         {parsedContent.map((part, index) => (
           <MessagePart key={index} part={part} />
@@ -507,6 +511,35 @@ const RewardCard: React.FC<{ message: WrappedMessage }> = ({ message }) => {
         <div className="text-[18px] text-[#333] font-bold">{usdValue}</div>
         <div className="text-[13px] text-[#999]">
           {amount} {token}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const ReplyCard: React.FC<{ reply: ReplyMessage }> = ({ reply }) => {
+  return (
+    <div className="rounded-lg [.my-msg_&]:bg-[#D2CDFF] [.other-msg_&]:bg-[#D4D4F0] pl-[3px] mb-2">
+      <div className="relative flex rounded-md [.my-msg_&]:bg-[#5446F4] [.other-msg_&]:bg-[#F7F9FC] px-[10px] py-2">
+        {/* Media Message Preview */}
+        {reply.messageType !== MessageType.TEXT && <div></div>}
+
+        <div className="flex flex-col flex-1 overflow-hidden text-sm">
+          {/* Reply To */}
+          <div className="font-medium [.my-msg_&]:text-[#fff] [.other-msg_&]:text-[#999] ">
+            Reply to {reply.toUsername}
+          </div>
+          {/* Reply Content */}
+          <div className="text-nowrap text-ellipsis overflow-hidden font-normal">
+            <span className="[.my-msg_&]:text-[#ffffff99] [.other-msg_&]:text-[#999]">
+              {reply.messageType === MessageType.REWARD && 'Tips'}
+              {reply.messageType === MessageType.IMAGE && 'Image'}
+              {reply.messageType === MessageType.VIDEO && 'Video'}
+            </span>
+            <span className="[.my-msg_&]:text-[#ffffff99] [.other-msg_&]:text-[#999]">
+              {reply.messageType === MessageType.TEXT && reply.message}
+            </span>
+          </div>
         </div>
       </div>
     </div>

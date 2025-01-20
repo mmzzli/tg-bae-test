@@ -44,25 +44,24 @@ const OtherUserProfile: FC = () => {
   return (
     <Box
       p="0px 16px"
+      mt="-26px"
       className="no-tap"
-      style={{
-        position: 'relative',
-        paddingTop: `calc(${
-          window
-            .getComputedStyle(document.documentElement)
-            .getPropertyValue('--tg-safe-area-inset-top') &&
-          parseInt(
-            window
-              .getComputedStyle(document.documentElement)
-              .getPropertyValue('--tg-safe-area-inset-top'),
-            10
-          ) !== 0
-            ? '8px'
-            : '24px'
-        })`,
-      }}
     >
       <HStack gap="16px" pl="8px" justifyContent="space-between">
+
+      <div className="w-[82px] h-[82px] overflow-hidden rounded-[50%] bg-white flex items-center justify-center">
+          <Image
+            rect
+            type="avatar"
+            width={72}
+            height={72}
+            className="rounded-full"
+            src={userInfo.avatar || profileImg}
+            alt={userInfo.username}
+          />
+        </div>
+
+{/*
         <Image
           rect
           type="avatar"
@@ -71,8 +70,8 @@ const OtherUserProfile: FC = () => {
           className="rounded-full"
           src={userInfo.avatar || profileImg}
           alt={userInfo.username}
-        />
-        <div className="flex items-center gap-4">
+        /> */}
+        <div className="mt-[32px] flex items-center gap-4">
           <FollowButton tgid={userInfo.uid} avatar={userInfo.avatar} username={userInfo.username} />
           <div
             className="flex items-center justify-center cursor-pointer rounded-full w-9 h-9 bg-[#F8F8F8]"

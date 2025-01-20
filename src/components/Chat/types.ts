@@ -70,6 +70,7 @@ export type WrappedMessage = Message & {
   channelID: string
   status?: MessageStatus
   metadata?: MessageMetadata
+  reply?: ReplyMessage
 }
 export interface ChatListProps {
   chats: Conversation[]

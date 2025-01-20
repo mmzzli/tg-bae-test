@@ -1,4 +1,4 @@
-import { MessageMetadata, MessageType, WrappedMessage } from '@/components/Chat/types'
+import { MessageMetadata, MessageType, ReplyMessage, WrappedMessage } from '@/components/Chat/types'
 import { retrieveLaunchParams } from '@tma.js/sdk'
 function generateUUID() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -18,12 +18,14 @@ export const useFormatMessage = () => {
     url,
     to,
     metadata,
+    reply,
   }: {
     type: MessageType
     text?: string
     url?: string
     to: number
     metadata?: MessageMetadata
+    reply?: ReplyMessage
   }): WrappedMessage => {
     return {
       id: generateUUID(),
@@ -36,6 +38,7 @@ export const useFormatMessage = () => {
       messageSeq: -1,
       channelID: to.toString(),
       metadata,
+      reply,
     }
   }
 

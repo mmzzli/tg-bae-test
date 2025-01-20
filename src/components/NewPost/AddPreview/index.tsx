@@ -26,6 +26,7 @@ interface VideoPlayerProps {
 }
 
 const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: videoUrl, setTrailer, trailer }) => {
+  const [videoRefTrailer, setVideoRefTrailer] = useState<File | null>(null)
   const [frames, setFrames] = useState<Frame[]>([])
   const [isBaseModalOpen, { toggle, on, off }] = useBoolean(false)
   const token = useStore((state) => state.token)
@@ -168,8 +169,63 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
     }
   }
 
-  const captureFrame = async () => {
+  const videoUpload = async(formData:any)=>{
 
+    const response = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    await axios.post(response.data, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      onUploadProgress: async(progressEvent: any) => {
+        const total = progressEvent.total
+        const current = progressEvent.loaded
+        const percentCompleted = Math.round((current * 100) / total)
+        console.log(percentCompleted)
+        if(percentCompleted >= 100){
+          console.log(response.data)
+          const id = response.data.split('/').pop();
+          const url = `https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${id}/manifest/video.m3u8`
+          await checkVideoURL(url)
+          setTrailer(url)
+          setLoading(false)
+          off();
+        }
+      },
+    })
+  }
+
+  // 自定义预告片
+  const customizationVideo = async()=>{
+    if (!videoRefTrailer) {
+      return
+    }
+    setLoading(true)
+    const formData = new FormData();
+    formData.append("file", videoRefTrailer);
+    formData.append("name", videoRefTrailer.name);
+    formData.append("type", "bae");
+
+    formData.append(
+      "meta",
+      JSON.stringify({
+        name: videoRefTrailer.name,
+        type: "bae",
+      })
+    );
+    videoUpload(formData)
+
+  }
+
+  const captureFrame = async () => {
+    if(trailerBoll){
+      customizationVideo()
+      return
+    }
 
     if (!videoRef.current) return;
     setLoading(true)
@@ -207,33 +263,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
         })
       );
       console.log(formData)
-
-      const response = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      await axios.post(response.data, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        onUploadProgress: async(progressEvent: any) => {
-          const total = progressEvent.total
-          const current = progressEvent.loaded
-          const percentCompleted = Math.round((current * 100) / total)
-          console.log(percentCompleted)
-          if(percentCompleted >= 100){
-            console.log(response.data)
-            const id = response.data.split('/').pop();
-            const url = `https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${id}/manifest/video.m3u8`
-            await checkVideoURL(url)
-            setTrailer(url)
-            setLoading(false)
-            off();
-          }
-        },
-      })
+      videoUpload(formData)
 
     };
     recorder.start();
@@ -346,7 +376,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
                 </p>
 
                 <div className='mt-2 flex items-center gap-2'>
-                  <Trailer trailerBoll={trailerBoll} setTrailerBoll={setTrailerBoll} />
+                  <Trailer trailerBoll={trailerBoll} setTrailerBoll={setTrailerBoll} setVideoRefTrailer={setVideoRefTrailer} />
                   <Slider duration={duration} handleSliderChange={handleSliderChange} setStartTime={setStartTime} setEndTime={setEndTime}
                     trailerBoll={trailerBoll} setTrailerBoll={setTrailerBoll}
                   />

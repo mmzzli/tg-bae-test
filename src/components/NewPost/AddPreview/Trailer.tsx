@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect, useRef, useMemo } from 'react'
+import React, { FC, useState, useEffect, useRef, RefObject } from 'react'
 import {
   Input
 } from '@chakra-ui/react'
@@ -6,11 +6,13 @@ import {
 interface TrailerProps {
   trailerBoll: boolean
   setTrailerBoll: (boll:boolean)=>void
+  setVideoRefTrailer: (file: File | null)=>void
 }
 
 const Trailer: React.FC<TrailerProps> = ({
   trailerBoll,
-  setTrailerBoll
+  setTrailerBoll,
+  setVideoRefTrailer
 }) => {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [videoSrc, setVideoSrc] = useState("")
@@ -19,6 +21,7 @@ const Trailer: React.FC<TrailerProps> = ({
     const newFiles = event.target.files
     if (!newFiles || newFiles.length === 0) return
     const fileArray = Array.from(newFiles)
+    setVideoRefTrailer(fileArray[0])
     const videoUrl = URL.createObjectURL(fileArray[0])
     setVideoSrc(videoUrl)
     setTrailerBoll(true)
@@ -50,7 +53,6 @@ const Trailer: React.FC<TrailerProps> = ({
             </div>
 
             <video
-              // ref={videoRef}
               className={`h-[64px] min-w-[64px] rounded-md`}
               src={videoSrc}
               onClick={()=>setTrailerBoll(true)}

@@ -102,10 +102,11 @@ const TaskButton: React.FC<{
     dailyTaskList: state.dailyTaskList,
   }))
 
-
   const { isAllTasksCompleted } = useDailyTaskStatus()
-  const dailyTaskCount = dailyTaskList.filter(task => task.task_type !== TaskType.ClaimAll).length
-  const completedTaskCount = dailyTaskList.filter(task => task.status === DailyTaskStatusEnum.CLAIMED).length
+  const dailyTaskCount = dailyTaskList.filter((task) => task.task_type !== TaskType.ClaimAll).length
+  const completedTaskCount = dailyTaskList.filter(
+    (task) => task.status === DailyTaskStatusEnum.CLAIMED
+  ).length
 
   const onClaimSuccess = () => {
     updateDailyTask({
@@ -171,11 +172,13 @@ const TaskButton: React.FC<{
     } else if (task.status === DailyTaskStatusEnum.CLAIMED) {
       return <ClaimedButton />
     }
-    return <BaseButton
+    return (
+      <BaseButton
         text={`${completedTaskCount} / ${dailyTaskCount}`}
         handler={onClick}
         className="w-[79px] h-[34px] text-black bg-transparent border border-[#CDCDD4]"
-    />
+      />
+    )
   }
 
   switch (status) {
@@ -188,11 +191,13 @@ const TaskButton: React.FC<{
         />
       )
     case DailyTaskStatusEnum.IN_PROGRESS:
-      return <BaseButton
-        text={`${task.detail?.split(':')?.length} / ${task.total_amount}`}
-        handler={onClick}
-        className="w-[79px] h-[34px] text-black bg-transparent border border-[#CDCDD4]"
-      />
+      return (
+        <BaseButton
+          text={`${task.detail?.split(':')?.length} / ${task.total_amount}`}
+          handler={onClick}
+          className="w-[79px] h-[34px] text-black bg-transparent border border-[#CDCDD4]"
+        />
+      )
     case DailyTaskStatusEnum.CLAIM:
       return (
         <BaseButton
@@ -310,6 +315,27 @@ const Tasks: FC = () => {
       }
     },
   })
+
+  const handleDrawShape = (ctx: CanvasRenderingContext2D) => {
+    ctx.beginPath()
+    // 绘制随机的正方形和长方形
+    for (let i = 0; i < 5; i++) {
+      const size = Math.random() * 8 + 3 // 随机大小3-11像素
+      const width = Math.random() * 10 + 5 // 随机宽度5-15像素
+      const height = Math.random() * 10 + 5 // 随机高度5-15像素
+
+      if (i % 2 === 0) {
+        // 绘制正方形
+        ctx.rect(-size / 2, -size / 2, size, size)
+      } else {
+        // 绘制长方形
+        ctx.rect(-width / 2, -height / 2, width, height)
+      }
+      ctx.fill()
+    }
+    ctx.stroke()
+    ctx.closePath()
+  }
 
   useEffect(() => {
     if (token) {
@@ -446,7 +472,16 @@ const Tasks: FC = () => {
         ))}
       </div>
       {isAllFollowTasksClaimed && <FollowTask successToast={successToast} />}
-      {isConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} recycle={false} tweenDuration={7000}/>}
+      {isConfetti && (
+        <Confetti
+          width={window.innerWidth}
+          height={window.innerHeight}
+          recycle={false}
+          tweenDuration={7000}
+          colors={['#84FECD', '#77A9FF', '#BC6BF4', '#FF5596', '#64AEFF']}
+          drawShape={handleDrawShape}
+        />
+      )}
     </div>
   )
 }
@@ -500,7 +535,8 @@ const FollowTask: React.FC<{ successToast: () => void }> = ({ successToast }) =>
   const handleTaskToClaimed = (task: DailyTaskItem) => {
     console.log('handleTaskToClaimed....', task)
     handleTaskAction(task)
-    const taskName = task.task_type === FOLLOW_X ? 'x' : task.task_type === FOLLOW_INS ? 'ins' : 'channel'
+    const taskName =
+      task.task_type === FOLLOW_X ? 'x' : task.task_type === FOLLOW_INS ? 'ins' : 'channel'
     runFollowTaskToClaimed(taskName)
   }
 

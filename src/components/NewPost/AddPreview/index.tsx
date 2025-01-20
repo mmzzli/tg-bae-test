@@ -152,6 +152,22 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
     }
   }, [videoRef, videoUrl]);
 
+
+
+  async function checkVideoURL(url: string): Promise<AxiosResponse<any> | undefined> {
+    let isNotFound = true
+
+    while (isNotFound) {
+      try {
+        const response: AxiosResponse<any> = await axios.get(url)
+        isNotFound = false
+        return response
+      } catch (error: any) {
+        await new Promise((resolve) => setTimeout(resolve, 3000))
+      }
+    }
+  }
+
   const captureFrame = async () => {
 
 
@@ -202,17 +218,19 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-        onUploadProgress: (progressEvent: any) => {
+        onUploadProgress: async(progressEvent: any) => {
           const total = progressEvent.total
           const current = progressEvent.loaded
           const percentCompleted = Math.round((current * 100) / total)
           console.log(percentCompleted)
-          if(percentCompleted>=100){
+          if(percentCompleted >= 100){
             console.log(response.data)
             const id = response.data.split('/').pop();
-            setTrailer(`https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${id}/manifest/video.m3u8`)
-            off();
+            const url = `https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${id}/manifest/video.m3u8`
+            await checkVideoURL(url)
+            setTrailer(url)
             setLoading(false)
+            off();
           }
         },
       })

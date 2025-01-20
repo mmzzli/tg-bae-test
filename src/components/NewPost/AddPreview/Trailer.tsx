@@ -33,7 +33,9 @@ const Trailer: React.FC<TrailerProps> = ({
     <div className='relative'>
       {
         !videoSrc ?
-          <p className='h-[64px] w-[64px] bg-[#F7F9FC] rounded-md flex-none' onClick={handleChooseFile}></p>
+          <p className='h-[64px] w-[64px] bg-[#F7F9FC] rounded-md flex-none flex items-center justify-center' onClick={handleChooseFile}>
+            <i className="iconfont icon-add text-[#999999] text-[30px]"></i>
+          </p>
           :
           <div className='rounded-md'
             style={{

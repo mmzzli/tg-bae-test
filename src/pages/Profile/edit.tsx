@@ -11,7 +11,7 @@ import { useStore } from '@/store/store'
 import { UserInfoProfile } from '@/types'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import BaseButton from '@/components/BaseButton/BaseButton'
-const SCROLL_THRESHOLD = 130
+const SCROLL_THRESHOLD = 110
 
 const ProfileEdit: FC = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
@@ -29,6 +29,9 @@ const ProfileEdit: FC = () => {
   const [errBoll, setErrBoll] = useState<boolean>(false)
   const titleRef = useRef<HTMLHeadingElement>(null)
   const [showTopTitle, setShowTopTitle] = useState(false)
+  const scrollDivRef = useRef<HTMLDivElement>(null)
+  const [scale, setScale] = useState(1) // 控制背景图片的缩放
+
 
   const [profileData, setProfileData] = useState<UserInfoProfile>({
     username: '',
@@ -234,7 +237,6 @@ const ProfileEdit: FC = () => {
     toast({
       position: 'bottom',
       onCloseComplete: () => {
-        console.log(profileData.avatar, '=======')
         setUserInfo(profileData)
         setTimeout(() => {
           navigate('/profile')
@@ -249,17 +251,28 @@ const ProfileEdit: FC = () => {
   useEffect(() => {
     const scrollDiv = document.getElementById('profileScrollableDiv')
     if (!titleRef.current) return
+    if (!scrollDiv) return
+
 
     const handleScroll = throttle(() => {
+      const scrollTop = scrollDiv.scrollTop
+
       if (!scrollDiv) return
       const shouldShowTitle = scrollDiv.scrollTop >= SCROLL_THRESHOLD
       setShowTopTitle(shouldShowTitle)
+
+      if (shouldShowTitle) {
+        window.Telegram?.WebApp?.setHeaderColor("#ffffff")
+      } else {
+        window.Telegram?.WebApp?.setHeaderColor("#000000")
+      }
+
+      // 下拉放大背景图片
+      const pullDownOffset = Math.min(scrollTop, 0) // 限制为负值
+      const newScale = 1 - pullDownOffset / 300 // 最大放大到 1.3 倍
+      setScale(newScale)
     }, 40)
-    if (showTopTitle) {
-      window.Telegram?.WebApp?.setHeaderColor("#ffffff")
-    } else {
-      window.Telegram?.WebApp?.setHeaderColor("#000000")
-    }
+
     scrollDiv?.addEventListener('scroll', handleScroll)
     return () => scrollDiv?.removeEventListener('scroll', handleScroll)
   }, [showTopTitle])
@@ -300,6 +313,9 @@ const ProfileEdit: FC = () => {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           display: showTopTitle ? 'none' : 'flex',
+          transform: `scale(${scale})`,
+          transformOrigin: 'center top',
+          transition: 'transform 0.1s ease-out',
         }}
       >
         <BaseButton

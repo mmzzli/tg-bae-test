@@ -1,5 +1,5 @@
 import { cn, getMessageTimeDivider, getWrappedMessage } from '@/utils/utils'
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { memo, Ref, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import dayjs from 'dayjs'
@@ -17,9 +17,10 @@ interface MessageListProps {
   loadMore?: () => void
   className?: string
   channelInfo: OthersUserInfo | null
+  style?: React.CSSProperties
 }
 
-export const MessageList = ({ messages, className, channelInfo }: MessageListProps) => {
+export const MessageList = ({ messages, className, channelInfo, style }: MessageListProps) => {
   const scrollRef = useRef<HTMLDivElement>(null)
   const { getCurrentUid } = useTMAUtils()
   const current_uid = getCurrentUid()
@@ -81,61 +82,6 @@ export const MessageList = ({ messages, className, channelInfo }: MessageListPro
     return groups.reverse()
   }, [messages])
 
-  const MessageItem = memo(
-    ({
-      message,
-      isCurrentUser,
-      channelInfo,
-    }: {
-      message: WrappedMessage
-      isCurrentUser: boolean
-      channelInfo: OthersUserInfo | null
-    }) => (
-      <div
-        id={message.id}
-        className={`flex items-end gap-2 mx-4 my-2 text-white ${
-          isCurrentUser ? 'flex-row-reverse' : 'flex-row'
-        }`}
-      >
-        {!isCurrentUser && (
-          <div className="flex-shrink-0">
-            <Image
-              type="avatar"
-              width={26}
-              height={26}
-              src={channelInfo?.avatar}
-              alt="Avatar"
-              className="w-[26px] h-[26px] rounded-full"
-            />
-          </div>
-        )}
-        <Tooltip
-          content={message}
-          delay={800}
-          id={message.id}
-          config={{ enableReply: false, enableCopy: true, enableDownload: false }}
-        >
-          <div
-            className={`overflow-hidden rounded-lg max-w-[255px]
-            ${isCurrentUser && message.type === MessageType.TEXT ? 'bg-[#6254ff] dark:bg-[#4A3AFF] text-white' : 'dark:bg-[#303030] bg-[#F1F1F1] text-[#333333] dark:text-white'}
-            ${message.type === MessageType.TEXT ? 'p-3' : 'inline-block'}
-          `}
-          >
-            <MessageRender message={message} />
-          </div>
-        </Tooltip>
-      </div>
-    )
-  )
-
-  const TimeDevider = memo(({ timestamp }: { timestamp: number }) => (
-    <div className="flex items-center justify-center mt-[20px] mb-4">
-      <div className="text-xs dark:text-[#ffffff99] text-[#999999] px-2 py-1 rounded">
-        {getMessageTimeDivider(timestamp, true)}
-      </div>
-    </div>
-  ))
-
   const handleLoadMore = async () => {
     console.log('load more')
     if (messages[0].messageSeq === 1) {
@@ -177,10 +123,114 @@ export const MessageList = ({ messages, className, channelInfo }: MessageListPro
   }, [messages, maintainScrollPosition])
 
   return (
+    <InfiniteList
+      messages={messages}
+      className={className}
+      TimeDevider={TimeDevider}
+      MessageItem={MessageItem}
+      style={style}
+      handleLoadMore={handleLoadMore}
+      hasMore={hasMore}
+      messageGroups={messageGroups}
+      scrollRef={scrollRef}
+      channelInfo={channelInfo}
+      current_uid={current_uid}
+    />
+  )
+}
+const MessageItem = memo(
+  ({
+    message,
+    isCurrentUser,
+    channelInfo,
+    className,
+  }: {
+    message: WrappedMessage
+    isCurrentUser: boolean
+    channelInfo: OthersUserInfo | null
+    className?: string
+  }) => (
+    <div
+      id={message.id}
+      className={cn(
+        `flex items-end gap-2 mx-4 my-2 text-white ${
+          isCurrentUser ? 'flex-row-reverse' : 'flex-row'
+        }`,
+        className
+      )}
+    >
+      {!isCurrentUser && (
+        <div className="flex-shrink-0">
+          <Image
+            type="avatar"
+            width={26}
+            height={26}
+            src={channelInfo?.avatar}
+            alt="Avatar"
+            className="w-[26px] h-[26px] rounded-full"
+          />
+        </div>
+      )}
+      <Tooltip
+        content={message}
+        delay={800}
+        id={message.id}
+        config={{ enableReply: false, enableCopy: true, enableDownload: false }}
+      >
+        <div
+          className={`overflow-hidden rounded-lg max-w-[255px]
+          ${isCurrentUser && message.type === MessageType.TEXT ? 'bg-[#6254ff] dark:bg-[#4A3AFF] text-white' : 'dark:bg-[#303030] bg-[#F1F1F1] text-[#333333] dark:text-white'}
+          ${message.type === MessageType.TEXT ? 'p-3' : 'inline-block'}
+        `}
+        >
+          <MessageRender message={message} />
+        </div>
+      </Tooltip>
+    </div>
+  )
+)
+
+const TimeDevider = memo(({ timestamp }: { timestamp: number }) => (
+  <div className="flex items-center justify-center mt-[20px] mb-4">
+    <div className="text-xs dark:text-[#ffffff99] text-[#999999] px-2 py-1 rounded">
+      {getMessageTimeDivider(timestamp, true)}
+    </div>
+  </div>
+))
+
+const InfiniteList = ({
+  messages,
+  className,
+  style,
+  handleLoadMore,
+  hasMore,
+  messageGroups,
+  scrollRef,
+  channelInfo,
+  current_uid,
+}: {
+  messages: WrappedMessage[]
+  className?: string
+  style?: React.CSSProperties
+  handleLoadMore: () => Promise<void>
+  hasMore: boolean
+  messageGroups: { timestamp: number; messages: WrappedMessage[] }[]
+  scrollRef: Ref<HTMLDivElement>
+  channelInfo: OthersUserInfo | null
+  current_uid: number
+  TimeDevider: React.FC<{ timestamp: number }>
+  MessageItem: React.FC<{
+    message: WrappedMessage
+    isCurrentUser: boolean
+    channelInfo: OthersUserInfo | null
+  }>
+}) => {
+  return (
     <div
       id="scrollableDiv"
       ref={scrollRef}
       className={cn('overflow-auto flex flex-col-reverse', className)}
+      style={style}
     >
       <InfiniteScroll
         dataLength={messages.length}
@@ -193,11 +243,12 @@ export const MessageList = ({ messages, className, channelInfo }: MessageListPro
       >
         <div className="h-[22px]"></div>
         {messageGroups.map((group) => (
-          <div key={`group-${group.timestamp}`}>
+          <div key={`group-${group.timestamp}`} className={`group-${group.timestamp}`}>
             <TimeDevider timestamp={group.timestamp} />
             {group.messages.map((message, index) => (
               <MessageItem
-                key={message.id + index}
+                key={`message-${message.id}-${index}`}
+                className={`message-${message.id}-${index}`}
                 message={message}
                 isCurrentUser={message.sender === current_uid}
                 channelInfo={channelInfo}

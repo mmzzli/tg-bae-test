@@ -254,7 +254,10 @@ const MessagePageIOS = () => {
       <MemoizedMessageList
         messages={messages}
         channelInfo={chatPeople}
-        className="flex-1 mb-[68px] message-list-scroll-trigger"
+        className="flex-1 message-list-scroll-trigger"
+        style={{
+          marginBottom: '68px',
+        }}
       />
 
       {/* FAKE INPUT */}

@@ -3,7 +3,15 @@ import {
   Input
 } from '@chakra-ui/react'
 
-const Trailer = () => {
+interface TrailerProps {
+  trailerBoll: boolean
+  setTrailerBoll: (boll:boolean)=>void
+}
+
+const Trailer: React.FC<TrailerProps> = ({
+  trailerBoll,
+  setTrailerBoll
+}) => {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [videoSrc, setVideoSrc] = useState("")
 
@@ -13,6 +21,7 @@ const Trailer = () => {
     const fileArray = Array.from(newFiles)
     const videoUrl = URL.createObjectURL(fileArray[0])
     setVideoSrc(videoUrl)
+    setTrailerBoll(true)
 
   }
 
@@ -26,10 +35,14 @@ const Trailer = () => {
         !videoSrc ?
           <p className='h-[64px] w-[64px] bg-[#F7F9FC] rounded-md flex-none' onClick={handleChooseFile}></p>
           :
-          <div className='rounded-md border-2 border-[#6254FF]'>
+          <div className='rounded-md'
+            style={{
+              border: `2px solid ${trailerBoll ? "#6254FF" : "#fff"}`
+            }}
+          >
 
             <div className='w-[20px] h-[20px] right-[-6px] top-[-6px] z-10 rounded-[50px] bg-[#666] absolute flex items-center justify-center'
-              onClick={()=>setVideoSrc("")}
+              onClick={()=>{setVideoSrc("");setTrailerBoll(false)}}
             >
               <i className="iconfont icon-icon_close text-[#fff] dark:text-[#E0E2F6] text-[16px]"></i>
             </div>
@@ -38,6 +51,7 @@ const Trailer = () => {
               // ref={videoRef}
               className={`h-[64px] min-w-[64px] rounded-md`}
               src={videoSrc}
+              onClick={()=>setTrailerBoll(true)}
               // onLoadedMetadata={(e) => {
               //   const video = e.currentTarget
               //   setDuration(video.duration)

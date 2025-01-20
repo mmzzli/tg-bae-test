@@ -6,13 +6,17 @@ interface SliderProps {
   handleSliderChange: (value:any)=>void
   setStartTime:(num:number)=>void
   setEndTime:(num:number)=>void
+  trailerBoll: boolean
+  setTrailerBoll: (boll:boolean)=>void
 }
 
 const TransparentSlider: React.FC<SliderProps> = ({
   duration,
   handleSliderChange,
   setStartTime,
-  setEndTime
+  setEndTime,
+  trailerBoll,
+  setTrailerBoll
 }) => {
   const [selectedTime, setSelectedTime] = useState(0);
   const sliderRef = useRef<HTMLDivElement | null>(null);
@@ -80,6 +84,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
     const clientX = e.clientX;
     const time = getSelectedTime(clientX);
     setSelectedTime(time);
+    setTrailerBoll(false)
   };
 
   return (
@@ -101,7 +106,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
         }}
       >
         {/* 滑块 */}
-        <div
+        {!trailerBoll && <div
           style={{
             position: 'absolute',
             top: '50%',
@@ -115,7 +120,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
             // boxShadow: '0 0 10px rgba(0, 0, 255, 0.5)',
             pointerEvents: 'none',
           }}
-        />
+        />}
       </div>
       {/* <p style={{ color: '#000' }}>{selectedTime.toFixed(1)}</p> */}
     </div>

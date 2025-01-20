@@ -37,6 +37,8 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
   // 设置播放时间
   const [startTime, setStartTime] = useState<number>(0); // Set the start time for the video (in seconds)
   const [endTime, setEndTime] = useState<number>(6);  // Set the end time for the video (in seconds)
+  // 选择用哪个预告片
+  const [trailerBoll, setTrailerBoll] = useState(false)
 
   const isLandscape =
     selectedFrame?.width && selectedFrame?.height
@@ -171,7 +173,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
       const clipUrl = URL.createObjectURL(blob);
       console.log(chunks, clipUrl)
       const formData = new FormData();
-      const videoFile = new File([clipUrl], "asdsadsdaasssa.mp4", { type: "video/mp4" });
+      const videoFile = new File([clipUrl], "trailer.mp4", { type: "video/mp4" });
       console.log(videoFile)
       formData.append("file", blob); // 添加文件
       formData.append("name", videoFile.name); // 添加文件名
@@ -318,8 +320,10 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
                 </p>
 
                 <div className='mt-2 flex items-center gap-2'>
-                  <Trailer />
-                  <Slider duration={duration} handleSliderChange={handleSliderChange} setStartTime={setStartTime} setEndTime={setEndTime}/>
+                  <Trailer trailerBoll={trailerBoll} setTrailerBoll={setTrailerBoll} />
+                  <Slider duration={duration} handleSliderChange={handleSliderChange} setStartTime={setStartTime} setEndTime={setEndTime}
+                    trailerBoll={trailerBoll} setTrailerBoll={setTrailerBoll}
+                  />
                 </div>
 
                 <div className="px-[20px] pt-[24px] pb-[20px]">

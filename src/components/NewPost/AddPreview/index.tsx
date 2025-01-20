@@ -232,7 +232,13 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
 
     const video = videoRef.current;
     video.currentTime = startTime; // 设置视频开始时间
-    const stream = video.captureStream(); // 捕获视频流
+
+    const videoElement = videoRef.current as HTMLVideoElement & { captureStream?: () => MediaStream };
+    if (!videoElement?.captureStream) {
+      return
+    }
+
+    const stream = videoElement.captureStream(); // 捕获视频流
     const recorder = new MediaRecorder(stream);
     const chunks: Blob[] = [];
     // 处理录制数据

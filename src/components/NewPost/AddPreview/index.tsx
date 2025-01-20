@@ -269,7 +269,11 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
             <p className="text-[16px] text-[#000]">Add a preview</p>
             <p className="text-[12px] text-[#8E8E92]">You can add a preview to your locked video to entice viewers to unlock it.</p>
           </div>
-          <p className='h-[64px] w-[64px] bg-[#F7F9FC] rounded-md flex-none'></p>
+          {/* className="w-full h-full flex items-center justify-center border-dashed border border-[#CDCDD4] rounded-lg cursor-pointer" */}
+
+          <p className='h-[64px] w-[64px] bg-[#F7F9FC] rounded-md flex-none flex items-center justify-center'>
+            <i className="iconfont icon-add text-[#999999] text-[20px]"></i>
+          </p>
         </div>
       </div>
 

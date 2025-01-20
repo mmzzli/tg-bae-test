@@ -647,7 +647,7 @@ export const NewPost: FC = () => {
             setIsFocused={setIsFocused}
             />
         </Box>
-        {price && price > 0 && <AddPreview videoRef={videoRefCover} setCover={setCover} videoSrc={videoSrc || ""} setTrailer={setTrailer} />}
+        {price != null && price > 0 && <AddPreview videoRef={videoRefCover} setCover={setCover} videoSrc={videoSrc || ""} setTrailer={setTrailer} />}
         <StarsPage setPrice={setPrice} price={price || 0} />
       </Box>
       <Box h={`${isFocused ? '700px' : ''}`}></Box>

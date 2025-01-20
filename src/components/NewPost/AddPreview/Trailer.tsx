@@ -28,9 +28,10 @@ const Trailer = () => {
           :
           <div className='rounded-md border-2 border-[#6254FF]'>
 
-            <div className='w-[20px] h-[20px] right-[-6px] top-[-6px] z-10 rounded-[50px] bg-[#666] absolute'
+            <div className='w-[20px] h-[20px] right-[-6px] top-[-6px] z-10 rounded-[50px] bg-[#666] absolute flex items-center justify-center'
               onClick={()=>setVideoSrc("")}
             >
+              <i className="iconfont icon-icon_close text-[#fff] dark:text-[#E0E2F6] text-[16px]"></i>
             </div>
 
             <video

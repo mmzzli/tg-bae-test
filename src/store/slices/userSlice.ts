@@ -64,6 +64,11 @@ const initialOthersUserInfo: OthersUserInfo & { user_id: number } = {
   bio: '',
   follower: 0,
   fans: 0,
+  background_img: {
+    url: '',
+    width: 0,
+    height: 0
+  }
 }
 
 const initialFollowListState: FollowListState = {

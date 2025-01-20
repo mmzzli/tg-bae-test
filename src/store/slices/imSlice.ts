@@ -1,6 +1,6 @@
 import { StateCreator } from 'zustand'
 import BaeimSDK, { Conversation } from '@/components/SDK/BaeimSDK'
-import { MessageWindowListItem } from '@/components/Chat/types'
+import { MessageWindowListItem, ReplyMessage } from '@/components/Chat/types'
 import { OthersUserInfo } from '@/types'
 import { sortConversations } from '@/utils/chat/util'
 export interface IMSlice {
@@ -29,6 +29,11 @@ export interface IMSlice {
   deleteConversation: (conversationId: string) => void
   setConversationIds: (ids: string[]) => void
   // USE NEW DATA STRUCTURE END
+
+  // REPLY START
+  replyMessage: ReplyMessage | null
+  setReplyMessage: (message: ReplyMessage | null) => void
+  // REPLY END
 }
 
 export const createIMSlice: StateCreator<IMSlice> = (set) => ({
@@ -135,4 +140,9 @@ export const createIMSlice: StateCreator<IMSlice> = (set) => ({
       return { conversationIds: newConversationIds, conversationMap: newConversationMap }
     }),
   // USE NEW DATA STRUCTURE END
+
+  // REPLY START
+  replyMessage: null,
+  setReplyMessage: (message) => set({ replyMessage: message }),
+  // REPLY END
 })

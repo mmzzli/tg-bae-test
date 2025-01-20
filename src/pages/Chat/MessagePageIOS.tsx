@@ -15,6 +15,7 @@ import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { debounce } from '@/utils/chat/schedulers'
 import RewardButton from '@/components/Wallet/RewardButton'
+import { width } from '@telegram-apps/sdk/dist/dts/scopes/components/viewport/signals'
 // const PAGE_SIZE = 20
 const isIOS = () => {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
@@ -31,6 +32,8 @@ const MessagePageIOS = () => {
   const { sendMessage, getMessageWindow, getChatPeopleInfo } = useIM()
   const messageWindow = getMessageWindow(uid || '')
   const messageWindowList = useStore((state) => state.messageWindowList)
+  const replyMessage = useStore((state) => state.replyMessage)
+  const setReplyMessage = useStore((state) => state.setReplyMessage)
   const [showInput, setShowInput] = useState(false)
   const jumpToProfilePage = useProfileNavigation()
   const inputRef = useRef<HTMLInputElement>(null)
@@ -64,13 +67,19 @@ const MessagePageIOS = () => {
     }
   }, [uid])
 
+  const closeReply = () => {
+    setReplyMessage(null)
+  }
+
   const handleSend = ({ type, text }: { type: MessageType; text?: string }) => {
     const newMessage = formatMessage({
       type,
       text,
       to: Number(uid),
+      reply: replyMessage || undefined,
     })
     sendMessage(newMessage)
+    setReplyMessage(null)
   }
 
   const handleSendText = () => {
@@ -208,7 +217,7 @@ const MessagePageIOS = () => {
     }
   }, [])
 
-  console.log('MessagePage render', messageWindow)
+  console.log('MessagePage render', messageWindow, replyMessage)
   return (
     <div
       ref={containerRef}
@@ -254,8 +263,60 @@ const MessagePageIOS = () => {
       <MemoizedMessageList
         messages={messages}
         channelInfo={chatPeople}
-        className="flex-1 mb-[68px] message-list-scroll-trigger"
+        channelId={messageWindow?.channel.channelID || ''}
+        className="flex-1 message-list-scroll-trigger"
+        style={{
+          marginBottom:
+            replyMessage && replyMessage.channel === messageWindow?.channel.channelID
+              ? '136px'
+              : '68px',
+        }}
       />
+
+      {/* Reply Message */}
+      <div
+        className={cn(
+          'items-center h-[58px] absolute left-0 right-0 bottom-[68px] dark:bg-black bg-[#ffffff] pl-6 pr-3'
+        )}
+        style={{
+          display:
+            replyMessage && replyMessage.channel === messageWindow?.channel.channelID
+              ? 'flex'
+              : 'none',
+        }}
+      >
+        <div
+          className="h-8 bg-[#6254FF]"
+          style={{
+            width: '2px',
+            marginRight: '12px',
+          }}
+        ></div>
+
+        {/* Media Message Preview */}
+        {replyMessage?.messageType !== MessageType.TEXT && <div></div>}
+
+        <div className="flex flex-col flex-1 overflow-hidden text-sm">
+          {/* Reply To */}
+          <div className="font-medium text-[#6254FF]">Reply to {replyMessage?.toUsername}</div>
+          {/* Reply Content */}
+          <div className="text-nowrap text-ellipsis overflow-hidden font-normal">
+            <span className="text-[#999999]">
+              {replyMessage?.messageType === MessageType.REWARD && 'Tips'}
+              {replyMessage?.messageType === MessageType.IMAGE && 'Image'}
+              {replyMessage?.messageType === MessageType.VIDEO && 'Video'}
+            </span>
+            <span className="text-[#333]">
+              {replyMessage?.messageType === MessageType.TEXT && replyMessage.message}
+            </span>
+          </div>
+        </div>
+
+        {/* Close Icon */}
+        <div className="w-6 h-6 flex items-center justify-center ml-[18px]" onClick={closeReply}>
+          <i className="iconfont icon-icon_close text-[24px] text-[#707579]"></i>
+        </div>
+      </div>
 
       {/* FAKE INPUT */}
       <div

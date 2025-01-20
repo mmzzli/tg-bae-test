@@ -61,6 +61,11 @@ export type UserItem = {
   username: string
   fans: number
   follower: number
+  background_img: {
+    url: string
+    width: number
+    height: number
+  }
 }
 export type ListItem = {
   user: UserItem

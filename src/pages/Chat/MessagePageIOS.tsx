@@ -165,7 +165,7 @@ const MessagePageIOS = () => {
       console.log('###### TG viewportChanged ######')
       if (tg.viewportStableHeight < initTgViewportHeightRef.current) {
         console.log('keyboard up')
-        containerRef.current!.style.height = `${isIOSDevice ? tg.viewportStableHeight : tg.viewportStableHeight + 26}px`
+        containerRef.current!.style.height = `${isIOSDevice ? tg.viewportStableHeight : tg.viewportStableHeight - 26}px`
         keyboardUp()
         setShowInput(true)
       } else {
@@ -191,7 +191,7 @@ const MessagePageIOS = () => {
       // 这个有时候会获取不到初始的高度
       if (tg.viewportStableHeight < initTgViewportHeightRef.current) {
         console.log('keyboard up 2')
-        containerRef.current!.style.height = `${isIOSDevice ? tg.viewportStableHeight : tg.viewportStableHeight + 26}px`
+        containerRef.current!.style.height = `${isIOSDevice ? tg.viewportStableHeight : tg.viewportStableHeight - 26}px`
         setShowInput(true)
       } else {
         console.log('keyboard down 2')

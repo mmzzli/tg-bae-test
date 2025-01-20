@@ -18,10 +18,17 @@ interface MessageListProps {
   loadMore?: () => void
   className?: string
   channelInfo: OthersUserInfo | null
+  channelId: string
   style?: React.CSSProperties
 }
 
-export const MessageList = ({ messages, className, channelInfo, style }: MessageListProps) => {
+export const MessageList = ({
+  messages,
+  className,
+  channelInfo,
+  channelId,
+  style,
+}: MessageListProps) => {
   const scrollRef = useRef<HTMLDivElement>(null)
   const { getCurrentUid } = useTMAUtils()
   const current_uid = getCurrentUid()
@@ -135,6 +142,7 @@ export const MessageList = ({ messages, className, channelInfo, style }: Message
       messageGroups={messageGroups}
       scrollRef={scrollRef}
       channelInfo={channelInfo}
+      channelId={channelId}
       current_uid={current_uid}
     />
   )
@@ -146,12 +154,14 @@ const MessageItem = memo(
     channelInfo,
     userInfo,
     className,
+    channelId,
   }: {
     message: WrappedMessage
     isCurrentUser: boolean
     channelInfo: OthersUserInfo | null
     userInfo: IUserInfo
     className?: string
+    channelId: string
   }) => (
     <div
       id={message.id}
@@ -177,13 +187,14 @@ const MessageItem = memo(
       <Tooltip
         content={message}
         user={isCurrentUser ? userInfo : channelInfo}
+        channelId={channelId}
         delay={800}
         id={message.id}
         config={{ enableReply: true, enableCopy: true, enableDownload: false }}
       >
         <div
           className={`overflow-hidden rounded-lg max-w-[255px]
-          ${isCurrentUser && message.type === MessageType.TEXT ? 'bg-[#6254ff] dark:bg-[#4A3AFF] text-white' : 'dark:bg-[#303030] bg-[#F1F1F1] text-[#333333] dark:text-white'}
+          ${isCurrentUser && message.type === MessageType.TEXT ? 'bg-[#6254ff] dark:bg-[#4A3AFF] text-white my-msg' : 'dark:bg-[#303030] bg-[#F1F1F1] text-[#333333] dark:text-white other-msg'}
           ${message.type === MessageType.TEXT ? 'p-3' : 'inline-block'}
         `}
         >
@@ -214,6 +225,7 @@ const InfiniteList = ({
   scrollRef,
   channelInfo,
   current_uid,
+  channelId,
 }: {
   messages: WrappedMessage[]
   className?: string
@@ -231,7 +243,9 @@ const InfiniteList = ({
     channelInfo: OthersUserInfo | null
     userInfo: IUserInfo
     className?: string
+    channelId: string
   }>
+  channelId: string
 }) => {
   const userInfo = useStore((state) => state.userInfo)
   return (
@@ -261,6 +275,7 @@ const InfiniteList = ({
                 message={message}
                 isCurrentUser={message.sender === current_uid}
                 channelInfo={channelInfo}
+                channelId={channelId}
                 userInfo={userInfo}
               />
             ))}

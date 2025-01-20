@@ -76,8 +76,10 @@ const MessagePageIOS = () => {
       type,
       text,
       to: Number(uid),
+      reply: replyMessage || undefined,
     })
     sendMessage(newMessage)
+    setReplyMessage(null)
   }
 
   const handleSendText = () => {
@@ -261,6 +263,7 @@ const MessagePageIOS = () => {
       <MemoizedMessageList
         messages={messages}
         channelInfo={chatPeople}
+        channelId={messageWindow?.channel.channelID || ''}
         className="flex-1 message-list-scroll-trigger"
         style={{
           marginBottom:

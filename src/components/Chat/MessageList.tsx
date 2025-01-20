@@ -11,6 +11,7 @@ import { PullMode } from '../SDK/BaeimSDK'
 import { useStore } from '@/store'
 import { useIM } from '@/store/hook/userIM'
 import Tooltip from '@/components/LoogPressToolTip'
+import { IUserInfo } from '@/types'
 
 interface MessageListProps {
   messages: WrappedMessage[]
@@ -143,11 +144,13 @@ const MessageItem = memo(
     message,
     isCurrentUser,
     channelInfo,
+    userInfo,
     className,
   }: {
     message: WrappedMessage
     isCurrentUser: boolean
     channelInfo: OthersUserInfo | null
+    userInfo: IUserInfo
     className?: string
   }) => (
     <div
@@ -173,9 +176,10 @@ const MessageItem = memo(
       )}
       <Tooltip
         content={message}
+        user={isCurrentUser ? userInfo : channelInfo}
         delay={800}
         id={message.id}
-        config={{ enableReply: false, enableCopy: true, enableDownload: false }}
+        config={{ enableReply: true, enableCopy: true, enableDownload: false }}
       >
         <div
           className={`overflow-hidden rounded-lg max-w-[255px]
@@ -205,6 +209,8 @@ const InfiniteList = ({
   handleLoadMore,
   hasMore,
   messageGroups,
+  MessageItem,
+  TimeDevider,
   scrollRef,
   channelInfo,
   current_uid,
@@ -223,8 +229,11 @@ const InfiniteList = ({
     message: WrappedMessage
     isCurrentUser: boolean
     channelInfo: OthersUserInfo | null
+    userInfo: IUserInfo
+    className?: string
   }>
 }) => {
+  const userInfo = useStore((state) => state.userInfo)
   return (
     <div
       id="scrollableDiv"
@@ -252,6 +261,7 @@ const InfiniteList = ({
                 message={message}
                 isCurrentUser={message.sender === current_uid}
                 channelInfo={channelInfo}
+                userInfo={userInfo}
               />
             ))}
           </div>

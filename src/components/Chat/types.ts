@@ -21,6 +21,18 @@ export type MessageWindowListItem = {
   channel: Channel
   messages: WrappedMessage[]
 }
+
+export type ReplyMessage = {
+  channel?: string
+  message: string
+  messageId: string
+  messageSeq: number
+  messageType: MessageType
+  toUid: number
+  toUsername: string
+  revoke: boolean
+}
+
 export type Message = {
   url?: string
   text?: string

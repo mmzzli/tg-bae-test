@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState, useMemo } from 'react'
 import { useAccount, useDisconnect } from 'wagmi'
 // import { config } from '@/config/wagmi-config'
 // import { useNavigate } from 'react-router-dom'
@@ -71,7 +71,7 @@ const ProfileConnectButton = ({ className }: { className?: string }) => {
     ) : null
   }
 
-  const LoginedButton = () => {
+  const LoginedButton = useMemo(() => {
     return (
       status === 'connected' &&
       address && (
@@ -94,20 +94,20 @@ const ProfileConnectButton = ({ className }: { className?: string }) => {
             }}
           >
             <div className="w-full flex items-center justify-center gap-2">
-              <img src={TomoSvg} alt="" className="flex-shrink-0" />
+              <img src={TomoSvg} alt="tomo" loading="lazy" className="will-change-transform" />
               <span className="font-[500] truncate">{initData?.user?.username}</span>
             </div>
           </div>
         </div>
       )
     )
-  }
+  }, [status, address])
 
   return (
     <div>
       <LoginButton />
       <ConnectModal ref={connectModalRef} afterConnect={() => {}} />
-      <LoginedButton />
+      {LoginedButton}
     </div>
   )
 }

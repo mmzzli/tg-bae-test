@@ -17,7 +17,7 @@
     />
     <meta name="theme-color" content="#ff0000" />
     <link rel="icon" href="/vite.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="//at.alicdn.com/t/c/font_4749276_h44rv6551ys.css" />
+    <link rel="stylesheet" href="//at.alicdn.com/t/c/font_4749276_cgyh393twa6.css" />
     <title>Bae</title>
   </head>
   <body style="background-color: #ffffff">
@@ -55,11 +55,30 @@
       >
         <source src="https://img.bae.boo/bae_loading_2.mov" type="video/mp4" />
       </video>
+      <div
+        id="reload_btn"
+        style="
+          position: absolute;
+          top: 100px;
+          right: 10px;
+          color: #707579;
+          font-weight: 500;
+          cursor: pointer;
+          z-index: 60;
+          background-color: #E6E6EA;
+          padding: 4px 10px;
+          border-radius: 10px;
+          display: none;
+        "
+        aria-label="Reload"
+        onclick="window.location.href='/'"
+      >
+        Reload
+      </div>
     </div>
 
     <!-- Play Button -->
     <div id="btn" style="color: #000; cursor: pointer" aria-label="Play Video"></div>
-
     <!-- Scripts -->
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"
@@ -74,6 +93,7 @@
       window.loading = true
       const videoDom = document.getElementById('splash_video_dom')
       const playBtn = document.getElementById('btn')
+      const reloadBtn = document.getElementById('reload_btn')
 
       // Play button event listener
       playBtn.addEventListener('click', function (e) {
@@ -85,6 +105,9 @@
           clearTimeout(timer)
         }
       })
+      setTimeout(() => {
+        reloadBtn.style.display = 'block'
+      }, 2000)
 
       // Timer to trigger play button click after a short delay
       const timer = setTimeout(() => {

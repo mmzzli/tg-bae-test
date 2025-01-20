@@ -9,13 +9,15 @@ import { useStore } from '@/store'
 import { getFollowingList } from '@/api'
 import './index.css'
 // import FireworksAnimation from '../../components/Fireworks'
-const SCROLL_THRESHOLD = 130
+const SCROLL_THRESHOLD = 110
 
 const Profile: FC = () => {
   const { launchParams } = useTMAUtils()
+  const scrollDivRef = useRef<HTMLDivElement>(null)
   const userInfo = useStore((state) => state.userInfo)
   const titleRef = useRef<HTMLHeadingElement>(null)
   const [showTopTitle, setShowTopTitle] = useState(false)
+  const [scale, setScale] = useState(1) // 控制背景图片的缩放
 
   const { token, myFollow, setMyFollow } = useStore((state) => ({
     token: state.token,
@@ -30,18 +32,32 @@ const Profile: FC = () => {
   // const [showFireworks, setShowFireworks] = useState(false)
 
   useEffect(() => {
-    const scrollDiv = document.getElementById('profileScrollableDiv')
+    const scrollDiv = scrollDivRef.current
+    if (!scrollDiv) return
     if (!titleRef.current) return
 
     const handleScroll = throttle(() => {
-      if (!scrollDiv) return
-      const shouldShowTitle = scrollDiv.scrollTop >= SCROLL_THRESHOLD
+      const scrollTop = scrollDiv.scrollTop
+      console.log('scrollTop', scrollTop)
+
+      // 控制标题显示
+      const shouldShowTitle = scrollTop >= SCROLL_THRESHOLD
       setShowTopTitle(shouldShowTitle)
+      if (shouldShowTitle) {
+        window.Telegram?.WebApp?.setHeaderColor('#ffffff')
+      } else {
+        window.Telegram?.WebApp?.setHeaderColor('#000000')
+      }
+
+      // 下拉放大背景图片
+      const pullDownOffset = Math.min(scrollTop, 0) // 限制为负值
+      const newScale = 1 - pullDownOffset / 300 // 最大放大到 1.3 倍
+      setScale(newScale)
     }, 40)
 
-    scrollDiv?.addEventListener('scroll', handleScroll)
-    return () => scrollDiv?.removeEventListener('scroll', handleScroll)
-  }, [showTopTitle])
+    scrollDiv.addEventListener('scroll', handleScroll)
+    return () => scrollDiv.removeEventListener('scroll', handleScroll)
+  }, [])
 
   useEffect(() => {
     if (token && myFollow.length === 0) {
@@ -50,14 +66,11 @@ const Profile: FC = () => {
     }
   }, [token])
 
-  // const handleSuccess = () => {
-  //   setShowFireworks(true)
-  // }
-
   return (
     <div
       className="relative w-full overflow-auto bg-white dark:bg-black scrollbar-hide"
       id="profileScrollableDiv"
+      ref={scrollDivRef}
       style={{
         height:
           'calc(100vh - 84px - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top))',
@@ -68,6 +81,11 @@ const Profile: FC = () => {
         style={{
           backgroundImage: `url('${imgUrl}')`,
           display: showTopTitle ? 'none' : 'block',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          transform: `scale(${scale})`,
+          transformOrigin: 'center top',
+          transition: 'transform 0.1s ease-out',
         }}
       >
         {/* <div onClick={handleSuccess}>点击成功</div> */}
@@ -87,14 +105,13 @@ const Profile: FC = () => {
       >
         {userInfo?.username}
       </h3>
-      <div ref={titleRef} className="content-area absolute top-[134px] left-0 w-full h-full  bg-white dark:bg-black">
+      <div
+        ref={titleRef}
+        className="content-area absolute top-[113px] left-0 w-full h-full  bg-white dark:bg-black"
+      >
         <UserProfile />
         <ViewList />
       </div>
-
-      {/* {showFireworks && (
-        <FireworksAnimation duration={3000} onComplete={() => setShowFireworks(false)} />
-      )} */}
     </div>
   )
 }

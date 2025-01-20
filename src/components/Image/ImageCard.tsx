@@ -1,4 +1,5 @@
-import { Swiper, SwiperSlide } from 'swiper/react'
+
+import { Swiper } from 'antd-mobile'
 import React, { useEffect, useMemo, useState } from 'react'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import { formatImage, formatTime, generateUUID } from '@/utils/utils'
@@ -14,15 +15,9 @@ interface ImageCardProps {
   resourcesEve: (post_id: number, url: string, is_pay?: boolean) => void
 }
 const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resourcesEve }) => {
-  const userInfo = useStore((state) => state.userInfo)
   const { getCurrentUid } = useTMAUtils()
-  const [swiper, setSwiper] = useState<SwiperType | null>(null)
-  const imagesPreview = useMemo(() => {
-    return data.media.map((item) => formatImage(item, false))
-  }, [data])
 
   const [currentIndex, SetCurrentIndex] = useState(0)
-
   const firImageWidth = useMemo(() => {
     return document.body.getBoundingClientRect().width
   }, [])
@@ -41,15 +36,14 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
       <div className="border-t-[0.5px] border-[rgba(0,0,0,0.1)] relative z-[1]">
         <Swiper
           className={'z-[1]'}
-          onSwiper={setSwiper}
-          onSlideChange={(swiper: SwiperType) => {
-            SetCurrentIndex(swiper.activeIndex)
+          indicator={(total, current) =>{
+            SetCurrentIndex(current)
+            return null
           }}
-          allowTouchMove={true}
         >
           {data.media.map((image, index) => {
             return (
-              <SwiperSlide
+              <Swiper.Item
                 key={`${data.id}-${image}-${index}`}
                 style={{
                   height: firImageHeight ? firImageHeight + 'px' : 'calc(1.5*100vw)',
@@ -59,7 +53,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
                 className={'flex items-center  overflow-hidden justify-center'}
               >
                 <Image
-                  src={data.act_type === 1 ? image : formatImage(image, false)}
+                  src={[1, 2].includes(data?.act_type || 0) ? image : formatImage(image, false)}
                   alt={data.title}
                   // style={{ maxWidth: '100%', maxHeight: '100%' }}
                   style={{
@@ -82,7 +76,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
                     handleImageClick(data.media, index)
                   }}
                 />
-              </SwiperSlide>
+              </Swiper.Item>
             )
           })}
         </Swiper>

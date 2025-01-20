@@ -269,6 +269,15 @@ const Earnings = () => {
       // 这里您可以添加错误处理，比如显示错误提示等
     }
   }
+  const getDisabled = ()=>{
+    if(totalGifts.withdraw_gifts){
+      return false
+    }
+    if(rewardByUidList && rewardByUidList.length){
+      return false
+    }
+    return true
+  }
 
   useEffect(() => {
     if (!token) return
@@ -410,6 +419,7 @@ const Earnings = () => {
                   width="100%"
                   height="40px"
                   loading={loading}
+                  disabled={getDisabled()}
                   handler={() => {
                     walletWithdraw()
                   }}

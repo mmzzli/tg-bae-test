@@ -199,7 +199,7 @@ const UserInfo = memo(
           </div>
         </div>
         <MoreText textColor={'#fff'} text={content || ''} bgColor={'#000'} />
-        {isPaid && (
+        {info?.price && info?.price > 0 && !info?.is_pay && (
           <div className="mt-2">
             <PurchaseButton price={info?.price || 0} post_id={info?.id || 0 } resourcesEve={resourcesEve} setIsPaid={setIsPaid} />
           </div>
@@ -224,6 +224,7 @@ const VideoDialog = () => {
   const [duration, setDuration] = useState(0)
   const [progress, setProgress] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
+  const [ended, setEnded] = useState(false)
 
   const info = useStore((state) => state.videoResource)
   const setVideoResource = useStore((state) => state.setVideoResource)
@@ -328,6 +329,7 @@ const VideoDialog = () => {
 
   const togglePlay = useCallback(() => {
     if (videoRef.current) {
+      setEnded(false)
       if (playing) {
         videoRef.current.pause()
       } else {
@@ -402,6 +404,7 @@ const VideoDialog = () => {
             }}
             onEnded={() => {
               setPlaying(false)
+              setEnded(true)
             }}
             onPause={() => setPlaying(false)}
             onPlay={() => setPlaying(true)}
@@ -422,7 +425,7 @@ const VideoDialog = () => {
             </div>
           )}
           {
-            !isLoading && !playing ? info?.price && !info?.is_pay ? <ReplayButton onClick={togglePlay} /> : <PlayButton onClick={togglePlay} /> : null
+            !isLoading && !playing ? info?.price && !info?.is_pay && ended ? <ReplayButton onClick={togglePlay} /> : <PlayButton onClick={togglePlay} /> : null
           }
           <div
             ref={progressBarRef}

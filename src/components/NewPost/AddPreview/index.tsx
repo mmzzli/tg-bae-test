@@ -151,6 +151,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
   const captureFrame = async () => {
 
     if (!videoRef.current) return;
+    setLoading(true)
 
     const video = videoRef.current;
     video.currentTime = startTime; // 设置视频开始时间
@@ -206,6 +207,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
             const id = response.data.split('/').pop();
             setTrailer(`https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${id}/manifest/video.m3u8`)
             off();
+            setLoading(false)
           }
         },
       })

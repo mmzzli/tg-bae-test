@@ -20,9 +20,10 @@ interface VideoPlayerProps {
   videoRef: RefObject<HTMLVideoElement>
   setCover: Dispatch<SetStateAction<string | null>>
   videoSrc: string
+  setTrailer: (url:string)=>void
 }
 
-const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: videoUrl }) => {
+const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: videoUrl, setTrailer }) => {
   const [frames, setFrames] = useState<Frame[]>([])
   const [isBaseModalOpen, { toggle, on, off }] = useBoolean(false)
   const token = useStore((state) => state.token)
@@ -35,7 +36,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
   const [isPlaying, setIsPlaying] = useState<boolean>(false); // New state to track if video is playing
   // 设置播放时间
   const [startTime, setStartTime] = useState<number>(0); // Set the start time for the video (in seconds)
-  const [endTime, setEndTime] = useState<number>(5);  // Set the end time for the video (in seconds)
+  const [endTime, setEndTime] = useState<number>(6);  // Set the end time for the video (in seconds)
 
   const isLandscape =
     selectedFrame?.width && selectedFrame?.height
@@ -141,36 +142,109 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
   useEffect(() => {
     if (videoRef) {
       const timer = setTimeout(() => {
-        captureFrame();
+        // captureFrame();
       }, 1000);
       return () => clearTimeout(timer);
     }
   }, [videoRef, videoUrl]);
 
   const captureFrame = async () => {
-    const canvas = canvasRef.current;
-    off();
-    if (canvas) {
-      const frameData = canvas.toDataURL("image/png", 1.0);
-      const file = base64ToFile(frameData, 'image.png');
 
-      const timestamp: number = new Date().getTime();
-      const url = `${import.meta.env.VITE_APP_UPLOAD_URL}upload/${timestamp}`;
+    if (!videoRef.current) return;
 
-      const formData = new FormData();
-      formData.append('file', file);
-      try {
-        const response = await axios.put(url, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setCover(response.data);
-      } catch (error) {
-        console.error(`Error uploading ${file.name}:`, error);
+    const video = videoRef.current;
+    video.currentTime = startTime; // 设置视频开始时间
+    const stream = video.captureStream(); // 捕获视频流
+    const recorder = new MediaRecorder(stream);
+    const chunks: Blob[] = [];
+    // 处理录制数据
+    recorder.ondataavailable = (e: BlobEvent) => {
+      if (e.data.size > 0) {
+        chunks.push(e.data);
       }
-    }
+    };
+
+    // 录制结束后生成 Blob URL
+    recorder.onstop = async() => {
+      const blob = new Blob(chunks, { type: "video/webm" });
+      const clipUrl = URL.createObjectURL(blob);
+      console.log(chunks, clipUrl)
+      const formData = new FormData();
+      const videoFile = new File([clipUrl], "asdsadsdaasssa.mp4", { type: "video/mp4" });
+      console.log(videoFile)
+      formData.append("file", blob); // 添加文件
+      formData.append("name", videoFile.name); // 添加文件名
+      formData.append("type", "bae"); // 添加类型
+
+      // 添加 meta 数据
+      formData.append(
+        "meta",
+        JSON.stringify({
+          name: videoFile.name,
+          type: "bae",
+        })
+      );
+      console.log(formData)
+
+      const response = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      await axios.post(response.data, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        onUploadProgress: (progressEvent: any) => {
+          const total = progressEvent.total
+          const current = progressEvent.loaded
+          const percentCompleted = Math.round((current * 100) / total)
+          console.log(percentCompleted)
+          if(percentCompleted>=100){
+            console.log(response.data)
+            const id = response.data.split('/').pop();
+            setTrailer(`https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${id}/manifest/video.m3u8`)
+            off();
+          }
+        },
+      })
+
+    };
+    recorder.start();
+
+    // 播放视频并自动停止录制
+    video.play();
+    setTimeout(() => {
+      video.pause();
+      recorder.stop();
+    }, (endTime - startTime) * 1000); // 按秒设置时长
+
+    // off();
+    //  startTime endTime
+
+    // if (canvas) {
+    //   const frameData = canvas.toDataURL("image/png", 1.0);
+    //   const file = base64ToFile(frameData, 'image.png');
+
+    //   const timestamp: number = new Date().getTime();
+    //   const url = `${import.meta.env.VITE_APP_UPLOAD_URL}upload/${timestamp}`;
+
+    //   const formData = new FormData();
+    //   formData.append('file', file);
+    //   try {
+    //     const response = await axios.put(url, formData, {
+    //       headers: {
+    //         'Content-Type': 'multipart/form-data',
+    //         Authorization: `Bearer ${token}`,
+    //       },
+    //     });
+    //     setCover(response.data);
+    //   } catch (error) {
+    //     console.error(`Error uploading ${file.name}:`, error);
+    //   }
+    // }
+
   };
 
   const base64ToFile = (base64String: any, filename: string) => {
@@ -187,7 +261,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
 
   return (
     <>
-      <div className="fixed bottom-[200px] left-0 w-[100%]" onClick={() => toggle()}>
+      <div className="fixed bottom-[120px] left-0 w-[100%]" onClick={() => toggle()}>
         <div className="px-7 flex justify-between gap-2 flex-none">
           <div>
             <p className="text-[16px] text-[#000]">Add a preview</p>

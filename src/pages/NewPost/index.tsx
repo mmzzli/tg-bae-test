@@ -15,6 +15,7 @@ import {
 import { useNavigate } from 'react-router-dom'
 import axios, { AxiosResponse } from 'axios'
 import { postResources, postReq } from '@/api'
+import {PostResourceReq} from '@/types'
 import StarsPage from '@/components/NewPost/Stars'
 import AddPreview from '@/components/NewPost/AddPreview'
 import { PostIcon, PostAddIcon, RemoveIcon, VideoSwitchIcon } from '@/assets/icons'
@@ -50,6 +51,8 @@ export const NewPost: FC = () => {
   const [price, setPrice] = useState<number | null>(null)
   // cover
   const [cover, setCover] = useState<string | null>(null)
+  //
+  const [trailer, setTrailer] = useState<string | null>(null)
 
   const [widths, setWidths] = useState<number[]>([])
   const [heights, setHeights] = useState<number[]>([])
@@ -235,14 +238,19 @@ export const NewPost: FC = () => {
         try {
           const medias = [url]
           cover && medias.unshift([cover])
-          await postResources({
+          //
+          const params:PostResourceReq = {
             duration: Math.floor(videoRef?.current?.duration || 0),
             media: medias.join(','),
             ...(title ? { title } : {}),
             type: 0,
             currency: 0,
             price: price || 0,
-          })
+          }
+          if(params.price && trailer){
+            params['trailer'] = trailer
+          }
+          await postResources(params)
           // when sent page will back to task page,so we need to update the task list
           runGetDailyTask()
           setTimeout(() => {
@@ -639,7 +647,7 @@ export const NewPost: FC = () => {
             setIsFocused={setIsFocused}
             />
         </Box>
-        {price && price > 0 && <AddPreview videoRef={videoRefCover} setCover={setCover} videoSrc={videoSrc || ""} />}
+        {price && price > 0 && <AddPreview videoRef={videoRefCover} setCover={setCover} videoSrc={videoSrc || ""} setTrailer={setTrailer} />}
         <StarsPage setPrice={setPrice} price={price || 0} />
       </Box>
       <Box h={`${isFocused ? '700px' : ''}`}></Box>

@@ -41,12 +41,12 @@ const TransparentSlider: React.FC<SliderProps> = ({
     setSelectedTime(time);
     // 设置视频时长
     // console.log(time)
-    if(time+5 >= videoDuration){
-      setStartTime(videoDuration-5)
+    if(time+6 >= videoDuration){
+      setStartTime(videoDuration-6)
       setEndTime(videoDuration)
     }else{
       setStartTime(time)
-      setEndTime(time + 5)
+      setEndTime(time + 6)
     }
   };
 

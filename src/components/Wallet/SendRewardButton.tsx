@@ -334,7 +334,7 @@ export const SendRewardButton = ({
         }}
       />
       <div
-        className="text-sm text-[#ccc] text-right mt-1 mr-1"
+        className="text-sm text-[#ccc] text-right mt-1 mr-1 overflow-hidden"
         style={{ display: showAllowance ? 'block' : 'none' }}
       >
         Allowance:{' '}

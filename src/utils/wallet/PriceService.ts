@@ -11,7 +11,7 @@ class PriceService {
   private async updatePrices() {
     try {
       const response = await fetch(
-        'https://api.coingecko.com/api/v3/simple/price?ids=usd-coin,tether,binancecoin&vs_currencies=usd'
+        'https://api.coingecko.com/api/v3/simple/price?ids=usd-coin,tether,binancecoin,ethereum&vs_currencies=usd'
       )
       const data = await response.json()
 
@@ -19,6 +19,7 @@ class PriceService {
         USDC: data['usd-coin'].usd,
         USDT: data.tether.usd,
         BNB: data.binancecoin.usd,
+        ETH: data.ethereum.usd,
       }
     } catch (error) {
       console.error('update price error:', error)

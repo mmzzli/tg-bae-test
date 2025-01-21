@@ -45,7 +45,7 @@ const Trailer: React.FC<TrailerProps> = ({
       {
         !videoSrc ?
           <p className='h-[64px] w-[64px] bg-[#F7F9FC] rounded-md flex-none flex items-center justify-center' onClick={handleChooseFile}>
-            <i className="iconfont icon-add text-[#999999] text-[30px]"></i>
+            <i className="iconfont icon-add text-[#999999] text-[18px]"></i>
           </p>
           :
           <div className='rounded-md'

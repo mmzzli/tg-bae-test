@@ -29,29 +29,11 @@ export const MessageList = ({
   channelId,
   style,
 }: MessageListProps) => {
-  const scrollRef = useRef<HTMLDivElement>(null)
   const { getCurrentUid } = useTMAUtils()
   const current_uid = getCurrentUid()
   const connection = useStore((state) => state.connection)
   const { updateMessage } = useIM()
   const [hasMore, setHasMore] = useState(true)
-  const prevMessagesLengthRef = useRef(messages.length)
-
-  const maintainScrollPosition = useCallback(() => {
-    if (scrollRef.current && messages.length > prevMessagesLengthRef.current) {
-      const newMessages = messages.length - prevMessagesLengthRef.current
-      const oldScrollHeight = scrollRef.current.scrollHeight
-
-      requestAnimationFrame(() => {
-        if (scrollRef.current) {
-          const newScrollHeight = scrollRef.current.scrollHeight
-          const heightDiff = newScrollHeight - oldScrollHeight
-          scrollRef.current.scrollTop += heightDiff
-        }
-      })
-    }
-    prevMessagesLengthRef.current = messages.length
-  }, [messages.length])
 
   const messageGroups = useMemo(() => {
     const groups: { timestamp: number; messages: WrappedMessage[] }[] = []
@@ -118,18 +100,6 @@ export const MessageList = ({
     }
   }
 
-  const scrollToMessage = (messageId: string) => {
-    const element = document.getElementById(messageId)
-    console.log('element', element)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
-  }
-
-  useEffect(() => {
-    maintainScrollPosition()
-  }, [messages, maintainScrollPosition])
-
   return (
     <InfiniteList
       messages={messages}
@@ -140,7 +110,6 @@ export const MessageList = ({
       handleLoadMore={handleLoadMore}
       hasMore={hasMore}
       messageGroups={messageGroups}
-      scrollRef={scrollRef}
       channelInfo={channelInfo}
       channelId={channelId}
       current_uid={current_uid}
@@ -222,7 +191,6 @@ const InfiniteList = ({
   messageGroups,
   MessageItem,
   TimeDevider,
-  scrollRef,
   channelInfo,
   current_uid,
   channelId,
@@ -233,7 +201,6 @@ const InfiniteList = ({
   handleLoadMore: () => Promise<void>
   hasMore: boolean
   messageGroups: { timestamp: number; messages: WrappedMessage[] }[]
-  scrollRef: Ref<HTMLDivElement>
   channelInfo: OthersUserInfo | null
   current_uid: number
   TimeDevider: React.FC<{ timestamp: number }>
@@ -248,6 +215,26 @@ const InfiniteList = ({
   channelId: string
 }) => {
   const userInfo = useStore((state) => state.userInfo)
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  const scrollToBottom = () => {
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: 'smooth',
+    })
+  }
+
+  useEffect(() => {
+    const handleScrollToBottom = () => {
+      scrollToBottom()
+    }
+
+    window.addEventListener('message-scroll-to-bottom', handleScrollToBottom)
+
+    return () => {
+      window.removeEventListener('message-scroll-to-bottom', handleScrollToBottom)
+    }
+  }, [])
   return (
     <div
       id="scrollableDiv"

@@ -1,5 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, RefObject, useEffect } from 'react';
 
+interface Frame {
+  url: string
+  time: number
+  height: number
+  width: number
+}
 
 interface SliderProps {
   duration: number
@@ -8,6 +14,7 @@ interface SliderProps {
   setEndTime:(num:number)=>void
   trailerBoll: boolean
   setTrailerBoll: (boll:boolean)=>void
+  videoRef: RefObject<HTMLVideoElement>
 }
 
 const TransparentSlider: React.FC<SliderProps> = ({
@@ -16,9 +23,11 @@ const TransparentSlider: React.FC<SliderProps> = ({
   setStartTime,
   setEndTime,
   trailerBoll,
-  setTrailerBoll
+  setTrailerBoll,
+  videoRef
 }) => {
   const [selectedTime, setSelectedTime] = useState(0);
+  const [frames, setFrames] = useState<Frame[]>([])
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const isDraggingRef = useRef<boolean>(false); // 判断是否正在拖动
 
@@ -87,6 +96,67 @@ const TransparentSlider: React.FC<SliderProps> = ({
     setTrailerBoll(false)
   };
 
+  const extractFramesFromVideo = async () => {
+    if (!videoRef.current) return;
+
+    const video = videoRef.current;
+    const framesArray: Frame[] = [];
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const videoDuration = video.duration;
+    const frameInterval = videoDuration / 20; // 每帧的时间间隔
+    let frameCount = 0; // 记录已提取的帧数
+
+    // 每次视频更新时提取一帧
+    const extractFrame = () => {
+      if (frameCount >= 20 || video.currentTime >= videoDuration) {
+        video.ontimeupdate = null; // 停止事件监听
+        video.pause(); // 停止视频播放
+        console.log('所有帧已提取完成:', framesArray);
+        setFrames(framesArray)
+        return;
+      }
+
+      if (context) {
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        framesArray.push({
+          url: canvas.toDataURL('image/png'),
+          time: video.currentTime,
+          height: canvas.height,
+          width: canvas.width,
+        });
+        frameCount++; // 增加帧计数
+        console.log(`帧 ${frameCount} 提取完成`);
+      }
+
+      video.currentTime += frameInterval; // 跳到下一帧时间点
+    };
+
+    video.ontimeupdate = extractFrame; // 绑定事件
+    video.play(); // 开始播放视频以触发 ontimeupdate
+  };
+
+
+
+  useEffect(() => {
+    if (videoRef && videoRef.current) {
+      const timer = setTimeout(() => {
+        extractFramesFromVideo()
+      }, 1000)
+      return () => clearTimeout(timer)
+    }
+  }, [videoRef])
+
+  // useEffect(()=>{
+  //   if(videoRef){
+  //     extractFramesFromVideo()
+  //   }
+  // },[videoRef])
+
   return (
     <div className='w-[100%]'>
       <div
@@ -105,6 +175,13 @@ const TransparentSlider: React.FC<SliderProps> = ({
           overflow: 'hidden'
         }}
       >
+        {frames.length >=1 && <div className='w-[1000%]'>
+          {
+            frames.map((item, key)=>(
+              <img key={key} className='w-[64px] float-left' src={item.url}/>
+            ))
+          }
+        </div>}
         {/* 滑块 */}
         {!trailerBoll && <div
           style={{

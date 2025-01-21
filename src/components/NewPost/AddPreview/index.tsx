@@ -392,7 +392,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
                 <div className='mt-2 flex items-center gap-2'>
                   <Trailer trailerBoll={trailerBoll} setTrailerBoll={setTrailerBoll} setVideoRefTrailer={setVideoRefTrailer} />
                   <Slider duration={duration} handleSliderChange={handleSliderChange} setStartTime={setStartTime} setEndTime={setEndTime}
-                    trailerBoll={trailerBoll} setTrailerBoll={setTrailerBoll}
+                    trailerBoll={trailerBoll} setTrailerBoll={setTrailerBoll} videoRef={videoRef}
                   />
                 </div>
 

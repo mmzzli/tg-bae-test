@@ -524,18 +524,7 @@ const ReplyCard: React.FC<{ reply: ReplyMessage }> = ({ reply }) => {
     <div className="rounded-lg [.my-msg_&]:bg-[#D2CDFF] [.other-msg_&]:bg-[#D4D4F0] pl-[3px] mb-2 min-w-[230px]">
       <div className="relative flex items-center rounded-md [.my-msg_&]:bg-[#5446F4] [.other-msg_&]:bg-[#F7F9FC] px-[10px] py-2">
         {/* Media Message Preview */}
-        {reply.messageType === MessageType.IMAGE && (
-          <div className="mr-[6px]">
-            <Image
-              rect
-              type="avatar"
-              src={formatImageNew({ url: reply.message })}
-              alt=""
-              width={32}
-              height={32}
-            />
-          </div>
-        )}
+        {reply.messageType === MessageType.IMAGE && <ImagePreviewIcon url={reply.message} />}
         {reply.messageType === MessageType.VIDEO && <VideoPreviewIcon url={reply.message} />}
 
         <div className="flex flex-col flex-1 overflow-hidden text-sm">
@@ -560,11 +549,19 @@ const ReplyCard: React.FC<{ reply: ReplyMessage }> = ({ reply }) => {
   )
 }
 
-const VideoPreviewIcon = ({ url }: { url: string }) => {
+export const VideoPreviewIcon = ({ url }: { url: string }) => {
   const { previewUrl } = useVideoPreview(url)
   return (
     <div className="mr-[6px]">
       <Image rect type="avatar" src={previewUrl} alt="" width={32} height={32} />
+    </div>
+  )
+}
+
+export const ImagePreviewIcon = ({ url }: { url: string }) => {
+  return (
+    <div className="mr-[6px]">
+      <Image rect type="avatar" src={formatImageNew({ url })} alt="" width={32} height={32} />
     </div>
   )
 }

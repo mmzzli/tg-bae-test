@@ -57,6 +57,7 @@
     "lottie-react": "^2.4.0",
     "lottie-web": "^5.12.2",
     "lucide-react": "^0.454.0",
+    "next": "^15.1.5",
     "path": "^0.12.7",
     "react": "^18.2.0",
     "react-activation": "^0.13.0",
@@ -90,6 +91,8 @@
     "vite-plugin-node-polyfills": "^0.7.0",
     "wagmi": "^2.14.6",
     "wukongimjssdk": "^1.2.10",
+    "xgplayer": "^3.0.20",
+    "xgplayer-hls": "^3.0.20",
     "zustand": "^5.0.0"
   },
   "devDependencies": {

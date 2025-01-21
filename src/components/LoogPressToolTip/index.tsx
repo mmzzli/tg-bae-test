@@ -92,10 +92,11 @@ const Tooltip: React.FC<TooltipProps> = ({
 
   const showTooltip = useCallback(() => {
     if (targetRef.current) {
+      console.log(content)
       // 只有在以下情况才显示tooltip:
       // 1. 有文本内容
       // 2. 或者在iOS设备上且有URL且enableDownload为true
-      if (content.text || (isIOSDevice && content.url && config.enableDownload)) {
+      if (content) {
         // 如果已经有其他tooltip在显示，发送事件通知它关闭
         if (activeTooltipId && activeTooltipId !== id) {
           const event = new CustomEvent('hideTooltip', { detail: { id: activeTooltipId } })
@@ -179,7 +180,7 @@ const Tooltip: React.FC<TooltipProps> = ({
       messageId: content.id,
       messageSeq: content.messageSeq,
       messageType: content.type,
-      message: content.text ?? '',
+      message: content.text || content.url || '',
       toUid: content.sender,
       toUsername: user?.username || '',
       revoke: false,
@@ -238,7 +239,7 @@ const Tooltip: React.FC<TooltipProps> = ({
               boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
             }}
           >
-            {config.enableReply && (content.text || content.url) && (
+            {config.enableReply && (
               <motion.div
                 className="flex flex-col items-center cursor-pointer text-[12px]"
                 onClick={handleReply}

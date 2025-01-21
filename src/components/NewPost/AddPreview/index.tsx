@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useState, RefObject, Dispatch, SetStateAction } from 'react'
 import { useBoolean, Text, useToast } from '@chakra-ui/react'
 import axios, { AxiosResponse } from 'axios'
+import { SkeletonShine } from '@/components/Skeketon/ChatSkeleton'
+
 
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { BaseModal } from '@/components/Modal/BaseModal'
@@ -33,6 +35,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
   const [isBaseModalOpen, { toggle, on, off }] = useBoolean(false)
   const token = useStore((state) => state.token)
   const [loading, setLoading] = useState(false)
+  const [loadingSkeleton, setLoadingSkeleton] = useState(true)
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [selectedFrame, setSelectedFrame] = useState<Frame | null>(null);
@@ -358,7 +361,24 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
         closeOnBackdropClick={true}
         showHandle={false}
       >
-        <div className="w-[100%]">
+        <div className='w-[100%]'
+          style={{
+            display:loadingSkeleton ? 'block' : 'none'
+          }}
+        >
+          <div className="h-[315px] w-[100%] relative overflow-hidden bg-[#F4F4F4] dark:bg-[#272727] rounded w-2/3">
+            <SkeletonShine />
+          </div>
+          <div className="h-[100px] w-[100%] mt-8 relative overflow-hidden bg-[#F4F4F4] dark:bg-[#272727] rounded w-2/3">
+            <SkeletonShine />
+          </div>
+        </div>
+
+        <div className="w-[100%]"
+          style={{
+            display:loadingSkeleton ? 'none' : 'block'
+          }}
+        >
           <h2 className="text-[24px] text-[#333] mt-[24px]">Add a preview</h2>
 
           {videoUrl && (
@@ -392,7 +412,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
                 <div className='mt-2 flex items-center gap-2'>
                   <Trailer trailerBoll={trailerBoll} setTrailerBoll={setTrailerBoll} setVideoRefTrailer={setVideoRefTrailer} />
                   <Slider duration={duration} handleSliderChange={handleSliderChange} setStartTime={setStartTime} setEndTime={setEndTime}
-                    trailerBoll={trailerBoll} setTrailerBoll={setTrailerBoll} videoRef={videoRef}
+                    trailerBoll={trailerBoll} setTrailerBoll={setTrailerBoll} videoRef={videoRef} setLoadingSkeleton={setLoadingSkeleton}
                   />
                 </div>
 

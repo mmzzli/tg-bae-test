@@ -15,6 +15,7 @@ interface SliderProps {
   trailerBoll: boolean
   setTrailerBoll: (boll:boolean)=>void
   videoRef: RefObject<HTMLVideoElement>
+  setLoadingSkeleton: (boll:boolean)=>void
 }
 
 const TransparentSlider: React.FC<SliderProps> = ({
@@ -24,7 +25,8 @@ const TransparentSlider: React.FC<SliderProps> = ({
   setEndTime,
   trailerBoll,
   setTrailerBoll,
-  videoRef
+  videoRef,
+  setLoadingSkeleton
 }) => {
   const [selectedTime, setSelectedTime] = useState(0);
   const [frames, setFrames] = useState<Frame[]>([])
@@ -118,6 +120,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
         video.pause(); // 停止视频播放
         console.log('所有帧已提取完成:', framesArray);
         setFrames(framesArray)
+        setLoadingSkeleton(false)
         return;
       }
 
@@ -145,6 +148,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
   useEffect(() => {
     if (videoRef && videoRef.current) {
       const timer = setTimeout(() => {
+        setLoadingSkeleton(true)
         extractFramesFromVideo()
       }, 1000)
       return () => clearTimeout(timer)

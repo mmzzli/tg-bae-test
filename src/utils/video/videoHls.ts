@@ -1,20 +1,24 @@
 import Hls from 'hls.js'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import { useStore } from '@/store'
-  const video = document.createElement('video')
-  video.controls = false
-  video.playsInline = true
-  video.setAttribute('webkit-playsinline', 'true')
-  video.setAttribute('x5-playsinline', 'true')
-  video.setAttribute('x5-video-player-type', 'h5')
-  video.setAttribute('x5-video-player-fullscreen', 'false')
-  video.setAttribute('preload', 'auto')
-  video.setAttribute('x-webkit-airplay', 'allow')
-  video.id = 'default-video-player'
+import { useTMAUtils } from '@/hooks/useTMAUtils'
+
+const video = document.createElement('video')
+video.controls = false
+video.playsInline = true
+video.setAttribute('webkit-playsinline', 'true')
+video.setAttribute('x5-playsinline', 'true')
+video.setAttribute('x5-video-player-type', 'h5')
+video.setAttribute('x5-video-player-fullscreen', 'false')
+video.setAttribute('preload', 'auto')
+video.setAttribute('x-webkit-airplay', 'allow')
+video.id = 'default-video-player'
 
 export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLElement) => {
   let url = videoCard.media[0]
-  if (videoCard.price > 0 && !videoCard.is_pay && videoCard.trailer) {
+  const { getCurrentUid } = useTMAUtils()
+  console.log(videoCard.uid, getCurrentUid(), 'videoCard.uid, getCurrentUid()')
+  if (videoCard.price > 0 && !videoCard.is_pay && videoCard.trailer && videoCard.uid != getCurrentUid()) {
     url = videoCard.trailer
   }
   const curVideo = videoCardContainer.querySelector('video')

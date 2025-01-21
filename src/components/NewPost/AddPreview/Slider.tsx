@@ -199,7 +199,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
         {frames.length >=1 && <div className='w-[1000%]'>
           {
             frames.map((item, key)=>(
-              <img key={key} className='w-[64px] h-[100%] float-left' src={item.url}/>
+              <img key={key} className='w-[auto] h-[64px] float-left' src={item.url}/>
             ))
           }
         </div>}

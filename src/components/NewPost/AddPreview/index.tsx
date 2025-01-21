@@ -52,6 +52,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
   const [endTime, setEndTime] = useState<number>(6);  // Set the end time for the video (in seconds)
   // 选择用哪个预告片
   const [trailerBoll, setTrailerBoll] = useState(false)
+  const [boll, setBoll] = useState(true)
 
   const isLandscape =
     selectedFrame?.width && selectedFrame?.height
@@ -213,7 +214,8 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
           const url = `https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${id}/manifest/video.m3u8`
           await checkVideoURL(url)
           // 是否是截取视频
-          if(!trailerBoll){
+          if(!trailerBoll && boll){
+            setBoll(false)
             const curl = await cutReq({
               url,
               filename: "trailer",
@@ -223,6 +225,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
             await checkVideoURL(curl)
             setTrailer(curl)
             setLoading(false)
+            setBoll(true)
             off();
             return
           }

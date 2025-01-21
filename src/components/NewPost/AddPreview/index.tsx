@@ -340,11 +340,11 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
 
   return (
     <>
-      <div className="fixed bottom-[120px] left-0 w-[100%]">
+      <div className="fixed bottom-[133px] left-0 w-[100%]">
         <div className="px-7 flex justify-between gap-2 flex-none">
           <div>
             <p className="text-[16px] text-[#000]">Add a preview</p>
-            <p className="text-[12px] text-[#8E8E92]">You can add a preview to your locked video to entice viewers to unlock it.</p>
+            <p className="text-[12px] text-[#8E8E92] font-light">You can add a preview to your locked video to entice viewers to unlock it.</p>
           </div>
           {/* className="w-full h-full flex items-center justify-center border-dashed border border-[#CDCDD4] rounded-lg cursor-pointer" */}
 
@@ -389,13 +389,12 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
           <h2 className="text-[24px] text-[#333] mt-[24px]">Add a preview</h2>
 
           {videoUrl && (
-            <div>
+            <div className='pt-[24px]'>
               {/* Video Element */}
-              {previewVideoUrl}
               <video
                 ref={previewVideoRef}
                 src={previewVideoUrl}
-                style={{ display: previewVideoUrl ? "block" : "none", width: "243px", height: "315px" }}
+                style={{ display: previewVideoUrl ? "block" : "none", width: "243px" }}
                 preload="auto"
                 playsInline
                 onClick={handleVideoClick1}
@@ -403,7 +402,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
               <video
                 ref={videoRef}
                 src={videoUrl}
-                style={{ display: previewVideoUrl ? "none" : "block", width: "243px", height: "315px" }}
+                style={{ display: previewVideoUrl ? "none" : "block", width: "243px" }}
                 preload="auto"
                 playsInline
                 onClick={handleVideoClick} // Add click handler to toggle play/pause
@@ -421,7 +420,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
               ></canvas> */}
 
               <div className="bg-[#fff] rounded-tl-[16px] rounded-tr-[16px]">
-                <p className="text-center text-[#999] pt-[62px] pb-[15px]">
+                <p className="text-[#999] pt-[30px] pb-[18px]">
                   Select a clip from the video to use as a preview, or upload a video from album.
                 </p>
 

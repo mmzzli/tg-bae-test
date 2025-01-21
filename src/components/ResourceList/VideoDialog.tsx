@@ -229,6 +229,7 @@ const VideoDialog = () => {
   const info = useStore((state) => state.videoResource)
   const setVideoResource = useStore((state) => state.setVideoResource)
   const isExpanded = useStore((state) => state.expand)
+  const { getCurrentUid } = useTMAUtils()
 
   const onClose = () => {
     if (videoRef?.current) {
@@ -250,7 +251,8 @@ const VideoDialog = () => {
     setDuration(0)
     setCurrentTime(0)
     setProgress(0)
-    if (info?.trailer && info.price > 0 && !info.is_pay) {
+    console.log(info?.uid, getCurrentUid(), 'info?.uid, getCurrentUid()')
+    if (info?.trailer && info.price > 0 && !info.is_pay && info.uid != getCurrentUid()) {
       setUrl(info.trailer)
     } else if (info?.media && info.media[0]) {
       setUrl(info.media[0])

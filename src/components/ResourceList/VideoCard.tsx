@@ -132,7 +132,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
                   {formatTime(Number(playVideoTime))}
                 </Text>
               </HStack>
-              {data.type=== 0 && data.price > 0 && !data.is_pay && (
+              {data.type=== 0 && data.price > 0 && !data.is_pay && data.uid != getCurrentUid() && data.trailer && (
                 <HStack
                   borderRadius="4px"
                   bg="rgba(0, 0, 0, 0.20)"

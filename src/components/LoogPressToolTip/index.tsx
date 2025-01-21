@@ -170,17 +170,31 @@ const Tooltip: React.FC<TooltipProps> = ({
   }, [content.url, hideTooltip])
 
   const handleReply = useCallback(() => {
-    console.log('handleReply')
+    console.log('handleReply', content, content.text || content.url || '')
     // postEvent('web_app_trigger_haptic_feedback', {
     //   type: 'impact',
     //   impact_style: 'light',
     // })
+    let message = content.text || content.url || ''
+    // 处理页面数组不更新问题
+    if (!message) {
+      const messageWindow = useStore
+        .getState()
+        .messageWindowList.filter((item) => item.channel.channelID === content.channelID)
+      if (messageWindow.length > 0) {
+        const _message = messageWindow[0].messages.filter((msg) => msg.id === content.id)
+        if (_message.length > 0) {
+          const res = _message[0]
+          message = res.text || res.url || ''
+        }
+      }
+    }
     setReplyMessage({
       channel: channelId,
       messageId: content.id,
       messageSeq: content.messageSeq,
       messageType: content.type,
-      message: content.text || content.url || '',
+      message: message,
       toUid: content.sender,
       toUsername: user?.username || '',
       revoke: false,

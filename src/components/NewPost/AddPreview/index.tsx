@@ -1,9 +1,9 @@
 import React, { useRef, useEffect, useState, RefObject, Dispatch, SetStateAction } from 'react'
 import { useBoolean, Text, useToast } from '@chakra-ui/react'
 import axios, { AxiosResponse } from 'axios'
+import RecordRTC from 'recordrtc'
 import { SkeletonShine } from '@/components/Skeketon/ChatSkeleton'
-import {cutReq} from '@/api'
-
+import { cutReq } from '@/api'
 
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { BaseModal } from '@/components/Modal/BaseModal'
@@ -25,31 +25,38 @@ interface VideoPlayerProps {
   videoRef: RefObject<HTMLVideoElement>
   setCover: Dispatch<SetStateAction<string | null>>
   videoSrc: string
-  setTrailer: (url:string)=>void
+  setTrailer: (url: string) => void
   trailer: string | null
   videoFile: File | null
 }
 
-const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: videoUrl, setTrailer, trailer, videoFile }) => {
+const AddPreview: React.FC<VideoPlayerProps> = ({
+  videoRef,
+  setCover,
+  videoSrc: videoUrl,
+  setTrailer,
+  trailer,
+  videoFile,
+}) => {
   const toast = useToast()
   const [videoRefTrailer, setVideoRefTrailer] = useState<File | null>(null)
   const previewVideoRef = useRef<HTMLVideoElement>(null)
   // 显示视频地址
-  const [previewVideoUrl, setPreviewVideoUrl] = useState<string>("")
+  const [previewVideoUrl, setPreviewVideoUrl] = useState<string>('')
   const [frames, setFrames] = useState<Frame[]>([])
   const [isBaseModalOpen, { toggle, on, off }] = useBoolean(false)
   const token = useStore((state) => state.token)
   const [loading, setLoading] = useState(false)
   const [loadingSkeleton, setLoadingSkeleton] = useState(true)
 
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [selectedFrame, setSelectedFrame] = useState<Frame | null>(null);
-  const [duration, setDuration] = useState<number>(0);
-  const [currentTime, setCurrentTime] = useState<number>(0);
-  const [isPlaying, setIsPlaying] = useState<boolean>(false); // New state to track if video is playing
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  const [selectedFrame, setSelectedFrame] = useState<Frame | null>(null)
+  const [duration, setDuration] = useState<number>(0)
+  const [currentTime, setCurrentTime] = useState<number>(0)
+  const [isPlaying, setIsPlaying] = useState<boolean>(false) // New state to track if video is playing
   // 设置播放时间
-  const [startTime, setStartTime] = useState<number>(0); // Set the start time for the video (in seconds)
-  const [endTime, setEndTime] = useState<number>(6);  // Set the end time for the video (in seconds)
+  const [startTime, setStartTime] = useState<number>(0) // Set the start time for the video (in seconds)
+  const [endTime, setEndTime] = useState<number>(6) // Set the end time for the video (in seconds)
   // 选择用哪个预告片
   const [trailerBoll, setTrailerBoll] = useState(false)
   const [boll, setBoll] = useState(true)
@@ -60,122 +67,119 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
       : false
 
   const renderFrameToCanvas = (): void => {
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
+    const video = videoRef.current
+    const canvas = canvasRef.current
     if (video && canvas) {
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext('2d')
       if (ctx) {
-        const videoWidth = video.videoWidth;
-        const videoHeight = video.videoHeight;
+        const videoWidth = video.videoWidth
+        const videoHeight = video.videoHeight
 
-        canvas.width = videoWidth;
-        canvas.height = videoHeight;
+        canvas.width = videoWidth
+        canvas.height = videoHeight
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-        ctx.drawImage(
-          video,
-          0, 0, videoWidth, videoHeight,
-          0, 0, videoWidth, videoHeight
-        );
+        ctx.drawImage(video, 0, 0, videoWidth, videoHeight, 0, 0, videoWidth, videoHeight)
       }
     }
-  };
+  }
 
   const handleVideoClick = () => {
-    const video = videoRef.current;
+    const video = videoRef.current
     if (video) {
       if (isPlaying) {
-        video.pause();
+        video.pause()
       } else {
-        video.play();
+        video.play()
       }
-      setIsPlaying(!isPlaying); // Toggle the playing state
+      setIsPlaying(!isPlaying) // Toggle the playing state
     }
-  };
+  }
   const handleVideoClick1 = () => {
-    const video = previewVideoRef.current;
+    const video = previewVideoRef.current
     if (video) {
       if (isPlaying) {
-        video.pause();
+        video.pause()
       } else {
-        video.play();
+        video.play()
       }
-      setIsPlaying(!isPlaying); // Toggle the playing state
+      setIsPlaying(!isPlaying) // Toggle the playing state
     }
-  };
+  }
 
   useEffect(() => {
-    const video = videoRef.current;
+    const video = videoRef.current
     if (video) {
       const handleLoadedMetadata = () => {
-        setDuration(video.duration);
-        setCurrentTime(0);
-        renderFrameToCanvas();
-      };
+        setDuration(video.duration)
+        setCurrentTime(0)
+        renderFrameToCanvas()
+      }
 
       const handleCanPlay = () => {
-        renderFrameToCanvas();
-      };
+        renderFrameToCanvas()
+      }
 
-      video.addEventListener("loadedmetadata", handleLoadedMetadata);
-      video.addEventListener("canplay", handleCanPlay);
-      video.addEventListener("loadeddata", handleCanPlay);
+      video.addEventListener('loadedmetadata', handleLoadedMetadata)
+      video.addEventListener('canplay', handleCanPlay)
+      video.addEventListener('loadeddata', handleCanPlay)
 
       if (video.readyState >= 3) {
-        handleCanPlay();
+        handleCanPlay()
       } else {
-        video.play().then(() => video.pause()).catch(console.error);
+        video
+          .play()
+          .then(() => video.pause())
+          .catch(console.error)
       }
 
       return () => {
-        video.removeEventListener("loadedmetadata", handleLoadedMetadata);
-        video.removeEventListener("canplay", handleCanPlay);
-        video.removeEventListener("loadeddata", handleCanPlay);
-      };
+        video.removeEventListener('loadedmetadata', handleLoadedMetadata)
+        video.removeEventListener('canplay', handleCanPlay)
+        video.removeEventListener('loadeddata', handleCanPlay)
+      }
     }
-  }, [videoUrl]);
+  }, [videoUrl])
 
   useEffect(() => {
-    const video = videoRef.current;
+    const video = videoRef.current
     if (video) {
-      video.currentTime = startTime; // Set the initial time to the start time
+      video.currentTime = startTime // Set the initial time to the start time
 
       const handleTimeUpdate = () => {
         if (video.currentTime >= endTime) {
-          video.currentTime = startTime; // Reset to start time if it exceeds the end time
+          video.currentTime = startTime // Reset to start time if it exceeds the end time
         }
-        setCurrentTime(video.currentTime);
-        renderFrameToCanvas();
-      };
+        setCurrentTime(video.currentTime)
+        renderFrameToCanvas()
+      }
 
-      video.addEventListener("timeupdate", handleTimeUpdate);
+      video.addEventListener('timeupdate', handleTimeUpdate)
 
       return () => {
-        video.removeEventListener("timeupdate", handleTimeUpdate);
-      };
+        video.removeEventListener('timeupdate', handleTimeUpdate)
+      }
     }
-  }, [startTime, endTime, videoRef]);
+  }, [startTime, endTime, videoRef])
 
   const handleSliderChange = (value: React.FormEvent<HTMLInputElement>): void => {
-    const video = videoRef.current;
+    const video = videoRef.current
     if (video) {
-      video.currentTime = Number(value);
-      setCurrentTime(Number(value));
-      renderFrameToCanvas();
+      video.currentTime = Number(value)
+      setCurrentTime(Number(value))
+      renderFrameToCanvas()
     }
-  };
+  }
 
   useEffect(() => {
     if (videoRef) {
       const timer = setTimeout(() => {
         // captureFrame();
-      }, 1000);
-      return () => clearTimeout(timer);
+      }, 1000)
+      return () => clearTimeout(timer)
     }
-  }, [videoRef, videoUrl]);
-
-
+  }, [videoRef, videoUrl])
 
   async function checkVideoURL(url: string): Promise<AxiosResponse<any> | undefined> {
     let isNotFound = true
@@ -191,143 +195,172 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
     }
   }
 
-  const videoUpload = async(formData:any)=>{
+  const videoUpload = async (formData: any) => {
+    try {
+      const response = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      })
 
-    const response = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    await axios.post(response.data, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-      onUploadProgress: async(progressEvent: any) => {
-        const total = progressEvent.total
-        const current = progressEvent.loaded
-        const percentCompleted = Math.round((current * 100) / total)
-        console.log(percentCompleted)
-        if(percentCompleted >= 100){
-          console.log(response.data)
-          const id = response.data.split('/').pop();
-          const url = `https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${id}/manifest/video.m3u8`
-          await checkVideoURL(url)
-          // 是否是截取视频
-          if(!trailerBoll && boll){
-            setBoll(false)
-            const curl = await cutReq({
-              url,
-              filename: "trailer",
-              start: ~~startTime,
-              end: ~~endTime
-            })
-            await checkVideoURL(curl)
-            setTrailer(curl)
+      await axios.post(response.data, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        onUploadProgress: async (progressEvent: any) => {
+          const total = progressEvent.total
+          const current = progressEvent.loaded
+          const percentCompleted = Math.round((current * 100) / total)
+          console.log('Upload progress:', percentCompleted)
+
+          if (percentCompleted >= 100) {
+            const id = response.data.split('/').pop()
+            const url = `https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${id}/manifest/video.m3u8`
+            // 是否是截取视频
+            if (!trailerBoll && boll) {
+              setBoll(false)
+              await checkVideoURL(url)
+              setTrailer(url)
+              setLoading(false)
+              setBoll(true)
+              off()
+              return
+            }
+            setTrailer(url)
             setLoading(false)
-            setBoll(true)
-            off();
-            return
+            off()
           }
-          setTrailer(url)
-          setLoading(false)
-          off();
-        }
-      },
-    })
+        },
+      })
+    } catch (error) {
+      console.error('Error uploading video:', error)
+      toast({
+        render: () => {
+          return <CustomToast title="Failed to upload video" type={typeOptions.error} />
+        },
+        position: 'bottom',
+      })
+      setLoading(false)
+    }
   }
 
   // 自定义预告片
-  const customizationVideo = async(videoRefTrailer: any)=>{
-    console.log(videoRefTrailer)
+  const customizationVideo = async (videoRefTrailer: any) => {
     if (!videoRefTrailer) {
       return
     }
     setLoading(true)
-    const formData = new FormData();
-    formData.append("file", videoRefTrailer);
-    formData.append("name", videoRefTrailer.name);
-    formData.append("type", "bae");
+    const formData = new FormData()
+    formData.append('file', videoRefTrailer)
+    formData.append('name', videoRefTrailer.name)
+    formData.append('type', 'bae')
 
     formData.append(
-      "meta",
+      'meta',
       JSON.stringify({
         name: videoRefTrailer.name,
-        type: "bae",
+        type: 'bae',
       })
-    );
+    )
     videoUpload(formData)
-
   }
 
   const captureFrame = async () => {
-    if(true){
-      customizationVideo(trailerBoll ? videoRefTrailer : videoFile)
+    if (trailerBoll) {
+      customizationVideo(videoRefTrailer)
       return
     }
 
-    // if (!videoRef.current) return;
-    // setLoading(true)
+    if (!videoRef.current) return
+    setLoading(true)
 
-    // const video = videoRef.current;
-    // video.currentTime = startTime; // 设置视频开始时间
+    const video = videoRef.current
+    video.currentTime = startTime // 设置视频开始时间
 
-    // const videoElement = videoRef.current as HTMLVideoElement & { captureStream?: () => MediaStream };
-    // if (!videoElement?.captureStream) {
-    //   toast({
-    //     render: () => {
-    //       return <CustomToast title="captureStream error" type={typeOptions.error} />
-    //     },
-    //     position: 'bottom',
-    //   })
-    //   return
-    // }
+    const videoElement = videoRef.current as HTMLVideoElement & {
+      captureStream?: () => MediaStream
+    }
+    if (!videoElement?.captureStream) {
+      toast({
+        render: () => {
+          return (
+            <CustomToast
+              title="Your browser doesn't support video capture"
+              type={typeOptions.error}
+            />
+          )
+        },
+        position: 'bottom',
+      })
+      return
+    }
 
-    // const stream = videoElement.captureStream(); // 捕获视频流
-    // const recorder = new MediaRecorder(stream);
-    // const chunks: Blob[] = [];
-    // // 处理录制数据
-    // recorder.ondataavailable = (e: BlobEvent) => {
-    //   if (e.data.size > 0) {
-    //     chunks.push(e.data);
-    //   }
-    // };
+    const stream = videoElement.captureStream()
+    const recorder = new RecordRTC(stream, {
+      type: 'video',
+      mimeType: 'video/webm;codecs=h264',  // 使用 H.264 编码
+      frameRate: 30,                        // 提高帧率
+      videoBitsPerSecond: 2500000,         // 提高比特率到 2.5Mbps
+      recorderType: RecordRTC.MediaStreamRecorder,
+      // 确保音频质量
+      numberOfAudioChannels: 2,             // 立体声
+      audioBitsPerSecond: 128000,          // 音频比特率
+      // 视频处理选项
+      disableLogs: true,
+      timeSlice: 100,                      // 减少时间片以提高流畅度
+      // 事件处理
+      onTimeStamp: (timestamp: number) => {
+        console.log('Recording timestamp:', timestamp)
+      },
+      ondataavailable: (blob: Blob) => {
+        console.log('Recording progress:', blob.size)
+      }
+    })
 
-    // // 录制结束后生成 Blob URL
-    // recorder.onstop = async() => {
-    //   const blob = new Blob(chunks, { type: "video/webm" });
-    //   const clipUrl = URL.createObjectURL(blob);
-    //   console.log(chunks, clipUrl)
-    //   const formData = new FormData();
-    //   const videoFile = new File([clipUrl], "trailer.mp4", { type: "video/mp4" });
-    //   console.log(videoFile)
-    //   formData.append("file", blob); // 添加文件
-    //   formData.append("name", videoFile.name); // 添加文件名
-    //   formData.append("type", "bae"); // 添加类型
+    // 开始录制前确保视频已准备就绪
+    video.currentTime = startTime
+    await new Promise((resolve) => {
+      video.addEventListener('seeked', resolve, { once: true })
+    })
 
-    //   // 添加 meta 数据
-    //   formData.append(
-    //     "meta",
-    //     JSON.stringify({
-    //       name: videoFile.name,
-    //       type: "bae",
-    //     })
-    //   );
-    //   console.log(formData)
-    //   videoUpload(formData)
+    // 开始录制
+    recorder.startRecording()
 
-    // };
-    // recorder.start();
+    // 播放视频并在指定时间后停止录制
+    video.play()
 
-    // // 播放视频并自动停止录制
-    // video.play();
-    // setTimeout(() => {
-    //   video.pause();
-    //   recorder.stop();
-    // }, (endTime - startTime) * 1000); // 按秒设置时长
+    setTimeout(
+      () => {
+        video.pause()
+        recorder.stopRecording(async () => {
+          const blob = recorder.getBlob()
+          console.log('Recording completed, blob size:', blob.size)
 
+          const formData = new FormData()
+          formData.append('file', blob)
+          formData.append('name', 'trailer.webm')
+          formData.append('type', 'bae')
 
-  };
+          formData.append(
+            'meta',
+            JSON.stringify({
+              name: 'trailer.webm',
+              type: 'bae',
+            })
+          )
+
+          // 清理资源
+          recorder.destroy()
+          stream.getTracks().forEach((track) => track.stop())
+
+          // 直接上传录制的视频片段
+          videoUpload(formData)
+        })
+      },
+      (endTime - startTime) * 1000
+    )
+  }
 
   const base64ToFile = (base64String: any, filename: string) => {
     const arr = base64String.split(',')
@@ -351,14 +384,16 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
           </div>
           {/* className="w-full h-full flex items-center justify-center border-dashed border border-[#CDCDD4] rounded-lg cursor-pointer" */}
 
-          {
-            trailer ?
-            <TrailerVideo trailer={trailer} setTrailer={setTrailer}/>
-            :
-            <p className='h-[64px] w-[64px] bg-[#F7F9FC] rounded-md flex-none flex items-center justify-center' onClick={() => toggle()}>
+          {trailer ? (
+            <TrailerVideo trailer={trailer} setTrailer={setTrailer} />
+          ) : (
+            <p
+              className="h-[64px] w-[64px] bg-[#F7F9FC] rounded-md flex-none flex items-center justify-center"
+              onClick={() => toggle()}
+            >
               <i className="iconfont icon-add text-[#999999] text-[20px]"></i>
             </p>
-          }
+          )}
         </div>
       </div>
 
@@ -367,13 +402,18 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
         onClose={off}
         height={isLandscape ? '70vh' : '85vh'}
         animation={{ duration: 400, timingFunction: 'ease-in-out' }}
-        theme={{ darkBackgroundColor: '#1a1a1a', lightBackgroundColor: '#ffffff', handleColor: '#d1d5db' }}
+        theme={{
+          darkBackgroundColor: '#1a1a1a',
+          lightBackgroundColor: '#ffffff',
+          handleColor: '#d1d5db',
+        }}
         closeOnBackdropClick={true}
         showHandle={false}
       >
-        <div className='w-[100%]'
+        <div
+          className="w-[100%]"
           style={{
-            display:loadingSkeleton ? 'block' : 'none'
+            display: loadingSkeleton ? 'block' : 'none',
           }}
         >
           <div className="h-[315px] w-[100%] relative overflow-hidden bg-[#F4F4F4] dark:bg-[#272727] rounded w-2/3">
@@ -384,15 +424,16 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
           </div>
         </div>
 
-        <div className="w-[100%]"
+        <div
+          className="w-[100%]"
           style={{
-            display:loadingSkeleton ? 'none' : 'block'
+            display: loadingSkeleton ? 'none' : 'block',
           }}
         >
           <h2 className="text-[24px] text-[#333] mt-[24px]">Add a preview</h2>
 
           {videoUrl && (
-            <div className='pt-[24px]'>
+            <div className="pt-[24px]">
               {/* Video Element */}
               <div className='max-h-[330px] min-h-[100px] overflow-hidden w-[fit-content] bg-[#666]'>
               <video
@@ -431,10 +472,22 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
                   Select a clip from the video to use as a preview, or upload a video from album.
                 </p>
 
-                <div className='mt-2 flex items-center gap-2'>
-                  <Trailer trailerBoll={trailerBoll} setTrailerBoll={setTrailerBoll} setVideoRefTrailer={setVideoRefTrailer} setPreviewVideoUrl={setPreviewVideoUrl} />
-                  <Slider duration={duration} handleSliderChange={handleSliderChange} setStartTime={setStartTime} setEndTime={setEndTime}
-                    trailerBoll={trailerBoll} setTrailerBoll={setTrailerBoll} videoRef={videoRef} setLoadingSkeleton={setLoadingSkeleton}
+                <div className="mt-2 flex items-center gap-2">
+                  <Trailer
+                    trailerBoll={trailerBoll}
+                    setTrailerBoll={setTrailerBoll}
+                    setVideoRefTrailer={setVideoRefTrailer}
+                    setPreviewVideoUrl={setPreviewVideoUrl}
+                  />
+                  <Slider
+                    duration={duration}
+                    handleSliderChange={handleSliderChange}
+                    setStartTime={setStartTime}
+                    setEndTime={setEndTime}
+                    trailerBoll={trailerBoll}
+                    setTrailerBoll={setTrailerBoll}
+                    videoRef={videoRef}
+                    setLoadingSkeleton={setLoadingSkeleton}
                     setPreviewVideoUrl={setPreviewVideoUrl}
                   />
                 </div>

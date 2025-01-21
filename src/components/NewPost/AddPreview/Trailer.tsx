@@ -64,7 +64,8 @@ const Trailer: React.FC<TrailerProps> = ({
                 className={`h-[64px] min-w-[64px]`}
                 onClick={()=>{setTrailerBoll(true);setPreviewVideoUrl(videoSrc)}}
                 src={videoSrc}
-                autoPlay
+                // autoPlay
+                preload="metadata"
                 playsInline
                 muted
               />

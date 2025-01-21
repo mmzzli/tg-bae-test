@@ -398,7 +398,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
               <video
                 ref={previewVideoRef}
                 src={previewVideoUrl}
-                style={{ display: previewVideoUrl ? "block" : "none", width: "243px" }}
+                style={{ opacity: previewVideoUrl ? 1 : 0, width: "243px" }}
                 preload="metadata"
                 playsInline
                 muted
@@ -407,7 +407,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
               <video
                 ref={videoRef}
                 src={videoUrl}
-                style={{ display: previewVideoUrl ? "none" : "block", width: "243px" }}
+                style={{ opacity: previewVideoUrl ? 0 : 1, width: "243px" }}
                 preload="metadata"
                 playsInline
                 muted

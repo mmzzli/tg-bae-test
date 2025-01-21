@@ -180,7 +180,7 @@ const Tooltip: React.FC<TooltipProps> = ({
       messageId: content.id,
       messageSeq: content.messageSeq,
       messageType: content.type,
-      message: content.text ?? '',
+      message: content.text || content.url || '',
       toUid: content.sender,
       toUsername: user?.username || '',
       revoke: false,

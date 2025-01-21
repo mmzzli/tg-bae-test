@@ -16,6 +16,7 @@ interface SliderProps {
   setTrailerBoll: (boll:boolean)=>void
   videoRef: RefObject<HTMLVideoElement>
   setLoadingSkeleton: (boll:boolean)=>void
+  setPreviewVideoUrl: (str:string)=>void
 }
 
 const TransparentSlider: React.FC<SliderProps> = ({
@@ -26,7 +27,8 @@ const TransparentSlider: React.FC<SliderProps> = ({
   trailerBoll,
   setTrailerBoll,
   videoRef,
-  setLoadingSkeleton
+  setLoadingSkeleton,
+  setPreviewVideoUrl
 }) => {
   const [selectedTime, setSelectedTime] = useState(0);
   const [frames, setFrames] = useState<Frame[]>([])
@@ -162,7 +164,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
   // },[videoRef])
 
   return (
-    <div className='w-[100%]'>
+    <div className='w-[100%]' onClick={()=>setPreviewVideoUrl("")}>
       <div
         ref={sliderRef}
         onMouseDown={handleMouseDown}
@@ -182,7 +184,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
         {frames.length >=1 && <div className='w-[1000%]'>
           {
             frames.map((item, key)=>(
-              <img key={key} className='w-[64px] float-left' src={item.url}/>
+              <img key={key} className='w-[64px] h-[100%] float-left' src={item.url}/>
             ))
           }
         </div>}

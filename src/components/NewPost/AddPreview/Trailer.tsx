@@ -7,12 +7,14 @@ interface TrailerProps {
   trailerBoll: boolean
   setTrailerBoll: (boll:boolean)=>void
   setVideoRefTrailer: (file: File | null)=>void
+  setPreviewVideoUrl:(str: string)=>void
 }
 
 const Trailer: React.FC<TrailerProps> = ({
   trailerBoll,
   setTrailerBoll,
-  setVideoRefTrailer
+  setVideoRefTrailer,
+  setPreviewVideoUrl
 }) => {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [videoSrc, setVideoSrc] = useState("")
@@ -28,6 +30,11 @@ const Trailer: React.FC<TrailerProps> = ({
     setTrailerBoll(true)
 
   }
+  useEffect(()=>{
+    if(videoSrc){
+      setPreviewVideoUrl(videoSrc)
+    }
+  },[videoSrc])
 
   const handleChooseFile = () => {
     inputRef.current?.click()
@@ -55,7 +62,7 @@ const Trailer: React.FC<TrailerProps> = ({
             <div className='overflow-hidden w-[64px] max-w-[64px] min-w-[64px] h-[64px] rounded-md  bg-[#F7F9FC]'>
               <video
                 className={`h-[64px] min-w-[64px]`}
-                onClick={()=>setTrailerBoll(true)}
+                onClick={()=>{setTrailerBoll(true);setPreviewVideoUrl(videoSrc)}}
                 src={videoSrc}
                 autoPlay
                 playsInline

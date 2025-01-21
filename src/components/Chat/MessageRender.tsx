@@ -163,7 +163,7 @@ const ImageRenderer = React.memo(
         }}
       >
         <Image
-          src={url}
+          src={formatImageNew({ url: url || '', quality: 70, width: 768 })}
           alt=""
           width={newWidth}
           height={newHeight}

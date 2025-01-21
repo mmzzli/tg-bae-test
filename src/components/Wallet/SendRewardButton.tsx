@@ -14,7 +14,7 @@ import { abi, approveAbi } from '@/config/abi'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useToast } from '@chakra-ui/react'
 import { CustomToast, typeOptions } from '../comm/Toast'
-import { parseEther, parseUnits } from 'viem'
+import { maxUint256, parseUnits } from 'viem'
 import { approveEvent, rewardEvent } from '@/api'
 import { MessageType } from '../Chat/types'
 import { useFormatMessage } from '@/hooks/useFormatMessage'
@@ -204,7 +204,7 @@ export const SendRewardButton = ({
         chainId,
         abi: approveAbi,
         functionName: 'approve',
-        args: [contractAddress as `0x${string}`, parseUnits(amount, decimals)],
+        args: [contractAddress as `0x${string}`, maxUint256],
         ...gasConfig,
       })
       return
@@ -334,7 +334,7 @@ export const SendRewardButton = ({
         }}
       />
       <div
-        className="text-sm text-[#ccc] text-right mt-1 mr-1"
+        className="text-sm text-[#ccc] text-right mt-1 mr-1 ml-auto text-ellipsis overflow-hidden max-w-[300px] whitespace-nowrap"
         style={{ display: showAllowance ? 'block' : 'none' }}
       >
         Allowance:{' '}

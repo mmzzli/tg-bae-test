@@ -560,16 +560,33 @@ const ReplyCard: React.FC<{ reply: ReplyMessage }> = ({ reply }) => {
 export const VideoPreviewIcon = ({ url }: { url: string }) => {
   const { previewUrl } = useVideoPreview(url)
   return (
-    <div className="mr-[6px]">
-      <Image rect type="avatar" src={previewUrl} alt="" width={32} height={32} />
+    <div className="mr-[6px] w-8 h-8">
+      <Image
+        rect
+        type="avatar"
+        src={previewUrl}
+        alt=""
+        width={32}
+        height={32}
+        wrapperClassName="w-8 h-8"
+      />
     </div>
   )
 }
 
 export const ImagePreviewIcon = ({ url }: { url: string }) => {
+  console.log(url)
   return (
-    <div className="mr-[6px]">
-      <Image rect type="avatar" src={formatImageNew({ url })} alt="" width={32} height={32} />
+    <div className="mr-[6px] w-8 h-8">
+      <Image
+        rect
+        type="avatar"
+        src={formatImageNew({ url })}
+        alt=""
+        width={32}
+        height={32}
+        wrapperClassName="w-8 h-8"
+      />
     </div>
   )
 }

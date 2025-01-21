@@ -23,6 +23,7 @@ const Trailer: React.FC<TrailerProps> = ({
     const fileArray = Array.from(newFiles)
     setVideoRefTrailer(fileArray[0])
     const videoUrl = URL.createObjectURL(fileArray[0])
+    console.log(videoUrl)
     setVideoSrc(videoUrl)
     setTrailerBoll(true)
 
@@ -51,38 +52,16 @@ const Trailer: React.FC<TrailerProps> = ({
             >
               <i className="iconfont icon-icon_close text-[#fff] dark:text-[#E0E2F6] text-[16px]"></i>
             </div>
-
-            <video
-              className={`h-[64px] min-w-[64px] rounded-md`}
-              src={videoSrc}
-              onClick={()=>setTrailerBoll(true)}
-              // onLoadedMetadata={(e) => {
-              //   const video = e.currentTarget
-              //   setDuration(video.duration)
-              // }}
-              // onTimeUpdate={(e) => {
-              //   const video = e.currentTarget
-              //   if (!isDragging) {
-              //     setCurrentTime(video.currentTime)
-              //     setProgress((video.currentTime / video.duration) * 100)
-              //   }
-              // }}
-              // onEnded={() => {
-              //   setPlaying(false)
-              // }}
-              // onPause={() => setPlaying(false)}
-              // onPlay={() => setPlaying(true)}
-              // onWaiting={() => setIsLoading(true)}
-              // onPlaying={() => setIsLoading(false)}
-              controls={false}
-              playsInline
-              webkit-playsinline="true"
-              x5-playsinline="true"
-              x5-video-player-type="h5"
-              x5-video-player-fullscreen="false"
-              preload="auto"
-              x-webkit-airplay="allow"
-            />
+            <div className='overflow-hidden w-[64px] max-w-[64px] min-w-[64px] h-[64px] rounded-md  bg-[#F7F9FC]'>
+              <video
+                className={`h-[64px] min-w-[64px]`}
+                onClick={()=>setTrailerBoll(true)}
+                src={videoSrc}
+                autoPlay
+                playsInline
+                muted
+              />
+            </div>
           </div>
       }
       <Input

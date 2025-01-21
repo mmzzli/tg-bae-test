@@ -48,7 +48,9 @@ const bscTestnet = defineChain({
 })
 
 export const evmChainList =
-  import.meta.env.VITE_APP_ENV === 'production' ? ([bsc] as const) : ([bsc, bscTestnet] as const)
+  import.meta.env.VITE_APP_ENV === 'production'
+    ? ([mainnet, bsc] as const)
+    : ([mainnet, bsc, bscTestnet] as const)
 
 const usdtAddressOnEvm = {
   [arbitrum.id]: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
@@ -62,7 +64,7 @@ const usdcAddressOnEvm = {
   [arbitrum.id]: '',
   // [bsc.id]: '',
   [bsc.id]: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
-  [mainnet.id]: '',
+  [mainnet.id]: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
   [optimism.id]: '',
   [duckChainTestnet.id]: '',
   [bscTestnet.id]: '',
@@ -71,6 +73,7 @@ const contractAddress = {
   [duckChainTestnet.id]: '0x84868afcC4Ba758a4ae2aca141D2fF0ECD8C5fac',
   [bscTestnet.id]: '0xF165cFb92441544cF9DEF72427028Db85b0aDEe2',
   [bsc.id]: '0x359E9Ef12132ea2a49701F838B5CdFbc13771AaF',
+  [mainnet.id]: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
 }
 
 export const config = createConfig({

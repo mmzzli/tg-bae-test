@@ -15,6 +15,7 @@ import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { debounce } from '@/utils/chat/schedulers'
 import RewardButton from '@/components/Wallet/RewardButton'
+import { ImagePreviewIcon, VideoPreviewIcon } from '@/components/Chat/MessageRender'
 // const PAGE_SIZE = 20
 const isIOS = () => {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
@@ -80,6 +81,9 @@ const MessagePageIOS = () => {
     })
     sendMessage(newMessage)
     setReplyMessage(null)
+    setTimeout(() => {
+      window.dispatchEvent(new Event('message-scroll-to-bottom'))
+    }, 200)
   }
 
   const handleSendText = () => {
@@ -310,7 +314,12 @@ const MessagePageIOS = () => {
         ></div>
 
         {/* Media Message Preview */}
-        {replyMessage?.messageType !== MessageType.TEXT && <div></div>}
+        {replyMessage?.messageType === MessageType.IMAGE && (
+          <ImagePreviewIcon url={replyMessage?.message} />
+        )}
+        {replyMessage?.messageType === MessageType.VIDEO && (
+          <VideoPreviewIcon url={replyMessage?.message} />
+        )}
 
         <div className="flex flex-col flex-1 overflow-hidden text-sm">
           {/* Reply To */}

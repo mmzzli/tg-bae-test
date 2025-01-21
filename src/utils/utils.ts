@@ -226,6 +226,37 @@ export const formatImage = (url: string, grid = true) => {
   }
 }
 
+type FitType = 'contain' | 'cover' | 'fill'
+interface ImageParams {
+  url: string
+  width?: number
+  fit?: FitType
+  quality?: number
+}
+
+export const formatImageNew = ({
+  url,
+  width = 230,
+  fit = 'contain',
+  quality = 40,
+}: ImageParams): string => {
+  try {
+    const urlObj = new URL(url)
+
+    const params: string[] = []
+    if (width) params.push(`width=${width}`)
+    if (fit) params.push(`fit=${fit}`)
+    if (quality) params.push(`quality=${quality}`)
+
+    const newPath = `/cdn-cgi/image/${params.join(',')}${urlObj.pathname}`
+
+    return `${urlObj.protocol}//${urlObj.host}${newPath}`
+  } catch (error) {
+    console.error('Invalid URL:', error)
+    return url
+  }
+}
+
 export const generateUUID = () => {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
     const r = (Math.random() * 16) | 0
@@ -301,7 +332,6 @@ export const formatNumber = (num: number): string => {
 
   return num.toString()
 }
-
 
 export const splitNumberParts = (num: number) => {
   const bigNum = new BigNumber(num)
@@ -390,45 +420,47 @@ export const formatUSD = (
   useUnit: boolean = false
 ): string => {
   if (input === null || input === undefined || input === '' || isNaN(Number(input))) {
-    return '-';
+    return '-'
   }
 
-  const num = new BigNumber(input);
+  const num = new BigNumber(input)
 
   if (num.isEqualTo(0)) {
-    return '$0';
+    return '$0'
   }
 
   if (num.isLessThan(0.01) && num.isGreaterThan(0)) {
-    return '<$0.01';
+    return '<$0.01'
   }
 
   const units = [
     { value: 1_000_000_000, symbol: 'B' },
     { value: 1_000_000, symbol: 'M' },
     { value: 1_000, symbol: 'K' },
-  ];
+  ]
 
   if (useUnit) {
     for (const unit of units) {
       if (num.isGreaterThanOrEqualTo(unit.value)) {
-        const formatted = num.dividedBy(unit.value).toFixed(1, BigNumber.ROUND_DOWN);
+        const formatted = num.dividedBy(unit.value).toFixed(1, BigNumber.ROUND_DOWN)
         return formatted.endsWith('.0')
           ? `$${formatted.slice(0, -2)}${unit.symbol}`
-          : `$${formatted}${unit.symbol}`;
+          : `$${formatted}${unit.symbol}`
       }
     }
   }
 
   if (num.isGreaterThanOrEqualTo(1) && num.isInteger()) {
-    return `$${num.toFixed(0)}`;
+    return `$${num.toFixed(0)}`
   }
 
   if (num.isGreaterThanOrEqualTo(1)) {
-    return `$${num.toFixed(2, BigNumber.ROUND_DOWN)}`;
+    return `$${num.toFixed(2, BigNumber.ROUND_DOWN)}`
   }
 
   // 修改：去掉多余的 0（如 0.30 => 0.3）
-  return `$${num.toFixed(2, BigNumber.ROUND_DOWN).replace(/\.0+$/, '').replace(/(\.[1-9]*)0+$/, '$1')}`;
-};
-
+  return `$${num
+    .toFixed(2, BigNumber.ROUND_DOWN)
+    .replace(/\.0+$/, '')
+    .replace(/(\.[1-9]*)0+$/, '$1')}`
+}

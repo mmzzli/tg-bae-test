@@ -19,6 +19,8 @@ import TokenIcon from '../Wallet/TokenIcon'
 import PriceService from '@/utils/wallet/PriceService'
 import BigNumber from 'bignumber.js'
 import { evmChainList } from '@/config/wagmi-config'
+import { formatImageNew } from '@/utils/utils'
+import { useVideoPreview } from '@/hooks/useVideoPreview'
 interface MessageRenderProps {
   message: WrappedMessage
   className?: string
@@ -161,7 +163,7 @@ const ImageRenderer = React.memo(
         }}
       >
         <Image
-          src={url}
+          src={formatImageNew({ url: url || '', quality: 70, width: 768 })}
           alt=""
           width={newWidth}
           height={newHeight}
@@ -519,10 +521,11 @@ const RewardCard: React.FC<{ message: WrappedMessage }> = ({ message }) => {
 
 const ReplyCard: React.FC<{ reply: ReplyMessage }> = ({ reply }) => {
   return (
-    <div className="rounded-lg [.my-msg_&]:bg-[#D2CDFF] [.other-msg_&]:bg-[#D4D4F0] pl-[3px] mb-2">
-      <div className="relative flex rounded-md [.my-msg_&]:bg-[#5446F4] [.other-msg_&]:bg-[#F7F9FC] px-[10px] py-2">
+    <div className="rounded-lg [.my-msg_&]:bg-[#D2CDFF] [.other-msg_&]:bg-[#D4D4F0] pl-[3px] mb-2 min-w-[230px]">
+      <div className="relative flex items-center rounded-md [.my-msg_&]:bg-[#5446F4] [.other-msg_&]:bg-[#F7F9FC] px-[10px] py-2">
         {/* Media Message Preview */}
-        {reply.messageType !== MessageType.TEXT && <div></div>}
+        {reply.messageType === MessageType.IMAGE && <ImagePreviewIcon url={reply.message} />}
+        {reply.messageType === MessageType.VIDEO && <VideoPreviewIcon url={reply.message} />}
 
         <div className="flex flex-col flex-1 overflow-hidden text-sm">
           {/* Reply To */}
@@ -542,6 +545,23 @@ const ReplyCard: React.FC<{ reply: ReplyMessage }> = ({ reply }) => {
           </div>
         </div>
       </div>
+    </div>
+  )
+}
+
+export const VideoPreviewIcon = ({ url }: { url: string }) => {
+  const { previewUrl } = useVideoPreview(url)
+  return (
+    <div className="mr-[6px]">
+      <Image rect type="avatar" src={previewUrl} alt="" width={32} height={32} />
+    </div>
+  )
+}
+
+export const ImagePreviewIcon = ({ url }: { url: string }) => {
+  return (
+    <div className="mr-[6px]">
+      <Image rect type="avatar" src={formatImageNew({ url })} alt="" width={32} height={32} />
     </div>
   )
 }

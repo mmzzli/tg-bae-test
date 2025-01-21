@@ -33,6 +33,9 @@ interface VideoPlayerProps {
 const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: videoUrl, setTrailer, trailer, videoFile }) => {
   const toast = useToast()
   const [videoRefTrailer, setVideoRefTrailer] = useState<File | null>(null)
+  const previewVideoRef = useRef<HTMLVideoElement>(null)
+  // 显示视频地址
+  const [previewVideoUrl, setPreviewVideoUrl] = useState<string>("")
   const [frames, setFrames] = useState<Frame[]>([])
   const [isBaseModalOpen, { toggle, on, off }] = useBoolean(false)
   const token = useStore((state) => state.token)
@@ -80,6 +83,17 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
 
   const handleVideoClick = () => {
     const video = videoRef.current;
+    if (video) {
+      if (isPlaying) {
+        video.pause();
+      } else {
+        video.play();
+      }
+      setIsPlaying(!isPlaying); // Toggle the playing state
+    }
+  };
+  const handleVideoClick1 = () => {
+    const video = previewVideoRef.current;
     if (video) {
       if (isPlaying) {
         video.pause();
@@ -377,10 +391,19 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
           {videoUrl && (
             <div>
               {/* Video Element */}
+              {previewVideoUrl}
+              <video
+                ref={previewVideoRef}
+                src={previewVideoUrl}
+                style={{ display: previewVideoUrl ? "block" : "none", width: "243px", height: "315px" }}
+                preload="auto"
+                playsInline
+                onClick={handleVideoClick1}
+              />
               <video
                 ref={videoRef}
                 src={videoUrl}
-                style={{ display: "block", width: "243px", height: "315px" }}
+                style={{ display: previewVideoUrl ? "none" : "block", width: "243px", height: "315px" }}
                 preload="auto"
                 playsInline
                 onClick={handleVideoClick} // Add click handler to toggle play/pause
@@ -403,9 +426,10 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
                 </p>
 
                 <div className='mt-2 flex items-center gap-2'>
-                  <Trailer trailerBoll={trailerBoll} setTrailerBoll={setTrailerBoll} setVideoRefTrailer={setVideoRefTrailer} />
+                  <Trailer trailerBoll={trailerBoll} setTrailerBoll={setTrailerBoll} setVideoRefTrailer={setVideoRefTrailer} setPreviewVideoUrl={setPreviewVideoUrl} />
                   <Slider duration={duration} handleSliderChange={handleSliderChange} setStartTime={setStartTime} setEndTime={setEndTime}
                     trailerBoll={trailerBoll} setTrailerBoll={setTrailerBoll} videoRef={videoRef} setLoadingSkeleton={setLoadingSkeleton}
+                    setPreviewVideoUrl={setPreviewVideoUrl}
                   />
                 </div>
 

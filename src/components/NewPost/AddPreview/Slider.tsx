@@ -68,6 +68,9 @@ const TransparentSlider: React.FC<SliderProps> = ({
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
+    if(duration < 5){
+      return
+    }
     e.preventDefault();
     isDraggingRef.current = true;
     document.addEventListener('mousemove', handleMove);
@@ -75,6 +78,9 @@ const TransparentSlider: React.FC<SliderProps> = ({
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
+    if(duration < 5){
+      return
+    }
     e.preventDefault();
     isDraggingRef.current = true;
     document.addEventListener('touchmove', handleMove);
@@ -82,18 +88,27 @@ const TransparentSlider: React.FC<SliderProps> = ({
   };
 
   const handleMouseUp = () => {
+    if(duration < 5){
+      return
+    }
     isDraggingRef.current = false;
     document.removeEventListener('mousemove', handleMove);
     document.removeEventListener('mouseup', handleMouseUp);
   };
 
   const handleTouchEnd = () => {
+    if(duration < 5){
+      return
+    }
     isDraggingRef.current = false;
     document.removeEventListener('touchmove', handleMove);
     document.removeEventListener('touchend', handleTouchEnd);
   };
 
   const handleClick = (e: React.MouseEvent) => {
+    if(duration < 5){
+      return
+    }
     const clientX = e.clientX;
     const time = getSelectedTime(clientX);
     setSelectedTime(time);
@@ -189,7 +204,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
           }
         </div>}
         {/* 滑块 */}
-        {!trailerBoll && <div
+        {(!trailerBoll && duration > 5) && <div
           style={{
             position: 'absolute',
             top: '50%',

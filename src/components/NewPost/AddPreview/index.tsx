@@ -347,7 +347,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
         <div className="px-7 flex justify-between gap-2 flex-none">
           <div>
             <p className="text-[16px] text-[#000]">Add a preview</p>
-            <p className="text-[12px] text-[#8E8E92] font-light">You can add a preview to your locked video to entice viewers to unlock it.</p>
+            <p className="text-[12px] text-[#8E8E92] font-light">Give your fans a sneak peek before they unlock the content!</p>
           </div>
           {/* className="w-full h-full flex items-center justify-center border-dashed border border-[#CDCDD4] rounded-lg cursor-pointer" */}
 
@@ -394,22 +394,26 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
           {videoUrl && (
             <div className='pt-[24px]'>
               {/* Video Element */}
+              <div className='max-h-[330px] min-h-[100px] overflow-hidden w-[fit-content] bg-[#666]'>
               <video
                 ref={previewVideoRef}
                 src={previewVideoUrl}
                 style={{ display: previewVideoUrl ? "block" : "none", width: "243px" }}
-                preload="auto"
+                preload="metadata"
                 playsInline
+                muted
                 onClick={handleVideoClick1}
               />
               <video
                 ref={videoRef}
                 src={videoUrl}
                 style={{ display: previewVideoUrl ? "none" : "block", width: "243px" }}
-                preload="auto"
+                preload="metadata"
                 playsInline
+                muted
                 onClick={handleVideoClick} // Add click handler to toggle play/pause
               />
+              </div>
               {/* <canvas
                 ref={canvasRef}
                 width={243}

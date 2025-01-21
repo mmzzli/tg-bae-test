@@ -256,9 +256,9 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
       }}
     >
       <div
-        className="absolute left-0 right-0 h-[32px] pl-6 text-sm text-gray-400 dark:text-gray-200 bg-white dark:bg-black flex items-center justify-center"
+        className="absolute left-0 right-0 h-[32px] text-sm text-gray-400 dark:text-gray-200 bg-white dark:bg-black flex items-center justify-center"
         style={{
-          top: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) - 32px)',
+          top: 'calc(var(--tg-safe-area-inset-top))',
         }}
       >
         {getStatusText()}
@@ -280,7 +280,7 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
         </div>
       )}
       {!isChatListLoaded && (
-        <div className="flex-1 pb-[80px]">
+        <div className="flex-1 pb-[80px] pt-[40px]">
           <ChatSkeleton />
           <ChatSkeleton />
           <ChatSkeleton />

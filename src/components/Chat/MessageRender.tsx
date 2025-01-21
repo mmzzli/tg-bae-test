@@ -337,7 +337,7 @@ export const MessageRender: React.FC<MessageRenderProps> = ({
             height: height + 'px',
           }}
         >
-          <VideoPlayer file={file || ''} />
+          {/* <VideoPlayer file={file || ''} /> */}
           <UploadProgress
             progress={progress}
             isUploading={isUploading && message.status !== MessageStatus.UPLOADED}
@@ -359,7 +359,7 @@ export const MessageRender: React.FC<MessageRenderProps> = ({
           height: height + 'px',
         }}
       >
-        <video src={message.url} controls controlsList="nodownload">
+        <video src={message.url} controls controlsList="nodownload" autoPlay muted>
           <source src={message.url} type="video/mp4" />
         </video>
       </div>

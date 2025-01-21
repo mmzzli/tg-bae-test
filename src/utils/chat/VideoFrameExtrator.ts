@@ -11,6 +11,7 @@ class VideoFrameExtractor {
     this.video.playsInline = true
     this.video.muted = true
     this.video.crossOrigin = 'anonymous'
+    this.video.autoplay = true // 自动播放
   }
 
   /**

@@ -236,7 +236,7 @@ interface ImageParams {
 
 export const formatImageNew = ({
   url,
-  width = 200,
+  width = 230,
   fit = 'contain',
   quality = 40,
 }: ImageParams): string => {

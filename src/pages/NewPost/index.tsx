@@ -15,7 +15,9 @@ import {
 import { useNavigate } from 'react-router-dom'
 import axios, { AxiosResponse } from 'axios'
 import { postResources, postReq } from '@/api'
+import {PostResourceReq} from '@/types'
 import StarsPage from '@/components/NewPost/Stars'
+import AddPreview from '@/components/NewPost/AddPreview'
 import { PostIcon, PostAddIcon, RemoveIcon, VideoSwitchIcon } from '@/assets/icons'
 import { useStore } from '@/store'
 import VideoFrameSelector from '@/components/NewPost/VideoFrameSelector1'
@@ -49,6 +51,8 @@ export const NewPost: FC = () => {
   const [price, setPrice] = useState<number | null>(null)
   // cover
   const [cover, setCover] = useState<string | null>(null)
+  //
+  const [trailer, setTrailer] = useState<string | null>(null)
 
   const [widths, setWidths] = useState<number[]>([])
   const [heights, setHeights] = useState<number[]>([])
@@ -234,14 +238,19 @@ export const NewPost: FC = () => {
         try {
           const medias = [url]
           cover && medias.unshift([cover])
-          await postResources({
+          //
+          const params:PostResourceReq = {
             duration: Math.floor(videoRef?.current?.duration || 0),
             media: medias.join(','),
             ...(title ? { title } : {}),
             type: 0,
             currency: 0,
             price: price || 0,
-          })
+          }
+          if(params.price && trailer){
+            params['trailer'] = trailer
+          }
+          await postResources(params)
           // when sent page will back to task page,so we need to update the task list
           runGetDailyTask()
           setTimeout(() => {
@@ -504,7 +513,7 @@ export const NewPost: FC = () => {
       className="fixed w-screen h-screen bg-[#fff] z-10 overflow-auto scrollbar-hide"
       id="scrollable"
     >
-      <Box p="0 16px">
+      <Box p="0 16px" maxH="500px" overflow="auto">
         <Box>
           <HStack justifyContent="space-between" position="fixed" w="100%" left="0px" p="12px 16px" bg="#fff" zIndex={11}>
             <Heading as="h3" fontSize="20px" color="#000">
@@ -638,6 +647,7 @@ export const NewPost: FC = () => {
             setIsFocused={setIsFocused}
             />
         </Box>
+        {(price != null && price > 0 && firstFileType === 'video') && <AddPreview videoRef={videoRefCover} setCover={setCover} videoSrc={videoSrc || ""} trailer={trailer} setTrailer={setTrailer} videoFile={videoFile} />}
         <StarsPage setPrice={setPrice} price={price || 0} />
       </Box>
       <Box h={`${isFocused ? '700px' : ''}`}></Box>

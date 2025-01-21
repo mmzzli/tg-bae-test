@@ -29,6 +29,13 @@ export type PostResourceReq = {
   duration?: number
   width?: string
   height?: string
+  trailer?: string
+}
+export type CutReqReq = {
+  url: string,
+  filename: string,
+  start: number
+  end: number
 }
 
 // like

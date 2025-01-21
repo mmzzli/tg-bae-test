@@ -199,7 +199,7 @@ const UserInfo = memo(
           </div>
         </div>
         <MoreText textColor={'#fff'} text={content || ''} bgColor={'#000'} />
-        {info?.price && info?.price > 0 && !info?.is_pay && (
+        {info?.price && info?.price > 0 && !info?.is_pay && info?.uid !== current_uid && (
           <div className="mt-2">
             <PurchaseButton price={info?.price || 0} post_id={info?.id || 0 } resourcesEve={resourcesEve} setIsPaid={setIsPaid} />
           </div>

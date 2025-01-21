@@ -31,6 +31,12 @@ export type PostResourceReq = {
   height?: string
   trailer?: string
 }
+export type CutReqReq = {
+  url: string,
+  filename: string,
+  start: number
+  end: number
+}
 
 // like
 export type LikeReq = { act_type: number; post_id: number }

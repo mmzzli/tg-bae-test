@@ -13,6 +13,7 @@ import {
   totalAvailable,
   AccountdetailRes,
   VoteReq,
+  CutReqReq,
   VoteRes
 } from '@/types'
 
@@ -39,6 +40,9 @@ export const postLike = (params: LikeReq) => {
 }
 export const postReq = () => {
   return get(`/api/v1/postreq`)
+}
+export const cutReq = (params:CutReqReq) => {
+  return post<string>(`/api/v1/cut_req`,params)
 }
 
 export const deletePost = (pid: number) => {

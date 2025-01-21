@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState, RefObject, Dispatch, SetStateAction
 import { useBoolean, Text, useToast } from '@chakra-ui/react'
 import axios, { AxiosResponse } from 'axios'
 import { SkeletonShine } from '@/components/Skeketon/ChatSkeleton'
+import {cutReq} from '@/api'
 
 
 import BaseButton from '@/components/BaseButton/BaseButton'
@@ -26,9 +27,10 @@ interface VideoPlayerProps {
   videoSrc: string
   setTrailer: (url:string)=>void
   trailer: string | null
+  videoFile: File | null
 }
 
-const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: videoUrl, setTrailer, trailer }) => {
+const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: videoUrl, setTrailer, trailer, videoFile }) => {
   const toast = useToast()
   const [videoRefTrailer, setVideoRefTrailer] = useState<File | null>(null)
   const [frames, setFrames] = useState<Frame[]>([])
@@ -196,6 +198,20 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
           const id = response.data.split('/').pop();
           const url = `https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${id}/manifest/video.m3u8`
           await checkVideoURL(url)
+          // 是否是截取视频
+          if(!trailerBoll){
+            const curl = await cutReq({
+              url,
+              filename: "trailer",
+              start: ~~startTime,
+              end: ~~endTime
+            })
+            await checkVideoURL(curl)
+            setTrailer(curl)
+            setLoading(false)
+            off();
+            return
+          }
           setTrailer(url)
           setLoading(false)
           off();
@@ -205,7 +221,8 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
   }
 
   // 自定义预告片
-  const customizationVideo = async()=>{
+  const customizationVideo = async(videoRefTrailer: any)=>{
+    console.log(videoRefTrailer)
     if (!videoRefTrailer) {
       return
     }
@@ -227,95 +244,71 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
   }
 
   const captureFrame = async () => {
-    if(trailerBoll){
-      customizationVideo()
+    if(true){
+      customizationVideo(trailerBoll ? videoRefTrailer : videoFile)
       return
     }
 
-    if (!videoRef.current) return;
-    setLoading(true)
+    // if (!videoRef.current) return;
+    // setLoading(true)
 
-    const video = videoRef.current;
-    video.currentTime = startTime; // 设置视频开始时间
+    // const video = videoRef.current;
+    // video.currentTime = startTime; // 设置视频开始时间
 
-    const videoElement = videoRef.current as HTMLVideoElement & { captureStream?: () => MediaStream };
-    if (!videoElement?.captureStream) {
-      toast({
-        render: () => {
-          return <CustomToast title="captureStream error" type={typeOptions.error} />
-        },
-        position: 'bottom',
-      })
-      return
-    }
-
-    const stream = videoElement.captureStream(); // 捕获视频流
-    const recorder = new MediaRecorder(stream);
-    const chunks: Blob[] = [];
-    // 处理录制数据
-    recorder.ondataavailable = (e: BlobEvent) => {
-      if (e.data.size > 0) {
-        chunks.push(e.data);
-      }
-    };
-
-    // 录制结束后生成 Blob URL
-    recorder.onstop = async() => {
-      const blob = new Blob(chunks, { type: "video/webm" });
-      const clipUrl = URL.createObjectURL(blob);
-      console.log(chunks, clipUrl)
-      const formData = new FormData();
-      const videoFile = new File([clipUrl], "trailer.mp4", { type: "video/mp4" });
-      console.log(videoFile)
-      formData.append("file", blob); // 添加文件
-      formData.append("name", videoFile.name); // 添加文件名
-      formData.append("type", "bae"); // 添加类型
-
-      // 添加 meta 数据
-      formData.append(
-        "meta",
-        JSON.stringify({
-          name: videoFile.name,
-          type: "bae",
-        })
-      );
-      console.log(formData)
-      videoUpload(formData)
-
-    };
-    recorder.start();
-
-    // 播放视频并自动停止录制
-    video.play();
-    setTimeout(() => {
-      video.pause();
-      recorder.stop();
-    }, (endTime - startTime) * 1000); // 按秒设置时长
-
-    // off();
-    //  startTime endTime
-
-    // if (canvas) {
-    //   const frameData = canvas.toDataURL("image/png", 1.0);
-    //   const file = base64ToFile(frameData, 'image.png');
-
-    //   const timestamp: number = new Date().getTime();
-    //   const url = `${import.meta.env.VITE_APP_UPLOAD_URL}upload/${timestamp}`;
-
-    //   const formData = new FormData();
-    //   formData.append('file', file);
-    //   try {
-    //     const response = await axios.put(url, formData, {
-    //       headers: {
-    //         'Content-Type': 'multipart/form-data',
-    //         Authorization: `Bearer ${token}`,
-    //       },
-    //     });
-    //     setCover(response.data);
-    //   } catch (error) {
-    //     console.error(`Error uploading ${file.name}:`, error);
-    //   }
+    // const videoElement = videoRef.current as HTMLVideoElement & { captureStream?: () => MediaStream };
+    // if (!videoElement?.captureStream) {
+    //   toast({
+    //     render: () => {
+    //       return <CustomToast title="captureStream error" type={typeOptions.error} />
+    //     },
+    //     position: 'bottom',
+    //   })
+    //   return
     // }
+
+    // const stream = videoElement.captureStream(); // 捕获视频流
+    // const recorder = new MediaRecorder(stream);
+    // const chunks: Blob[] = [];
+    // // 处理录制数据
+    // recorder.ondataavailable = (e: BlobEvent) => {
+    //   if (e.data.size > 0) {
+    //     chunks.push(e.data);
+    //   }
+    // };
+
+    // // 录制结束后生成 Blob URL
+    // recorder.onstop = async() => {
+    //   const blob = new Blob(chunks, { type: "video/webm" });
+    //   const clipUrl = URL.createObjectURL(blob);
+    //   console.log(chunks, clipUrl)
+    //   const formData = new FormData();
+    //   const videoFile = new File([clipUrl], "trailer.mp4", { type: "video/mp4" });
+    //   console.log(videoFile)
+    //   formData.append("file", blob); // 添加文件
+    //   formData.append("name", videoFile.name); // 添加文件名
+    //   formData.append("type", "bae"); // 添加类型
+
+    //   // 添加 meta 数据
+    //   formData.append(
+    //     "meta",
+    //     JSON.stringify({
+    //       name: videoFile.name,
+    //       type: "bae",
+    //     })
+    //   );
+    //   console.log(formData)
+    //   videoUpload(formData)
+
+    // };
+    // recorder.start();
+
+    // // 播放视频并自动停止录制
+    // video.play();
+    // setTimeout(() => {
+    //   video.pause();
+    //   recorder.stop();
+    // }, (endTime - startTime) * 1000); // 按秒设置时长
+
 
   };
 

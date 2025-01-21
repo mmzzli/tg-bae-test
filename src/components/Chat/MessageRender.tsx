@@ -359,7 +359,15 @@ export const MessageRender: React.FC<MessageRenderProps> = ({
           height: height + 'px',
         }}
       >
-        <video src={message.url} controls controlsList="nodownload" autoPlay muted>
+        <video
+          src={message.url}
+          controls
+          controlsList="nodownload"
+          autoPlay
+          muted
+          playsInline
+          preload="metadata"
+        >
           <source src={message.url} type="video/mp4" />
         </video>
       </div>

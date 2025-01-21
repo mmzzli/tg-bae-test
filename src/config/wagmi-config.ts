@@ -73,7 +73,7 @@ const contractAddress = {
   [duckChainTestnet.id]: '0x84868afcC4Ba758a4ae2aca141D2fF0ECD8C5fac',
   [bscTestnet.id]: '0xF165cFb92441544cF9DEF72427028Db85b0aDEe2',
   [bsc.id]: '0x359E9Ef12132ea2a49701F838B5CdFbc13771AaF',
-  [mainnet.id]: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+  [mainnet.id]: '0x359E9Ef12132ea2a49701F838B5CdFbc13771AaF',
 }
 
 export const config = createConfig({

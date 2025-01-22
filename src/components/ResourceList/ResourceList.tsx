@@ -576,6 +576,7 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
 const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, savedEve, type }) => {
   const likes = useStore((state) => state.like)
   const saveds = useStore((state) => state.save)
+  const { getCurrentUid } = useTMAUtils()
 
   const liked = useMemo(() => {
     return likes.find((like) => like.id === data.id)?.liked || false
@@ -642,7 +643,7 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
           }
         />
       </div>
-      {(data.title || data.is_pay) && (
+      {(data.title || data.is_pay || data.uid == getCurrentUid()) && (
         <div className="px-4 pt-[10px]">
           <div className="text-[#0F1419] dark:text-[#ccc] font-normal text-sm leading-4">
             <MoreText text={data.title} bgColor={'#fff'} textColor={'#0F1419'} type="post" />

@@ -12,13 +12,15 @@ interface SliderProps {
   handleSliderChange: (value:any)=>void
   videoRef: RefObject<HTMLVideoElement>
   setLoadingSkeleton: (boll:boolean)=>void
+  isBaseModalOpen: boolean
 }
 
 const TransparentSlider: React.FC<SliderProps> = ({
   duration,
   handleSliderChange,
   videoRef,
-  setLoadingSkeleton
+  setLoadingSkeleton,
+  isBaseModalOpen
 }) => {
   const [selectedTime, setSelectedTime] = useState(0);
   const [frames, setFrames] = useState<Frame[]>([])
@@ -153,7 +155,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
   useEffect(() => {
     const videoElement = videoRef.current;
 
-    if (videoElement) {
+    if (videoElement && isBaseModalOpen) {
       const handleLoadedMetadata = () => {
         // 确保在元数据加载完成后执行逻辑
         extractFramesFromVideo();

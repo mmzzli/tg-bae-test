@@ -35,11 +35,13 @@ const Trailer: React.FC<TrailerProps> = ({
 
   useEffect(() => {
     if (videoSrc && videoRef.current) {
-      videoRef.current.load();
       setPreviewVideoUrl(videoSrc);
+      setTimeout(() => {
+        videoRef.current?.load();
+      }, 100);
       console.log('Video source set:', videoSrc);
     }
-  }, [videoSrc]);
+  }, [videoSrc, videoRef]);
 
   const handleChooseFile = () => {
     inputRef.current?.click();

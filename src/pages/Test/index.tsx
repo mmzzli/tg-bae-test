@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, useRef } from 'react';
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 
 const VideoTrimmer: React.FC = () => {
@@ -6,56 +6,39 @@ const VideoTrimmer: React.FC = () => {
   const [trimmedVideo, setTrimmedVideo] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
-  const ffmpeg = createFFmpeg({ log: true });
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  // 加载 FFmpeg 库
-  const loadFFmpeg = async (): Promise<void> => {
-    if (!ffmpeg.isLoaded()) {
-      await ffmpeg.load();
-    }
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setVideoFile(e.target.files ? e.target.files[0] : null);
   };
 
-  // 处理文件上传
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    const file = e.target.files ? e.target.files[0] : null;
-    setVideoFile(file);
-  };
-
-  // 视频裁剪函数
-  const trimVideo = async (start: number, duration: number): Promise<void> => {
+  const trimVideo = async (start: number, duration: number) => {
     if (!videoFile) {
-      alert("Please upload a video file first.");
+      alert('Please upload a video file first.');
       return;
     }
 
     setIsProcessing(true);
 
-    try {
-      await loadFFmpeg();
-      const fileName = videoFile.name;
+    const ffmpeg = createFFmpeg({ log: true });
+    await ffmpeg.load();
 
-      // 将视频文件写入 FFmpeg 文件系统
-      ffmpeg.FS('writeFile', fileName, await fetchFile(videoFile));
+    // Convert the file to a format ffmpeg.js can process
+    await ffmpeg.FS('writeFile', 'input.mp4', await fetchFile(videoFile));
 
-      // 执行裁剪命令
-      await ffmpeg.run(
-        '-i', fileName,
-        '-ss', start.toString(),
-        '-t', duration.toString(),
-        '-c', 'copy',
-        'output.mp4'
-      );
+    // Execute the trimming command
+    await ffmpeg.run('-i', 'input.mp4', '-ss', `${start}`, '-t', `${duration}`, 'output.mp4');
 
-      // 读取输出文件
-      const data:any = ffmpeg.FS('readFile', 'output.mp4');
-      const url = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
+    // Read the output file
+    const data = ffmpeg.FS('readFile', 'output.mp4');
 
-      setTrimmedVideo(url);
-    } catch (err) {
-      console.error("Error trimming video:", err);
-    } finally {
-      setIsProcessing(false);
-    }
+    // Create a URL for the trimmed video
+    const videoBlob = new Blob([data.buffer], { type: 'video/mp4' });
+    const videoUrl = URL.createObjectURL(videoBlob);
+
+    // Set the trimmed video URL for playback
+    setTrimmedVideo(videoUrl);
+    setIsProcessing(false);
   };
 
   return (
@@ -74,6 +57,7 @@ const VideoTrimmer: React.FC = () => {
           <video src={trimmedVideo} controls width="400"></video>
         </div>
       )}
+      <video ref={videoRef} hidden />
     </div>
   );
 };

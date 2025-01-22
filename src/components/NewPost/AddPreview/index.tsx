@@ -192,7 +192,23 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
   }
 
   const videoUpload = async(formData:any)=>{
-
+    // 是否是截取视频
+    if(!trailerBoll && boll){
+      const {data} = await axios.post(import.meta.env.VITE_API_URL + "api/v1/cut_req_file", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+        timeout: 300000
+      })
+      console.log(data)
+      await checkVideoURL(data)
+      setTrailer(data)
+      setLoading(false)
+      setBoll(true)
+      off();
+      return
+    }
     const response = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -214,21 +230,21 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
           const url = `https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${id}/manifest/video.m3u8`
           await checkVideoURL(url)
           // 是否是截取视频
-          if(!trailerBoll && boll){
-            setBoll(false)
-            const curl = await cutReq({
-              url,
-              filename: "trailer",
-              start: ~~startTime,
-              end: ~~endTime
-            })
-            await checkVideoURL(curl)
-            setTrailer(curl)
-            setLoading(false)
-            setBoll(true)
-            off();
-            return
-          }
+          // if(!trailerBoll && boll){
+          //   setBoll(false)
+          //   const curl = await cutReq({
+          //     url,
+          //     filename: "trailer",
+          //     start: ~~startTime,
+          //     end: ~~endTime
+          //   })
+          //   await checkVideoURL(curl)
+          //   setTrailer(curl)
+          //   setLoading(false)
+          //   setBoll(true)
+          //   off();
+          //   return
+          // }
           setTrailer(url)
           setLoading(false)
           off();
@@ -248,6 +264,9 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
     formData.append("file", videoRefTrailer);
     formData.append("name", videoRefTrailer.name);
     formData.append("type", "bae");
+    // 截取视频使用
+    formData.append('start', `${~~startTime}`);
+    formData.append('end', `${~~endTime}`);
 
     formData.append(
       "meta",

@@ -213,7 +213,7 @@ export const NewPost: FC = () => {
     if (!videoFile) {
       return
     }
-    if(!cover){
+    if(!cover && !trailer){
       toast({
         render: () => {
           return <CustomToast title="Cover not" type={typeOptions.error} />

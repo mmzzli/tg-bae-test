@@ -199,7 +199,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
         },
-        timeout: 300000
+        timeout: 600000
       })
       console.log(data)
       await checkVideoURL(data)

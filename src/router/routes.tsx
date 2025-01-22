@@ -19,6 +19,7 @@ import JKFCampaign from '@/pages/Home/JKFCampaign'
 import OthersProfile from '@/pages/OthersProfile'
 import ProfileGuard from '@/pages/OthersProfile/routeGuard'
 import MessagePageRouteGuard from '@/pages/Chat/MessagePageRouteGuard'
+import TTPlayer from '@/pages/TTPlayer'
 
 const Task = lazy(() => import('@/pages/Task'))
 
@@ -47,6 +48,7 @@ export const routes = [
       { path: 'post', element: <NewPost /> },
       { path: 'shares', element: <Shares /> },
       { path: 'test', element: <Test /> },
+      { path: 'tt-player', element: <TTPlayer /> },
       {
         path: 'task',
         element: (

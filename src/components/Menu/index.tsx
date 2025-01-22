@@ -50,8 +50,6 @@ const navList: NavItem[] = [
 const Menu: FC = () => {
   const navigate = useNavigate()
   const pathname = useLocation().pathname
-
-  console.log('menu render')
   return (
     <div className="fixed bottom-0 left-0 w-full p-0 h-[84px] pt-3 border-t bg-white dark:bg-[#0D0D0D] border-[#DEDEDE] dar:border-[#212121] z-[9]">
       <PostProgressBar />

@@ -39,6 +39,7 @@ export type FormatterListItem = Omit<ListItem['post'], 'media'> & {
   pic_num?: number
   is_pay?: number | boolean
   trailer?: string
+  r2?: string
 } & UserItem
 export interface ListState {
   list: FormatterListItem[]
@@ -177,6 +178,9 @@ export interface ResourceListSlice {
 
   homeVideoMuted: boolean
   setHomeVideoMuted: (muted: boolean) => void
+
+  ttMode: boolean
+  setTtMode: (ttMode: boolean) => void
 }
 
 const initialListState: BaseListState = {
@@ -272,6 +276,10 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
   },
 
   recommendList: { ...initialListState },
+  ttMode: false,
+  setTtMode: (ttMode: boolean) => {
+    set({ ttMode })
+  },
   setRecommendPage: (page) => {
     console.log('setRecommendPage', page)
     return set((state) => ({

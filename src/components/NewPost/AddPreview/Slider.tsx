@@ -210,7 +210,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
             top: '50%',
             left: `${(selectedTime / videoDuration) * 100}%`,
             width: '107px',
-            height: '50px',
+            height: '60px',
             border: '2px solid #FFF', // 边框颜色保持不变
             backgroundColor: 'rgba(0, 0, 0, 0.2)', // 背景色改为黑色
             borderRadius: '8px',

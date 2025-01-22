@@ -248,6 +248,7 @@ export const NewPost: FC = () => {
             price: price || 0,
           }
           if(params.price && trailer){
+            await checkVideoURL(trailer)
             params['trailer'] = trailer
           }
           await postResources(params)
@@ -647,7 +648,7 @@ export const NewPost: FC = () => {
             setIsFocused={setIsFocused}
             />
         </Box>
-        {(price != null && price > 0 && firstFileType === 'video') && <AddPreview videoRef={videoRefCover} setCover={setCover} videoSrc={videoSrc || ""} trailer={trailer} setTrailer={setTrailer} videoFile={videoFile} />}
+        {(price != null && price > 0 && firstFileType === 'video' && videoSrc) && <AddPreview videoRef={videoRefCover} setCover={setCover} videoSrc={videoSrc || ""} trailer={trailer} setTrailer={setTrailer} videoFile={videoFile} />}
         <StarsPage setPrice={setPrice} price={price || 0} />
       </Box>
       <Box h={`${isFocused ? '700px' : ''}`}></Box>

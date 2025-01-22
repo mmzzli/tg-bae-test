@@ -202,7 +202,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
         timeout: 600000
       })
       console.log(data)
-      await checkVideoURL(data)
+      // await checkVideoURL(data)
       setTrailer(data)
       setLoading(false)
       setBoll(true)
@@ -380,7 +380,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
 
           {
             trailer ?
-            <TrailerVideo trailer={trailer} setTrailer={setTrailer}/>
+            <TrailerVideo trailer={trailer} setTrailer={setTrailer} previewVideoUrl={previewVideoUrl} videoUrl={videoUrl}/>
             :
             <p className='h-[64px] w-[64px] bg-[#F7F9FC] rounded-md flex-none flex items-center justify-center' onClick={() => toggle()}>
               <i className="iconfont icon-add text-[#999999] text-[20px]"></i>

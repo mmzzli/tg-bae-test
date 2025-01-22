@@ -96,7 +96,8 @@ const HomePage: FC = () => {
   const clickTimeoutRef = useRef<NodeJS.Timeout>()
 
   const consecutiveHits = () => {
-    if (import.meta.env.PROD) {
+    console.log('env', import.meta.env.PROD)
+    if (import.meta.env.MODE === 'production') {
       return
     }
     setClickCount(prev => prev + 1)

@@ -38,11 +38,11 @@ const TTPlayer: React.FC = () => {
 
   console.log('list...', list)
 
-  // useEffect(() => {
-  //   if (list?.length && ((activeIndex + 2) > list?.length)) {
-  //     fetchMoreData()
-  //   }
-  // }, [activeIndex])
+  useEffect(() => {
+    if (list?.length && ((activeIndex + 2) > list?.length)) {
+      fetchMoreData()
+    }
+  }, [activeIndex])
 
   useEffect(() => {
     if (state.id != undefined) {
@@ -58,12 +58,11 @@ const TTPlayer: React.FC = () => {
       className="h-full w-full z-[10] fixed top-0 left-0"
       grabCursor
       shortSwipes={false}
-      longSwipesRatio={0.33}
-      threshold={20}
+      longSwipesRatio={0.1} // 调整滑动切换的幅度
+      threshold={20} // 调整滑动切换的幅度
       touchReleaseOnEdges
       preventInteractionOnTransition
       direction="vertical"
-      // initialSlide={2}
       virtual={{
         enabled: true,
         cache: false,
@@ -71,7 +70,6 @@ const TTPlayer: React.FC = () => {
         addSlidesAfter: 1,
       }}
       modules={[Virtual]}
-      // onSwiper={(swiper) => (window.swiper = swiper)}
       slidesPerView={1}
       spaceBetween={10}
       navigation={false}

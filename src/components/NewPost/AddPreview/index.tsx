@@ -447,7 +447,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
               <video
                 ref={videoRef}
                 src={previewVideoUrl || videoUrl}
-                style={{ display: previewVideoUrl ? "block" : "block", width: "100%" }}
+                style={{ display: previewVideoUrl ? "block" : "block", width: "243px" }}
                 preload="metadata"
                 // controls
                 playsInline

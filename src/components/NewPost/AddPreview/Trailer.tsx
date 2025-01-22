@@ -47,6 +47,7 @@ const Trailer: React.FC<TrailerProps> = ({
 
   const clearVideo = () => {
     setVideoSrc('');
+    setPreviewVideoUrl("")
     setTrailerBoll(false);
     setVideoRefTrailer(null);
   };

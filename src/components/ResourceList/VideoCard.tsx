@@ -10,6 +10,7 @@ import { CardRecommendProvider } from '@/utils/constants'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { VolumeMuteIcon, VolumeSpeakerIcon } from '@/assets/icons'
+import { useNavigate } from 'react-router-dom'
 
 interface VideoCardProps {
   data: FormatterListItem
@@ -23,8 +24,21 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
   const cacheVideoIndex = useStore((state) => state.cacheVideoIndex)
   const setVideoResource = useStore((state) => state.setVideoResource)
   const { runDailyWatch } = useDailyTaskActions()
+  const navigate = useNavigate()
+  const { ttMode } = useStore((state) => ({
+    ttMode: state.ttMode,
+  }))
+
 
   const handleVideoClick = useCallback((video: FormatterListItem) => {
+    if (ttMode) {
+      navigate('/tt-player', {
+        state: {
+          id: data.id
+        },
+      })
+      return
+    }
     const videoDom = videoCardContainer?.current?.querySelector('video')
     runDailyWatch(video.id)
     setCacheVideoIndex(video.id)

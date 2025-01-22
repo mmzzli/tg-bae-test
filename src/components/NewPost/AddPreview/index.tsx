@@ -391,7 +391,12 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
       <BaseModal
         isOpen={isBaseModalOpen}
         onClose={off}
-        height={isLandscape ? '70vh' : '85vh'}
+        // height={isLandscape ? '70vh' : '85vh'}
+        style={{
+          maxHeight: isLandscape ? '70vh' : '85vh',
+          height: "auto",
+          overflow: "auto"
+        }}
         animation={{ duration: 400, timingFunction: 'ease-in-out' }}
         theme={{ darkBackgroundColor: '#1a1a1a', lightBackgroundColor: '#ffffff', handleColor: '#d1d5db' }}
         closeOnBackdropClick={true}

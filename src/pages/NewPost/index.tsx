@@ -20,7 +20,7 @@ import StarsPage from '@/components/NewPost/Stars'
 import AddPreview from '@/components/NewPost/AddPreview'
 import { PostIcon, PostAddIcon, RemoveIcon, VideoSwitchIcon } from '@/assets/icons'
 import { useStore } from '@/store'
-import VideoFrameSelector from '@/components/NewPost/VideoFrameSelector1'
+import VideoFrameSelector from '@/components/NewPost/VideoFrameSelector'
 import VideoPlayer from '@/components/comm/VideoPlayer'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import { TaskStatus, UploadThread } from '@/store/slices/taskSlice'
@@ -213,7 +213,7 @@ export const NewPost: FC = () => {
     if (!videoFile) {
       return
     }
-    if(!cover){
+    if(!cover && !trailer){
       toast({
         render: () => {
           return <CustomToast title="Cover not" type={typeOptions.error} />
@@ -500,7 +500,7 @@ export const NewPost: FC = () => {
     if (isFocused) {
       const scrollable: any = document.getElementById('scrollable')
       scrollable.scrollTo({
-        top: 100000,
+        top: 60,
         behavior: 'smooth',
       })
     }

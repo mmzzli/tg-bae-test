@@ -10,25 +10,15 @@ interface Frame {
 interface SliderProps {
   duration: number
   handleSliderChange: (value:any)=>void
-  setStartTime:(num:number)=>void
-  setEndTime:(num:number)=>void
-  trailerBoll: boolean
-  setTrailerBoll: (boll:boolean)=>void
   videoRef: RefObject<HTMLVideoElement>
   setLoadingSkeleton: (boll:boolean)=>void
-  setPreviewVideoUrl: (str:string)=>void
 }
 
 const TransparentSlider: React.FC<SliderProps> = ({
   duration,
   handleSliderChange,
-  setStartTime,
-  setEndTime,
-  trailerBoll,
-  setTrailerBoll,
   videoRef,
-  setLoadingSkeleton,
-  setPreviewVideoUrl
+  setLoadingSkeleton
 }) => {
   const [selectedTime, setSelectedTime] = useState(0);
   const [frames, setFrames] = useState<Frame[]>([])
@@ -58,13 +48,13 @@ const TransparentSlider: React.FC<SliderProps> = ({
     setSelectedTime(time);
     // 设置视频时长
     // console.log(time)
-    if(time+6 >= videoDuration){
-      setStartTime(videoDuration-6)
-      setEndTime(videoDuration)
-    }else{
-      setStartTime(time)
-      setEndTime(time + 6)
-    }
+    // if(time+6 >= videoDuration){
+    //   setStartTime(videoDuration-6)
+    //   setEndTime(videoDuration)
+    // }else{
+    //   setStartTime(time)
+    //   setEndTime(time + 6)
+    // }
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -112,7 +102,6 @@ const TransparentSlider: React.FC<SliderProps> = ({
     const clientX = e.clientX;
     const time = getSelectedTime(clientX);
     setSelectedTime(time);
-    setTrailerBoll(false)
   };
 
   const extractFramesFromVideo = async () => {
@@ -161,25 +150,26 @@ const TransparentSlider: React.FC<SliderProps> = ({
   };
 
 
-
   useEffect(() => {
-    if (videoRef && videoRef.current) {
-      const timer = setTimeout(() => {
-        setLoadingSkeleton(true)
-        extractFramesFromVideo()
-      }, 1000)
-      return () => clearTimeout(timer)
-    }
-  }, [videoRef])
+    const videoElement = videoRef.current;
 
-  // useEffect(()=>{
-  //   if(videoRef){
-  //     extractFramesFromVideo()
-  //   }
-  // },[videoRef])
+    if (videoElement) {
+      const handleLoadedMetadata = () => {
+        // 确保在元数据加载完成后执行逻辑
+        extractFramesFromVideo();
+      };
+
+      videoElement.addEventListener("loadedmetadata", handleLoadedMetadata);
+
+      // 清理事件监听器
+      return () => {
+        videoElement.removeEventListener("loadedmetadata", handleLoadedMetadata);
+      };
+    }
+  }, []);
 
   return (
-    <div className='w-[100%]' onClick={()=>{setPreviewVideoUrl("");setTrailerBoll(false)}}>
+    <div className='w-[100%]'>
       <div
         ref={sliderRef}
         onMouseDown={handleMouseDown}
@@ -204,12 +194,12 @@ const TransparentSlider: React.FC<SliderProps> = ({
           }
         </div>}
         {/* 滑块 */}
-        {(!trailerBoll && duration > 5) && <div
+        { <div
           style={{
             position: 'absolute',
             top: '50%',
             left: `${(selectedTime / videoDuration) * 100}%`,
-            width: '107px',
+            width: '45px',
             height: '60px',
             border: '2px solid #FFF', // 边框颜色保持不变
             backgroundColor: 'rgba(0, 0, 0, 0.2)', // 背景色改为黑色
@@ -218,10 +208,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
             // boxShadow: '0 0 10px rgba(0, 0, 255, 0.5)',
             pointerEvents: 'none',
           }}
-        >
-          <p className='text-[18px] text-[#fff] text-center h-[60px] leading-[60px]'>5S</p>
-        </div>
-        }
+        />}
       </div>
       {/* <p style={{ color: '#000' }}>{selectedTime.toFixed(1)}</p> */}
     </div>

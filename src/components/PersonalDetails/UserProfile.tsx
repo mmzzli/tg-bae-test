@@ -97,7 +97,7 @@ const UserProfile: FC = () => {
             {userInfo.follower}
           </Heading>
           <Text color="#8A8C91" fontSize="12px" lineHeight="14px">
-            Followers
+            followers
           </Text>
         </Box>
         <Box textAlign="center">
@@ -111,7 +111,7 @@ const UserProfile: FC = () => {
             {userInfo.fans}
           </Heading>
           <Text color="#8A8C91" fontSize="12px" lineHeight="14px">
-            Following
+            following
           </Text>
         </Box>
         <Box textAlign="center">
@@ -125,7 +125,7 @@ const UserProfile: FC = () => {
             {formatUSD(gifts, true)}
           </Heading>
           <Text color="#8A8C91" fontSize="12px" lineHeight="14px">
-            Earnings
+            earnings
           </Text>
         </Box>
       </HStack>

@@ -96,7 +96,7 @@ const resourcesEve = (post_id: number, url: string, is_pay?: boolean) => {
   setRecommendList(updatedUsers)
 }
 
-const UserInfo = memo(
+export const UserInfo = memo(
   ({
     avatar,
     username,

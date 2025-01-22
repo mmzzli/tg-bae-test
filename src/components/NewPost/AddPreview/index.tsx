@@ -192,7 +192,23 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
   }
 
   const videoUpload = async(formData:any)=>{
-
+    // 是否是截取视频
+    if(!trailerBoll && boll){
+      const {data} = await axios.post(import.meta.env.VITE_API_URL + "api/v1/cut_req_file", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+        timeout: 600000
+      })
+      console.log(data)
+      await checkVideoURL(data)
+      setTrailer(data)
+      setLoading(false)
+      setBoll(true)
+      off();
+      return
+    }
     const response = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -214,21 +230,21 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
           const url = `https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${id}/manifest/video.m3u8`
           await checkVideoURL(url)
           // 是否是截取视频
-          if(!trailerBoll && boll){
-            setBoll(false)
-            const curl = await cutReq({
-              url,
-              filename: "trailer",
-              start: ~~startTime,
-              end: ~~endTime
-            })
-            await checkVideoURL(curl)
-            setTrailer(curl)
-            setLoading(false)
-            setBoll(true)
-            off();
-            return
-          }
+          // if(!trailerBoll && boll){
+          //   setBoll(false)
+          //   const curl = await cutReq({
+          //     url,
+          //     filename: "trailer",
+          //     start: ~~startTime,
+          //     end: ~~endTime
+          //   })
+          //   await checkVideoURL(curl)
+          //   setTrailer(curl)
+          //   setLoading(false)
+          //   setBoll(true)
+          //   off();
+          //   return
+          // }
           setTrailer(url)
           setLoading(false)
           off();
@@ -248,6 +264,9 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
     formData.append("file", videoRefTrailer);
     formData.append("name", videoRefTrailer.name);
     formData.append("type", "bae");
+    // 截取视频使用
+    formData.append('start', `${~~startTime}`);
+    formData.append('end', `${~~endTime}`);
 
     formData.append(
       "meta",
@@ -341,13 +360,20 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
     return new File([u8arr], filename, { type: mime })
   }
 
+  useEffect(() => {
+    if ((videoUrl || previewVideoUrl) && videoRef.current) {
+      videoRef.current.load();
+    }
+  }, [videoUrl, previewVideoUrl]);
+
+
   return (
     <>
       <div className="fixed bottom-[133px] left-0 w-[100%]">
         <div className="px-7 flex justify-between gap-2 flex-none">
           <div>
             <p className="text-[16px] text-[#000]">Add a preview</p>
-            <p className="text-[12px] text-[#8E8E92] font-light">You can add a preview to your locked video to entice viewers to unlock it.</p>
+            <p className="text-[12px] text-[#8E8E92] font-light">Give your fans a sneak peek before they unlock the content!</p>
           </div>
           {/* className="w-full h-full flex items-center justify-center border-dashed border border-[#CDCDD4] rounded-lg cursor-pointer" */}
 
@@ -365,7 +391,12 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
       <BaseModal
         isOpen={isBaseModalOpen}
         onClose={off}
-        height={isLandscape ? '70vh' : '85vh'}
+        // height={isLandscape ? '70vh' : '85vh'}
+        style={{
+          maxHeight: isLandscape ? '70vh' : '85vh',
+          height: "auto",
+          overflow: "auto"
+        }}
         animation={{ duration: 400, timingFunction: 'ease-in-out' }}
         theme={{ darkBackgroundColor: '#1a1a1a', lightBackgroundColor: '#ffffff', handleColor: '#d1d5db' }}
         closeOnBackdropClick={true}
@@ -394,22 +425,26 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
           {videoUrl && (
             <div className='pt-[24px]'>
               {/* Video Element */}
-              <video
+              <div className='max-h-[330px] min-h-[100px] overflow-hidden w-[fit-content] bg-[#666]'>
+              {/* <video
                 ref={previewVideoRef}
                 src={previewVideoUrl}
                 style={{ display: previewVideoUrl ? "block" : "none", width: "243px" }}
-                preload="auto"
+                preload="metadata"
                 playsInline
+                muted
                 onClick={handleVideoClick1}
-              />
+              /> */}
               <video
                 ref={videoRef}
-                src={videoUrl}
-                style={{ display: previewVideoUrl ? "none" : "block", width: "243px" }}
-                preload="auto"
+                src={previewVideoUrl || videoUrl}
+                style={{ display: previewVideoUrl ? "block" : "block", width: "243px" }}
+                preload="metadata"
                 playsInline
+                muted
                 onClick={handleVideoClick} // Add click handler to toggle play/pause
               />
+              </div>
               {/* <canvas
                 ref={canvasRef}
                 width={243}

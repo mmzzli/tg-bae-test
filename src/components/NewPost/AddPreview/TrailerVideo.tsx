@@ -42,6 +42,9 @@ const TrailerVideo: React.FC<TrailerVideoProps> = ({
         preload="auto"
         playsInline
         className='min-w-[64px] max-w-[64px] h-[64px] bg-[#F7F9FC] rounded-md'
+        style={{
+          objectFit: "cover"
+        }}
       />
     </div>
   );

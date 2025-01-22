@@ -1,4 +1,9 @@
 import React, { useState, useRef, RefObject, useEffect } from 'react';
+import {
+  useToast,
+} from '@chakra-ui/react'
+
+import { CustomToast, typeOptions } from '@/components/comm/Toast'
 
 interface Frame {
   url: string
@@ -30,6 +35,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
   setLoadingSkeleton,
   setPreviewVideoUrl
 }) => {
+  const toast = useToast()
   const [selectedTime, setSelectedTime] = useState(0);
   const [frames, setFrames] = useState<Frame[]>([])
   const sliderRef = useRef<HTMLDivElement | null>(null);
@@ -107,6 +113,14 @@ const TransparentSlider: React.FC<SliderProps> = ({
 
   const handleClick = (e: React.MouseEvent) => {
     if(duration < 5){
+      if(!trailerBoll){
+        toast({
+          render: () => {
+            return <CustomToast title="video should be over 5s." type={typeOptions.error} />
+          },
+          position: 'bottom',
+        })
+      }
       return
     }
     const clientX = e.clientX;

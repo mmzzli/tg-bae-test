@@ -206,7 +206,11 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
                       />
                     </Box>
                   )}
-                  <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} maskOnClick={() => handleVideoClick(data)} />
+                  <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} maskOnClick={() => {
+                    if (data?.trailer) {
+                      handleVideoClick(data)
+                    }
+                  }} />
                 </>
               )}
             </Box>

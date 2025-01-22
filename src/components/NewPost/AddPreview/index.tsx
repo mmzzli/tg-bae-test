@@ -475,7 +475,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
                 />
                 {!isPlaying && (
                   <Img
-                    className="w-[40px] h-[40px] absolute top-[56px] left-[50%] transform -translate-x-[50%] "
+                    className="w-[40px] h-[40px] absolute top-[50%] left-[50%] transform -translate-x-[50%] -translate-y-[50%] "
                     src={playIcon}
                     onClick={handleVideoClick}
                   />

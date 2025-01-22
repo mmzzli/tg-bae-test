@@ -5,9 +5,9 @@ import dynamic from 'next/dynamic'
 import { ChakraProvider } from '@chakra-ui/react'
 
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { Virtual, Mousewheel } from 'swiper/modules'
+import { Virtual } from 'swiper/modules'
 import Player from 'xgplayer'
-
+import { useLocation } from 'react-router-dom'
 import 'swiper/css'
 import ImagePreview from '@/components/TT/ImageReview'
 import useCacheVideo, { useRecommendList } from '@/store/hook/useResourceList'
@@ -25,6 +25,8 @@ const TTPlayer: React.FC = () => {
   const [isTouched, setIsTouched] = useState(() => false)
   const [activeIndex, setActiveIndex] = useState(0)
 
+  const { state } = useLocation()
+
   const setAllMuted = useCallback((muted: boolean) => {
     if (!isTouched) setIsTouched(true)
     setGlobalMuted(muted)
@@ -34,7 +36,22 @@ const TTPlayer: React.FC = () => {
     if (videoRefs.current) videoRefs.current[index] = ref
   }
 
-  console.log(list, '=======jacob')
+  console.log('list...', list)
+
+  // useEffect(() => {
+  //   if (list?.length && ((activeIndex + 2) > list?.length)) {
+  //     fetchMoreData()
+  //   }
+  // }, [activeIndex])
+
+  useEffect(() => {
+    if (state.id != undefined) {
+      console.log('setActiveIndex...', state.id)
+      const index = list.findIndex((item) => item.id === state.id)
+      console.log('setActiveIndex...', index)
+      setActiveIndex(index)
+    }
+  }, [state])
 
   return (
     <Swiper
@@ -46,31 +63,24 @@ const TTPlayer: React.FC = () => {
       touchReleaseOnEdges
       preventInteractionOnTransition
       direction="vertical"
+      // initialSlide={2}
       virtual={{
         enabled: true,
         cache: false,
         addSlidesBefore: 1,
         addSlidesAfter: 1,
       }}
-      modules={[Virtual, Mousewheel]}
+      modules={[Virtual]}
       // onSwiper={(swiper) => (window.swiper = swiper)}
       slidesPerView={1}
       spaceBetween={10}
-      mousewheel={{
-        enabled: true,
-        forceToAxis: true,
-        sensitivity: 1,
-        releaseOnEdges: true,
-        thresholdDelta: 80,
-        thresholdTime: 300,
-      }}
       navigation={false}
       pagination={false}
       onSlideChange={(swiper) => {
-        setActiveIndex(swiper.activeIndex)
+        // setActiveIndex(swiper.activeIndex)
       }}
       onReachEnd={(swiper) => {
-        console.log('swiper:', swiper)
+        // console.log('swiper1111:', swiper.slideTo)
       }}
     >
       {list.map((item, index) => (

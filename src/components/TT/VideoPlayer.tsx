@@ -81,7 +81,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
   useEffect(() => {
     if (elRef.current) {
       playerRef.current = new Player({
-        url: 'https://longcoin.teleshorts.io/--3-CvuVUdiC3i4YUf2cuzHA0ibHWas5.mp4',
+        url: sourceItem.r2,
         poster: sourceItem.avatar,
         el: elRef.current,
         playsinline: true,

@@ -9,6 +9,8 @@ import FrostedGlass from '@/components/ResourceList/FrostedGlass'
 import { calc, HStack, Text } from '@chakra-ui/react'
 import { useStore } from '@/store'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
+import { useNavigate } from 'react-router-dom'
+
 interface ImageCardProps {
   data: FormatterListItem
   handleImageClick: (images: string[], index: number) => void
@@ -16,7 +18,10 @@ interface ImageCardProps {
 }
 const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resourcesEve }) => {
   const { getCurrentUid } = useTMAUtils()
-
+  const { ttMode } = useStore((state) => ({
+    ttMode: state.ttMode,
+  }))
+  const navigate = useNavigate()
   const [currentIndex, SetCurrentIndex] = useState(0)
   const firImageWidth = useMemo(() => {
     return document.body.getBoundingClientRect().width
@@ -70,6 +75,14 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
                         })
                   }}
                   onClick={() => {
+                    if (ttMode) {
+                      navigate('/tt-player', {
+                        state: {
+                          id: data.id
+                        },
+                      })
+                      return
+                    }
                     if (data.uid !== getCurrentUid() && !data.is_pay && data.price > 0) {
                       return
                     }

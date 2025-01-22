@@ -30,8 +30,7 @@ const WsHandler = memo(() => {
     }
     rewardInterval = setInterval(() => {
       setNeedUpdateEarnings()
-      console.log('rewardInterval run')
-    }, 10000)
+    }, 30000)
   }
 
   const handleMessage = (data: any) => {

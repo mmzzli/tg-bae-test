@@ -7,6 +7,8 @@ import { useStore } from '@/store'
 import { CardRecommendProvider } from '@/utils/constants'
 import { throttle } from '@/utils/chat/schedulers'
 import { PullToRefresh } from 'antd-mobile'
+import { useToast } from '@chakra-ui/react'
+
 interface ChildRef {
   refresh: () => void
   scrollToIndex: (index: number) => void
@@ -26,6 +28,11 @@ const HomePage: FC = () => {
   const childRef = useRef<ChildRef>(null)
 
   const containerRef = useRef<HTMLDivElement>(null)
+  const toast = useToast()
+  const { ttMode, setTtMode } = useStore((state) => ({
+    ttMode: state.ttMode,
+    setTtMode: state.setTtMode,
+  }))
 
   const animation = useMemo(() => {
     if (userInfo.user_id !== -1 && userInfo.fans === 0) {
@@ -85,6 +92,41 @@ const HomePage: FC = () => {
     childRef.current?.refresh()
   }
 
+  const [clickCount, setClickCount] = useState(0)
+  const clickTimeoutRef = useRef<NodeJS.Timeout>()
+
+  const consecutiveHits = () => {
+    console.log('env', import.meta.env.PROD)
+    if (import.meta.env.MODE === 'production') {
+      return
+    }
+    setClickCount(prev => prev + 1)
+    // 清除之前的定时器
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current)
+    }
+    // 设置新的定时器，1秒后重置点击次数
+    clickTimeoutRef.current = setTimeout(() => {
+      if (clickCount + 1 >= 6) {
+        setTtMode(!ttMode)
+        toast({
+          title: !ttMode ? 'Switched to TT mode' : 'Switched to recommendation mode',
+          status: 'success',
+        })
+      }
+      setClickCount(0)
+    }, 1000)
+  }
+
+  // 组件卸载时清除定时器
+  useEffect(() => {
+    return () => {
+      if (clickTimeoutRef.current) {
+        clearTimeout(clickTimeoutRef.current)
+      }
+    }
+  }, [])
+
   return (
     <div
       className="relative w-full overflow-auto scrollbar-hide"
@@ -137,7 +179,10 @@ const HomePage: FC = () => {
                 top: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top)) + 18px',
                 opacity: showTopTitle ? 0 : 1,
               }}
-              // onClick={()=>navigate('/test')}
+              onClick={(e) => {
+                e.stopPropagation();
+                consecutiveHits();
+              }}
             >
               {title}
             </h3>

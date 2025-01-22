@@ -113,14 +113,6 @@ const TransparentSlider: React.FC<SliderProps> = ({
 
   const handleClick = (e: React.MouseEvent) => {
     if(duration < 5){
-      if(!trailerBoll){
-        toast({
-          render: () => {
-            return <CustomToast title="video should be over 5s." type={typeOptions.error} />
-          },
-          position: 'bottom',
-        })
-      }
       return
     }
     const clientX = e.clientX;
@@ -218,6 +210,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
           }
         </div>}
         {/* 滑块 */}
+        {duration <= 5 && <p className='text-[18px] text-[#fff] text-center h-[60px] leading-[60px] z-9 absolute w-[100%]'>video should be over 5s.</p>}
         {(!trailerBoll && duration > 5) && <div
           style={{
             position: 'absolute',

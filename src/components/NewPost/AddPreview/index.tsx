@@ -1,8 +1,9 @@
 import React, { useRef, useEffect, useState, RefObject, Dispatch, SetStateAction } from 'react'
-import { useBoolean, Text, useToast } from '@chakra-ui/react'
+import { useBoolean, Text, useToast, Img } from '@chakra-ui/react'
 import axios, { AxiosResponse } from 'axios'
 import { SkeletonShine } from '@/components/Skeketon/ChatSkeleton'
 import {cutReq} from '@/api'
+import playIcon from '@/assets/icons/videoSwitch.svg'
 
 
 import BaseButton from '@/components/BaseButton/BaseButton'
@@ -448,10 +449,12 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
                 src={previewVideoUrl || videoUrl}
                 style={{ display: previewVideoUrl ? "block" : "block", width: "100%" }}
                 preload="metadata"
+                // controls
                 playsInline
                 muted
                 onClick={handleVideoClick} // Add click handler to toggle play/pause
               />
+              {!isPlaying && <Img className='w-[40px] h-[40px] absolute top-[220px] left-[50%] transform -translate-x-[50%] ' src={playIcon}  onClick={handleVideoClick}/>}
               </div>
               {/* <canvas
                 ref={canvasRef}

@@ -1,7 +1,6 @@
 import Hls from 'hls.js'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import { useStore } from '@/store'
-import { useTMAUtils } from '@/hooks/useTMAUtils'
 
 const video = document.createElement('video')
 video.controls = false
@@ -16,9 +15,7 @@ video.id = 'default-video-player'
 
 export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLElement) => {
   let url = videoCard.media[0]
-  const { getCurrentUid } = useTMAUtils()
-  console.log(videoCard.uid, getCurrentUid(), 'videoCard.uid, getCurrentUid()')
-  if (videoCard.price > 0 && !videoCard.is_pay && videoCard.trailer && videoCard.uid != getCurrentUid()) {
+  if (videoCard.price > 0 && !videoCard.is_pay && videoCard.trailer) {
     url = videoCard.trailer
   }
   const curVideo = videoCardContainer.querySelector('video')

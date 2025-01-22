@@ -33,6 +33,12 @@ const TrailerVideo: React.FC<TrailerVideoProps> = ({
   //   }
   // }, [trailer]);
 
+  useEffect(() => {
+    if ((previewVideoUrl || videoUrl) && videoRef.current) {
+      videoRef.current.load();
+    }
+  }, [previewVideoUrl, videoUrl]);
+
   return (
     <div className='relative'>
       <div className='w-[20px] h-[20px] right-[-6px] top-[-6px] z-10 rounded-[50px] bg-[#666] absolute flex items-center justify-center'
@@ -44,8 +50,9 @@ const TrailerVideo: React.FC<TrailerVideoProps> = ({
       <video
         ref={videoRef}
         src={previewVideoUrl || videoUrl}
-        preload="auto"
+        preload="metadata"
         playsInline
+        muted
         className='min-w-[64px] max-w-[64px] h-[64px] bg-[#F7F9FC] rounded-md'
         style={{
           objectFit: "cover"

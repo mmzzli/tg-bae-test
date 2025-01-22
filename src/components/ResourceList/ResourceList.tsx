@@ -589,6 +589,12 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
   const saved = useMemo(() => {
     return saveds.find((saved) => saved.id === data.id)?.saveds
   }, [saveds])
+
+  const renderPriceText = (uid: number, price: number) => {
+    return uid !== getCurrentUid()
+      ? `Purchased for ${price}`
+      : `Unlock post for ${price}`;
+  };
   return (
     <>
       <div className="px-4 flex items-center justify-between h-6 mt-3 box-content">
@@ -652,7 +658,7 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
             {(((type === 'view' || type === 'recommend') && data.price > 0) || data.is_pay) && (
               <div className="flex items-center gap-2 mt-1">
                 <p className="text-[#666666] dark:text-[#424048] text-[12px]">
-                  Purchased for {data.price}
+                  {renderPriceText(data.uid, data.price)}
                 </p>
                 <Image src={StarsIcon} className="mb-1" />
               </div>

@@ -28,6 +28,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
   const token = useStore((state) => state.token)
   const [loading, setLoading] = useState(false)
   const [loadingSkeleton, setLoadingSkeleton] = useState(true)
+  const [ landscape, setLandscape ] = useState(false)
 
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -164,6 +165,25 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
     return new File([u8arr], filename, { type: mime })
   }
 
+  useEffect(() => {
+    const videoElement = videoRef.current;
+
+    if (videoElement) {
+      const handleMetadataLoaded = () => {
+        const { videoWidth, videoHeight } = videoElement;
+        if (videoWidth >= videoHeight) {
+          setLandscape(true)
+        } else {
+          setLandscape(false)
+        }
+      };
+      videoElement.addEventListener("loadedmetadata", handleMetadataLoaded);
+      return () => {
+        videoElement.removeEventListener("loadedmetadata", handleMetadataLoaded);
+      };
+    }
+  }, []);
+
   return (
     <>
       <Text
@@ -222,7 +242,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
               <div className='max-h-[330px] min-h-[100px] overflow-hidden w-[fit-content] bg-[#666]'>
                 <video
                   ref={videoRef}
-                  style={{ width: "243px" }}
+                  style={{ width: !landscape ? '243px': '100%' }}
                   src={videoUrl}
                   preload="metadata"
                   playsInline

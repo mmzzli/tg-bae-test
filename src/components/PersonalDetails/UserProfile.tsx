@@ -34,7 +34,7 @@ const UserProfile: FC = () => {
       try {
         const [giftsResponse, invoiceResponse] = await Promise.all([
           getTotalGifts(),
-          totalAvailableInvoice()
+          totalAvailableInvoice(),
         ])
 
         const { gifts } = giftsResponse
@@ -54,12 +54,8 @@ const UserProfile: FC = () => {
   return !userInfo.avatar ? (
     <ProfileSkeleton />
   ) : (
-    <Box
-      padding="0 16px"
-      className="no-tap"
-      mt="-26px"
-    >
-      <HStack paddingLeft="0" justifyContent="space-between" >
+    <Box padding="0 16px" className="no-tap" mt="-26px">
+      <HStack paddingLeft="0" justifyContent="space-between">
         <div className="w-[82px] h-[82px] overflow-hidden rounded-[50%] bg-white flex items-center justify-center">
           <Image
             rect
@@ -71,7 +67,7 @@ const UserProfile: FC = () => {
             alt={userInfo.username}
           />
         </div>
-        <Box className='mt-[32px]' display="flex" alignItems="center">
+        <Box className="mt-[32px]" display="flex" alignItems="center">
           {/* <EarningsPage /> */}
           <Notification />
           <ShareUser userInfo={userInfo} />
@@ -101,7 +97,7 @@ const UserProfile: FC = () => {
             {userInfo.follower}
           </Heading>
           <Text color="#8A8C91" fontSize="12px" lineHeight="14px">
-            Followers
+            followers
           </Text>
         </Box>
         <Box textAlign="center">
@@ -115,7 +111,7 @@ const UserProfile: FC = () => {
             {userInfo.fans}
           </Heading>
           <Text color="#8A8C91" fontSize="12px" lineHeight="14px">
-            Following
+            following
           </Text>
         </Box>
         <Box textAlign="center">
@@ -129,7 +125,7 @@ const UserProfile: FC = () => {
             {formatUSD(gifts, true)}
           </Heading>
           <Text color="#8A8C91" fontSize="12px" lineHeight="14px">
-            Earnings
+            earnings
           </Text>
         </Box>
       </HStack>

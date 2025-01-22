@@ -378,6 +378,8 @@ const useCacheVideo = (
       const videoIdStr = visibleElements[0].getAttribute('data-id')
       if (videoIdStr) {
         const currentId = parseInt(videoIdStr, 10)
+        const videoElement = document.getElementById('default-video-player');
+        const videoId = videoElement?.getAttribute('video-id') || '';
 
         // 更新状态
         setCacheVideoIndex(currentId)
@@ -385,7 +387,7 @@ const useCacheVideo = (
 
         // 找到对应的视频数据并播放
         const videoCard = videos.find((item) => item.id === currentId)
-        if (videoCard) {
+        if (videoCard && +videoId != currentId) {
           videoHls(videoCard, visibleElements[0])
         }
       }

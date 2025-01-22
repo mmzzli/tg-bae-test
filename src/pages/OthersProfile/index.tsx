@@ -1,7 +1,7 @@
 import { FC, useState, useRef, useEffect } from 'react'
 import { Box } from '@chakra-ui/react'
 import OtherUserProfile from '@/components/PersonalDetails/OtherUserProfile'
-import { useOthersViewList } from '@/store/hook/useResourceList'
+import useCacheVideo, { useOthersViewList } from '@/store/hook/useResourceList'
 import PostList from '@/components/PostList/PostList'
 import { useStore } from '@/store'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
@@ -9,7 +9,10 @@ import { throttle } from '@/utils/chat/schedulers'
 const SCROLL_THRESHOLD = 110
 
 const OthersProfile: FC = () => {
-  const { list, hasMore, fetchMoreData } = useOthersViewList()
+  const { list, hasMore, fetchMoreData, page } = useOthersViewList()
+  const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
+  const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
+  const updateCacheVideo = useStore((state) => state.updateCacheVideo)
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { userInfo } = useStore((state) => ({
     userInfo: state.othersUserInfo,
@@ -22,6 +25,17 @@ const OthersProfile: FC = () => {
     userInfo?.background_img && userInfo?.background_img.url
       ? userInfo?.background_img.url
       : '/src/assets/image/profile/bg-header.png'
+
+    useCacheVideo(
+      list,
+      page,
+      setCacheVideoIndex,
+      getCacheVideoindex,
+      updateCacheVideo,
+      'profileScrollableDiv',
+      'video-card'
+    )
+
 
   useEffect(() => {
     const scrollDiv = scrollDivRef.current

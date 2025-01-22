@@ -1,65 +1,109 @@
 import React, { useState, useRef } from 'react';
-import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 
-const VideoTrimmer: React.FC = () => {
-  const [videoFile, setVideoFile] = useState<File | null>(null);
-  const [trimmedVideo, setTrimmedVideo] = useState<string | null>(null);
-  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+const TransparentSlider = () => {
+  const [selectedTime, setSelectedTime] = useState(0);
+  const sliderRef = useRef<HTMLDivElement | null>(null);
+  const isDraggingRef = useRef<boolean>(false); // 判断是否正在拖动
 
-  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const videoDuration = 120; // 视频总时长（秒）
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setVideoFile(e.target.files ? e.target.files[0] : null);
+  // 计算滑块当前的时间
+  const getSelectedTime = (clientX: number) => {
+    const slider = sliderRef.current;
+    if (slider) {
+      const rect = slider.getBoundingClientRect();
+      const offsetX = Math.min(Math.max(clientX - rect.left, 0), rect.width);
+      return (offsetX / rect.width) * videoDuration;
+    }
+    return 0;
   };
 
-  const trimVideo = async (start: number, duration: number) => {
-    if (!videoFile) {
-      alert('Please upload a video file first.');
-      return;
-    }
+  const handleMove = (e: MouseEvent | TouchEvent) => {
+    if (!isDraggingRef.current) return;
 
-    setIsProcessing(true);
+    const clientX = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
+    const time = getSelectedTime(clientX);
+    setSelectedTime(time);
+  };
 
-    const ffmpeg = createFFmpeg({ log: true });
-    await ffmpeg.load();
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    isDraggingRef.current = true;
+    document.addEventListener('mousemove', handleMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
 
-    // Convert the file to a format ffmpeg.js can process
-    await ffmpeg.FS('writeFile', 'input.mp4', await fetchFile(videoFile));
+  const handleTouchStart = (e: React.TouchEvent) => {
+    e.preventDefault();
+    isDraggingRef.current = true;
+    document.addEventListener('touchmove', handleMove);
+    document.addEventListener('touchend', handleTouchEnd);
+  };
 
-    // Execute the trimming command
-    await ffmpeg.run('-i', 'input.mp4', '-ss', `${start}`, '-t', `${duration}`, 'output.mp4');
+  const handleMouseUp = () => {
+    isDraggingRef.current = false;
+    document.removeEventListener('mousemove', handleMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+  };
 
-    // Read the output file
-    const data = ffmpeg.FS('readFile', 'output.mp4');
+  const handleTouchEnd = () => {
+    isDraggingRef.current = false;
+    document.removeEventListener('touchmove', handleMove);
+    document.removeEventListener('touchend', handleTouchEnd);
+  };
 
-    // Create a URL for the trimmed video
-    const videoBlob = new Blob([data.buffer], { type: 'video/mp4' });
-    const videoUrl = URL.createObjectURL(videoBlob);
-
-    // Set the trimmed video URL for playback
-    setTrimmedVideo(videoUrl);
-    setIsProcessing(false);
+  const handleClick = (e: React.MouseEvent) => {
+    const clientX = e.clientX;
+    const time = getSelectedTime(clientX);
+    setSelectedTime(time);
   };
 
   return (
-    <div>
-      <h1>Video Trimmer</h1>
-      <input type="file" accept="video/*" onChange={handleFileChange} />
-      <div>
-        <button onClick={() => trimVideo(10, 5)} disabled={isProcessing || !videoFile}>
-          Trim (Start: 10s, Duration: 5s)
-        </button>
+    <div
+      style={{
+        padding: '20px',
+        textAlign: 'center',
+        background: 'url(https://via.placeholder.com/800x400) no-repeat center',
+        backgroundSize: 'cover',
+        height: '400px',
+      }}
+    >
+      <h1 style={{ color: '#000' }}>视频封面选择器</h1>
+      <div
+        ref={sliderRef}
+        onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
+        onClick={handleClick} // 点击区域直接跳到时间
+        style={{
+          position: 'relative',
+          width: '80%',
+          height: '10px',
+          background: 'rgba(0, 0, 0, 0.2)', // 背景改为黑色
+          borderRadius: '5px',
+          margin: '20px auto',
+          cursor: 'pointer',
+        }}
+      >
+        {/* 滑块 */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '-25px',
+            left: `${(selectedTime / videoDuration) * 100}%`,
+            width: '50px',
+            height: '50px',
+            border: '2px solid #00f', // 边框颜色保持不变
+            backgroundColor: 'rgba(0, 0, 0, 0.5)', // 背景色改为黑色
+            borderRadius: '10px',
+            transform: 'translate(-50%, 0)',
+            boxShadow: '0 0 10px rgba(0, 0, 255, 0.5)',
+            pointerEvents: 'none',
+          }}
+        />
       </div>
-      {isProcessing && <p>Processing...</p>}
-      {trimmedVideo && (
-        <div>
-          <h2>Trimmed Video:</h2>
-          <video src={trimmedVideo} controls width="400"></video>
-        </div>
-      )}
-      <video ref={videoRef} hidden />
+      <p style={{ color: '#000' }}>选中时间：{selectedTime.toFixed(1)} 秒</p>
     </div>
   );
 };
 
-export default VideoTrimmer;
+export default TransparentSlider;

@@ -222,7 +222,8 @@ const TransparentSlider: React.FC<SliderProps> = ({
           style={{
             position: 'absolute',
             top: '50%',
-            left: `${(selectedTime / videoDuration) * 100}%`,
+            left: `calc(min(max(${(selectedTime / videoDuration) * 100}%, ${((107 / 2) / sliderRef.current!.offsetWidth) * 100}%),
+              ${100 - ((107 / 2) / sliderRef.current!.offsetWidth) * 100}%))`,
             width: '107px',
             height: '60px',
             border: '2px solid #FFF', // 边框颜色保持不变

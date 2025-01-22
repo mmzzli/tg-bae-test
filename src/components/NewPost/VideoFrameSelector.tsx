@@ -242,7 +242,8 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
               <div className='max-h-[330px] min-h-[100px] overflow-hidden w-[fit-content] bg-[#666]'>
                 <video
                   ref={videoRef}
-                  style={{ width: !landscape ? '243px': '100%' }}
+                  // style={{ width: !landscape ? '243px': '100%' }}
+                  style={{ width: '243px' }}
                   src={videoUrl}
                   preload="metadata"
                   playsInline

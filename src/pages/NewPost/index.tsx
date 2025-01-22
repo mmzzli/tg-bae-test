@@ -224,6 +224,9 @@ export const NewPost: FC = () => {
     }
     try {
       setIsLoading(true)
+      if(trailer){
+        await checkVideoURL(trailer)
+      }
       const errorHandler = (error: any) => {
         toast({
           render: () => {
@@ -248,7 +251,6 @@ export const NewPost: FC = () => {
             price: price || 0,
           }
           if(params.price && trailer){
-            await checkVideoURL(trailer)
             params['trailer'] = trailer
           }
           await postResources(params)

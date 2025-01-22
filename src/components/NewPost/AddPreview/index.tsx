@@ -194,6 +194,19 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
   const videoUpload = async(formData:any)=>{
     // 是否是截取视频
     if(!trailerBoll && boll){
+      // 获取上传地址
+      const response = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      const id = response.data.split('/').pop();
+      setTrailer(`https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${id}/manifest/video.m3u8`)
+      formData.append("url", response.data);
+      setLoading(false)
+      setBoll(true)
+      off();
       const {data} = await axios.post(import.meta.env.VITE_API_URL + "api/v1/cut_req_file", formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -201,12 +214,6 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
         },
         timeout: 600000
       })
-      console.log(data)
-      // await checkVideoURL(data)
-      setTrailer(data)
-      setLoading(false)
-      setBoll(true)
-      off();
       return
     }
     const response = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {

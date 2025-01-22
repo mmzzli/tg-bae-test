@@ -20,6 +20,7 @@ export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLE
   }
   const curVideo = videoCardContainer.querySelector('video')
 
+  video.setAttribute('video-id', '' + videoCard.id)
   const homeVideoMuted = useStore.getState().homeVideoMuted
   if (curVideo) return
 

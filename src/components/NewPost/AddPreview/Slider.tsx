@@ -179,7 +179,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
   // },[videoRef])
 
   return (
-    <div className='w-[100%]' onClick={()=>setPreviewVideoUrl("")}>
+    <div className='w-[100%]' onClick={()=>{setPreviewVideoUrl("");setTrailerBoll(false)}}>
       <div
         ref={sliderRef}
         onMouseDown={handleMouseDown}
@@ -218,7 +218,10 @@ const TransparentSlider: React.FC<SliderProps> = ({
             // boxShadow: '0 0 10px rgba(0, 0, 255, 0.5)',
             pointerEvents: 'none',
           }}
-        />}
+        >
+          <p className='text-[18px] text-[#fff] text-center h-[60px] leading-[60px]'>5S</p>
+        </div>
+        }
       </div>
       {/* <p style={{ color: '#000' }}>{selectedTime.toFixed(1)}</p> */}
     </div>

@@ -500,7 +500,7 @@ export const NewPost: FC = () => {
     if (isFocused) {
       const scrollable: any = document.getElementById('scrollable')
       scrollable.scrollTo({
-        top: 100000,
+        top: 60,
         behavior: 'smooth',
       })
     }

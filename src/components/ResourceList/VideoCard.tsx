@@ -117,7 +117,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
                   maxHeight: 'calc(62.8vh)',
                 }}
                 className={
-                  'flex items-center overflow-hidden relative object-contain video-container z-[1]'
+                  'absolute items-center overflow-hidden relative object-contain video-container z-[4]'
                 }
               >
                 <Image
@@ -183,13 +183,13 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
               </HStack>
               {data.uid !== getCurrentUid() && data.price > 0 && !data.is_pay && (
                 <>
-                  {!data.trailer && (
+                  {data.trailer && (
                     <Box
                       position="absolute"
                       top="0"
                       left="0"
                       w="100%"
-                      zIndex={3}
+                      zIndex={1}
                       style={{
                         height: firImageHeight ? firImageHeight + 'px' : 'calc(1.5*100vw)',
                         maxHeight: 'calc(62.8vh)',
@@ -206,6 +206,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
                       />
                     </Box>
                   )}
+
                   <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} maskOnClick={() => {
                     if (data?.trailer) {
                       handleVideoClick(data)

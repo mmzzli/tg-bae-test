@@ -48,7 +48,7 @@ const Trailer: React.FC<TrailerProps> = ({
   };
 
   const clearVideo = () => {
-    setVideoSrc('');
+    setVideoSrc("");
     setPreviewVideoUrl("")
     setTrailerBoll(false);
     setVideoRefTrailer(null);
@@ -86,6 +86,7 @@ const Trailer: React.FC<TrailerProps> = ({
               }}
               src={videoSrc}
               preload="metadata"
+              autoPlay
               playsInline
               muted
               // controls

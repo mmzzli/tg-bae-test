@@ -44,6 +44,10 @@ export const postReq = () => {
 export const cutReq = (params:CutReqReq) => {
   return post<string>(`/api/v1/cut_req`,params)
 }
+export const cutReqFile = (params:any) => {
+  return post<string>(`/api/v1/cut_req_file`,params)
+}
+
 
 export const deletePost = (pid: number) => {
   return del<string>(`/api/v1/post/${pid}`)

@@ -261,8 +261,9 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
     }
     setLoading(true)
     const formData = new FormData();
+    const items = Date.now()
     formData.append("file", videoRefTrailer);
-    formData.append("name", videoRefTrailer.name);
+    formData.append("name", `${items}`);
     formData.append("type", "bae");
     // 截取视频使用
     formData.append('start', `${~~startTime}`);
@@ -271,7 +272,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({ videoRef, setCover, videoSrc: 
     formData.append(
       "meta",
       JSON.stringify({
-        name: videoRefTrailer.name,
+        name: `${items}`,
         type: "bae",
       })
     );

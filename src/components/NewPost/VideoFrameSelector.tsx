@@ -278,7 +278,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
                     value={currentTime}
                     onInput={(e: any) => handleSliderChange(e.target.value)}
                   /> */}
-                  <Slider duration={duration} handleSliderChange={handleSliderChange} videoRef={videoRef} setLoadingSkeleton={setLoadingSkeleton} />
+                  <Slider duration={duration} handleSliderChange={handleSliderChange} videoRef={videoRef} setLoadingSkeleton={setLoadingSkeleton} isBaseModalOpen={isBaseModalOpen} />
                 </div>
 
                 <div className="px-[20px] pt-[24px] pb-[20px]">

@@ -469,6 +469,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
                   style={{ display: previewVideoUrl ? 'block' : 'block', width: '243px' }}
                   preload="metadata"
                   // controls
+                  autoPlay
                   playsInline
                   muted
                   onClick={handleVideoClick} // Add click handler to toggle play/pause

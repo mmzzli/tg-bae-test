@@ -35,18 +35,20 @@ const Trailer: React.FC<TrailerProps> = ({
 
   useEffect(() => {
     if (videoSrc && videoRef.current) {
-      videoRef.current.load();
       setPreviewVideoUrl(videoSrc);
+      setTimeout(() => {
+        videoRef.current?.load();
+      }, 100);
       console.log('Video source set:', videoSrc);
     }
-  }, [videoSrc]);
+  }, [videoSrc, videoRef]);
 
   const handleChooseFile = () => {
     inputRef.current?.click();
   };
 
   const clearVideo = () => {
-    setVideoSrc('');
+    setVideoSrc("");
     setPreviewVideoUrl("")
     setTrailerBoll(false);
     setVideoRefTrailer(null);
@@ -84,6 +86,7 @@ const Trailer: React.FC<TrailerProps> = ({
               }}
               src={videoSrc}
               preload="metadata"
+              autoPlay
               playsInline
               muted
               // controls

@@ -285,6 +285,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
     useEffect(() => {
       if (writeContractError || receiptError || writeContractApiError) {
         console.log(writeContractError, receiptError, writeContractApiError)
+        stopPolling()
         toast({
           render: () => {
             return <CustomToast title={'Failed'} type={typeOptions.error} />

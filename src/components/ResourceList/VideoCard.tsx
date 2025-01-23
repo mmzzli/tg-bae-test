@@ -53,7 +53,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
       videoDom.pause()
       videoDom.muted = false
     }
-  }, [ttMode])
+  }, [ttMode, isPaid, data.is_pay, data.trailer, data.uid])
 
   const videoPlayerRef = useRef<HTMLVideoElement | null>(null)
 

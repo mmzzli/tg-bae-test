@@ -18,9 +18,11 @@ interface MentionFeatureProps {
   title: string
   setTitle: (str: string) => void
   setIsFocused: (bool: boolean) => void
+  isFocused: boolean
+  featureRefBoll: any
 }
 
-const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsFocused }) => {
+const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsFocused, isFocused, featureRefBoll }) => {
   const [mentionCandidates, setMentionCandidates] = useState<MentionCandidate[]>([])
   const [showMentionList, setShowMentionList] = useState<boolean>(false)
   const [filteredCandidates, setFilteredCandidates] = useState<MentionCandidate[]>([])
@@ -101,6 +103,29 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsF
       }
     }
   }, [current_uid, token])
+  const [initialHeight, setInitialHeight] = useState(window.innerHeight);
+
+  useEffect(() => {
+    const handleResize = () => {
+      // alert(isFocused)
+      const currentHeight = window.innerHeight;
+      if(!featureRefBoll.current){
+        if (currentHeight < initialHeight) {
+          // 视口高度变小，键盘弹出
+          setIsFocused(true);
+        } else {
+          // 视口高度恢复，键盘收起
+          setIsFocused(false);
+        }
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [initialHeight]);
 
   return (
     <div className="relative h-[280px]">

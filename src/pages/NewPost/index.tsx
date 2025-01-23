@@ -515,6 +515,9 @@ export const NewPost: FC = () => {
       })
     }
   }, [isFocused])
+  const featureRefBoll = useRef(false)
+
+
 
   return (
     <Box
@@ -655,12 +658,16 @@ export const NewPost: FC = () => {
             title={title}
             setTitle={setTitle}
             setIsFocused={setIsFocused}
+            isFocused={isFocused}
+            featureRefBoll={featureRefBoll}
             />
         </Box>
-        <div onClick={()=>stopVideo()}>
-          {(price != null && price > 0 && firstFileType === 'video' && videoSrc) && <AddPreview videoRef={videoRefCover} setCover={setCover} videoSrc={videoSrc || ""} trailer={trailer} setTrailer={setTrailer} videoFile={videoFile} />}
-        </div>
-        <StarsPage setPrice={setPrice} price={price || 0} />
+        {!isFocused && <div>
+          <div onClick={()=>stopVideo()}>
+            {(price != null && price > 0 && firstFileType === 'video' && videoSrc) && <AddPreview videoRef={videoRefCover} setCover={setCover} videoSrc={videoSrc || ""} trailer={trailer} setTrailer={setTrailer} videoFile={videoFile} />}
+          </div>
+          <StarsPage setPrice={setPrice} price={price || 0} featureRefBoll={featureRefBoll} />
+        </div>}
       </Box>
       <Box h={`${isFocused ? '700px' : ''}`}></Box>
     </Box>

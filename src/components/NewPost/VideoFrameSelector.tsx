@@ -203,7 +203,12 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
       <BaseModal
         isOpen={isBaseModalOpen}
         onClose={off}
-        height={isLandscape ? '70vh' : '85vh'}
+        // height={isLandscape ? '70vh' : '85vh'}
+        style={{
+          maxHeight: isLandscape ? '70vh' : '85vh',
+          height: 'auto',
+          overflow: 'auto',
+        }}
         animation={{
           duration: 400,
           timingFunction: 'ease-in-out',
@@ -266,7 +271,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
 
 
               <div className="bg-[#fff] rounded-tl-[16px] rounded-tr-[16px]">
-                <p className="text-center text-[#999] pt-[62px] pb-[15px]">
+                <p className="text-center text-[#999] pt-[32px] pb-[15px]">
                   Swipe left and right to choose the best cover
                 </p>
 

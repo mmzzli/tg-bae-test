@@ -346,8 +346,8 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       const updatedPosts = posts.map(({ post, user }: ListItem) => ({
         ...user,
         ...post,
-        media: converMedia(post)
-          // post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
+        media:
+          post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => item.endsWith('.m3u8')) || ''] : [post.media],
       }))
 
       get().setRecommendList(updatedPosts, page > 1)
@@ -416,7 +416,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       const updatedPosts = featured.map(({ post, user }: ListItem) => ({
         ...user,
         ...post,
-        media: converMedia(post)
+        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => item.endsWith('.m3u8')) || ''] : [post.media]
           // post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
       }))
 
@@ -819,7 +819,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       const updatedPosts = posts.map(({ post, user }) => ({
         ...user,
         ...post,
-        media: converMedia(post)
+        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => item.endsWith('.m3u8')) || ''] : [post.media]
           // post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
       }))
       get().setViewList(updatedPosts, page > 1)
@@ -887,7 +887,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       const updatedPosts = posts.map((post) => ({
         ...post,
         ...othersUserInfo,
-        media: converMedia(post)
+        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => item.endsWith('.m3u8')) || ''] : [post.media]
           // post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
       }))
       get().setOthersViewList(updatedPosts, page > 1)
@@ -905,7 +905,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     const updatedPosts = posts.map(({ post, user }: ListItem) => ({
       ...user,
       ...post,
-      media: converMedia(post)
+      media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => item.endsWith('.m3u8')) || ''] : [post.media]
         // post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
     }))
     set(() => ({
@@ -938,7 +938,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       const updatedPosts = posts.map(({ post, user }) => ({
         ...user,
         ...post,
-        media: converMedia(post)
+        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => item.endsWith('.m3u8')) || ''] : [post.media]
           // post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
       }))
       get().setFavList(updatedPosts, page > 1)
@@ -1009,7 +1009,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       const updatedPosts = posts.map(({ post, user }) => ({
         ...user,
         ...post,
-        media: converMedia(post)
+        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => item.endsWith('.m3u8')) || ''] : [post.media]
           // post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
       }))
       console.log(updatedPosts)

@@ -73,7 +73,7 @@ const JKFCampaignList = ({ containerRef }: PostListProps) => {
       res.media = res.media.map(({ post, user }: any) => ({
         ...user,
         ...post,
-        media: converMedia(post)
+        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => item.endsWith('.m3u8')) || ''] : [post.media]
           // post.type === 1 && typeof post.media === 'string'
           //   ? post.media.split(',')
           //   : [post.media],

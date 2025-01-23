@@ -40,9 +40,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
       })
       return
     }
-    console.log('data.is_pay1>', data.is_pay)
-    console.log('data.is_pay3>', isPaid)
-    if (!data?.trailer && data.price > 0 && !isPaid && data.uid != getCurrentUid()) {
+    if (!data?.trailer && data.price > 0 && !data.is_pay && data.uid != getCurrentUid()) {
       return
     }
     const videoDom = videoCardContainer?.current?.querySelector('video')
@@ -113,12 +111,6 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
     return (pic_height * width) / pic_width
   }, [data])
 
-  const interanlResourcesEve = (post_id: number, viewUrl: string, isPay?: boolean) => {
-    resourcesEve(post_id, viewUrl, isPay)
-    if (isPay) {
-      setIsPaid(isPay)
-    }
-  }
   return (
     <>
       <Box className="video-card" data-id={data.id} ref={videoCardContainer}>
@@ -219,7 +211,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
                         src={data.media[0]}
                       />
                     </Box>
-                  <FrostedGlass price={data.price} post_id={data.id} resourcesEve={interanlResourcesEve} maskOnClick={() => {
+                  <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} maskOnClick={() => {
                     if (data?.trailer) {
                       handleVideoClick(data)
                     }

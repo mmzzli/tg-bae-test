@@ -1,0 +1,11 @@
+
+export const converMedia = (data: any) => {
+  if (data.type === 1) {
+    return data.media.split(',')
+  } else if (data.type === 0) {
+    const medias = data.media.split(',')
+    // const picUrl = medias.find((item) => !item.endsWith('.m3u8'))
+    const media = medias.find((item: string) => item.endsWith('.m3u8'))
+    return [media]
+  }
+}

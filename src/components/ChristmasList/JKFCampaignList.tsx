@@ -12,6 +12,7 @@ import { debounce } from '@/utils/chat/schedulers';
 import { getVoteDetail, postVote } from '@/api';
 import { cn } from '@/utils/utils'
 import { VoteReq } from '@/types'
+import { converMedia } from '@/utils/video/media';
 
 interface PostListProps {
   containerRef: React.RefObject<HTMLDivElement>;
@@ -72,10 +73,10 @@ const JKFCampaignList = ({ containerRef }: PostListProps) => {
       res.media = res.media.map(({ post, user }: any) => ({
         ...user,
         ...post,
-        media:
-          post.type === 1 && typeof post.media === 'string'
-            ? post.media.split(',')
-            : [post.media],
+        media: converMedia(post)
+          // post.type === 1 && typeof post.media === 'string'
+          //   ? post.media.split(',')
+          //   : [post.media],
       }));
     }
     setIsLoading(false)

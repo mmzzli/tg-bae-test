@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
-import { formatUnits } from 'viem'
+import { formatUnits, parseEther, parseUnits } from 'viem'
 import BigNumber from 'bignumber.js'
 import { SendRewardButton } from './SendRewardButton'
 import { useToast } from '@chakra-ui/react'
 import { CustomToast, typeOptions } from '../comm/Toast'
+import { useEstimateFeesPerGas, useEstimateGas, useEstimateMaxPriorityFeePerGas } from 'wagmi'
 
 interface TransferPanelProps {
   balance: bigint
@@ -44,6 +45,16 @@ export const TransferPanel = ({
     { label: '50%', value: 0.5 },
     { label: 'MAX', value: 1 },
   ]
+
+  const { data: gasLimit } = useEstimateGas({
+    chainId: chainId,
+  })
+  const { data: feesPerGas } = useEstimateFeesPerGas({
+    chainId: chainId,
+  })
+  const { data: maxPriorityFee } = useEstimateMaxPriorityFeePerGas({
+    chainId: chainId,
+  })
 
   const validateAmount = (value: string) => {
     if (!value) {
@@ -117,9 +128,30 @@ export const TransferPanel = ({
 
   const handlePercentageClick = (percentage: number) => {
     const balanceBN = new BigNumber(formattedBalance)
-    const newAmount = balanceBN
-      .multipliedBy(percentage)
-      .decimalPlaces(decimals, BigNumber.ROUND_DOWN)
+    let newAmount = balanceBN.multipliedBy(percentage).decimalPlaces(decimals, BigNumber.ROUND_DOWN)
+
+    if (tokenAddress === '0x0000000000000000000000000000000000000000') {
+      const estimatedGas = gasLimit ? BigInt(gasLimit) : 21000n
+      const currentGasPrice = feesPerGas ? BigInt(feesPerGas.maxFeePerGas) : 0n
+      const totalCost =
+        estimatedGas * 2n * (currentGasPrice + (maxPriorityFee ? BigInt(maxPriorityFee) : 0n))
+
+      if (totalCost + parseUnits(newAmount.toString(), decimals) > balance) {
+        const amount = parseUnits(newAmount.toString(), decimals) - totalCost
+        if (amount < 0) {
+          toast({
+            render: () => <CustomToast title={`Insufficient gas`} type={typeOptions.info} />,
+          })
+          setError('Insufficient gas')
+          return
+        }
+
+        newAmount = new BigNumber(formatUnits(amount, decimals)).decimalPlaces(
+          decimals,
+          BigNumber.ROUND_DOWN
+        )
+      }
+    }
     handleAmountChange(newAmount.toString())
   }
 

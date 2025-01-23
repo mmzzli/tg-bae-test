@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
 import { useBoolean, useToast } from '@chakra-ui/react'
 import { BaseModal } from '@/components/Modal/BaseModal'
 import BaseButton from '@/components/BaseButton/BaseButton'
@@ -30,7 +30,7 @@ import {
 import { abi } from '@/config/abi'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { CustomToast, typeOptions } from '../comm/Toast'
-import { giftSign } from '@/api'
+import { approveEvent, giftSign, verifyWithdraw } from '@/api'
 import { formatUSD } from '@/utils/utils'
 
 const contractAddress = '0x359E9Ef12132ea2a49701F838B5CdFbc13771AaF'
@@ -51,6 +51,8 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
     const [loading, setLoading] = useState<boolean>(false)
     const { getCurrentUid } = useTMAUtils()
     const current_uid = getCurrentUid()
+    const [writeContractSuccess, setWriteContractSuccess] = useState(false)
+    const [writeContractApiError, setWriteContractApiError] = useState<any>(null)
 
     // Wagmi Hooks START
     const { data: gasLimit } = useEstimateGas()
@@ -67,12 +69,68 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
     })
     // Wagmi Hooks END
 
+    // Tx Status Interval START
+    const isPollingRef = useRef(false)
+    const isHandledRef = useRef(false)
+    const pollingTimeoutRef = useRef<NodeJS.Timeout>()
+
+    const setIsPolling = (value: boolean) => {
+      isPollingRef.current = value
+    }
+
+    const setIsHandled = (value: boolean) => {
+      isHandledRef.current = value
+    }
+
+    const stopPolling = () => {
+      setIsPolling(false)
+      pollingTimeoutRef.current && clearTimeout(pollingTimeoutRef.current)
+    }
+
+    const pollStatus = async () => {
+      if (!hash || !isPollingRef.current || isHandledRef.current) return
+      pollingTimeoutRef.current && clearTimeout(pollingTimeoutRef.current)
+      try {
+        const res = await approveEvent({
+          hash: hash as `0x${string}`,
+          chain_id: currentWithdrawChain,
+        })
+
+        if (res.status === 1) {
+          stopPolling()
+          if (!isHandledRef.current) {
+            setIsHandled(true)
+            setWriteContractSuccess(true)
+          }
+        } else if (res.status === 2) {
+          stopPolling()
+          setWriteContractApiError(res)
+        } else if (res.status === 0) {
+          pollingTimeoutRef.current = setTimeout(() => {
+            pollStatus()
+          }, 2000)
+        } else {
+          throw new Error('Unknown status')
+        }
+      } catch (error) {
+        stopPolling()
+        console.error('Polling error:', error)
+      }
+    }
+    // Tx Status Interval END
+
     // Reward List
     const [rewards, setRewards] = useState<{ token: `0x${string}`; amount: bigint }[]>([])
     const [currentWithdraw, setCurrentWithdraw] = useState<{
       chain_id: number
       withdraw_gifts: number
     } | null>(null)
+    const [currentWithdrawInProgress, setCurrentWithdrawInProgress] = useState<{
+      chain_id: number
+      withdraw_gifts: number
+    } | null>(null)
+
+    const [currentWithdrawChain, setCurrentWithdrawChain] = useState(0)
 
     // Read Contract START
     const { data: bscReward, refetch: refetchBscReward } = useReadContract({
@@ -133,30 +191,47 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
         return
       }
 
+      setLoading(true)
+      setCurrentWithdrawChain(currentChain.id)
+      setCurrentWithdrawInProgress(currentWithdraw)
+      onLoading?.()
+
       let _deadline = 0
+      let signatures: any
       const chainId = currentChain.id
       const token = rewards.map((item) => item.token)
       const amount = rewards.map((item) => Number(item.amount))
-      const { signatures: sigRes } = await giftSign({
-        receiver: `${address}` as `0x${string}`,
-        token: token.join(','),
-        chainid: chainId,
-        amount: amount.join(','),
-      })
-      const signatures: any = sigRes.map((item) => item.signature)
-      console.log(signatures)
-      _deadline = sigRes[0]?.deadline
 
-      setLoading(true)
-      onLoading?.()
+      try {
+        const { signatures: sigRes } = await giftSign({
+          receiver: `${address}` as `0x${string}`,
+          token: token.join(','),
+          chainid: chainId,
+          amount: amount.join(','),
+        })
+
+        signatures = sigRes.map((item) => item.signature)
+        console.log('signatures', signatures)
+        _deadline = sigRes[0]?.deadline
+      } catch (error) {
+        toast({
+          render: () => {
+            return <CustomToast title="signature error" type={typeOptions.info} />
+          },
+          position: 'bottom',
+        })
+        resetState()
+      }
 
       const gasConfig = {
         gas: BigInt(Number(gasLimit) * 10) || 530000n,
-        maxFeePerGas: feesPerGas?.maxFeePerGas || 530000n,
-        maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas || 530000n,
+        maxFeePerGas: BigInt(Number(feesPerGas?.maxFeePerGas) * 2) || 530000n,
+        maxPriorityFeePerGas: BigInt(Number(feesPerGas?.maxPriorityFeePerGas) * 2) || 530000n,
       }
 
-      console.log([
+      console.log('gas', gasLimit, gasConfig)
+
+      console.log('args', [
         BigInt(current_uid),
         `${address}` as `0x${string}`,
         rewards,
@@ -202,26 +277,69 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
     }, [currentChain, bscReward, ethReward, testReward, withdraw])
 
     useEffect(() => {
-      if (writeContractError || receiptError) {
-        console.log(writeContractError, receiptError)
+      if (writeContractError || receiptError || writeContractApiError) {
+        console.log(writeContractError, receiptError, writeContractApiError)
         toast({
           render: () => {
             return <CustomToast title={'Failed'} type={typeOptions.error} />
           },
           position: 'bottom',
         })
+        resetState()
         onFinish?.()
-        setLoading(false)
       }
-    }, [writeContractError, receiptError])
+    }, [writeContractError, receiptError, writeContractApiError])
 
     useEffect(() => {
-      if (isConfirmed) {
-        setLoading(false)
+      if (isConfirmed && !isHandledRef.current) {
+        stopPolling()
+        verifyWithdrawEve()
         onFinish?.()
       }
-    }, [isConfirmed])
-    console.log(withdraw)
+      if (writeContractSuccess && !isHandledRef.current) {
+        verifyWithdrawEve()
+        onFinish?.()
+      }
+    }, [isConfirmed, writeContractSuccess])
+
+    useEffect(() => {
+      console.log('tx hash', hash)
+      if (hash) {
+        setIsHandled(false)
+        setIsPolling(true)
+        setTimeout(() => {
+          pollStatus()
+        }, 0)
+      }
+      return () => {
+        stopPolling()
+      }
+    }, [hash])
+
+    const verifyWithdrawEve = async () => {
+      resetState()
+      toast({
+        render: () => {
+          return <CustomToast title={'success'} type={typeOptions.success} />
+        },
+        position: 'bottom',
+      })
+      await verifyWithdraw({
+        from: address as `0x${string}`,
+        chain_id: currentWithdrawChain,
+        amount: currentWithdrawInProgress?.withdraw_gifts || 0,
+        hash: hash as `0x${string}`,
+      })
+    }
+
+    const resetState = () => {
+      setIsHandled(false)
+      setCurrentWithdrawChain(0)
+      setWriteContractSuccess(false)
+      setWriteContractApiError(null)
+      setCurrentWithdrawInProgress(null)
+      setLoading(false)
+    }
     return (
       <>
         <BaseModal

@@ -47,7 +47,8 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
       videoDom.pause()
       videoDom.muted = false
     }
-  }, [])
+  }, [ttMode])
+
   const videoPlayerRef = useRef<HTMLVideoElement | null>(null)
 
   const [playVideoTime, setPlayVideoTime] = useState(data.duration)
@@ -108,7 +109,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
   return (
     <>
       <Box className="video-card" data-id={data.id} ref={videoCardContainer}>
-        <div className="relative ">
+        <div className="relative">
           <Box position="relative">
             <Box>
               <div
@@ -117,7 +118,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
                   maxHeight: 'calc(62.8vh)',
                 }}
                 className={
-                  'absolute items-center overflow-hidden relative object-contain video-container z-[4]'
+                  'absolute items-center justify-center overflow-hidden relative object-contain video-container z-[4] flex'
                 }
               >
                 <Image
@@ -183,7 +184,6 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
               </HStack>
               {data.uid !== getCurrentUid() && data.price > 0 && !data.is_pay && (
                 <>
-                  {data.trailer && (
                     <Box
                       position="absolute"
                       top="0"
@@ -205,8 +205,6 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
                         src={data.media[0]}
                       />
                     </Box>
-                  )}
-
                   <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} maskOnClick={() => {
                     if (data?.trailer) {
                       handleVideoClick(data)

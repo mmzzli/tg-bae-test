@@ -47,7 +47,8 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
       videoDom.pause()
       videoDom.muted = false
     }
-  }, [])
+  }, [ttMode])
+
   const videoPlayerRef = useRef<HTMLVideoElement | null>(null)
 
   const [playVideoTime, setPlayVideoTime] = useState(data.duration)
@@ -183,7 +184,6 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
               </HStack>
               {data.uid !== getCurrentUid() && data.price > 0 && !data.is_pay && (
                 <>
-                  {data.trailer && (
                     <Box
                       position="absolute"
                       top="0"
@@ -205,8 +205,6 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
                         src={data.media[0]}
                       />
                     </Box>
-                  )}
-
                   <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} maskOnClick={() => {
                     if (data?.trailer) {
                       handleVideoClick(data)

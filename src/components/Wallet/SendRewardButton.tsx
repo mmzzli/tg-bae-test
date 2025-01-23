@@ -64,17 +64,19 @@ export const SendRewardButton = ({
 
   const isPollingRef = useRef(false)
   const isHandledRef = useRef(false)
+  const pollingTimeoutRef = useRef<NodeJS.Timeout>()
+  const startTimeRef = useRef<number>(0)
 
   const setIsPolling = (value: boolean) => {
     isPollingRef.current = value
+    if (value) {
+      startTimeRef.current = Date.now()
+    }
   }
 
   const setIsHandled = (value: boolean) => {
     isHandledRef.current = value
   }
-  const pollingTimeoutRef = useRef<NodeJS.Timeout>()
-  const [isTimeout, setIsTimeout] = useState(false)
-  const timeoutRef = useRef<NodeJS.Timeout>()
 
   const [isApproving, setIsApproving] = useState(false)
   const [writeContractError, setWriteContractError] = useState<any>(null)
@@ -112,11 +114,25 @@ export const SendRewardButton = ({
   const stopPolling = () => {
     setIsPolling(false)
     pollingTimeoutRef.current && clearTimeout(pollingTimeoutRef.current)
-    timeoutRef.current && clearTimeout(timeoutRef.current)
   }
   const pollStatus = async () => {
     if (!hash || !isPollingRef.current || isHandledRef.current) return
     pollingTimeoutRef.current && clearTimeout(pollingTimeoutRef.current)
+
+    if (Date.now() - startTimeRef.current > 20000) {
+      stopPolling()
+      toast({
+        render: () => {
+          return <CustomToast title="Transaction timeout" type={typeOptions.error} />
+        },
+        position: 'bottom',
+      })
+      setIsApproving(false)
+      reset()
+      slideButtonRef.current?.reset()
+      return
+    }
+
     try {
       const res = await approveEvent({
         hash: hash as `0x${string}`,
@@ -291,18 +307,6 @@ export const SendRewardButton = ({
       console.warn(`${isApproving ? 'Approve' : 'Reward'} hash:`, hash)
       setIsHandled(false)
       setIsPolling(true)
-      setIsTimeout(false)
-
-      timeoutRef.current = setTimeout(() => {
-        setIsTimeout(true)
-        stopPolling()
-        toast({
-          render: () => <CustomToast title="Transaction timeout" type={typeOptions.error} />,
-          position: 'bottom',
-        })
-        slideButtonRef.current?.reset()
-      }, 20000)
-
       setTimeout(() => {
         pollStatus()
       }, 0)

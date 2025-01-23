@@ -239,7 +239,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
       } catch (error) {
         toast({
           render: () => {
-            return <CustomToast title="signature error" type={typeOptions.info} />
+            return <CustomToast title="Signature error" type={typeOptions.info} />
           },
           position: 'bottom',
         })
@@ -346,7 +346,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
       resetState()
       toast({
         render: () => {
-          return <CustomToast title={'success'} type={typeOptions.success} />
+          return <CustomToast title={'Success'} type={typeOptions.success} />
         },
         position: 'bottom',
       })

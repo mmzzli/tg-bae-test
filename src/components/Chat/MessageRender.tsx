@@ -513,7 +513,7 @@ const RewardCard: React.FC<{ message: WrappedMessage }> = ({ message }) => {
   }
   return (
     <div
-      className="cursor-pointer flex items-center w-[255px] h-[72px] border-[0.5px] border-[#CDCDD4] rounded-lg px-4 bg-[#F5F7FC]"
+      className="cursor-pointer flex items-center w-[255px] h-[72px] border-[0.5px] border-[#CDCDD4] rounded-lg px-4 bg-[#ffffff]"
       onClick={handleClick}
     >
       <TokenIcon token={token} chainName={chain_name} size="36px" />

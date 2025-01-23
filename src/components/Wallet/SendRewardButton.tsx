@@ -50,7 +50,7 @@ export const SendRewardButton = ({
 
   const { runDailyChat } = useDailyTaskActions()
 
-  const { data: hash, error, writeContract } = useWriteContract()
+  const { data: hash, error, writeContract, reset } = useWriteContract()
   const { address } = useAccount()
 
   const { getCurrentUid } = useTMAUtils()
@@ -115,7 +115,10 @@ export const SendRewardButton = ({
     if (!hash || !isPollingRef.current || isHandledRef.current) return
     pollingTimeoutRef.current && clearTimeout(pollingTimeoutRef.current)
     try {
-      const res = await approveEvent({ hash: hash as `0x${string}`, chain_id: chainId })
+      const res = await approveEvent({
+        hash: hash as `0x${string}`,
+        chain_id: chainId,
+      })
 
       if (res.status === 1) {
         stopPolling()
@@ -134,9 +137,10 @@ export const SendRewardButton = ({
         throw new Error('Unknown status')
       }
     } catch (error) {
-      stopPolling()
+      pollingTimeoutRef.current = setTimeout(() => {
+        pollStatus()
+      }, 2000)
       console.error('Polling error:', error)
-      setWriteContractError(error)
     }
   }
 
@@ -225,6 +229,7 @@ export const SendRewardButton = ({
       })
       stopPolling()
       setIsApproving(false)
+      reset()
       slideButtonRef.current?.reset()
     }
   }, [error, receiptError, writeContractError])
@@ -261,6 +266,7 @@ export const SendRewardButton = ({
       setIsApproving(false)
       afterReward?.()
       refetchAllowance()
+      reset()
       slideButtonRef.current?.reset()
     } else if (isApproving) {
       setIsApproving(false)
@@ -314,6 +320,11 @@ export const SendRewardButton = ({
 
     const handleDoubleClick = () => {
       setShowAllowance(!showAllowance)
+      setIsHandled(false)
+      setIsPolling(true)
+      setTimeout(() => {
+        pollStatus()
+      }, 0)
     }
 
     // 同时监听触摸和鼠标事件

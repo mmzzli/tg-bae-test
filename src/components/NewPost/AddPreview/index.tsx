@@ -453,7 +453,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
           {videoUrl && (
             <div className="pt-[24px]">
               {/* Video Element */}
-              <div className="relative max-h-[330px] min-h-[100px] overflow-hidden w-[fit-content] bg-[#666]">
+              <div className="relative max-h-[330px] min-h-[200px] overflow-hidden w-[fit-content] bg-[#666] rounded-[8px]">
                 {/* <video
                 ref={previewVideoRef}
                 src={previewVideoUrl}
@@ -469,13 +469,14 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
                   style={{ display: previewVideoUrl ? 'block' : 'block', width: '243px' }}
                   preload="metadata"
                   // controls
+                  autoPlay
                   playsInline
                   muted
                   onClick={handleVideoClick} // Add click handler to toggle play/pause
                 />
                 {!isPlaying && (
                   <Img
-                    className="w-[40px] h-[40px] absolute top-[56px] left-[50%] transform -translate-x-[50%] "
+                    className="w-[40px] h-[40px] absolute top-[50%] left-[50%] transform -translate-x-[50%] -translate-y-[50%] "
                     src={playIcon}
                     onClick={handleVideoClick}
                   />

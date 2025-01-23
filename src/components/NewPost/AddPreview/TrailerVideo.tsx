@@ -51,6 +51,7 @@ const TrailerVideo: React.FC<TrailerVideoProps> = ({
         ref={videoRef}
         src={previewVideoUrl || videoUrl}
         preload="metadata"
+        autoPlay
         playsInline
         muted
         className='min-w-[64px] max-w-[64px] h-[64px] bg-[#F7F9FC] rounded-md'

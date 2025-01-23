@@ -123,6 +123,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
 
     // 每次视频更新时提取一帧
     const extractFrame = () => {
+      console.log(1)
       if (frameCount >= 20 || video.currentTime >= videoDuration) {
         video.ontimeupdate = null; // 停止事件监听
         video.pause(); // 停止视频播放
@@ -156,19 +157,20 @@ const TransparentSlider: React.FC<SliderProps> = ({
     const videoElement = videoRef.current;
 
     if (videoElement && isBaseModalOpen) {
-      const handleLoadedMetadata = () => {
-        // 确保在元数据加载完成后执行逻辑
-        extractFramesFromVideo();
-      };
+      extractFramesFromVideo();
+      // const handleLoadedMetadata = () => {
+      //   // 确保在元数据加载完成后执行逻辑
+      //   extractFramesFromVideo();
+      // };
 
-      videoElement.addEventListener("loadedmetadata", handleLoadedMetadata);
+      // videoElement.addEventListener("loadedmetadata", handleLoadedMetadata);
 
-      // 清理事件监听器
-      return () => {
-        videoElement.removeEventListener("loadedmetadata", handleLoadedMetadata);
-      };
+      // // 清理事件监听器
+      // return () => {
+      //   videoElement.removeEventListener("loadedmetadata", handleLoadedMetadata);
+      // };
     }
-  }, []);
+  }, [isBaseModalOpen]);
 
   return (
     <div className='w-[100%]'>

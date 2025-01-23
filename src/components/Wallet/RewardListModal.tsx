@@ -73,9 +73,13 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
     const isPollingRef = useRef(false)
     const isHandledRef = useRef(false)
     const pollingTimeoutRef = useRef<NodeJS.Timeout>()
+    const startTimeRef = useRef<number>(0)
 
     const setIsPolling = (value: boolean) => {
       isPollingRef.current = value
+      if (value) {
+        startTimeRef.current = Date.now()
+      }
     }
 
     const setIsHandled = (value: boolean) => {
@@ -90,6 +94,20 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
     const pollStatus = async () => {
       if (!hash || !isPollingRef.current || isHandledRef.current) return
       pollingTimeoutRef.current && clearTimeout(pollingTimeoutRef.current)
+
+      if (Date.now() - startTimeRef.current > 20000) {
+        stopPolling()
+        toast({
+          render: () => {
+            return <CustomToast title="Transaction timeout" type={typeOptions.error} />
+          },
+          position: 'bottom',
+        })
+        resetState()
+        onFinish?.()
+        return
+      }
+
       try {
         const res = await approveEvent({
           hash: hash as `0x${string}`,

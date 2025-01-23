@@ -158,7 +158,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
   useEffect(() => {
     const videoElement = videoRef.current;
 
-    if (videoElement && isBaseModalOpen) {
+    if (videoElement && isBaseModalOpen && frames.length < 20) {
       extractFramesFromVideo();
       // const handleLoadedMetadata = () => {
       //   // 确保在元数据加载完成后执行逻辑

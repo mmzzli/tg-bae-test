@@ -1,33 +1,20 @@
 import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useBoolean, useToast } from '@chakra-ui/react'
-import { parseUnits } from 'viem'
-import {
-  useAccount,
-  useReadContract,
-  useSwitchChain,
-  useWriteContract,
-  useEstimateFeesPerGas,
-  useEstimateGas,
-  useWaitForTransactionReceipt,
-} from 'wagmi'
+import { useToast } from '@chakra-ui/react'
+import { useAccount, useReadContract, useSwitchChain, useWriteContract } from 'wagmi'
 import { abi } from '@/config/abi'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
-import { supportEVMTokenList } from '@/config/wagmi-config'
 
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { StarsIcon, RightIcon } from '@/assets/icons'
-import { totalAvailableInvoice, giftSign, verifyWithdraw, getTotalGifts, approveEvent } from '@/api'
+import { totalAvailableInvoice, verifyWithdraw, getTotalGifts, approveEvent } from '@/api'
 import { useStore } from '@/store/store'
-import { totalAvailable } from '@/types'
-import { formatNumber, formatUSD } from '@/utils/utils'
+import { GiftsRes, totalAvailable } from '@/types'
+import { formatUSD } from '@/utils/utils'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import ConnectModal from '@/components/Wallet/ConnectModal'
+import RewardListModal from '@/components/Wallet/RewardListModal'
 import { useRequest } from 'ahooks'
-
-interface RewardItem {
-  amount: string | number
-}
 
 const Earnings = () => {
   const navigate = useNavigate()
@@ -41,19 +28,15 @@ const Earnings = () => {
     total: 0,
   })
   const connectModalRef = useRef<{ someMethod: () => void }>(null)
-  const myTokensModalRef = useRef<{ someMethod: () => void }>(null)
+  const rewardRef = useRef<{ someMethod: () => void }>(null)
   const { address, chain, status } = useAccount()
   const { switchChain } = useSwitchChain()
-  const { data: hash, error, writeContract } = useWriteContract()
-  const { getCurrentUid } = useTMAUtils()
-  const current_uid = getCurrentUid()
+  const { data: hash } = useWriteContract()
   const setNeedUpdateEarnings = useStore((state) => state.setNeedUpdateEarnings)
-  const { data: gasLimit } = useEstimateGas()
-  const { data: feesPerGas } = useEstimateFeesPerGas()
-  const [loading, setLiading] = useState(false)
-  const [totalGifts, setTotalGifts] = useState({
+  const [totalGifts, setTotalGifts] = useState<GiftsRes>({
     gifts: 0,
     withdraw_gifts: 0,
+    details: [],
   })
   const [writeContractSuccess, setWriteContractSuccess] = useState(false)
   const [writeContractError, setWriteContractError] = useState<any>(null)
@@ -87,111 +70,8 @@ const Earnings = () => {
       ? `0x359E9Ef12132ea2a49701F838B5CdFbc13771AaF`
       : `0x359E9Ef12132ea2a49701F838B5CdFbc13771AaF`
 
-  const { data: rewardByUidList, refetch } = useReadContract({
-    abi,
-    address: contractAddress as `0x${string}`,
-    functionName: 'getRewardByUid',
-    args: [BigInt(current_uid)],
-  })
-
-  const getTokenInfoByChainId = (chainId: number) => {
-    return supportEVMTokenList.filter((token) => token.chainId === chainId)
-  }
-
-  const { error: receiptError } = useWaitForTransactionReceipt({
-    hash,
-  })
-
-  const walletWithdraw = async () => {
-    console.log(BigInt(Number(gasLimit) * 10) || 0)
-    try {
-      await switchChain({ chainId })
-    } catch (error) {
-      toast({
-        render: () => <CustomToast title="Switch chain failed" type={typeOptions.error} />,
-        position: 'bottom',
-      })
-      return
-    }
-    const tokenInfo = getTokenInfoByChainId(chainId)
-    console.log(tokenInfo, rewardByUidList)
-    if (
-      !(rewardByUidList && rewardByUidList.length)
-      // ||
-      // (rewardByUidList &&
-      //   rewardByUidList.length === 1 &&
-      //   rewardByUidList[0].token === '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d')
-    ) {
-      toast({
-        render: () => {
-          return <CustomToast title="Withdrawal in progress, please wait." type={typeOptions.info} />
-        },
-        position: 'bottom',
-      })
-      return
-    }
-
-    // let signatures: `0x${string}`[] = []
-    const tokenAmounts: { token: `0x${string}`; amount: bigint }[] = []
-    let _deadline = 0
-
-    console.log(rewardByUidList)
-    const token = rewardByUidList.map(item => item.token);
-    const amount = rewardByUidList.map(item => Number(item.amount));
-    const { signatures:sigRes } = await giftSign({
-      receiver: `${address}` as `0x${string}`,
-      token: token.join(','),
-      chainid: chainId,
-      amount: amount.join(',')
-    })
-    const signatures:any = sigRes.map(item => item.signature);
-    console.log(signatures)
-    _deadline = sigRes[0]?.deadline
-
-    setLiading(true)
-
-    const gasConfig =
-      import.meta.env.VITE_APP_ENV === 'production'
-        ? {
-            gas: BigInt(Number(gasLimit) * 10) || 530000n,
-            maxFeePerGas: feesPerGas?.maxFeePerGas || 530000n,
-            maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas || 530000n,
-          }
-        : {
-            gas: BigInt(Number(gasLimit) * 10) || 530000n,
-            maxFeePerGas: feesPerGas?.maxFeePerGas || 530000n,
-            maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas || 530000n,
-          }
-
-    console.log([
-      BigInt(current_uid),
-      `${address}` as `0x${string}`,
-      // token as `0x${string}`,
-      // amount,
-      rewardByUidList,
-      BigInt(_deadline),
-      signatures,
-    ])
-    writeContract({
-      address: contractAddress as `0x${string}`,
-      abi,
-      functionName: 'withdrawMultiToken',
-      chainId,
-      args: [
-        BigInt(current_uid),
-        `${address}` as `0x${string}`,
-        // token as `0x${string}`,
-        // amount,
-        rewardByUidList,
-        BigInt(_deadline),
-        signatures,
-      ],
-      ...gasConfig,
-    })
-  }
-
-  const handleAfterConnect = () => {
-    status === 'connected' && address && myTokensModalRef.current?.someMethod()
+  const showRewardModal = () => {
+    rewardRef.current?.someMethod()
   }
 
   const handleReward = async () => {
@@ -200,9 +80,7 @@ const Earnings = () => {
     console.log('chain', chain)
     if (status === 'disconnected') {
       connectModalRef.current?.someMethod()
-    } else if (status === 'connected') {
-      myTokensModalRef.current?.someMethod()
-    } else {
+    } else if (status !== 'connected') {
       toast({
         render: () => {
           return <CustomToast title="Connecting..." type={typeOptions.info} />
@@ -225,7 +103,6 @@ const Earnings = () => {
       },
       position: 'bottom',
     })
-    setLiading(false)
     setWriteContractSuccess(false)
     setWriteContractError(null)
     load()
@@ -236,19 +113,6 @@ const Earnings = () => {
       verifyWithdrawEve()
     }
   }, [writeContractSuccess])
-
-  useEffect(() => {
-    if (error || receiptError || writeContractError) {
-      console.log(error || receiptError || writeContractError)
-      toast({
-        render: () => {
-          return <CustomToast title={'Failed'} type={typeOptions.error} />
-        },
-        position: 'bottom',
-      })
-      setLiading(false)
-    }
-  }, [error, receiptError, writeContractError])
 
   const load = async () => {
     await updateEarnings()
@@ -268,15 +132,6 @@ const Earnings = () => {
       console.error('Failed to fetch earnings data:', error)
       // 这里您可以添加错误处理，比如显示错误提示等
     }
-  }
-  const getDisabled = ()=>{
-    if(totalGifts.withdraw_gifts){
-      return false
-    }
-    if(rewardByUidList && rewardByUidList.length){
-      return false
-    }
-    return true
   }
 
   useEffect(() => {
@@ -415,13 +270,11 @@ const Earnings = () => {
               ) : (
                 <BaseButton
                   className="mt-5"
-                  text="Launch wallet to withdraw"
+                  text="Withdraw"
                   width="100%"
                   height="40px"
-                  loading={loading}
-                  disabled={getDisabled()}
                   handler={() => {
-                    walletWithdraw()
+                    showRewardModal()
                   }}
                 />
               )}
@@ -430,7 +283,15 @@ const Earnings = () => {
         </div>
       </div>
 
-      <ConnectModal ref={connectModalRef} afterConnect={handleAfterConnect} />
+      <ConnectModal ref={connectModalRef} />
+      <RewardListModal
+        ref={rewardRef}
+        totalReward={formatUSD(totalGifts.withdraw_gifts, true)}
+        withdraw={totalGifts.details}
+        onFinish={() => {
+          load()
+        }}
+      />
     </div>
   )
 }

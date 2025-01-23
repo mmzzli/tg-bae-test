@@ -453,7 +453,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
           {videoUrl && (
             <div className="pt-[24px]">
               {/* Video Element */}
-              <div className="relative max-h-[330px] min-h-[100px] overflow-hidden w-[fit-content] bg-[#666]">
+              <div className="relative max-h-[330px] min-h-[200px] overflow-hidden w-[fit-content] bg-[#666] rounded-[8px]">
                 {/* <video
                 ref={previewVideoRef}
                 src={previewVideoUrl}

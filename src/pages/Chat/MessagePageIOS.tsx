@@ -162,18 +162,18 @@ const MessagePageIOS = () => {
     // 这个函数在视口变化时立即执行 可以提前确定布局
     const handleViewportChange = debounce(() => {
       if (useStore.getState().virtualRoutePage?.name === 'SendRewardPage') return
-      console.log('###### TG viewportChanged ######')
-      console.log('tg.viewportStableHeight', tg.viewportStableHeight)
-      console.log('initTgViewportHeightRef', initTgViewportHeightRef.current)
-      console.log('initVisualViewportHeightRef', initVisualViewportHeightRef.current)
-      console.log('###### TG viewportChanged ######')
+      // console.log('###### TG viewportChanged ######')
+      // console.log('tg.viewportStableHeight', tg.viewportStableHeight)
+      // console.log('initTgViewportHeightRef', initTgViewportHeightRef.current)
+      // console.log('initVisualViewportHeightRef', initVisualViewportHeightRef.current)
+      // console.log('###### TG viewportChanged ######')
       if (tg.viewportStableHeight < initTgViewportHeightRef.current) {
-        console.log('keyboard up')
+        console.log('keyboard up 1')
         containerRef.current!.style.height = `${isIOSDevice ? tg.viewportStableHeight : tg.viewportStableHeight - 26}px`
         keyboardUp()
         setShowInput(true)
       } else {
-        console.log('keyboard down')
+        console.log('keyboard down 1')
         // containerRef.current!.style.height = `${initVisualViewportHeightRef.current - 84}px`
         containerRef.current!.style.height = `100vh`
         keyboardDown()
@@ -185,12 +185,12 @@ const MessagePageIOS = () => {
     const handleVisualViewportResize = debounce(() => {
       if (useStore.getState().virtualRoutePage?.name === 'SendRewardPage' || !window.visualViewport)
         return
-      const currentHeight = window.visualViewport.height
+      // const currentHeight = window.visualViewport.height
 
-      console.log('###### window visualViewport ######')
-      console.log('visualViewport.height', currentHeight)
-      console.log('tg.viewportStableHeight', tg.viewportStableHeight)
-      console.log('###### window visualViewport ######')
+      // console.log('###### window visualViewport ######')
+      // console.log('visualViewport.height', currentHeight)
+      // console.log('tg.viewportStableHeight', tg.viewportStableHeight)
+      // console.log('###### window visualViewport ######')
 
       // 这个有时候会获取不到初始的高度
       if (tg.viewportStableHeight < initTgViewportHeightRef.current) {
@@ -229,7 +229,6 @@ const MessagePageIOS = () => {
     }
   }, [replyMessage])
 
-  console.log('MessagePage render', messageWindow, replyMessage)
   return (
     <div
       ref={containerRef}

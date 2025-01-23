@@ -215,6 +215,7 @@ const ResourceList = ({
   const setImageResource = useStore((state) => state.setImageResource)
   const setFollowResource = useStore((state) => state.setFollowResource)
   const followResource = useStore((state) => state.followResource)
+  const videoInfo = useStore((state) => state.videoResource)
 
   const { launchParams } = useTMAUtils()
   const [isBaseModalOpen, { toggle, off }] = useBoolean(false)
@@ -415,6 +416,13 @@ const ResourceList = ({
     })
     setResources(updatedUsers)
   }
+
+  useEffect(() => {
+    if (videoInfo && videoInfo.is_pay) {
+      const mediaUrl = [...videoInfo.media, videoInfo.mediaCover].filter(v => !!v).join(',')
+      resourcesEve(videoInfo.id, mediaUrl, true)
+    }
+  }, [videoInfo])
 
   if (type === 'fav' && !hasMore && !resources.length) {
     return (

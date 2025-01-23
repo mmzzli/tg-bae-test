@@ -225,6 +225,7 @@ const ResourceList = ({
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const toast = useToast()
   const { sharedPostList } = useSharedList()
+  const videoInfo = useStore((state) => state.videoResource)
 
   const saveds = useStore((state) => state.save)
 
@@ -372,6 +373,13 @@ const ResourceList = ({
     })
     setResources(updatedUsers)
   }
+
+  useEffect(() => {
+    if (videoInfo && videoInfo.is_pay) {
+      const mediaUrl = [...videoInfo.media, videoInfo.mediaCover].filter(v => !!v).join(',')
+      resourcesEve(videoInfo.id, mediaUrl, true)
+    }
+  }, [videoInfo])
 
   if (type === 'fav' && !hasMore && !resources.length) {
     return (

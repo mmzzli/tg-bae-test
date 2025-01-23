@@ -8,6 +8,7 @@ import {
   unstable_scheduleCallback as scheduleCallback,
   unstable_NormalPriority as NormalPriority,
 } from 'scheduler'
+import { converMedia } from '@/utils/video/media'
 
 export type ListType = 'recommend' | 'view'
 
@@ -345,8 +346,8 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       const updatedPosts = posts.map(({ post, user }: ListItem) => ({
         ...user,
         ...post,
-        media:
-          post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
+        media: converMedia(post)
+          // post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
       }))
 
       get().setRecommendList(updatedPosts, page > 1)
@@ -415,8 +416,8 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       const updatedPosts = featured.map(({ post, user }: ListItem) => ({
         ...user,
         ...post,
-        media:
-          post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
+        media: converMedia(post)
+          // post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
       }))
 
       get().setAllFeaturedList(updatedPosts, page > 1)
@@ -818,8 +819,8 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       const updatedPosts = posts.map(({ post, user }) => ({
         ...user,
         ...post,
-        media:
-          post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
+        media: converMedia(post)
+          // post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
       }))
       get().setViewList(updatedPosts, page > 1)
       get().setViewHasMore(hasMore)
@@ -886,8 +887,8 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       const updatedPosts = posts.map((post) => ({
         ...post,
         ...othersUserInfo,
-        media:
-          post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
+        media: converMedia(post)
+          // post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
       }))
       get().setOthersViewList(updatedPosts, page > 1)
       get().setOthersViewHasMore(hasMore)
@@ -904,8 +905,8 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     const updatedPosts = posts.map(({ post, user }: ListItem) => ({
       ...user,
       ...post,
-      media:
-        post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
+      media: converMedia(post)
+        // post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
     }))
     set(() => ({
       sharedPostList: updatedPosts,
@@ -937,8 +938,8 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       const updatedPosts = posts.map(({ post, user }) => ({
         ...user,
         ...post,
-        media:
-          post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
+        media: converMedia(post)
+          // post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
       }))
       get().setFavList(updatedPosts, page > 1)
       get().setFavHasMore(hasMore)
@@ -1008,8 +1009,8 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       const updatedPosts = posts.map(({ post, user }) => ({
         ...user,
         ...post,
-        media:
-          post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
+        media: converMedia(post)
+          // post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
       }))
       console.log(updatedPosts)
       get().setOrderList(updatedPosts, page > 1)

@@ -56,7 +56,9 @@ const PurchaseButton: FC<PurchaseButtonProps> = ({ price, post_id, resourcesEve,
           resourcesEve(post_id, viewUrl, true)
           clearInterval(items)
           setIsPay(false)
-          setIsPaid?.(true) // 支付成功
+          if (setIsPaid) {
+            setIsPaid(true) // 支付成功
+          }
         } catch (error) {
           console.log(error, 'payment')
           if (retryCount >= MAX_RETRIES) {

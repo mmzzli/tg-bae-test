@@ -12,6 +12,7 @@ interface Props {
   onLoading?: () => void
   onFinish?: () => void
   totalReward?: string
+  withdraw: { chain_id: number; withdraw: number }[]
 }
 
 import { evmChainList } from '@/config/wagmi-config'
@@ -30,13 +31,12 @@ import { abi } from '@/config/abi'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { CustomToast, typeOptions } from '../comm/Toast'
 import { giftSign } from '@/api'
-import { onLoad } from '@sentry/react'
 
 const contractAddress = '0x359E9Ef12132ea2a49701F838B5CdFbc13771AaF'
 const contractAddressTestnet = '0xF165cFb92441544cF9DEF72427028Db85b0aDEe2'
 
 const RewardListModal = forwardRef<ChildMethods, Props>(
-  ({ onLoading, onFinish, totalReward = '$0' }, ref) => {
+  ({ onLoading, onFinish, totalReward = '$0', withdraw }, ref) => {
     useImperativeHandle(ref, () => ({
       someMethod: () => {
         toggle()
@@ -193,7 +193,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
       }
 
       return true
-    }, [currentChain, bscReward, ethReward, testReward])
+    }, [currentChain, bscReward, ethReward, testReward, withdraw])
 
     useEffect(() => {
       if (writeContractError || receiptError) {

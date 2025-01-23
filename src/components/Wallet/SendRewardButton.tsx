@@ -202,7 +202,7 @@ export const SendRewardButton = ({
       const estimatedGas = gasLimit ? BigInt(gasLimit) : 21000n
       const currentGasPrice = feesPerGas ? BigInt(feesPerGas.maxFeePerGas) : 0n
       const totalCost =
-        estimatedGas * (currentGasPrice + (maxPriorityFee ? BigInt(maxPriorityFee) : 0n))
+        estimatedGas * 2n * (currentGasPrice + (maxPriorityFee ? BigInt(maxPriorityFee) : 0n))
       console.log(totalCost, gasLimit, feesPerGas, maxPriorityFee)
 
       if (totalCost + parseUnits(amount, decimals) > balance) {

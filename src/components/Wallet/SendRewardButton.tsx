@@ -64,15 +64,19 @@ export const SendRewardButton = ({
 
   const isPollingRef = useRef(false)
   const isHandledRef = useRef(false)
+  const pollingTimeoutRef = useRef<NodeJS.Timeout>()
+  const startTimeRef = useRef<number>(0)
 
   const setIsPolling = (value: boolean) => {
     isPollingRef.current = value
+    if (value) {
+      startTimeRef.current = Date.now()
+    }
   }
 
   const setIsHandled = (value: boolean) => {
     isHandledRef.current = value
   }
-  const pollingTimeoutRef = useRef<NodeJS.Timeout>()
 
   const [isApproving, setIsApproving] = useState(false)
   const [writeContractError, setWriteContractError] = useState<any>(null)
@@ -114,6 +118,21 @@ export const SendRewardButton = ({
   const pollStatus = async () => {
     if (!hash || !isPollingRef.current || isHandledRef.current) return
     pollingTimeoutRef.current && clearTimeout(pollingTimeoutRef.current)
+
+    if (Date.now() - startTimeRef.current > 20000) {
+      stopPolling()
+      toast({
+        render: () => {
+          return <CustomToast title="Transaction timeout" type={typeOptions.error} />
+        },
+        position: 'bottom',
+      })
+      setIsApproving(false)
+      reset()
+      slideButtonRef.current?.reset()
+      return
+    }
+
     try {
       const res = await approveEvent({
         hash: hash as `0x${string}`,
@@ -158,7 +177,6 @@ export const SendRewardButton = ({
         }
 
   const switchChain = async () => {
-    // if (currentChainId !== chainId) {
     try {
       await switchChainAsync({ chainId })
     } catch (error) {
@@ -167,7 +185,6 @@ export const SendRewardButton = ({
         position: 'bottom',
       })
     }
-    // }
   }
   const reward = () => {
     writeContract({

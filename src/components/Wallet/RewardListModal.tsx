@@ -15,7 +15,7 @@ interface Props {
   withdraw: { chain_id: number; withdraw_gifts: number }[]
 }
 
-import { evmChainList } from '@/config/wagmi-config'
+import { config, evmChainList } from '@/config/wagmi-config'
 import { Chain } from 'viem'
 import { tokenIconMap } from '@/config/token-icon'
 import {
@@ -27,6 +27,7 @@ import {
   useWaitForTransactionReceipt,
   useWriteContract,
 } from 'wagmi'
+import { getBalance } from '@wagmi/core'
 import { abi } from '@/config/abi'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { CustomToast, typeOptions } from '../comm/Toast'
@@ -51,7 +52,6 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
     const [loading, setLoading] = useState<boolean>(false)
     const { getCurrentUid } = useTMAUtils()
     const current_uid = getCurrentUid()
-    const [writeContractSuccess, setWriteContractSuccess] = useState(false)
     const [writeContractApiError, setWriteContractApiError] = useState<any>(null)
 
     // Wagmi Hooks START
@@ -73,9 +73,13 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
     const isPollingRef = useRef(false)
     const isHandledRef = useRef(false)
     const pollingTimeoutRef = useRef<NodeJS.Timeout>()
+    const startTimeRef = useRef<number>(0)
 
     const setIsPolling = (value: boolean) => {
       isPollingRef.current = value
+      if (value) {
+        startTimeRef.current = Date.now()
+      }
     }
 
     const setIsHandled = (value: boolean) => {
@@ -90,6 +94,20 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
     const pollStatus = async () => {
       if (!hash || !isPollingRef.current || isHandledRef.current) return
       pollingTimeoutRef.current && clearTimeout(pollingTimeoutRef.current)
+
+      if (Date.now() - startTimeRef.current > 20000) {
+        stopPolling()
+        toast({
+          render: () => {
+            return <CustomToast title="Transaction timeout" type={typeOptions.error} />
+          },
+          position: 'bottom',
+        })
+        resetState()
+        onFinish?.()
+        return
+      }
+
       try {
         const res = await approveEvent({
           hash: hash as `0x${string}`,
@@ -101,7 +119,6 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
           if (!isHandledRef.current) {
             console.log('setWriteContractSuccess')
             setIsHandled(true)
-            setWriteContractSuccess(true)
             verifyWithdrawEve()
             onFinish?.()
           }
@@ -175,6 +192,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
     // Withdraw START
     const walletWithdraw = async () => {
       if (!currentChain) return
+      setLoading(true)
       try {
         await switchChain({ chainId: currentChain.id })
       } catch (error) {
@@ -182,6 +200,17 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
           render: () => <CustomToast title="Switch chain failed" type={typeOptions.error} />,
           position: 'bottom',
         })
+        resetState()
+        return
+      }
+      if (rewards.length === 0) {
+        toast({
+          render: () => {
+            return <CustomToast title="No rewards" type={typeOptions.info} />
+          },
+          position: 'bottom',
+        })
+        resetState()
         return
       }
       if (!currentWithdraw) {
@@ -193,10 +222,33 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
           },
           position: 'bottom',
         })
+        resetState()
         return
       }
 
-      setLoading(true)
+      const balance =
+        address && currentChain
+          ? getBalance(config, {
+              address: address,
+              chainId: currentChain.id as 1 | 56 | undefined,
+            })
+          : null
+
+      if (balance) {
+        const res = await balance
+        console.log('balance', res)
+        if (res.formatted === '0') {
+          toast({
+            render: () => (
+              <CustomToast title="Insufficient balance for withdrawal" type={typeOptions.error} />
+            ),
+            position: 'bottom',
+          })
+          resetState()
+          return
+        }
+      }
+
       setCurrentWithdrawChain(currentChain.id)
       setCurrentWithdrawInProgress(currentWithdraw)
       onLoading?.()
@@ -221,7 +273,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
       } catch (error) {
         toast({
           render: () => {
-            return <CustomToast title="signature error" type={typeOptions.info} />
+            return <CustomToast title="Signature error" type={typeOptions.info} />
           },
           position: 'bottom',
         })
@@ -301,6 +353,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
     useEffect(() => {
       if (isConfirmed && !isHandledRef.current) {
         console.log('isConfirmed')
+        setIsHandled(true)
         stopPolling()
         verifyWithdrawEve()
         onFinish?.()
@@ -328,7 +381,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
       resetState()
       toast({
         render: () => {
-          return <CustomToast title={'success'} type={typeOptions.success} />
+          return <CustomToast title={'Success'} type={typeOptions.success} />
         },
         position: 'bottom',
       })
@@ -344,7 +397,6 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
       reset()
       setIsHandled(false)
       setCurrentWithdrawChain(0)
-      setWriteContractSuccess(false)
       setWriteContractApiError(null)
       setCurrentWithdrawInProgress(null)
       setLoading(false)

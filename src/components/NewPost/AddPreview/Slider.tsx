@@ -46,7 +46,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
     if (sliderRef.current) {
       setSliderWidth(sliderRef.current.offsetWidth);
     }
-  }, [sliderRef.current]);
+  }, [sliderRef.current, frames]);
 
   const calculateSelectedTime = (clientX: number) => {
     if (sliderRef.current) {

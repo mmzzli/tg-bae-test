@@ -1,5 +1,6 @@
 
 export const converMedia = (data: any) => {
+  if (!data) return;
   if (data.type === 1) {
     if (data.media && typeof data.media === 'string') {
       return data.media.split(',')

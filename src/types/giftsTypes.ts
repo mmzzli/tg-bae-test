@@ -18,7 +18,7 @@ export interface SignRes {
 export interface GiftsRes {
   gifts: number
   withdraw_gifts: number
-  details: { chain_id: number; withdraw: number }[]
+  details: { chain_id: number; withdraw_gifts: number }[]
 }
 
 export interface WithdrawReq {

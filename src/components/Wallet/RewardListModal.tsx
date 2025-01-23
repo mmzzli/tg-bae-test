@@ -59,7 +59,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
     const { data: feesPerGas } = useEstimateFeesPerGas()
     const { switchChain } = useSwitchChain()
     const { address } = useAccount()
-    const { data: hash, error: writeContractError, writeContract } = useWriteContract()
+    const { data: hash, error: writeContractError, writeContract, reset } = useWriteContract()
     const { isSuccess: isConfirmed, error: receiptError } = useWaitForTransactionReceipt({
       hash,
       chainId: currentChain?.id,
@@ -99,8 +99,11 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
         if (res.status === 1) {
           stopPolling()
           if (!isHandledRef.current) {
+            console.log('setWriteContractSuccess')
             setIsHandled(true)
             setWriteContractSuccess(true)
+            verifyWithdrawEve()
+            onFinish?.()
           }
         } else if (res.status === 2) {
           stopPolling()
@@ -273,6 +276,8 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
       const hasRewards = currentReward.length > 0
       const hasWithdraw = currentWithdraw.length > 0
 
+      console.log('current reward', currentReward)
+
       return !(hasRewards || hasWithdraw)
     }, [currentChain, bscReward, ethReward, testReward, withdraw])
 
@@ -292,15 +297,12 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
 
     useEffect(() => {
       if (isConfirmed && !isHandledRef.current) {
+        console.log('isConfirmed')
         stopPolling()
         verifyWithdrawEve()
         onFinish?.()
       }
-      if (writeContractSuccess && !isHandledRef.current) {
-        verifyWithdrawEve()
-        onFinish?.()
-      }
-    }, [isConfirmed, writeContractSuccess])
+    }, [isConfirmed])
 
     useEffect(() => {
       console.log('tx hash', hash)
@@ -333,6 +335,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
     }
 
     const resetState = () => {
+      reset()
       setIsHandled(false)
       setCurrentWithdrawChain(0)
       setWriteContractSuccess(false)
@@ -361,14 +364,14 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
           showHandle={false}
         >
           <div className="mt-1 w-full">
-            <h3 className="font-bold text-2xl mb-[14px] text-[24px] text-[#333]">
+            <h3 className="font-bold text-2xl mb-[10px] text-[24px] text-[#333]">
               Choose a network
             </h3>
-            <div className="text-[15px] text-[#999] font-normal">
+            <div className="text-[15px] text-[#999] font-normal leading-tight">
               Your assets are on multiple networks. Please select one network you want to withdraw
               from.
             </div>
-            <div className="flex items-center text-[16px] text-[#999] font-normal mt-10 mb-4">
+            <div className="flex items-center text-[16px] text-[#999] font-normal mt-9 mb-4">
               Available :&nbsp;<span className="text-[#333333]">{totalReward}</span>
             </div>
 
@@ -403,7 +406,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
               </div>
             ))}
 
-            <div className="mt-8 mx-[18px]">
+            <div className="mt-7 mx-[18px] mb-[30px]">
               <BaseButton
                 text="Launch wallet to withdraw"
                 height="48px"

@@ -339,7 +339,7 @@ const ResourceList = ({
         console.log(item.act_type, '=======jacob')
         console.log(url, '=======jacob')
         runDailyWatch(post_id)
-        if (item.act_type === 0) {
+        if (item.act_type === 0 || item.act_type === 1) {
           const medias = url.split(',')
           const picUrl = medias.find((item) => !item.endsWith('.m3u8'))
           const media = medias.find((item) => item.endsWith('.m3u8'))

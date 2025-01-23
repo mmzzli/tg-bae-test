@@ -1,20 +1,17 @@
 import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '@chakra-ui/react'
-import { useAccount, useReadContract, useSwitchChain, useWriteContract } from 'wagmi'
-import { abi } from '@/config/abi'
-import { useTMAUtils } from '@/hooks/useTMAUtils'
+import { useAccount } from 'wagmi'
 
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { StarsIcon, RightIcon } from '@/assets/icons'
-import { totalAvailableInvoice, verifyWithdraw, getTotalGifts, approveEvent } from '@/api'
+import { totalAvailableInvoice, getTotalGifts } from '@/api'
 import { useStore } from '@/store/store'
 import { GiftsRes, totalAvailable } from '@/types'
 import { formatUSD } from '@/utils/utils'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import ConnectModal from '@/components/Wallet/ConnectModal'
 import RewardListModal from '@/components/Wallet/RewardListModal'
-import { useRequest } from 'ahooks'
 
 const Earnings = () => {
   const navigate = useNavigate()
@@ -30,45 +27,15 @@ const Earnings = () => {
   const connectModalRef = useRef<{ someMethod: () => void }>(null)
   const rewardRef = useRef<{ someMethod: () => void }>(null)
   const { address, chain, status } = useAccount()
-  const { switchChain } = useSwitchChain()
-  const { data: hash } = useWriteContract()
   const setNeedUpdateEarnings = useStore((state) => state.setNeedUpdateEarnings)
   const [totalGifts, setTotalGifts] = useState<GiftsRes>({
     gifts: 0,
     withdraw_gifts: 0,
     details: [],
   })
-  const [writeContractSuccess, setWriteContractSuccess] = useState(false)
-  const [writeContractError, setWriteContractError] = useState<any>(null)
   const { needUpdateEarnings } = useStore((state) => ({
     needUpdateEarnings: state.needUpdateEarnings,
   }))
-
-  const { run: pollStatus, cancel: stopPolling } = useRequest(
-    async () => {
-      const res = await approveEvent({ hash: hash as `0x${string}`, chain_id: chainId })
-      if (res.status === 1) {
-        stopPolling()
-        setWriteContractSuccess(true)
-      } else if (res.status === 2) {
-        setWriteContractError(res)
-        stopPolling()
-      }
-      return res
-    },
-    {
-      pollingInterval: 1200,
-      manual: true,
-      pollingWhenHidden: false,
-    }
-  )
-
-  // 都先用主网
-  const chainId = import.meta.env.VITE_APP_ENV === 'production' ? 56 : 56
-  const contractAddress =
-    import.meta.env.VITE_APP_ENV === 'production'
-      ? `0x359E9Ef12132ea2a49701F838B5CdFbc13771AaF`
-      : `0x359E9Ef12132ea2a49701F838B5CdFbc13771AaF`
 
   const showRewardModal = () => {
     rewardRef.current?.someMethod()
@@ -89,30 +56,6 @@ const Earnings = () => {
       })
     }
   }
-
-  const verifyWithdrawEve = async () => {
-    await verifyWithdraw({
-      from: address as `0x${string}`,
-      chain_id: chainId,
-      amount: totalGifts.gifts,
-      hash: hash as `0x${string}`,
-    })
-    toast({
-      render: () => {
-        return <CustomToast title={'success'} type={typeOptions.success} />
-      },
-      position: 'bottom',
-    })
-    setWriteContractSuccess(false)
-    setWriteContractError(null)
-    load()
-  }
-
-  useEffect(() => {
-    if (writeContractSuccess) {
-      verifyWithdrawEve()
-    }
-  }, [writeContractSuccess])
 
   const load = async () => {
     await updateEarnings()
@@ -140,21 +83,11 @@ const Earnings = () => {
   }, [token])
 
   useEffect(() => {
-    console.log(hash, 'talk')
-    if (hash) {
-      pollStatus()
-    }
-  }, [hash])
-
-  useEffect(() => {
     if (needUpdateEarnings) {
       updateEarnings()
     }
   }, [needUpdateEarnings])
 
-  useEffect(() => {
-    switchChain({ chainId })
-  }, [])
   return (
     <div
       className="px-4 fixed w-screen bg-[#fff] z-10 scrollbar-hide pt-6"

@@ -131,26 +131,24 @@ export const TransferPanel = ({
     let newAmount = balanceBN.multipliedBy(percentage).decimalPlaces(decimals, BigNumber.ROUND_DOWN)
 
     if (tokenAddress === '0x0000000000000000000000000000000000000000') {
-      const estimatedGas = gasLimit ? BigInt(gasLimit) : 21000n
-      const currentGasPrice = feesPerGas ? BigInt(feesPerGas.maxFeePerGas) : 0n
-      const totalCost =
-        estimatedGas * 2n * (currentGasPrice + (maxPriorityFee ? BigInt(maxPriorityFee) : 0n))
-
-      if (totalCost + parseUnits(newAmount.toString(), decimals) > balance) {
-        const amount = parseUnits(newAmount.toString(), decimals) - totalCost
-        if (amount < 0) {
-          toast({
-            render: () => <CustomToast title={`Insufficient gas`} type={typeOptions.info} />,
-          })
-          setError('Insufficient gas')
-          return
-        }
-
-        newAmount = new BigNumber(formatUnits(amount, decimals)).decimalPlaces(
-          decimals,
-          BigNumber.ROUND_DOWN
-        )
-      }
+      // const estimatedGas = gasLimit ? BigInt(gasLimit) : 21000n
+      // const currentGasPrice = feesPerGas ? BigInt(feesPerGas.maxFeePerGas) : 0n
+      // const totalCost =
+      //   estimatedGas * 2n * (currentGasPrice + (maxPriorityFee ? BigInt(maxPriorityFee) : 0n))
+      // if (totalCost + parseUnits(newAmount.toString(), decimals) > balance) {
+      //   const amount = parseUnits(newAmount.toString(), decimals) - totalCost
+      //   if (amount < 0) {
+      //     toast({
+      //       render: () => <CustomToast title={`Insufficient gas`} type={typeOptions.info} />,
+      //     })
+      //     setError('Insufficient gas')
+      //     return
+      //   }
+      //   newAmount = new BigNumber(formatUnits(amount, decimals)).decimalPlaces(
+      //     decimals,
+      //     BigNumber.ROUND_DOWN
+      //   )
+      // }
     }
     handleAmountChange(newAmount.toString())
   }

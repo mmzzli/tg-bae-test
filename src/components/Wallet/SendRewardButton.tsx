@@ -199,19 +199,18 @@ export const SendRewardButton = ({
   }
   const reward = () => {
     if (tokenAddress === '0x0000000000000000000000000000000000000000') {
-      const estimatedGas = gasLimit ? BigInt(gasLimit) : 21000n
-      const currentGasPrice = feesPerGas ? BigInt(feesPerGas.maxFeePerGas) : 0n
-      const totalCost =
-        estimatedGas * 2n * (currentGasPrice + (maxPriorityFee ? BigInt(maxPriorityFee) : 0n))
-      console.log(totalCost, gasLimit, feesPerGas, maxPriorityFee)
-
-      if (totalCost + parseUnits(amount, decimals) > balance) {
-        toast({
-          render: () => <CustomToast title="Insufficient gas" type={typeOptions.error} />,
-          position: 'bottom',
-        })
-        return slideButtonRef.current?.reset()
-      }
+      // const estimatedGas = gasLimit ? BigInt(gasLimit) : 21000n
+      // const currentGasPrice = feesPerGas ? BigInt(feesPerGas.maxFeePerGas) : 0n
+      // const totalCost =
+      //   estimatedGas * (currentGasPrice + (maxPriorityFee ? BigInt(maxPriorityFee) : 0n))
+      // console.log(totalCost, gasLimit, feesPerGas, maxPriorityFee)
+      // if (totalCost + parseUnits(amount, decimals) > balance) {
+      //   toast({
+      //     render: () => <CustomToast title="Insufficient gas" type={typeOptions.error} />,
+      //     position: 'bottom',
+      //   })
+      //   return slideButtonRef.current?.reset()
+      // }
     }
     writeContract({
       address: contractAddress as `0x${string}`,

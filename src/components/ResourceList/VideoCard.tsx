@@ -39,9 +39,12 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
       })
       return
     }
-    // if (!data?.trailer && data.price > 0 && !data.is_pay && data.uid != getCurrentUid()) {
-    //   return
-    // }
+    console.log('data.is_pay1>', data.is_pay)
+    console.log('data.is_pay2>', data.uid, getCurrentUid())
+    console.log('data.is_pay3>', data.price)
+    if (!data?.trailer && data.price > 0 && !data.is_pay && data.uid != getCurrentUid()) {
+      return
+    }
     const videoDom = videoCardContainer?.current?.querySelector('video')
     runDailyWatch(video.id)
     setCacheVideoIndex(video.id)

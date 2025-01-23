@@ -113,9 +113,11 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
     return (pic_height * width) / pic_width
   }, [data])
 
-  const interanlResourcesEve = (post_id: number, viewUrl: string, isPay: boolean) => {
+  const interanlResourcesEve = (post_id: number, viewUrl: string, isPay?: boolean) => {
     resourcesEve(post_id, viewUrl, isPay)
-    setIsPaid(isPay)
+    if (isPay) {
+      setIsPaid(isPay)
+    }
   }
   return (
     <>

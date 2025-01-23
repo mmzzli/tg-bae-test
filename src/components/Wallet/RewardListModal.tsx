@@ -274,7 +274,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
       setCurrentWithdraw(currentWithdraw[0] || null)
 
       const hasRewards = currentReward.length > 0
-      const hasWithdraw = currentWithdraw.length > 0
+      const hasWithdraw = currentWithdraw.length > 0 && currentWithdraw[0].withdraw_gifts > 0
 
       console.log('current reward', currentReward)
 

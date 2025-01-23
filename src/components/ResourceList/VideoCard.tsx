@@ -109,7 +109,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
   return (
     <>
       <Box className="video-card" data-id={data.id} ref={videoCardContainer}>
-        <div className="relative ">
+        <div className="relative">
           <Box position="relative">
             <Box>
               <div
@@ -118,7 +118,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
                   maxHeight: 'calc(62.8vh)',
                 }}
                 className={
-                  'absolute items-center overflow-hidden relative object-contain video-container z-[4]'
+                  'absolute items-center justify-center overflow-hidden relative object-contain video-container z-[4] flex'
                 }
               >
                 <Image

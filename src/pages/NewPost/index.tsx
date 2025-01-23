@@ -516,6 +516,29 @@ export const NewPost: FC = () => {
     }
   }, [isFocused])
 
+  const [initialHeight, setInitialHeight] = useState(window.innerHeight);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const currentHeight = window.innerHeight;
+
+      if (currentHeight < initialHeight) {
+        // 视口高度变小，键盘弹出
+        setIsFocused(true);
+      } else {
+        // 视口高度恢复，键盘收起
+        setIsFocused(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [initialHeight]);
+
+
   return (
     <Box
       h="100vh"

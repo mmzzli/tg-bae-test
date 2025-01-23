@@ -378,8 +378,6 @@ export const MessageRender: React.FC<MessageRenderProps> = ({
     return <RewardCard message={message} />
   }
 
-  console.log('message render', message)
-
   return (
     <div>
       {message.reply && <ReplyCard reply={message.reply} />}

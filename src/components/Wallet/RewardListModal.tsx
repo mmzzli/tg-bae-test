@@ -118,6 +118,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
       } catch (error) {
         stopPolling()
         console.error('Polling error:', error)
+        setWriteContractApiError(error)
       }
     }
     // Tx Status Interval END
@@ -319,6 +320,9 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
     }, [hash])
 
     const verifyWithdrawEve = async () => {
+      refetchBscReward()
+      refetchEthReward()
+      refetchTestReward()
       resetState()
       toast({
         render: () => {

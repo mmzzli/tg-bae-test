@@ -124,34 +124,13 @@ export const UserInfo = memo(
     }, [uid])
 
     const resourcesEve = (post_id: number, url: string, is_pay?: boolean) => {
-      // const recommendList = useStore((state) => state.recommendList)
-      console.log('update2...')
       const options = is_pay ? { is_pay } : {}
       const medias = url.split(',')
       const picUrl = medias.find((item) => !item.endsWith('.m3u8'))
       const media = medias.find((item) => item.endsWith('.m3u8'))
-      console.log('update3...')
       if (media) {
         setVideoResource({ ...info, media: [media], mediaCover: picUrl ?? '', ...options } as FormatterListItem)
       }
-      // const updatedUsers = recommendList.list.map((item) => {
-      //   if (item.id === post_id) {
-      //     const options = is_pay ? { is_pay } : {}
-      //     if (item.act_type === 0) {
-      //       const medias = url.split(',')
-      //       const picUrl = medias.find((item) => !item.endsWith('.m3u8'))
-      //       const media = medias.find((item) => item.endsWith('.m3u8'))
-      //       // setCacheVideoIndex(item.id)
-      //       if (media) {
-      //         setVideoResource({ ...item, media: [media], mediaCover: picUrl ?? '', ...options })
-      //         return { ...item, media: [media], mediaCover: picUrl ?? '', ...options }
-      //       }
-      //     }
-      //     return { ...item, media: url.split(','), ...options }
-      //   }
-      //   return item
-      // })
-      // setRecommendList(updatedUsers)
     }
 
     return (

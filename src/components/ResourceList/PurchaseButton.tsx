@@ -48,23 +48,16 @@ const PurchaseButton: FC<PurchaseButtonProps> = ({ price, post_id, resourcesEve,
 
       let retryCount = 0
       const MAX_RETRIES = 10
-      console.log('paid0..', url)
       const items = setInterval(async () => {
         try {
           retryCount++
-          console.log('paid1..')
           const viewUrl = await viewPid(post_id)
-          console.log('paid2..')
           resourcesEve(post_id, viewUrl, true)
-          console.log('paid3..')
           clearInterval(items)
-          console.log('paid4..')
           setIsPay(false)
-          console.log('paid5..')
           if (setIsPaid) {
             setIsPaid(true) // 支付成功
           }
-          console.log('paid6..')
         } catch (error) {
           console.log(error, 'payment')
           if (retryCount >= MAX_RETRIES) {
@@ -76,7 +69,6 @@ const PurchaseButton: FC<PurchaseButtonProps> = ({ price, post_id, resourcesEve,
       if (window.Telegram?.WebApp) {
         const tgApp = window.Telegram.WebApp
         tgApp.openInvoice(url, (status: string) => {
-          console.log('paid7..', status)
           if (status === 'paid') {
             const timestamp = Date.now()
             trackPurchase({

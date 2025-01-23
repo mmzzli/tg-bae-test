@@ -102,7 +102,9 @@ const TransparentSlider: React.FC<SliderProps> = ({
       return
     }
     const clientX = e.clientX;
+    console.log(clientX)
     const time = getSelectedTime(clientX);
+    handleSliderChange(time.toFixed(1))
     setSelectedTime(time);
   };
 

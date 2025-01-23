@@ -94,18 +94,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
         video.muted = false
         video.play()
       }
-      setIsPlaying(!isPlaying) // Toggle the playing state
-    }
-  }
-  const handleVideoClick1 = () => {
-    const video = previewVideoRef.current
-    if (video) {
-      if (isPlaying) {
-        video.pause()
-      } else {
-        video.play()
-      }
-      setIsPlaying(!isPlaying) // Toggle the playing state
+      // setIsPlaying(!isPlaying) // Toggle the playing state
     }
   }
 
@@ -380,6 +369,22 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
     }
   }, [videoUrl, previewVideoUrl])
 
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video) {
+      const handlePlay = () => setIsPlaying(true);
+      const handlePause = () => setIsPlaying(false);
+
+      video.addEventListener('play', handlePlay);
+      video.addEventListener('pause', handlePause);
+
+      return () => {
+        video.removeEventListener('play', handlePlay);
+        video.removeEventListener('pause', handlePause);
+      };
+    }
+  }, []);
+
   return (
     <>
       <div className="fixed bottom-[133px] left-0 w-[100%]">
@@ -468,10 +473,8 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
                   src={previewVideoUrl || videoUrl}
                   style={{ display: previewVideoUrl ? 'block' : 'block', width: '243px' }}
                   preload="metadata"
-                  // controls
                   autoPlay
                   playsInline
-                  muted
                   onClick={handleVideoClick} // Add click handler to toggle play/pause
                 />
                 {!isPlaying && (

@@ -5,6 +5,8 @@ import {
   useChainId,
   useEstimateFeesPerGas,
   useEstimateGas,
+  useEstimateMaxPriorityFeePerGas,
+  useGasPrice,
   useReadContract,
   useSwitchChain,
   useWaitForTransactionReceipt,
@@ -24,6 +26,7 @@ import { useDailyTaskActions } from '@/hooks/useDailyTask'
 
 export const SendRewardButton = ({
   amount,
+  balance,
   decimals,
   tokenAddress,
   contractAddress,
@@ -35,6 +38,7 @@ export const SendRewardButton = ({
   afterReward,
 }: {
   amount: string
+  balance: bigint
   decimals: number
   tokenAddress: string
   contractAddress: string
@@ -59,8 +63,15 @@ export const SendRewardButton = ({
   const { sendMessage } = useIM()
 
   const toast = useToast()
-  const { data: gasLimit } = useEstimateGas()
-  const { data: feesPerGas } = useEstimateFeesPerGas()
+  const { data: gasLimit } = useEstimateGas({
+    chainId: chainId,
+  })
+  const { data: feesPerGas } = useEstimateFeesPerGas({
+    chainId: chainId,
+  })
+  const { data: maxPriorityFee } = useEstimateMaxPriorityFeePerGas({
+    chainId: chainId,
+  })
 
   const isPollingRef = useRef(false)
   const isHandledRef = useRef(false)
@@ -187,6 +198,21 @@ export const SendRewardButton = ({
     }
   }
   const reward = () => {
+    if (tokenAddress === '0x0000000000000000000000000000000000000000') {
+      const estimatedGas = gasLimit ? BigInt(gasLimit) : 21000n
+      const currentGasPrice = feesPerGas ? BigInt(feesPerGas.maxFeePerGas) : 0n
+      const totalCost =
+        estimatedGas * (currentGasPrice + (maxPriorityFee ? BigInt(maxPriorityFee) : 0n))
+      console.log(totalCost, gasLimit, feesPerGas, maxPriorityFee)
+
+      if (totalCost + parseUnits(amount, decimals) > balance) {
+        toast({
+          render: () => <CustomToast title="Insufficient gas" type={typeOptions.error} />,
+          position: 'bottom',
+        })
+        return slideButtonRef.current?.reset()
+      }
+    }
     writeContract({
       address: contractAddress as `0x${string}`,
       chainId,

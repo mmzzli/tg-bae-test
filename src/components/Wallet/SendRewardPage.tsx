@@ -5,7 +5,7 @@ import { isMobileDevice } from '@/utils/utils'
 import TokenIcon from './TokenIcon'
 import PriceService from '@/utils/wallet/PriceService'
 import { useEffect, useMemo } from 'react'
-import { useAccount, useBalance } from 'wagmi'
+import { useAccount, useBalance, useChainId } from 'wagmi'
 const SendRewardPage = () => {
   const { virtualRoutePage, resetVirtualRoutePage } = useStore((state) => ({
     virtualRoutePage: state.virtualRoutePage,
@@ -25,6 +25,7 @@ const SendRewardPage = () => {
   } = virtualRoutePage?.params || {}
 
   const { address: account } = useAccount()
+  const currentChainId = useChainId()
 
   const { data: accountBalance, refetch: refetchBalance } = useBalance({
     query: {
@@ -43,7 +44,7 @@ const SendRewardPage = () => {
   })
 
   const formattedBalance = useMemo(() => {
-    return formatNumber(accountBalance?.formatted || balance, {
+    return formatNumber(accountBalance?.formatted || balance.formatted, {
       thousandsSeparator: ',',
     })
   }, [accountBalance, balance])
@@ -57,6 +58,10 @@ const SendRewardPage = () => {
   useEffect(() => {
     refetchBalance()
   }, [])
+
+  useEffect(() => {
+    refetchBalance()
+  }, [currentChainId])
   const price = PriceService.getInstance().getPrice(token)
   return (
     <div
@@ -105,9 +110,9 @@ const SendRewardPage = () => {
         </div>
 
         <TransferPanel
-          balance={balance?.value || 0n}
+          balance={accountBalance?.value || 0n}
           symbol={token}
-          decimals={balance?.decimals || 18}
+          decimals={accountBalance?.decimals || 18}
           price={price || 0}
           tokenAddress={address ? address : '0x0000000000000000000000000000000000000000'}
           contractAddress={rewardContractAddress}

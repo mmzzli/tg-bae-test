@@ -384,6 +384,15 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
       };
     }
   }, []);
+  useEffect(() => {
+    if(!isBaseModalOpen){
+      const video = videoRef.current
+      if(video){
+        video.pause()
+      }
+    }
+  },[isBaseModalOpen])
+
 
   return (
     <>

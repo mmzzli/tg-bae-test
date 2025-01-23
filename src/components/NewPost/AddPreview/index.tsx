@@ -484,6 +484,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
                   preload="metadata"
                   autoPlay
                   playsInline
+                  muted
                   onClick={handleVideoClick} // Add click handler to toggle play/pause
                 />
                 {!isPlaying && (

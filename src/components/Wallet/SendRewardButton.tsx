@@ -129,13 +129,14 @@ export const SendRewardButton = ({
       } else if (res.status === 0) {
         pollingTimeoutRef.current = setTimeout(() => {
           pollStatus()
-        }, 1200)
+        }, 2000)
       } else {
         throw new Error('Unknown status')
       }
     } catch (error) {
       stopPolling()
       console.error('Polling error:', error)
+      setWriteContractError(error)
     }
   }
 

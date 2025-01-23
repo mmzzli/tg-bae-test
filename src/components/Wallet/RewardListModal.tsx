@@ -12,7 +12,7 @@ interface Props {
   onLoading?: () => void
   onFinish?: () => void
   totalReward?: string
-  withdraw: { chain_id: number; withdraw: number }[]
+  withdraw: { chain_id: number; withdraw_gifts: number }[]
 }
 
 import { evmChainList } from '@/config/wagmi-config'
@@ -31,6 +31,7 @@ import { abi } from '@/config/abi'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { CustomToast, typeOptions } from '../comm/Toast'
 import { giftSign } from '@/api'
+import { formatUSD } from '@/utils/utils'
 
 const contractAddress = '0x359E9Ef12132ea2a49701F838B5CdFbc13771AaF'
 const contractAddressTestnet = '0xF165cFb92441544cF9DEF72427028Db85b0aDEe2'
@@ -68,6 +69,10 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
 
     // Reward List
     const [rewards, setRewards] = useState<{ token: `0x${string}`; amount: bigint }[]>([])
+    const [currentWithdraw, setCurrentWithdraw] = useState<{
+      chain_id: number
+      withdraw_gifts: number
+    } | null>(null)
 
     // Read Contract START
     const { data: bscReward, refetch: refetchBscReward } = useReadContract({
@@ -116,7 +121,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
         })
         return
       }
-      if (!(rewards && rewards.length)) {
+      if (!currentWithdraw) {
         toast({
           render: () => {
             return (
@@ -184,15 +189,16 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
         97: testReward,
       }
 
-      const currentReward = chainRewardMap[currentChain.id as keyof typeof chainRewardMap]
+      const currentReward = chainRewardMap[currentChain.id as keyof typeof chainRewardMap] || []
+      const currentWithdraw = withdraw.filter((item) => item.chain_id === currentChain.id)
 
-      if (currentReward) {
-        console.log('current reward', currentReward)
-        setRewards([...(currentReward || [])])
-        return !(currentReward && currentReward.length > 0)
-      }
+      setRewards([...(currentReward || [])])
+      setCurrentWithdraw(currentWithdraw[0] || null)
 
-      return true
+      const hasRewards = currentReward.length > 0
+      const hasWithdraw = currentWithdraw.length > 0
+
+      return !(hasRewards || hasWithdraw)
     }, [currentChain, bscReward, ethReward, testReward, withdraw])
 
     useEffect(() => {
@@ -215,7 +221,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
         onFinish?.()
       }
     }, [isConfirmed])
-
+    console.log(withdraw)
     return (
       <>
         <BaseModal
@@ -270,7 +276,12 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
                 <span className="flex-1 overflow-hidden text-base font-medium text-[#333333]">
                   {chain.name}
                 </span>
-                <span className="text-[20px] font-semibold text-[#000]">$0</span>
+                <span className="text-[20px] font-semibold text-[#000]">
+                  {formatUSD(
+                    withdraw.filter((item) => item.chain_id === chain.id)[0]?.withdraw_gifts,
+                    true
+                  )}
+                </span>
               </div>
             ))}
 
@@ -281,7 +292,6 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
                 disabled={disabled}
                 loading={loading}
                 handler={() => {
-                  console.log('start withdraw')
                   walletWithdraw()
                 }}
               />

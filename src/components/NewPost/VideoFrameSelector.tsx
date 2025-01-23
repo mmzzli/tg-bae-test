@@ -239,11 +239,11 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
               }}
             >
               {/* 视频元素 */}
-              <div className='max-h-[330px] min-h-[100px] overflow-hidden w-[fit-content] bg-[#666]'>
+              <div className='overflow-hidden w-[fit-content] bg-[#666]'>
                 <video
                   ref={videoRef}
                   // style={{ width: !landscape ? '243px': '100%' }}
-                  style={{ width: '243px' }}
+                  style={{ width: '243px', display: "none" }}
                   src={videoUrl}
                   preload="metadata"
                   playsInline
@@ -253,12 +253,13 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
               <canvas
                 ref={canvasRef}
                 width={243}
-                height={315}
+                // height={315}
                 style={{
                   marginTop: "16px",
-                  display: "none",
+                  // display: "none",
+
                   width: "243px",
-                  height: "315px",
+                  // height: "315px",
                 }}
               ></canvas>
 

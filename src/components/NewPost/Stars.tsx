@@ -22,12 +22,13 @@ import { isMobileDevice } from '@/utils/utils'
 type StarsProps = {
   price: StarValue
   setPrice: (index: StarValue) => void // Function type to update index
+  featureRefBoll:any
 }
 type StarValue = number
 
 const starList: StarValue[] = [0, 100, 250, 500, 1000, 2500]
 
-const Stars: FC<StarsProps> = ({ price, setPrice }) => {
+const Stars: FC<StarsProps> = ({ price, setPrice, featureRefBoll }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [boll, setBoll] = useState<boolean>(false)
   const [isFocused, setIsFocused] = useState<boolean>(false);
@@ -58,7 +59,12 @@ const Stars: FC<StarsProps> = ({ price, setPrice }) => {
   }, [isOpen]);
 
   useEffect(() => {
-    console.log(1)
+    // alert(isOpen)
+    if(isOpen){
+      featureRefBoll.current = true
+    }else{
+      featureRefBoll.current = false
+    }
     if (!isOpen) {
       window.scrollTo(0, 0);
     }

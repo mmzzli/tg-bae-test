@@ -515,29 +515,8 @@ export const NewPost: FC = () => {
       })
     }
   }, [isFocused])
+  const featureRefBoll = useRef(false)
 
-  const [initialHeight, setInitialHeight] = useState(window.innerHeight);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if(isFocused){
-        const currentHeight = window.innerHeight;
-        if (currentHeight < initialHeight) {
-          // 视口高度变小，键盘弹出
-          setIsFocused(true);
-        } else {
-          // 视口高度恢复，键盘收起
-          setIsFocused(false);
-        }
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [initialHeight]);
 
 
   return (
@@ -679,13 +658,15 @@ export const NewPost: FC = () => {
             title={title}
             setTitle={setTitle}
             setIsFocused={setIsFocused}
+            isFocused={isFocused}
+            featureRefBoll={featureRefBoll}
             />
         </Box>
         {!isFocused && <div>
           <div onClick={()=>stopVideo()}>
             {(price != null && price > 0 && firstFileType === 'video' && videoSrc) && <AddPreview videoRef={videoRefCover} setCover={setCover} videoSrc={videoSrc || ""} trailer={trailer} setTrailer={setTrailer} videoFile={videoFile} />}
           </div>
-          <StarsPage setPrice={setPrice} price={price || 0} />
+          <StarsPage setPrice={setPrice} price={price || 0} featureRefBoll={featureRefBoll} />
         </div>}
       </Box>
       <Box h={`${isFocused ? '700px' : ''}`}></Box>

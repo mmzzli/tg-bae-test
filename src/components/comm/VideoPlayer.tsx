@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, Image } from '@chakra-ui/react';
 import { VideoSwitchIcon } from '@/assets/icons';
 
@@ -12,26 +12,44 @@ interface VideoPlayerProps {
 const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, style, videoRef, videoRefCover }) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  const togglePlayPause = () => {
-    const videoElement = videoRef?.current;
-
-    if (!videoElement) return;
-
-    if (videoElement.paused) {
-      videoElement.play();
-      setTimeout(() => setIsHovered(false), 100);
-    } else {
-      videoElement.pause();
-      setTimeout(() => setIsHovered(true), 100);
+  const handleVideoClick = () => {
+    if(videoRef){
+      const video = videoRef.current
+      if (video) {
+        if (isHovered) {
+          video.pause()
+        } else {
+          video.muted = false
+          video.play()
+        }
+      }
     }
-  };
+  }
+
+  useEffect(() => {
+    if(videoRef){
+      const video = videoRef.current;
+      if (video) {
+        const handlePlay = () => setIsHovered(true);
+        const handlePause = () => setIsHovered(false);
+
+        video.addEventListener('play', handlePlay);
+        video.addEventListener('pause', handlePause);
+
+        return () => {
+          video.removeEventListener('play', handlePlay);
+          video.removeEventListener('pause', handlePause);
+        };
+      }
+    }
+  }, []);
 
   return (
     <div
       // style={{ position: 'relative', width: '100%' }}
       // onMouseEnter={() => setIsHovered(true)}
       // onMouseLeave={() => setIsHovered(false)}
-      onClick={togglePlayPause}
+      onClick={handleVideoClick}
     >
       <video
         ref={videoRef}
@@ -52,13 +70,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, style, videoRef, videoRe
         muted
       />
       </div>
-      {(isHovered || videoRef?.current?.paused) && (
+      {(!isHovered) && (
         <Text
           position="absolute"
           top="50%"
           left="50%"
           transform="translate(-50%, -50%)"
           cursor="pointer"
+          // onClick={()=>handleVideoClick()}
         >
           <Image src={VideoSwitchIcon} />
         </Text>

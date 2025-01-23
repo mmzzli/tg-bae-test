@@ -482,6 +482,13 @@ export const NewPost: FC = () => {
     setFiles((prevItems) => prevItems.filter((_, index) => index !== key))
   }
 
+  const stopVideo = ()=>{
+    const video = videoRef.current
+    if(video){
+      video.pause()
+    }
+  }
+
 
   useEffect(() => {
     return () => {
@@ -650,7 +657,9 @@ export const NewPost: FC = () => {
             setIsFocused={setIsFocused}
             />
         </Box>
-        {(price != null && price > 0 && firstFileType === 'video' && videoSrc) && <AddPreview videoRef={videoRefCover} setCover={setCover} videoSrc={videoSrc || ""} trailer={trailer} setTrailer={setTrailer} videoFile={videoFile} />}
+        <div onClick={()=>stopVideo()}>
+          {(price != null && price > 0 && firstFileType === 'video' && videoSrc) && <AddPreview videoRef={videoRefCover} setCover={setCover} videoSrc={videoSrc || ""} trailer={trailer} setTrailer={setTrailer} videoFile={videoFile} />}
+        </div>
         <StarsPage setPrice={setPrice} price={price || 0} />
       </Box>
       <Box h={`${isFocused ? '700px' : ''}`}></Box>

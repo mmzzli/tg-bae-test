@@ -24,7 +24,6 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
   const cacheVideoIndex = useStore((state) => state.cacheVideoIndex)
   const setVideoResource = useStore((state) => state.setVideoResource)
   const { runDailyWatch } = useDailyTaskActions()
-  const [isPaid, setIsPaid] = useState(false)
   const navigate = useNavigate()
   const { ttMode } = useStore((state) => ({
     ttMode: state.ttMode,
@@ -51,7 +50,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
       videoDom.pause()
       videoDom.muted = false
     }
-  }, [ttMode, isPaid, data.is_pay, data.trailer, data.uid])
+  }, [ttMode, data.is_pay, data.trailer, data.uid])
 
   const videoPlayerRef = useRef<HTMLVideoElement | null>(null)
 

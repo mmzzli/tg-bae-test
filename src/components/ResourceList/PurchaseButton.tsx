@@ -52,9 +52,7 @@ const PurchaseButton: FC<PurchaseButtonProps> = ({ price, post_id, resourcesEve,
         try {
           retryCount++
           const viewUrl = await viewPid(post_id)
-          console.log('resourcesEve1..')
           resourcesEve(post_id, viewUrl, true)
-          console.log('resourcesEve2..')
           clearInterval(items)
           setIsPay(false)
           if (setIsPaid) {

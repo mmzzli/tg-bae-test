@@ -65,7 +65,7 @@ const Trailer: React.FC<TrailerProps> = ({
         </p>
       ) : (
         <div
-          className="rounded-md relative"
+          className="rounded-md relative bg-[#6254FF]"
           style={{
             border: `2px solid ${trailerBoll ? '#6254FF' : '#fff'}`,
           }}
@@ -79,7 +79,7 @@ const Trailer: React.FC<TrailerProps> = ({
           <div className="overflow-hidden w-[64px] h-[64px] rounded-md bg-[#F7F9FC]">
             <video
               ref={videoRef}
-              className="h-[64px] w-[64px] object-cover cursor-pointer"
+              className="h-[64px] w-[64px] object-cover cursor-pointer rounded-md"
               onClick={() => {
                 setTrailerBoll(true);
                 setPreviewVideoUrl(videoSrc);

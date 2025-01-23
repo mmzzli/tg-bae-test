@@ -1,27 +1,24 @@
-import React, { useState, useRef, RefObject, useEffect } from 'react';
-import {
-  useToast,
-} from '@chakra-ui/react'
-
-import { CustomToast, typeOptions } from '@/components/comm/Toast'
+import React, { useState, useRef, useEffect, RefObject } from 'react';
+import { useToast } from '@chakra-ui/react';
+import { CustomToast, typeOptions } from '@/components/comm/Toast';
 
 interface Frame {
-  url: string
-  time: number
-  height: number
-  width: number
+  url: string;
+  time: number;
+  height: number;
+  width: number;
 }
 
 interface SliderProps {
-  duration: number
-  handleSliderChange: (value:any)=>void
-  setStartTime:(num:number)=>void
-  setEndTime:(num:number)=>void
-  trailerBoll: boolean
-  setTrailerBoll: (boll:boolean)=>void
-  videoRef: RefObject<HTMLVideoElement>
-  setLoadingSkeleton: (boll:boolean)=>void
-  setPreviewVideoUrl: (str:string)=>void
+  duration: number;
+  handleSliderChange: (value: any) => void;
+  setStartTime: (num: number) => void;
+  setEndTime: (num: number) => void;
+  trailerBoll: boolean;
+  setTrailerBoll: (boll: boolean) => void;
+  videoRef: RefObject<HTMLVideoElement>;
+  setLoadingSkeleton: (boll: boolean) => void;
+  setPreviewVideoUrl: (str: string) => void;
 }
 
 const TransparentSlider: React.FC<SliderProps> = ({
@@ -33,205 +30,186 @@ const TransparentSlider: React.FC<SliderProps> = ({
   setTrailerBoll,
   videoRef,
   setLoadingSkeleton,
-  setPreviewVideoUrl
+  setPreviewVideoUrl,
 }) => {
-  const toast = useToast()
+  const toast = useToast();
   const [selectedTime, setSelectedTime] = useState(0);
-  const [frames, setFrames] = useState<Frame[]>([])
+  const [frames, setFrames] = useState<Frame[]>([]);
   const sliderRef = useRef<HTMLDivElement | null>(null);
-  const isDraggingRef = useRef<boolean>(false); // 判断是否正在拖动
+  const isDraggingRef = useRef<boolean>(false); // 是否正在拖动
+  const [sliderWidth, setSliderWidth] = useState(0);
 
   const videoDuration = duration; // 视频总时长（秒）
 
-  // 计算滑块当前的时间
-  const getSelectedTime = (clientX: number) => {
-    const slider = sliderRef.current;
-    if (slider) {
-      const rect = slider.getBoundingClientRect();
-      const offsetX = Math.min(Math.max(clientX - rect.left, 0), rect.width);
-      return (offsetX / rect.width) * videoDuration;
+  // 获取 slider 宽度，确保实时更新
+  useEffect(() => {
+    if (sliderRef.current) {
+      setSliderWidth(sliderRef.current.offsetWidth);
+    }
+  }, [sliderRef.current]);
+
+  const calculateSelectedTime = (clientX: number) => {
+    if (sliderRef.current) {
+      const { left, width } = sliderRef.current.getBoundingClientRect();
+      const offsetX = Math.max(0, Math.min(clientX - left, width));
+      return (offsetX / width) * videoDuration;
     }
     return 0;
   };
 
-  const handleMove = (e: MouseEvent | TouchEvent) => {
+  const updateSliderPosition = (time: number) => {
+    setSelectedTime(time);
+    const adjustedStart = Math.max(0, time);
+    const adjustedEnd = Math.min(videoDuration, time + 6);
+    setStartTime(adjustedStart);
+    setEndTime(adjustedEnd);
+  };
+
+  const handleDrag = (e: MouseEvent | TouchEvent) => {
     if (!isDraggingRef.current) return;
 
     const clientX = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
-    const time = getSelectedTime(clientX);
-    handleSliderChange(time.toFixed(1))
-    console.log(time)
-    setSelectedTime(time);
-    // 设置视频时长
-    // console.log(time)
-    if(time+6 >= videoDuration){
-      setStartTime(videoDuration-6)
-      setEndTime(videoDuration)
-    }else{
-      setStartTime(time)
-      setEndTime(time + 6)
-    }
+    const time = calculateSelectedTime(clientX);
+    handleSliderChange(time.toFixed(1));
+    updateSliderPosition(time);
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    if(duration < 5){
-      return
-    }
+    if (duration < 5) return;
     e.preventDefault();
     isDraggingRef.current = true;
-    document.addEventListener('mousemove', handleMove);
+    document.addEventListener('mousemove', handleDrag);
     document.addEventListener('mouseup', handleMouseUp);
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    if(duration < 5){
-      return
-    }
+    if (duration < 5) return;
     e.preventDefault();
     isDraggingRef.current = true;
-    document.addEventListener('touchmove', handleMove);
+    document.addEventListener('touchmove', handleDrag);
     document.addEventListener('touchend', handleTouchEnd);
   };
 
   const handleMouseUp = () => {
-    if(duration < 5){
-      return
-    }
     isDraggingRef.current = false;
-    document.removeEventListener('mousemove', handleMove);
+    document.removeEventListener('mousemove', handleDrag);
     document.removeEventListener('mouseup', handleMouseUp);
   };
 
   const handleTouchEnd = () => {
-    if(duration < 5){
-      return
-    }
     isDraggingRef.current = false;
-    document.removeEventListener('touchmove', handleMove);
+    document.removeEventListener('touchmove', handleDrag);
     document.removeEventListener('touchend', handleTouchEnd);
   };
 
   const handleClick = (e: React.MouseEvent) => {
-    if(duration < 5){
-      return
-    }
-    const clientX = e.clientX;
-    const time = getSelectedTime(clientX);
-    setSelectedTime(time);
-    setTrailerBoll(false)
+    if (duration < 5) return;
+    const time = calculateSelectedTime(e.clientX);
+    updateSliderPosition(time);
+    setTrailerBoll(false);
   };
 
   const extractFramesFromVideo = async () => {
     if (!videoRef.current) return;
 
     const video = videoRef.current;
-    const framesArray: Frame[] = [];
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
+
+    if (!context) return;
 
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
 
-    const videoDuration = video.duration;
-    const frameInterval = videoDuration / 20; // 每帧的时间间隔
-    let frameCount = 0; // 记录已提取的帧数
+    const frameInterval = video.duration / 20; // 每帧间隔
+    const framesArray: Frame[] = [];
+    let frameCount = 0;
 
-    // 每次视频更新时提取一帧
     const extractFrame = () => {
-      if (frameCount >= 20 || video.currentTime >= videoDuration) {
-        video.ontimeupdate = null; // 停止事件监听
-        video.pause(); // 停止视频播放
-        console.log('所有帧已提取完成:', framesArray);
-        setFrames(framesArray)
-        setLoadingSkeleton(false)
+      if (frameCount >= 20 || video.currentTime >= video.duration) {
+        video.ontimeupdate = null;
+        video.pause();
+        setFrames(framesArray);
+        setLoadingSkeleton(false);
         return;
       }
 
-      if (context) {
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        framesArray.push({
-          url: canvas.toDataURL('image/png'),
-          time: video.currentTime,
-          height: canvas.height,
-          width: canvas.width,
-        });
-        frameCount++; // 增加帧计数
-        console.log(`帧 ${frameCount} 提取完成`);
-      }
-
-      video.currentTime += frameInterval; // 跳到下一帧时间点
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      framesArray.push({
+        url: canvas.toDataURL('image/png'),
+        time: video.currentTime,
+        height: canvas.height,
+        width: canvas.width,
+      });
+      frameCount++;
+      video.currentTime += frameInterval;
     };
 
-    video.ontimeupdate = extractFrame; // 绑定事件
-    video.play(); // 开始播放视频以触发 ontimeupdate
+    video.ontimeupdate = extractFrame;
+    video.play();
   };
-
-
 
   useEffect(() => {
     if (videoRef && videoRef.current) {
       const timer = setTimeout(() => {
-        setLoadingSkeleton(true)
-        extractFramesFromVideo()
-      }, 1000)
-      return () => clearTimeout(timer)
+        setLoadingSkeleton(true);
+        extractFramesFromVideo();
+      }, 1000);
+      return () => clearTimeout(timer);
     }
-  }, [videoRef])
-
-  // useEffect(()=>{
-  //   if(videoRef){
-  //     extractFramesFromVideo()
-  //   }
-  // },[videoRef])
+  }, [videoRef]);
 
   return (
-    <div className='w-[100%]' onClick={()=>{setPreviewVideoUrl("");setTrailerBoll(false)}}>
+    <div className="w-[100%]" onClick={() => { setPreviewVideoUrl(''); setTrailerBoll(false); }}>
       <div
         ref={sliderRef}
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
-        onClick={handleClick} // 点击区域直接跳到时间
+        onClick={handleClick}
         style={{
           position: 'relative',
           width: '100%',
           height: '64px',
-          background: 'rgba(0, 0, 0, 0.2)', // 背景改为黑色
+          background: 'rgba(0, 0, 0, 0.2)',
           borderRadius: '5px',
-          // margin: '20px auto',
           cursor: 'pointer',
-          overflow: 'hidden'
+          overflow: 'hidden',
         }}
       >
-        {frames.length >=1 && <div className='w-[1000%]'>
-          {
-            frames.map((item, key)=>(
-              <img key={key} className='w-[auto] h-[64px] float-left' src={item.url}/>
-            ))
-          }
-        </div>}
-        {/* 滑块 */}
-        {(duration <= 5 && !trailerBoll) &&  <p className='text-[18px] text-[#fff] text-center h-[60px] leading-[60px] z-9 absolute w-[100%]'>video should be over 5s.</p>}
-        {(!trailerBoll && duration > 5) && <div
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: `calc(min(max(${(selectedTime / videoDuration) * 100}%, ${((107 / 2) / sliderRef.current!.offsetWidth) * 100}%),
-              ${100 - ((107 / 2) / sliderRef.current!.offsetWidth) * 100}%))`,
-            width: '107px',
-            height: '60px',
-            border: '2px solid #FFF', // 边框颜色保持不变
-            backgroundColor: 'rgba(0, 0, 0, 0.2)', // 背景色改为黑色
-            borderRadius: '8px',
-            transform: 'translate(-50%, -50%)',
-            // boxShadow: '0 0 10px rgba(0, 0, 255, 0.5)',
-            pointerEvents: 'none',
-          }}
-        >
-          <p className='text-[18px] text-[#fff] text-center h-[60px] leading-[60px]'>5S</p>
-        </div>
-        }
+        {frames.length > 0 && (
+          <div className="w-[1000%]">
+            {frames.map((frame, index) => (
+              <img key={index} className="w-[auto] h-[64px] float-left" src={frame.url} alt={`Frame ${index}`} />
+            ))}
+          </div>
+        )}
+        {duration <= 5 && !trailerBoll && (
+          <p className="text-[18px] text-[#fff] text-center h-[60px] leading-[60px] absolute w-[100%]">Video should be over 5s.</p>
+        )}
+        {duration > 5 && !trailerBoll && (
+          <div
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: `calc(${
+                Math.min(
+                  Math.max((selectedTime / videoDuration) * 100, (107 / 2) / sliderRef.current!.offsetWidth * 100),
+                  100 - (107 / 2) / sliderRef.current!.offsetWidth * 100
+                )
+              }%)`,
+              width: '107px',
+              height: '60px',
+              border: '2px solid #FFF',
+              backgroundColor: 'rgba(0, 0, 0, 0.2)',
+              borderRadius: '8px',
+              transform: 'translate(-50%, -50%)',
+              pointerEvents: 'none',
+            }}
+          >
+            <p className="text-[18px] text-[#fff] text-center h-[60px] leading-[60px]">5S</p>
+          </div>
+        )}
       </div>
-      {/* <p style={{ color: '#000' }}>{selectedTime.toFixed(1)}</p> */}
     </div>
   );
 };

@@ -123,6 +123,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
                 className={
                   'absolute items-center justify-center overflow-hidden relative object-contain video-container z-[4] flex'
                 }
+                onClick={() => handleVideoClick(data)}
               >
                 <Image
                   src={data.mediaCover ? formatImage(data.mediaCover, false) : ''}

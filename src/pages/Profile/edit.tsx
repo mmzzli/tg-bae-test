@@ -306,6 +306,26 @@ const ProfileEdit: FC = () => {
           'calc(100vh - 84px - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top))',
       }}
     >
+       <div
+        className="fixed top-0 left-0 right-0 bg-white dark:bg-black z-10"
+        style={{
+          display: showTopTitle ? 'block' : 'none',
+          height: `${
+            parseInt(
+              getComputedStyle(document.documentElement).getPropertyValue(
+                '--tg-safe-area-inset-top'
+              )
+            ) > 0 ||
+            parseInt(
+              getComputedStyle(document.documentElement).getPropertyValue(
+                '--tg-content-safe-area-inset-top'
+              )
+            ) > 0
+              ? '0'
+              : '68px'
+          }`,
+        }}
+      ></div>
       <div
         className="bg-area fixed top-0 left-0 items-center justify-center"
         style={{
@@ -340,6 +360,7 @@ const ProfileEdit: FC = () => {
           opacity: showTopTitle ? 1 : 0,
           transform: `translateX(-50%)`,
           left: '50%',
+          zIndex: 11,
           top: `${
             showTopTitle
               ? 'calc(var(--tg-safe-area-inset-top) + 10px)'

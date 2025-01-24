@@ -35,6 +35,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
   const [selectedFrame, setSelectedFrame] = useState<Frame | null>(null);
   const [duration, setDuration] = useState<number>(0);
   const [currentTime, setCurrentTime] = useState<number>(0);
+  const [coverImg, setCoverImg] = useState('')
 
   const isLandscape =
     selectedFrame?.width && selectedFrame?.height
@@ -105,7 +106,10 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
   }, [videoUrl]);
 
 
-  const handleSliderChange = (value: React.FormEvent<HTMLInputElement>): void => {
+  const handleSliderChange = (value: React.FormEvent<HTMLInputElement>, coverImgData: any): void => {
+    if (coverImgData) {
+      setCoverImg(coverImgData.url)
+    }
     const video = videoRef.current;
     if (video) {
       video.currentTime = Number(value);
@@ -129,8 +133,8 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
     off();
     if (canvas) {
       // Get the frame as a PNG image at the video's full size
-      const frameData = canvas.toDataURL("image/png", 1.0);
-      const file = base64ToFile(frameData, 'image.png');
+      // const frameData = canvas.toDataURL("image/png", 1.0);
+      const file = base64ToFile(coverImg, 'image.png');
       console.log(file);
 
       const timestamp: number = new Date().getTime();
@@ -265,8 +269,17 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
 
                   width: "243px",
                   // height: "315px",
+                  display: "none"
                 }}
               ></canvas>
+              <img
+                 style={{
+                  marginTop: "16px",
+                  // display: "none",
+                  width: "243px",
+                }}
+                src={coverImg}
+              />
 
 
 

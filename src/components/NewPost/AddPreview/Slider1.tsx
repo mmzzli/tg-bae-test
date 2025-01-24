@@ -9,7 +9,7 @@ interface Frame {
 
 interface SliderProps {
   duration: number
-  handleSliderChange: (value:any)=>void
+  handleSliderChange: (value:any, coverImg: any)=>void
   videoRef: RefObject<HTMLVideoElement>
   setLoadingSkeleton: (boll:boolean)=>void
   isBaseModalOpen: boolean
@@ -26,27 +26,63 @@ const TransparentSlider: React.FC<SliderProps> = ({
   const [frames, setFrames] = useState<Frame[]>([])
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const isDraggingRef = useRef<boolean>(false); // 判断是否正在拖动
+  const [firstImgWidth, setFirstImgWidth ] = useState(0)
+  const [activeFrameIndex, setActiveFrameIndex] = useState(0)
 
   const videoDuration = duration; // 视频总时长（秒）
 
   // 计算滑块当前的时间
   const getSelectedTime = (clientX: number) => {
     const slider = sliderRef.current;
+    console.log('xxxxx', clientX)
     if (slider) {
       const rect = slider.getBoundingClientRect();
+      const currentScreenFrameNum = Math.floor(rect.width / firstImgWidth)
+      // if ((activeFrameIndex + 1) >= currentScreenFrameNum) {
+      //   slider.scrollTo({ left: slider.scrollLeft + firstImgWidth, behavior: 'smooth' });
+      // }
+      // slider.scrollTo({ left: slider.scrollLeft + 110, behavior: 'smooth' });
       const offsetX = Math.min(Math.max(clientX - rect.left, 0), rect.width);
       return (offsetX / rect.width) * videoDuration;
     }
     return 0;
   };
 
+  const handleImgClick = (item: any, index: number) => {
+    setActiveFrameIndex(index)
+  }
+
+  useEffect(() => {
+    handleSliderChange(0, frames[activeFrameIndex])
+  }, [activeFrameIndex])
+
+  // 根据 clientX 判断当前 activeFrameIndex
+  const setActiveFrameIndexByX = (clientX: number) => {
+    if (frames && frames.length) {
+      const fullWidth = frames.length * firstImgWidth;
+      const slider = sliderRef.current;
+      if (slider) {
+        const rect = slider.getBoundingClientRect();
+        const offsetX = Math.min(Math.max(clientX - rect.left, 0), rect.width);
+        const index = Math.floor((offsetX / fullWidth) * frames.length);
+        setActiveFrameIndex(index);
+        return index;
+      }
+      return 0;
+    }
+    return 0;
+  }
+
   const handleMove = (e: MouseEvent | TouchEvent) => {
     if (!isDraggingRef.current) return;
 
     const clientX = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
+
+    console.log('clientX>>>', clientX)
+    // const frameIndex =  setActiveFrameIndexByX(clientX)
     const time = getSelectedTime(clientX);
-    handleSliderChange(time.toFixed(1))
-    console.log(time)
+    // handleSliderChange(time.toFixed(1), frames[frameIndex])
+    console.log('time..', time)
     setSelectedTime(time);
     // 设置视频时长
     // console.log(time)
@@ -102,9 +138,9 @@ const TransparentSlider: React.FC<SliderProps> = ({
       return
     }
     const clientX = e.clientX;
-    console.log(clientX)
+    const frameIndex = setActiveFrameIndexByX(clientX)
     const time = getSelectedTime(clientX);
-    handleSliderChange(time.toFixed(1))
+    handleSliderChange(time.toFixed(1), frames[frameIndex])
     setSelectedTime(time);
   };
 
@@ -125,12 +161,15 @@ const TransparentSlider: React.FC<SliderProps> = ({
 
     // 每次视频更新时提取一帧
     const extractFrame = () => {
-      console.log(1)
       if (frameCount >= 20 || video.currentTime >= videoDuration) {
         video.ontimeupdate = null; // 停止事件监听
         video.pause(); // 停止视频播放
         console.log('所有帧已提取完成:', framesArray);
+        if (framesArray[0]) {
+          setFirstImgWidth(framesArray[0].width * 64 / framesArray[0].height)
+        }
         setFrames(framesArray)
+        handleSliderChange(0, framesArray[0])
         setLoadingSkeleton(false)
         return;
       }
@@ -180,7 +219,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
         ref={sliderRef}
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
-        onClick={handleClick} // 点击区域直接跳到时间
+        // onClick={handleClick} // 点击区域直接跳到时间
         style={{
           position: 'relative',
           width: '100%',
@@ -189,13 +228,27 @@ const TransparentSlider: React.FC<SliderProps> = ({
           borderRadius: '5px',
           // margin: '20px auto',
           cursor: 'pointer',
-          overflow: 'hidden'
+          overflowY: 'hidden',
+          overflowX: 'auto'
         }}
       >
-        {frames.length >=1 && <div className='w-[1000%]'>
+        {frames.length >=1 && <div style={{
+          width: `${firstImgWidth * frames.length}px`
+        }}>
           {
             frames.map((item, key)=>(
-              <img key={key} className='w-[auto] h-[64px] float-left' src={item.url}/>
+              <img
+                key={key}
+                className='w-[auto] h-[64px] float-left'
+                src={item.url}
+                onClick={() => handleImgClick(item, key)}
+                onLoad={(e) => {
+                  if (key === 0) {
+                    const img = e.target as HTMLImageElement;
+                    setFirstImgWidth(img.naturalWidth * 64 / img.naturalHeight)
+                  }
+                }}
+              />
             ))
           }
         </div>}
@@ -203,17 +256,30 @@ const TransparentSlider: React.FC<SliderProps> = ({
         { <div
           style={{
             position: 'absolute',
-            top: '50%',
-            left: `${(selectedTime / videoDuration) * 100}%`,
-            width: '45px',
-            height: '60px',
-            border: '2px solid #FFF', // 边框颜色保持不变
-            backgroundColor: 'rgba(0, 0, 0, 0.2)', // 背景色改为黑色
+            top: 0,
+            left: `${activeFrameIndex * firstImgWidth}px`,
+            width: `${firstImgWidth}px`,
+            height: '64px',
+            border: '2px solid #FFF',
+            backgroundColor: 'rgba(0, 0, 0, 0.2)',
             borderRadius: '8px',
-            transform: 'translate(-50%, -50%)',
-            // boxShadow: '0 0 10px rgba(0, 0, 255, 0.5)',
-            pointerEvents: 'none',
           }}
+        // onMouseDown={handleMouseDown}
+        // onTouchStart={handleTouchStart}
+
+          // style={{
+          //   position: 'absolute',
+          //   top: 0,
+          //   left: `${(selectedTime / videoDuration) * 100}%`,
+          //   width: `${frames[0]?.width}px`,
+          //   height: '64px',
+          //   border: '2px solid #FFF', // 边框颜色保持不变
+          //   backgroundColor: 'rgba(0, 0, 0, 0.2)', // 背景色改为黑色
+          //   borderRadius: '8px',
+          //   transform: 'translate(-50%, -50%)',
+          //   // boxShadow: '0 0 10px rgba(0, 0, 255, 0.5)',
+          //   pointerEvents: 'none',
+          // }}
         />}
       </div>
       {/* <p style={{ color: '#000' }}>{selectedTime.toFixed(1)}</p> */}

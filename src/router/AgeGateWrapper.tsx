@@ -14,10 +14,10 @@ export const AgeGateWrapper = ({ children }: { children: React.ReactNode }) => {
       return
     }
 
-    if (location.pathname.startsWith('/profile')) {
-      window.Telegram?.WebApp?.setHeaderColor("#000000")
+    if (location.pathname.startsWith('/profile') && location.pathname !== '/profile/earnings') {
+      window.Telegram?.WebApp?.setHeaderColor('#000000')
     } else {
-      window.Telegram?.WebApp?.setHeaderColor("#ffffff")
+      window.Telegram?.WebApp?.setHeaderColor('#ffffff')
     }
 
     const isAgeVerified = localStorage.getItem(`ageGate-${current_uid}`) === '1'

@@ -122,7 +122,7 @@ const Earnings = () => {
           <ul className="flex justify-between items-center">
             <li>
               <p className="text-[#999] text-[12px]">Total stars earned</p>
-              <h5 className="text-[#000] text-[22px] my-4">
+              <h5 className="text-[#000] text-[22px] my-1">
                 {formatUSD(data.total * data.exchange_rate, true)}
               </h5>
               <p className="flex gap-1">
@@ -132,7 +132,7 @@ const Earnings = () => {
             </li>
             <li>
               <p className="text-[#999] text-[12px]">Available to convert</p>
-              <h5 className="text-[#000] text-[22px] my-4">
+              <h5 className="text-[#000] text-[22px] my-1">
                 {formatUSD(data.available * data.exchange_rate, true)}
               </h5>
               <p className="flex gap-1">
@@ -189,6 +189,10 @@ const Earnings = () => {
                 </h3>
               </li>
             </ul>
+            <div>
+              This shows the estimated total value of crypto you received from others, subject to
+              market fluctuations.
+            </div>
             <div className="px-3">
               {status === 'disconnected' ? (
                 <BaseButton

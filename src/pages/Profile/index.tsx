@@ -9,7 +9,7 @@ import { useStore } from '@/store'
 import { getFollowingList } from '@/api'
 import './index.css'
 // import FireworksAnimation from '../../components/Fireworks'
-const SCROLL_THRESHOLD = 110
+const SCROLL_THRESHOLD = 100
 
 const Profile: FC = () => {
   const { launchParams } = useTMAUtils()
@@ -107,7 +107,10 @@ const Profile: FC = () => {
       </h3>
       <div
         ref={titleRef}
-        className="content-area absolute top-[113px] left-0 w-full h-full  bg-white dark:bg-black"
+        className="content-area absolute left-0 w-full h-full  bg-white dark:bg-black"
+        style={{
+          top: 'calc(174px - var(--tg-safe-area-inset-top))',
+        }}
       >
         <UserProfile />
         <ViewList />

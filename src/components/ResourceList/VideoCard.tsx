@@ -154,12 +154,12 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
               </HStack>
               {data.type=== 0 && data.price > 0 && !data.is_pay && data.uid != getCurrentUid() && data.trailer && (
                 <HStack
-                  borderRadius="4px"
-                  bg="rgba(0, 0, 0, 0.20)"
+                  borderRadius="20px"
+                  bg="rgba(0, 0, 0, 0.40)"
                   position="absolute"
-                  top="16px"
-                  left="16px"
-                  p="6px 8px"
+                  top="12px"
+                  left="12px"
+                  p="6px 12px"
                   zIndex={4}
                 >
                   <Text color="white" fontSize="14px" fontWeight="500">

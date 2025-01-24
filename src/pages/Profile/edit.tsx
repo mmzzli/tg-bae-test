@@ -11,7 +11,7 @@ import { useStore } from '@/store/store'
 import { UserInfoProfile } from '@/types'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import BaseButton from '@/components/BaseButton/BaseButton'
-const SCROLL_THRESHOLD = 110
+const SCROLL_THRESHOLD = 130
 
 const ProfileEdit: FC = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
@@ -351,7 +351,10 @@ const ProfileEdit: FC = () => {
       </h3>
       <div
         ref={titleRef}
-        className="content-area absolute top-[113px] pt-[24px] px-[16px] pb-[63px] left-0 w-full h-full  bg-white dark:bg-black"
+        className="content-area absolute pt-[24px] px-[16px] pb-[63px] left-0 w-full h-full  bg-white dark:bg-black"
+        style={{
+          top: 'calc(174px - var(--tg-safe-area-inset-top))',
+        }}
       >
         <div className={`text-[20px] text-[#0F1233] font-[500] ${showTopTitle ? 'opacity-0' : ''}`}>
           Profile

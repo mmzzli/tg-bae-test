@@ -131,7 +131,7 @@ export const TransferPanel = ({
     currentGasPrice: bigint,
     maxPriorityFee: bigint
   ) => {
-    return estimatedGas * 2n * (currentGasPrice + maxPriorityFee)
+    return estimatedGas * (currentGasPrice + maxPriorityFee)
   }
 
   const getCurrentGasPrice = (feesPerGas: any) => {
@@ -151,11 +151,13 @@ export const TransferPanel = ({
 
       const estimatedGas = gasLimit ? BigInt(gasLimit) : 53000n
       const currentGasPrice = getCurrentGasPrice(feesPerGas)
-      const totalCost = calculateTotalCost(
+      let totalCost = calculateTotalCost(
         estimatedGas,
         currentGasPrice,
         maxPriorityFee ? BigInt(maxPriorityFee) : 1000000000n
       )
+
+      if (chainId === 1) totalCost *= 2n
 
       console.log('totalCost', totalCost)
       const newAmountWithCost = parseUnits(newAmount.toString(), decimals) + totalCost

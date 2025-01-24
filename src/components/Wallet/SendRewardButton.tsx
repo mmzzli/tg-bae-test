@@ -176,27 +176,6 @@ export const SendRewardButton = ({
     }
   }
 
-  const gasConfig =
-    import.meta.env.VITE_APP_ENV === 'production'
-      ? {
-          gas: gasLimit ? BigInt(Number(gasLimit) * 4) : 1030000n,
-          gasLimit: gasLimit ? BigInt(Number(gasLimit) * 4) : 1030000n,
-          gasPrice:
-            (feesPerGas?.maxFeePerGas || 1000000000n) +
-            (feesPerGas?.maxPriorityFeePerGas || 1000000000n),
-          maxFeePerGas: feesPerGas?.maxFeePerGas,
-          maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
-        }
-      : {
-          // gas: gasLimit ? BigInt(Number(gasLimit) * 4) : 1030000n,
-          gasLimit: gasLimit ? BigInt(Number(gasLimit) * 4) : 1030000n,
-          gasPrice:
-            (feesPerGas?.maxFeePerGas || 1000000000n) +
-            (feesPerGas?.maxPriorityFeePerGas || 1000000000n),
-          // maxFeePerGas: feesPerGas?.maxFeePerGas,
-          // maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
-        }
-
   const switchChain = async () => {
     try {
       await switchChainAsync({ chainId })

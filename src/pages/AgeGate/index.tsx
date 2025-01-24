@@ -46,7 +46,7 @@ const AgeGate = () => {
           to use this app. By tapping the button below, you confirm you meet these requirements.
         </p>
       </div>
-      <div className={`mt-16 text-center pb-5 ${window.devicePixelRatio >=3 ? 'px-[40px]' : 'px-[38px]'}`}>
+      <div className={`mt-16 text-center pb-5 ${window.devicePixelRatio >=3 ? 'px-[40px]' : 'px-[12px]'}`}>
         <div className="flex justify-center gap-[8px] flex-col items-center pl-[3px]">
           <Checkbox
             type="checkbox"
@@ -55,11 +55,11 @@ const AgeGate = () => {
             alignItems="flex-start"
           >
             <p className="break-all text-left text-[#999] text-[12px]">
-              I have read and*accepted the
+              I have read and accepted the
               <a
                 href="https://terms.bae.boo/terms.html"
                 target="_blank"
-                className="text-[#999] underline mx-[4px]"
+                className="text-[#999] underline mx-[4px] whitespace-nowrap"
               >
                 Terms of Service
               </a>
@@ -67,7 +67,7 @@ const AgeGate = () => {
               <a
                 href="https://privacy.bae.boo/privacy.html"
                 target="_blank"
-                className="text-[#999] underline ml-[4px]"
+                className="text-[#999] underline ml-[4px] whitespace-nowrap"
               >
                 Privacy Policy
               </a>

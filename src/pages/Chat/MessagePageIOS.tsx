@@ -77,8 +77,11 @@ const MessagePageIOS = () => {
       type,
       text,
       to: Number(uid),
-      reply: replyMessage || undefined,
+      ...(replyMessage && replyMessage.channel === messageWindow?.channel.channelID
+        ? { reply: replyMessage }
+        : {}),
     })
+
     sendMessage(newMessage)
     setReplyMessage(null)
     setTimeout(() => {

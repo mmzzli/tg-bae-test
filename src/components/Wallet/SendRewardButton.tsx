@@ -23,6 +23,8 @@ import { useFormatMessage } from '@/hooks/useFormatMessage'
 import { useIM } from '@/store/hook/userIM'
 import BigNumber from 'bignumber.js'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
+import { getBalance } from '@wagmi/core'
+import { config } from '@/config/wagmi-config'
 
 export const SendRewardButton = ({
   amount,
@@ -197,38 +199,87 @@ export const SendRewardButton = ({
       })
     }
   }
-  const reward = () => {
+
+  const calculateTotalCost = (
+    estimatedGas: bigint,
+    currentGasPrice: bigint,
+    maxPriorityFee: bigint
+  ) => {
+    return estimatedGas * (currentGasPrice + maxPriorityFee)
+  }
+
+  const getCurrentGasPrice = (feesPerGas: any) => {
+    return feesPerGas && BigInt(feesPerGas.maxFeePerGas) < 1000000000n
+      ? 1000000000n
+      : BigInt(feesPerGas.maxFeePerGas || 1000000000n)
+  }
+
+  const checkGasBalance = async (cb: () => void) => {
+    const estimatedGas = gasLimit ? BigInt(gasLimit) : 53000n
+    const currentGasPrice = getCurrentGasPrice(feesPerGas)
+    let totalCost = calculateTotalCost(
+      estimatedGas,
+      currentGasPrice,
+      maxPriorityFee ? BigInt(maxPriorityFee) : 1000000000n
+    )
+
+    if (chainId === 1) totalCost *= 2n
     if (tokenAddress === '0x0000000000000000000000000000000000000000') {
-      // const estimatedGas = gasLimit ? BigInt(gasLimit) : 21000n
-      // const currentGasPrice = feesPerGas ? BigInt(feesPerGas.maxFeePerGas) : 0n
-      // const totalCost =
-      //   estimatedGas * (currentGasPrice + (maxPriorityFee ? BigInt(maxPriorityFee) : 0n))
-      // console.log(totalCost, gasLimit, feesPerGas, maxPriorityFee)
-      // if (totalCost + parseUnits(amount, decimals) > balance) {
-      //   toast({
-      //     render: () => <CustomToast title="Insufficient gas" type={typeOptions.error} />,
-      //     position: 'bottom',
-      //   })
-      //   return slideButtonRef.current?.reset()
-      // }
+      if (totalCost + parseUnits(amount, decimals) > balance) {
+        toast({
+          render: () => <CustomToast title="Insufficient gas" type={typeOptions.error} />,
+          position: 'bottom',
+        })
+        return slideButtonRef.current?.reset()
+      }
+    } else {
+      // 计算余额是否足够支付gas
+      const balance = address
+        ? getBalance(config, {
+            address: address,
+            chainId: chainId as 1 | 56 | undefined,
+          })
+        : null
+
+      console.log(balance)
+
+      if (balance) {
+        const res = await balance
+        console.log('balance', res)
+        if (res.value < totalCost) {
+          toast({
+            render: () => (
+              <CustomToast title="Insufficient gas balance for reward" type={typeOptions.error} />
+            ),
+            position: 'bottom',
+          })
+          return slideButtonRef.current?.reset()
+        }
+      }
     }
-    writeContract({
-      address: contractAddress as `0x${string}`,
-      chainId,
-      abi,
-      functionName: 'reward',
-      args: [
-        parseUnits('0', decimals),
-        tokenAddress as `0x${string}`,
-        parseUnits(amount, decimals),
-        BigInt(current_uid),
-        BigInt(toUid),
-      ],
-      value:
-        tokenAddress === '0x0000000000000000000000000000000000000000'
-          ? parseUnits(amount, decimals)
-          : 0n,
-      ...gasConfig,
+    cb()
+  }
+
+  const reward = () => {
+    checkGasBalance(() => {
+      writeContract({
+        address: contractAddress as `0x${string}`,
+        chainId,
+        abi,
+        functionName: 'reward',
+        args: [
+          parseUnits('0', decimals),
+          tokenAddress as `0x${string}`,
+          parseUnits(amount, decimals),
+          BigInt(current_uid),
+          BigInt(toUid),
+        ],
+        value:
+          tokenAddress === '0x0000000000000000000000000000000000000000'
+            ? parseUnits(amount, decimals)
+            : 0n,
+        ...gasConfig,
+      })
     })
   }
 
@@ -245,14 +296,17 @@ export const SendRewardButton = ({
 
     if (tokenAddress !== '0x0000000000000000000000000000000000000000' && needApprove) {
       console.warn('Approve:', tokenAddress as `0x${string}`, parseUnits(amount, decimals))
+
       setIsApproving(true)
-      writeContract({
-        address: tokenAddress as `0x${string}`,
-        chainId,
-        abi: approveAbi,
-        functionName: 'approve',
-        args: [contractAddress as `0x${string}`, maxUint256],
-        ...gasConfig,
+      checkGasBalance(() => {
+        writeContract({
+          address: tokenAddress as `0x${string}`,
+          chainId,
+          abi: approveAbi,
+          functionName: 'approve',
+          args: [contractAddress as `0x${string}`, maxUint256],
+          ...gasConfig,
+        })
       })
       return
     }

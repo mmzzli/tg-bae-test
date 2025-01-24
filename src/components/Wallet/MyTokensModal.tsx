@@ -57,6 +57,7 @@ const MyTokensModal = forwardRef<ChildMethods, { userInfo: OthersUserInfo }>(
 
     return (
       <>
+        {virtualRoutePage?.name === 'SendRewardPage' && <SendRewardPage />}
         <BaseModal
           isOpen={isBaseModalOpen}
           onClose={off}
@@ -92,11 +93,6 @@ const MyTokensModal = forwardRef<ChildMethods, { userInfo: OthersUserInfo }>(
             </div>
           </div>
         </BaseModal>
-        {virtualRoutePage?.name === 'SendRewardPage' && (
-          <div className="transition-opacity duration-500 opacity-100 fixed z-[10000]">
-            <SendRewardPage />
-          </div>
-        )}
       </>
     )
   }

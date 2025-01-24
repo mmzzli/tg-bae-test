@@ -235,7 +235,7 @@ export const SendRewardButton = ({
         if (res.value < totalCost) {
           toast({
             render: () => (
-              <CustomToast title="Insufficient gas balance for reward" type={typeOptions.error} />
+              <CustomToast title="Insufficient gas for reward" type={typeOptions.error} />
             ),
             position: 'top',
           })

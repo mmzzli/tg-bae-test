@@ -244,7 +244,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
         if (res.value < totalCost) {
           toast({
             render: () => (
-              <CustomToast title="Insufficient balance for withdrawal" type={typeOptions.error} />
+              <CustomToast title="Insufficient gas for withdrawal" type={typeOptions.error} />
             ),
             position: 'bottom',
           })

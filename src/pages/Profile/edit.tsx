@@ -391,7 +391,7 @@ const ProfileEdit: FC = () => {
                 <p className="text-[#888] text-[12px]">{profileData?.username.length}/20</p>
               </div>
               <input
-                className="w-[100%] rounded-[10px] text-[#333] text-[14px] border-[1px] border-[#CDCDD4] px-[16px] py-[15px]"
+                className="w-[100%] rounded-[10px] text-[#333] text-[14px] border-[0.5px] border-[#CDCDD4] px-[16px] py-[15px]"
                 value={profileData?.username}
                 onChange={(e) => {
                   changeEve(e, 'username')
@@ -405,7 +405,7 @@ const ProfileEdit: FC = () => {
                   <p className="text-[#888] text-[12px]">{profileData?.bio.length}/500</p>
                 </div>
                 <textarea
-                  className="w-[100%] h-[218px] rounded-[10px] text-[#333] text-[14px] border-[1px] border-[#CDCDD4] px-[16px] py-[15px]"
+                  className="w-[100%] h-[218px] rounded-[10px] text-[#333] text-[14px] border-[0.5px] border-[#CDCDD4] px-[16px] py-[15px]"
                   value={profileData?.bio}
                   onChange={(e) => changeEve(e, 'bio')}
                   onFocus={() => {

@@ -11,7 +11,6 @@ const SendRewardPage = () => {
     virtualRoutePage: state.virtualRoutePage,
     resetVirtualRoutePage: state.resetVirtualRoutePage,
   }))
-  console.log('virtualRoutePage', virtualRoutePage)
   const {
     token,
     balance,

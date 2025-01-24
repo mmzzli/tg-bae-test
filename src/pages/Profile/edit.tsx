@@ -11,7 +11,7 @@ import { useStore } from '@/store/store'
 import { UserInfoProfile } from '@/types'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import BaseButton from '@/components/BaseButton/BaseButton'
-const SCROLL_THRESHOLD = 110
+const SCROLL_THRESHOLD = 130
 
 const ProfileEdit: FC = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
@@ -306,6 +306,26 @@ const ProfileEdit: FC = () => {
           'calc(100vh - 84px - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top))',
       }}
     >
+       <div
+        className="fixed top-0 left-0 right-0 bg-white dark:bg-black z-10"
+        style={{
+          display: showTopTitle ? 'block' : 'none',
+          height: `${
+            parseInt(
+              getComputedStyle(document.documentElement).getPropertyValue(
+                '--tg-safe-area-inset-top'
+              )
+            ) > 0 ||
+            parseInt(
+              getComputedStyle(document.documentElement).getPropertyValue(
+                '--tg-content-safe-area-inset-top'
+              )
+            ) > 0
+              ? '0'
+              : '68px'
+          }`,
+        }}
+      ></div>
       <div
         className="bg-area fixed top-0 left-0 items-center justify-center"
         style={{
@@ -340,6 +360,7 @@ const ProfileEdit: FC = () => {
           opacity: showTopTitle ? 1 : 0,
           transform: `translateX(-50%)`,
           left: '50%',
+          zIndex: 11,
           top: `${
             showTopTitle
               ? 'calc(var(--tg-safe-area-inset-top) + 10px)'
@@ -351,7 +372,10 @@ const ProfileEdit: FC = () => {
       </h3>
       <div
         ref={titleRef}
-        className="content-area absolute top-[113px] pt-[24px] px-[16px] pb-[63px] left-0 w-full h-full  bg-white dark:bg-black"
+        className="content-area absolute pt-[24px] px-[16px] pb-[63px] left-0 w-full h-full  bg-white dark:bg-black"
+        style={{
+          top: 'calc(174px - var(--tg-safe-area-inset-top))',
+        }}
       >
         <div className={`text-[20px] text-[#0F1233] font-[500] ${showTopTitle ? 'opacity-0' : ''}`}>
           Profile
@@ -388,7 +412,7 @@ const ProfileEdit: FC = () => {
                 <p className="text-[#888] text-[12px]">{profileData?.username.length}/20</p>
               </div>
               <input
-                className="w-[100%] rounded-[10px] text-[#333] text-[14px] border-[1px] border-[#CDCDD4] px-[16px] py-[15px]"
+                className="w-[100%] rounded-[10px] text-[#333] text-[14px] border-[0.5px] border-[#CDCDD4] px-[16px] py-[15px]"
                 value={profileData?.username}
                 onChange={(e) => {
                   changeEve(e, 'username')
@@ -402,7 +426,7 @@ const ProfileEdit: FC = () => {
                   <p className="text-[#888] text-[12px]">{profileData?.bio.length}/500</p>
                 </div>
                 <textarea
-                  className="w-[100%] h-[218px] rounded-[10px] text-[#333] text-[14px] border-[1px] border-[#CDCDD4] px-[16px] py-[15px]"
+                  className="w-[100%] h-[218px] rounded-[10px] text-[#333] text-[14px] border-[0.5px] border-[#CDCDD4] px-[16px] py-[15px]"
                   value={profileData?.bio}
                   onChange={(e) => changeEve(e, 'bio')}
                   onFocus={() => {

@@ -68,6 +68,11 @@ const WsHandler = memo(() => {
   useEffect(() => {
     if (token) {
       connect()
+      getUnreadNotificationCount(current_uid).then((res) => {
+        if (res.amount) {
+          setUnreadNotificationCount(res.amount)
+        }
+      })
     }
   }, [token])
 

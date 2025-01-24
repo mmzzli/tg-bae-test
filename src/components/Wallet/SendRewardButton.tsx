@@ -6,7 +6,6 @@ import {
   useEstimateFeesPerGas,
   useEstimateGas,
   useEstimateMaxPriorityFeePerGas,
-  useGasPrice,
   useReadContract,
   useSwitchChain,
   useWaitForTransactionReceipt,
@@ -16,13 +15,15 @@ import { abi, approveAbi } from '@/config/abi'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useToast } from '@chakra-ui/react'
 import { CustomToast, typeOptions } from '../comm/Toast'
-import { maxUint256, parseUnits } from 'viem'
+import { parseUnits, encodeFunctionData, maxUint256 } from 'viem'
 import { approveEvent, rewardEvent } from '@/api'
 import { MessageType } from '../Chat/types'
 import { useFormatMessage } from '@/hooks/useFormatMessage'
 import { useIM } from '@/store/hook/userIM'
 import BigNumber from 'bignumber.js'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
+import { getBalance } from '@wagmi/core'
+import { config } from '@/config/wagmi-config'
 
 export const SendRewardButton = ({
   amount,
@@ -54,7 +55,8 @@ export const SendRewardButton = ({
 
   const { runDailyChat } = useDailyTaskActions()
 
-  const { data: hash, error, writeContract, reset } = useWriteContract()
+  const [hash, setHash] = useState<`0x${string}}` | undefined>(undefined)
+
   const { address } = useAccount()
 
   const { getCurrentUid } = useTMAUtils()
@@ -139,7 +141,7 @@ export const SendRewardButton = ({
         position: 'bottom',
       })
       setIsApproving(false)
-      reset()
+      setHash(undefined)
       slideButtonRef.current?.reset()
       return
     }
@@ -174,19 +176,6 @@ export const SendRewardButton = ({
     }
   }
 
-  const gasConfig =
-    import.meta.env.VITE_APP_ENV === 'production'
-      ? {
-          gas: gasLimit ? BigInt(Number(gasLimit) * 4) : 1030000n,
-          maxFeePerGas: feesPerGas?.maxFeePerGas,
-          maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
-        }
-      : {
-          gas: gasLimit ? BigInt(Number(gasLimit) * 4) : 1030000n,
-          maxFeePerGas: feesPerGas?.maxFeePerGas,
-          maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
-        }
-
   const switchChain = async () => {
     try {
       await switchChainAsync({ chainId })
@@ -197,38 +186,122 @@ export const SendRewardButton = ({
       })
     }
   }
-  const reward = () => {
+
+  const calculateTotalCost = (
+    estimatedGas: bigint,
+    currentGasPrice: bigint,
+    maxPriorityFee: bigint
+  ) => {
+    return estimatedGas * (currentGasPrice + maxPriorityFee)
+  }
+
+  const getCurrentGasPrice = (feesPerGas: any) => {
+    return feesPerGas && BigInt(feesPerGas.maxFeePerGas) < 1000000000n
+      ? 1000000000n
+      : BigInt(feesPerGas.maxFeePerGas || 1000000000n)
+  }
+
+  const checkGasBalance = async (cb: () => void) => {
+    const estimatedGas = gasLimit ? BigInt(Number(gasLimit) * 3) : 100000n
+    const currentGasPrice = getCurrentGasPrice(feesPerGas)
+    let totalCost = calculateTotalCost(
+      estimatedGas,
+      currentGasPrice,
+      maxPriorityFee ? BigInt(maxPriorityFee) : 1000000000n
+    )
+
     if (tokenAddress === '0x0000000000000000000000000000000000000000') {
-      // const estimatedGas = gasLimit ? BigInt(gasLimit) : 21000n
-      // const currentGasPrice = feesPerGas ? BigInt(feesPerGas.maxFeePerGas) : 0n
-      // const totalCost =
-      //   estimatedGas * (currentGasPrice + (maxPriorityFee ? BigInt(maxPriorityFee) : 0n))
-      // console.log(totalCost, gasLimit, feesPerGas, maxPriorityFee)
-      // if (totalCost + parseUnits(amount, decimals) > balance) {
-      //   toast({
-      //     render: () => <CustomToast title="Insufficient gas" type={typeOptions.error} />,
-      //     position: 'bottom',
-      //   })
-      //   return slideButtonRef.current?.reset()
-      // }
+      if (totalCost + parseUnits(amount, decimals) > balance) {
+        toast({
+          render: () => <CustomToast title="Insufficient gas" type={typeOptions.error} />,
+          position: 'top',
+        })
+        return slideButtonRef.current?.reset()
+      }
+    } else {
+      // 计算余额是否足够支付gas
+      const balance = address
+        ? getBalance(config, {
+            address: address,
+            chainId: chainId as 1 | 56 | undefined,
+          })
+        : null
+
+      console.log(balance)
+
+      if (balance) {
+        const res = await balance
+        console.log('balance', res)
+        if (res.value < totalCost) {
+          toast({
+            render: () => (
+              <CustomToast title="Insufficient gas for reward" type={typeOptions.error} />
+            ),
+            position: 'top',
+          })
+          return slideButtonRef.current?.reset()
+        }
+      }
     }
-    writeContract({
-      address: contractAddress as `0x${string}`,
-      chainId,
-      abi,
-      functionName: 'reward',
-      args: [
-        parseUnits('0', decimals),
-        tokenAddress as `0x${string}`,
-        parseUnits(amount, decimals),
-        BigInt(current_uid),
-        BigInt(toUid),
-      ],
-      value:
-        tokenAddress === '0x0000000000000000000000000000000000000000'
-          ? parseUnits(amount, decimals)
-          : 0n,
-      ...gasConfig,
+    cb()
+  }
+
+  const reward = () => {
+    checkGasBalance(async () => {
+      // writeContract({
+      //   address: contractAddress as `0x${string}`,
+      //   chainId,
+      //   abi,
+      //   functionName: 'reward',
+      //   args: [
+      //     parseUnits('0', decimals),
+      //     tokenAddress as `0x${string}`,
+      //     parseUnits(amount, decimals),
+      //     BigInt(current_uid),
+      //     BigInt(toUid),
+      //   ],
+      //   value:
+      //     tokenAddress === '0x0000000000000000000000000000000000000000'
+      //       ? parseUnits(amount, decimals)
+      //       : 0n,
+      //   gasPrice: 2000000000n,
+      //   gas: gasConfig.gasLimit,
+      // })
+      const abiData = encodeFunctionData({
+        abi,
+        functionName: 'reward',
+        args: [
+          parseUnits('0', decimals),
+          tokenAddress as `0x${string}`,
+          parseUnits(amount, decimals),
+          BigInt(current_uid),
+          BigInt(toUid),
+        ],
+      })
+
+      try {
+        const hash = await window.ethereum.request({
+          method: 'eth_sendTransaction', // or eth_sendTransaction
+          params: [
+            {
+              from: address,
+              to: contractAddress,
+              value:
+                tokenAddress === '0x0000000000000000000000000000000000000000'
+                  ? '0x' + BigInt(parseUnits(amount, decimals).toString()).toString(16)
+                  : '0x0',
+              chainId: chainId,
+              data: abiData,
+              gasLimit: (gasLimit ? BigInt(Number(gasLimit) * 3) : 100000n).toString(),
+              gasPrice: getCurrentGasPrice(feesPerGas).toString(),
+            },
+          ],
+        })
+        console.log('window.ethereum.request', hash)
+        setHash(hash)
+      } catch (error) {
+        setWriteContractError(true)
+      }
     })
   }
 
@@ -236,7 +309,7 @@ export const SendRewardButton = ({
     if (!contractAddress) {
       toast({
         render: () => <CustomToast title="Coming soon" type={typeOptions.info} />,
-        position: 'bottom',
+        position: 'top',
       })
       return slideButtonRef.current?.reset()
     }
@@ -245,14 +318,42 @@ export const SendRewardButton = ({
 
     if (tokenAddress !== '0x0000000000000000000000000000000000000000' && needApprove) {
       console.warn('Approve:', tokenAddress as `0x${string}`, parseUnits(amount, decimals))
+
       setIsApproving(true)
-      writeContract({
-        address: tokenAddress as `0x${string}`,
-        chainId,
-        abi: approveAbi,
-        functionName: 'approve',
-        args: [contractAddress as `0x${string}`, maxUint256],
-        ...gasConfig,
+      checkGasBalance(async () => {
+        // writeContract({
+        //   address: tokenAddress as `0x${string}`,
+        //   chainId,
+        //   abi: approveAbi,
+        //   functionName: 'approve',
+        //   args: [contractAddress as `0x${string}`, maxUint256],
+        //   ...gasConfig,
+        // })
+        const abiData = encodeFunctionData({
+          abi: approveAbi,
+          functionName: 'approve',
+          args: [contractAddress as `0x${string}`, maxUint256],
+        })
+
+        try {
+          const hash = await window.ethereum.request({
+            method: 'eth_sendTransaction', // or eth_sendTransaction
+            params: [
+              {
+                from: address,
+                to: tokenAddress,
+                chainId: chainId,
+                data: abiData,
+                gasLimit: (gasLimit ? BigInt(Number(gasLimit) * 3) : 60000n).toString(),
+                gasPrice: getCurrentGasPrice(feesPerGas).toString(),
+              },
+            ],
+          })
+          console.log('window.ethereum.request', hash)
+          setHash(hash)
+        } catch (error) {
+          setWriteContractError(true)
+        }
       })
       return
     }
@@ -261,20 +362,20 @@ export const SendRewardButton = ({
   }
 
   useEffect(() => {
-    if (error || receiptError || writeContractError) {
-      console.log('error', error, receiptError, writeContractError)
+    if (receiptError || writeContractError) {
+      console.log('error', receiptError, writeContractError)
       toast({
         render: () => {
           return <CustomToast title={'Failed'} type={typeOptions.error} />
         },
-        position: 'bottom',
+        position: 'top',
       })
       stopPolling()
       setIsApproving(false)
-      reset()
+      setHash(undefined)
       slideButtonRef.current?.reset()
     }
-  }, [error, receiptError, writeContractError])
+  }, [receiptError, writeContractError])
 
   const handleSuccess = () => {
     if (!isApproving) {
@@ -303,12 +404,12 @@ export const SendRewardButton = ({
       runDailyChat()
       toast({
         render: () => <CustomToast title="Sent" type={typeOptions.success} />,
-        position: 'bottom',
+        position: 'top',
       })
       setIsApproving(false)
       afterReward?.()
       refetchAllowance()
-      reset()
+      setHash(undefined)
       slideButtonRef.current?.reset()
     } else if (isApproving) {
       setIsApproving(false)

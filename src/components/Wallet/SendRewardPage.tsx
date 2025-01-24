@@ -11,7 +11,6 @@ const SendRewardPage = () => {
     virtualRoutePage: state.virtualRoutePage,
     resetVirtualRoutePage: state.resetVirtualRoutePage,
   }))
-  console.log('virtualRoutePage', virtualRoutePage)
   const {
     token,
     balance,
@@ -65,7 +64,7 @@ const SendRewardPage = () => {
   const price = PriceService.getInstance().getPrice(token)
   return (
     <div
-      className="fixed top-0 left-0 bottom-0 right-0 bg-white z-[9999] px-[20px]"
+      className="fixed top-0 left-0 bottom-0 right-0 bg-white z-[10000] px-[20px]"
       style={{
         paddingTop: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
         paddingBottom:

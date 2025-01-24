@@ -68,6 +68,7 @@ export const TransferPanel = ({
         render: () => (
           <CustomToast title={`Max ${decimals} decimal places`} type={typeOptions.info} />
         ),
+        position: 'top',
       })
       const truncatedValue = `${decimalParts[0]}.${decimalParts[1].slice(0, decimals)}`
       setAmount(truncatedValue)
@@ -126,29 +127,54 @@ export const TransferPanel = ({
     return `$${usdValue.toFixed(2, 1)}`
   }
 
+  const calculateTotalCost = (
+    estimatedGas: bigint,
+    currentGasPrice: bigint,
+    maxPriorityFee: bigint
+  ) => {
+    return estimatedGas * (currentGasPrice + maxPriorityFee)
+  }
+
+  const getCurrentGasPrice = (feesPerGas: any) => {
+    return feesPerGas && BigInt(feesPerGas.maxFeePerGas) < 1000000000n
+      ? 1000000000n
+      : BigInt(feesPerGas.maxFeePerGas || 1000000000n)
+  }
+
   const handlePercentageClick = (percentage: number) => {
     const balanceBN = new BigNumber(formattedBalance)
     let newAmount = balanceBN.multipliedBy(percentage).decimalPlaces(decimals, BigNumber.ROUND_DOWN)
 
     if (tokenAddress === '0x0000000000000000000000000000000000000000') {
-      // const estimatedGas = gasLimit ? BigInt(gasLimit) : 21000n
-      // const currentGasPrice = feesPerGas ? BigInt(feesPerGas.maxFeePerGas) : 0n
-      // const totalCost =
-      //   estimatedGas * 2n * (currentGasPrice + (maxPriorityFee ? BigInt(maxPriorityFee) : 0n))
-      // if (totalCost + parseUnits(newAmount.toString(), decimals) > balance) {
-      //   const amount = parseUnits(newAmount.toString(), decimals) - totalCost
-      //   if (amount < 0) {
-      //     toast({
-      //       render: () => <CustomToast title={`Insufficient gas`} type={typeOptions.info} />,
-      //     })
-      //     setError('Insufficient gas')
-      //     return
-      //   }
-      //   newAmount = new BigNumber(formatUnits(amount, decimals)).decimalPlaces(
-      //     decimals,
-      //     BigNumber.ROUND_DOWN
-      //   )
-      // }
+      console.log('gasLimit', gasLimit)
+      console.log('feesPerGas', feesPerGas)
+      console.log('maxPriorityFee', maxPriorityFee)
+
+      const estimatedGas = gasLimit ? BigInt(Number(gasLimit) * 3) : 100000n
+      const currentGasPrice = getCurrentGasPrice(feesPerGas)
+      let totalCost = calculateTotalCost(
+        estimatedGas,
+        currentGasPrice,
+        maxPriorityFee ? BigInt(maxPriorityFee) : 1000000000n
+      )
+
+      console.log('totalCost', totalCost)
+      const newAmountWithCost = parseUnits(newAmount.toString(), decimals) + totalCost
+
+      if (newAmountWithCost > balance) {
+        const amount = parseUnits(newAmount.toString(), decimals) - totalCost
+        if (amount < 0) {
+          toast({
+            render: () => <CustomToast title={`Insufficient gas`} type={typeOptions.error} />,
+            position: 'top',
+          })
+          return
+        }
+        newAmount = new BigNumber(formatUnits(amount, decimals)).decimalPlaces(
+          decimals,
+          BigNumber.ROUND_DOWN
+        )
+      }
     }
     handleAmountChange(newAmount.toString())
   }

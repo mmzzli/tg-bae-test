@@ -16,18 +16,10 @@ interface Props {
 }
 
 import { config, evmChainList } from '@/config/wagmi-config'
-import { Chain } from 'viem'
+import { Chain, encodeFunctionData } from 'viem'
 import { tokenIconMap } from '@/config/token-icon'
-import {
-  useAccount,
-  useEstimateFeesPerGas,
-  useEstimateGas,
-  useReadContract,
-  useSwitchChain,
-  useWaitForTransactionReceipt,
-  useWriteContract,
-} from 'wagmi'
-import { getBalance } from '@wagmi/core'
+import { useAccount, useReadContract, useSwitchChain, useWaitForTransactionReceipt } from 'wagmi'
+import { getBalance, getGasPrice, estimateGas } from '@wagmi/core'
 import { abi } from '@/config/abi'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { CustomToast, typeOptions } from '../comm/Toast'
@@ -53,13 +45,11 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
     const { getCurrentUid } = useTMAUtils()
     const current_uid = getCurrentUid()
     const [writeContractApiError, setWriteContractApiError] = useState<any>(null)
+    const [hash, setHash] = useState<`0x${string}` | undefined>(undefined)
 
     // Wagmi Hooks START
-    const { data: gasLimit } = useEstimateGas()
-    const { data: feesPerGas } = useEstimateFeesPerGas()
     const { switchChain } = useSwitchChain()
     const { address } = useAccount()
-    const { data: hash, error: writeContractError, writeContract, reset } = useWriteContract()
     const { isSuccess: isConfirmed, error: receiptError } = useWaitForTransactionReceipt({
       hash,
       chainId: currentChain?.id,
@@ -190,6 +180,10 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
     // Read Contract END
 
     // Withdraw START
+    const calculateTotalCost = (estimatedGas: bigint, currentGasPrice: bigint) => {
+      return estimatedGas * currentGasPrice
+    }
+
     const walletWithdraw = async () => {
       if (!currentChain) return
       setLoading(true)
@@ -225,7 +219,15 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
         resetState()
         return
       }
+      const gasPrice = await getGasPrice(config, {
+        chainId: currentChain.id as 1 | 56 | undefined,
+      })
 
+      const gasLimit = await estimateGas(config, {
+        chainId: currentChain.id as 1 | 56 | undefined,
+      })
+
+      console.log(gasPrice, gasLimit)
       const balance =
         address && currentChain
           ? getBalance(config, {
@@ -237,10 +239,12 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
       if (balance) {
         const res = await balance
         console.log('balance', res)
-        if (res.formatted === '0') {
+        const estimatedGas = gasLimit ? BigInt(Number(gasLimit) * 4) : 100000n
+        let totalCost = calculateTotalCost(estimatedGas, gasPrice ? gasPrice : 1000000000n)
+        if (res.value < totalCost) {
           toast({
             render: () => (
-              <CustomToast title="Insufficient balance for withdrawal" type={typeOptions.error} />
+              <CustomToast title="Insufficient gas for withdrawal" type={typeOptions.error} />
             ),
             position: 'bottom',
           })
@@ -280,14 +284,6 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
         resetState()
       }
 
-      const gasConfig = {
-        gas: BigInt(Number(gasLimit) * 10) || 530000n,
-        maxFeePerGas: BigInt(Number(feesPerGas?.maxFeePerGas) * 2) || 530000n,
-        maxPriorityFeePerGas: BigInt(Number(feesPerGas?.maxPriorityFeePerGas) * 2) || 530000n,
-      }
-
-      console.log('gas', gasLimit, gasConfig)
-
       console.log('args', [
         BigInt(current_uid),
         `${address}` as `0x${string}`,
@@ -295,11 +291,10 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
         BigInt(_deadline),
         signatures,
       ])
-      writeContract({
-        address: contractAddress as `0x${string}`,
+
+      const abiData = encodeFunctionData({
         abi,
         functionName: 'withdrawMultiToken',
-        chainId,
         args: [
           BigInt(current_uid),
           `${address}` as `0x${string}`,
@@ -307,8 +302,42 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
           BigInt(_deadline),
           signatures,
         ],
-        ...gasConfig,
       })
+
+      try {
+        const hash = await window.ethereum.request({
+          method: 'eth_sendTransaction', // or eth_sendTransaction
+          params: [
+            {
+              from: address,
+              to: contractAddress,
+              chainId: chainId,
+              data: abiData,
+              gasLimit: (gasLimit ? BigInt(Number(gasLimit) * 4) : 100000n).toString(),
+              gasPrice: gasPrice.toString(),
+            },
+          ],
+        })
+        console.log('window.ethereum.request', hash)
+        setHash(hash)
+      } catch (error) {
+        setWriteContractApiError(true)
+      }
+
+      // writeContract({
+      //   address: contractAddress as `0x${string}`,
+      //   abi,
+      //   functionName: 'withdrawMultiToken',
+      //   chainId,
+      //   args: [
+      //     BigInt(current_uid),
+      //     `${address}` as `0x${string}`,
+      //     rewards,
+      //     BigInt(_deadline),
+      //     signatures,
+      //   ],
+      //   ...gasConfig,
+      // })
     }
     // Withdraw END
 
@@ -336,8 +365,8 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
     }, [currentChain, bscReward, ethReward, testReward, withdraw])
 
     useEffect(() => {
-      if (writeContractError || receiptError || writeContractApiError) {
-        console.log(writeContractError, receiptError, writeContractApiError)
+      if (receiptError || writeContractApiError) {
+        console.log(receiptError, writeContractApiError)
         stopPolling()
         toast({
           render: () => {
@@ -348,7 +377,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
         resetState()
         onFinish?.()
       }
-    }, [writeContractError, receiptError, writeContractApiError])
+    }, [receiptError, writeContractApiError])
 
     useEffect(() => {
       if (isConfirmed && !isHandledRef.current) {
@@ -394,7 +423,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
     }
 
     const resetState = () => {
-      reset()
+      setHash(undefined)
       setIsHandled(false)
       setCurrentWithdrawChain(0)
       setWriteContractApiError(null)

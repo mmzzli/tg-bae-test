@@ -32,16 +32,19 @@ const Stars: FC<StarsProps> = ({ price, setPrice, featureRefBoll }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [boll, setBoll] = useState<boolean>(false)
   const [isFocused, setIsFocused] = useState<boolean>(false);
-
+  const [customValue, setCustomValue] = useState<string>('');
 
   const handleStarSelect = (item: StarValue) => {
     setPrice(item)
+    setCustomValue('') // Clear custom input when selecting preset value
   }
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     if (/^\d*$/.test(newValue)) {
       const numericValue = Number(newValue);
       if (numericValue <= 100000) {
+        setCustomValue(newValue);
         setPrice(numericValue);
       }
     }
@@ -167,7 +170,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice, featureRefBoll }) => {
                 inputMode="numeric"
                 placeholder="customize"
                 onChange={handleChange}
-                value={price || ''}
+                value={customValue}
                 h="100%"
                 onFocus={() => focusEve(true)}
                 onBlur={() => focusEve(false)}

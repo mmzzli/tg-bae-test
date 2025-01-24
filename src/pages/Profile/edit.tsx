@@ -351,7 +351,7 @@ const ProfileEdit: FC = () => {
       </h3>
       <div
         ref={titleRef}
-        className="content-area absolute top-[134px] pt-[24px] px-[16px] pb-[63px] left-0 w-full h-full  bg-white dark:bg-black"
+        className="content-area absolute top-[113px] pt-[24px] px-[16px] pb-[63px] left-0 w-full h-full  bg-white dark:bg-black"
       >
         <div className={`text-[20px] text-[#0F1233] font-[500] ${showTopTitle ? 'opacity-0' : ''}`}>
           Profile
@@ -388,7 +388,7 @@ const ProfileEdit: FC = () => {
                 <p className="text-[#888] text-[12px]">{profileData?.username.length}/20</p>
               </div>
               <input
-                className="w-[100%] rounded-[10px] text-[#333] text-[14px] bg-[#F5F5FA] px-[16px] py-[15px]"
+                className="w-[100%] rounded-[10px] text-[#333] text-[14px] border-[1px] border-[#CDCDD4] px-[16px] py-[15px]"
                 value={profileData?.username}
                 onChange={(e) => {
                   changeEve(e, 'username')
@@ -402,7 +402,7 @@ const ProfileEdit: FC = () => {
                   <p className="text-[#888] text-[12px]">{profileData?.bio.length}/500</p>
                 </div>
                 <textarea
-                  className="w-[100%] h-[218px] rounded-[10px] text-[#333] text-[14px] bg-[#F5F5FA] px-[16px] py-[15px]"
+                  className="w-[100%] h-[218px] rounded-[10px] text-[#333] text-[14px] border-[1px] border-[#CDCDD4] px-[16px] py-[15px]"
                   value={profileData?.bio}
                   onChange={(e) => changeEve(e, 'bio')}
                   onFocus={() => {

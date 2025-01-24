@@ -130,13 +130,16 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
   // 捕获当前帧作为封面
   const captureFrame = async () => {
     const canvas = canvasRef.current;
-    off();
     if (canvas) {
       // Get the frame as a PNG image at the video's full size
-      // const frameData = canvas.toDataURL("image/png", 1.0);
-      const file = base64ToFile(coverImg, 'image.png');
-      console.log(file);
-
+      let file
+      if (coverImg) {
+        file = base64ToFile(coverImg, 'image.png');
+        // off();
+      } else {
+        const frameData = canvas.toDataURL("image/png", 1.0);
+        file = base64ToFile(frameData, 'image.png');
+      }
       const timestamp: number = new Date().getTime();
       const url = `${import.meta.env.VITE_APP_UPLOAD_URL}upload/${timestamp}`;
 
@@ -307,7 +310,10 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
                     width="100%"
                     loading={loading}
                     className="h-[48px]"
-                    handler={() => captureFrame()}
+                    handler={() => {
+                      captureFrame()
+                      off()
+                    }}
                   />
                 </div>
 

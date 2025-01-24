@@ -351,7 +351,10 @@ const ProfileEdit: FC = () => {
       </h3>
       <div
         ref={titleRef}
-        className="content-area absolute top-[113px] pt-[24px] px-[16px] pb-[63px] left-0 w-full h-full  bg-white dark:bg-black"
+        className="content-area absolute pt-[24px] px-[16px] pb-[63px] left-0 w-full h-full  bg-white dark:bg-black"
+        style={{
+          top: 'calc(164px - var(--tg-safe-area-inset-top))',
+        }}
       >
         <div className={`text-[20px] text-[#0F1233] font-[500] ${showTopTitle ? 'opacity-0' : ''}`}>
           Profile

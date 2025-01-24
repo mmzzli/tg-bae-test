@@ -68,6 +68,7 @@ export const TransferPanel = ({
         render: () => (
           <CustomToast title={`Max ${decimals} decimal places`} type={typeOptions.info} />
         ),
+        position: 'top',
       })
       const truncatedValue = `${decimalParts[0]}.${decimalParts[1].slice(0, decimals)}`
       setAmount(truncatedValue)
@@ -149,15 +150,13 @@ export const TransferPanel = ({
       console.log('feesPerGas', feesPerGas)
       console.log('maxPriorityFee', maxPriorityFee)
 
-      const estimatedGas = gasLimit ? BigInt(gasLimit) : 53000n
+      const estimatedGas = gasLimit ? BigInt(Number(gasLimit) * 3) : 100000n
       const currentGasPrice = getCurrentGasPrice(feesPerGas)
       let totalCost = calculateTotalCost(
         estimatedGas,
         currentGasPrice,
         maxPriorityFee ? BigInt(maxPriorityFee) : 1000000000n
       )
-
-      if (chainId === 1) totalCost *= 2n
 
       console.log('totalCost', totalCost)
       const newAmountWithCost = parseUnits(newAmount.toString(), decimals) + totalCost
@@ -166,7 +165,8 @@ export const TransferPanel = ({
         const amount = parseUnits(newAmount.toString(), decimals) - totalCost
         if (amount < 0) {
           toast({
-            render: () => <CustomToast title={`Insufficient balance`} type={typeOptions.info} />,
+            render: () => <CustomToast title={`Insufficient gas`} type={typeOptions.error} />,
+            position: 'top',
           })
           return
         }

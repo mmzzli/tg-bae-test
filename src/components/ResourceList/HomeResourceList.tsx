@@ -210,12 +210,14 @@ const ResourceList = ({
   virtualizer,
   type,
   hasMore,
+  onlySelected = false,
 }: {
   resources: FormatterListItem[]
   virtualList: VirtualItem[]
   virtualizer: Virtualizer<HTMLDivElement, Element>
   type?: string
   hasMore?: boolean
+  onlySelected?: boolean
 }) => {
   const navigate = useNavigate()
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
@@ -338,7 +340,7 @@ const ResourceList = ({
 
         console.log(item.act_type, '=======jacob')
         console.log(url, '=======jacob')
-        runDailyWatch(post_id)
+        // runDailyWatch(post_id)
         if (item.act_type === 0 || item.act_type === 1) {
           const medias = url.split(',')
           const picUrl = medias.find((item) => !item.endsWith('.m3u8'))
@@ -376,7 +378,7 @@ const ResourceList = ({
 
   useEffect(() => {
     if (videoInfo && videoInfo.is_pay) {
-      const mediaUrl = [...videoInfo.media, videoInfo.mediaCover].filter(v => !!v).join(',')
+      const mediaUrl = [...videoInfo.media, videoInfo.mediaCover].filter((v) => !!v).join(',')
       resourcesEve(videoInfo.id, mediaUrl, true)
     }
   }, [videoInfo])
@@ -393,8 +395,8 @@ const ResourceList = ({
     )
   }
   const [reportVisible, setReportVisible] = useState(false)
-  const getUrl = (act_type:number)=>{
-    switch(act_type){
+  const getUrl = (act_type: number) => {
+    switch (act_type) {
       case 1:
         return '/christmas'
       case 2:
@@ -423,6 +425,8 @@ const ResourceList = ({
               return <PostSkeleton />
             }
 
+            if (data.is_follow && onlySelected) return <div></div>
+
             return (
               <Box
                 key={`resource-${data.id}-${virtualRow.index}`}
@@ -449,7 +453,7 @@ const ResourceList = ({
                       <HStack p="3px 16px" justifyContent="space-between" bg="rgba(0, 0, 0, 0.5)">
                         <Text fontSize={14} color="#fff">
                           {' '}
-                          {data.act_type === 1 ? "Explore more" : "Vote now"}
+                          {data.act_type === 1 ? 'Explore more' : 'Vote now'}
                         </Text>
                         <i className="iconfont icon-icon_arrow_right text-[#fff] text-[20px]"></i>
                       </HStack>
@@ -512,55 +516,60 @@ interface ResourceFooterProps {
   type?: string
 }
 
-const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileClick, type, setReportVisible }) => {
-  const cardValue = useContext(CardRecommendProvider)
-  return (
-    <div className="pl-4 pr-4 pb-4 flex items-center">
-      <div className="flex items-center justify-between gap-2" onClick={() => onProfileClick(data)}>
-        <div className="w-[48px] h-[48px] overflow-hidden rounded-[50%]">
-          <Image
-            rect
-            width={48}
-            height={48}
-            className="rounded-full"
-            src={data.avatar}
-            type={'avatar'}
-            alt={data.username}
-          />
-        </div>
-        <div className="flex flex-col">
-          <div className='flex items-center gap-1.5'>
-            <div className="text-[#0F1233] dark:text-[#E0E2F6]  font-bold text-base">
-              {data.username}
+const ResourceHeader = memo<ResourceHeaderProps>(
+  ({ data, currentUid, onProfileClick, type, setReportVisible }) => {
+    const cardValue = useContext(CardRecommendProvider)
+    return (
+      <div className="pl-4 pr-4 pb-4 flex items-center">
+        <div
+          className="flex items-center justify-between gap-2"
+          onClick={() => onProfileClick(data)}
+        >
+          <div className="w-[48px] h-[48px] overflow-hidden rounded-[50%]">
+            <Image
+              rect
+              width={48}
+              height={48}
+              className="rounded-full"
+              src={data.avatar}
+              type={'avatar'}
+              alt={data.username}
+            />
+          </div>
+          <div className="flex flex-col">
+            <div className="flex items-center gap-1.5">
+              <div className="text-[#0F1233] dark:text-[#E0E2F6]  font-bold text-base">
+                {data.username}
+              </div>
+              <p className="text-[#868686] dark:text-[#424048] text-xs">
+                {getTimeStringAutoShort(
+                  new Date(data.created_at).getTime() - new Date().getTimezoneOffset() * 60000,
+                  true
+                )}
+              </p>
             </div>
-            <p className="text-[#868686] dark:text-[#424048] text-xs">
-              {getTimeStringAutoShort(
-                new Date(data.created_at).getTime() - new Date().getTimezoneOffset() * 60000,
-                true
+            <div className="flex gap-1.5 items-center">
+              {data.act_type === 1 && type === 'recommend' ? (
+                <div className="text-[#333333] text-[12px]">Featured</div>
+              ) : (
+                cardValue?.recommend &&
+                !data.is_follow && <div className="text-[#333333] text-[12px]">Bae selected</div>
               )}
-            </p>
-          </div>
-          <div className="flex gap-1.5 items-center">
-            {data.act_type === 1 && type === 'recommend' ? (
-              <div className="text-[#333333] text-[12px]">Featured</div>
-            ) : (
-              cardValue?.recommend &&
-              !data.is_follow && <div className="text-[#333333] text-[12px]">Bae selected</div>
-            )}
+            </div>
           </div>
         </div>
+        <SecondaryMenu
+          className="ml-auto"
+          key={data.id}
+          mediaData={data}
+          currentUid={currentUid}
+          type={type}
+          setReportVisible={setReportVisible}
+        />
       </div>
-      <SecondaryMenu
-        className="ml-auto"
-        key={data.id}
-        mediaData={data}
-        currentUid={currentUid}
-        type={type}
-        setReportVisible={setReportVisible}
-      />
-    </div>
-  )
-})
+    )
+  }
+)
 
 const ResourceFooter = memo<ResourceFooterProps>(({ data, onShare, type, setResources }) => {
   return (
@@ -589,7 +598,7 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, onShare, type, setReso
             <MoreText text={data.title} bgColor={'#fff'} textColor={'#0F1419'} type="post" />
           </div>
           <div className="flex items-center justify-between">
-            {(((type === 'view' || type === 'recommend') && data.price > 0) && data.is_pay) && (
+            {(type === 'view' || type === 'recommend') && data.price > 0 && data.is_pay && (
               <div className="flex items-center gap-2 mt-1">
                 <p className="text-[#666666] dark:text-[#424048] text-[12px]">
                   Purchased for {data.price}

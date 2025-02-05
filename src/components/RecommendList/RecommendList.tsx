@@ -11,6 +11,7 @@ import { debounce } from '@/utils/chat/schedulers'
 interface PostListProps {
   className?: string
   containerRef?: React.RefObject<HTMLDivElement>
+  onlySelected?: boolean
 }
 interface ChildRef {
   refresh?: () => void
@@ -18,7 +19,7 @@ interface ChildRef {
 }
 
 const RecommendList = forwardRef<ChildRef, PostListProps>((props, ref) => {
-  const { containerRef } = props
+  const { containerRef, onlySelected = false } = props
   const { list, hasMore, fetchMoreData, page, refresh, isLoading } = useRecommendList()
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
@@ -89,6 +90,7 @@ const RecommendList = forwardRef<ChildRef, PostListProps>((props, ref) => {
           virtualizer={virtualizer}
           hasMore={hasMore}
           type="recommend"
+          onlySelected={onlySelected}
         />
       </div>
       {isLoading && hasMore && (

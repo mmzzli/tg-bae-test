@@ -8,7 +8,6 @@ import { PlayButton } from '@/components/ResourceList/ResourceList'
 import { useStore } from '@/store'
 import { CardRecommendProvider } from '@/utils/constants'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
-import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { VolumeMuteIcon, VolumeSpeakerIcon } from '@/assets/icons'
 import { useNavigate } from 'react-router-dom'
 
@@ -23,34 +22,35 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const cacheVideoIndex = useStore((state) => state.cacheVideoIndex)
   const setVideoResource = useStore((state) => state.setVideoResource)
-  const { runDailyWatch } = useDailyTaskActions()
   const navigate = useNavigate()
   const { ttMode } = useStore((state) => ({
     ttMode: state.ttMode,
   }))
 
-
-  const handleVideoClick = useCallback((video: FormatterListItem) => {
-    if (ttMode) {
-      navigate('/tt-player', {
-        state: {
-          id: data.id
-        },
-      })
-      return
-    }
-    if (!data?.trailer && data.price > 0 && !data.is_pay && data.uid != getCurrentUid()) {
-      return
-    }
-    const videoDom = videoCardContainer?.current?.querySelector('video')
-    runDailyWatch(video.id)
-    setCacheVideoIndex(video.id)
-    setVideoResource(video)
-    if (videoDom) {
-      videoDom.pause()
-      videoDom.muted = false
-    }
-  }, [ttMode, data.is_pay, data.trailer, data.uid])
+  const handleVideoClick = useCallback(
+    (video: FormatterListItem) => {
+      if (ttMode) {
+        navigate('/tt-player', {
+          state: {
+            id: data.id,
+          },
+        })
+        return
+      }
+      if (!data?.trailer && data.price > 0 && !data.is_pay && data.uid != getCurrentUid()) {
+        return
+      }
+      const videoDom = videoCardContainer?.current?.querySelector('video')
+      console.log('video card')
+      setCacheVideoIndex(video.id)
+      setVideoResource(video)
+      if (videoDom) {
+        videoDom.pause()
+        videoDom.muted = false
+      }
+    },
+    [ttMode, data.is_pay, data.trailer, data.uid]
+  )
 
   const videoPlayerRef = useRef<HTMLVideoElement | null>(null)
 
@@ -132,7 +132,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
                   wrapperClassName=" overflow-hidden z-[3]"
                   errorClassName="rounded-[0px] h-[150px]"
                   className="object-left w-[100%] m-[auto]"
-                  onClick={() => handleVideoClick(data)}
+                  // onClick={() => handleVideoClick(data)}
                 />
                 {data.media?.[0] && <PlayButton onClick={() => handleVideoClick(data)} />}
               </div>
@@ -152,24 +152,28 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
                   {formatTime(Number(playVideoTime))}
                 </Text>
               </HStack>
-              {data.type=== 0 && data.price > 0 && !data.is_pay && data.uid != getCurrentUid() && data.trailer && (
-                <HStack
-                  borderRadius="20px"
-                  bg="rgba(0, 0, 0, 0.40)"
-                  position="absolute"
-                  top="12px"
-                  left="12px"
-                  p="6px 12px"
-                  zIndex={4}
-                >
-                  <Text color="white" fontSize="14px" fontWeight="500">
-                    Preview
-                  </Text>
-                </HStack>
-              )}
+              {data.type === 0 &&
+                data.price > 0 &&
+                !data.is_pay &&
+                data.uid != getCurrentUid() &&
+                data.trailer && (
+                  <HStack
+                    borderRadius="20px"
+                    bg="rgba(0, 0, 0, 0.40)"
+                    position="absolute"
+                    top="12px"
+                    left="12px"
+                    p="6px 12px"
+                    zIndex={4}
+                  >
+                    <Text color="white" fontSize="14px" fontWeight="500">
+                      Preview
+                    </Text>
+                  </HStack>
+                )}
               <HStack
                 position="absolute"
-                bottom="40px"
+                bottom={(data.act_type === 1 || data.act_type === 2) ? "56px" : "20px"}
                 right="16px"
                 p="5px"
                 gap="4px"
@@ -189,32 +193,37 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
               </HStack>
               {data.uid !== getCurrentUid() && data.price > 0 && !data.is_pay && (
                 <>
-                    <Box
-                      position="absolute"
-                      top="0"
-                      left="0"
-                      w="100%"
-                      zIndex={1}
+                  <Box
+                    position="absolute"
+                    top="0"
+                    left="0"
+                    w="100%"
+                    zIndex={1}
+                    style={{
+                      height: firImageHeight ? firImageHeight + 'px' : 'calc(1.5*100vw)',
+                      maxHeight: 'calc(62.8vh)',
+                    }}
+                    overflow="hidden"
+                  >
+                    <Image
+                      className="h-[100%] w-[100%]"
                       style={{
                         height: firImageHeight ? firImageHeight + 'px' : 'calc(1.5*100vw)',
                         maxHeight: 'calc(62.8vh)',
                       }}
-                      overflow="hidden"
-                    >
-                      <Image
-                        className="h-[100%] w-[100%]"
-                        style={{
-                          height: firImageHeight ? firImageHeight + 'px' : 'calc(1.5*100vw)',
-                          maxHeight: 'calc(62.8vh)',
-                        }}
-                        src={data.media[0]}
-                      />
-                    </Box>
-                  <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} maskOnClick={() => {
-                    if (data?.trailer) {
-                      handleVideoClick(data)
-                    }
-                  }} />
+                      src={data.media[0]}
+                    />
+                  </Box>
+                  <FrostedGlass
+                    price={data.price}
+                    post_id={data.id}
+                    resourcesEve={resourcesEve}
+                    maskOnClick={() => {
+                      if (data?.trailer) {
+                        handleVideoClick(data)
+                      }
+                    }}
+                  />
                 </>
               )}
             </Box>

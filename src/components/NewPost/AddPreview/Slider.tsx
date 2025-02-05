@@ -200,7 +200,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
               width: '107px',
               height: '60px',
               border: '2px solid #FFF',
-              backgroundColor: 'rgba(0, 0, 0, 0.2)',
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
               borderRadius: '8px',
               transform: 'translate(-50%, -50%)',
               pointerEvents: 'none',

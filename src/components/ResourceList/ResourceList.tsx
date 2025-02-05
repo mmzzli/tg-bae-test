@@ -419,7 +419,7 @@ const ResourceList = ({
 
   useEffect(() => {
     if (videoInfo && videoInfo.is_pay) {
-      const mediaUrl = [...videoInfo.media, videoInfo.mediaCover].filter(v => !!v).join(',')
+      const mediaUrl = [...videoInfo.media, videoInfo.mediaCover].filter((v) => !!v).join(',')
       resourcesEve(videoInfo.id, mediaUrl, true)
     }
   }, [videoInfo])
@@ -435,8 +435,8 @@ const ResourceList = ({
       ></Empty>
     )
   }
-  const getUrl = (act_type:number)=>{
-    switch(act_type){
+  const getUrl = (act_type: number) => {
+    switch (act_type) {
       case 1:
         return '/christmas'
       case 2:
@@ -468,7 +468,7 @@ const ResourceList = ({
                     <HStack p="3px 16px" justifyContent="space-between" bg="rgba(0, 0, 0, 0.5)">
                       <Text fontSize={14} color="#fff">
                         {' '}
-                        {data.act_type === 1 ? "Explore more" : "Vote now"}
+                        {data.act_type === 1 ? 'Explore more' : 'Vote now'}
                       </Text>
                       <i className="iconfont icon-icon_arrow_right text-[#fff] text-[20px]"></i>
                     </HStack>
@@ -549,7 +549,7 @@ const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileC
           />
         </div>
         <div className="flex flex-col">
-          <div className='flex items-center gap-1.5'>
+          <div className="flex items-center gap-1.5">
             <div className="text-[#0F1233] dark:text-[#E0E2F6]  font-bold text-base">
               {data.username}
             </div>
@@ -599,10 +599,8 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, save
   }, [saveds])
 
   const renderPriceText = (uid: number, price: number) => {
-    return uid !== getCurrentUid()
-      ? `Purchased for ${price}`
-      : `Unlock post for ${price}`;
-  };
+    return uid !== getCurrentUid() ? `Purchased for ${price}` : `Unlock post for ${price}`
+  }
   return (
     <>
       <div className="px-4 flex items-center justify-between h-6 mt-3 box-content">

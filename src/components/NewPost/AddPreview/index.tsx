@@ -60,6 +60,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
   // 选择用哪个预告片
   const [trailerBoll, setTrailerBoll] = useState(false)
   const [boll, setBoll] = useState(true)
+  const [landscapeBoll, setLandscapeBoll] = useState(false)
 
   const isLandscape =
     selectedFrame?.width && selectedFrame?.height
@@ -367,6 +368,23 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
     if ((videoUrl || previewVideoUrl) && videoRef.current) {
       videoRef.current.load()
     }
+
+    const handleMetadataLoaded = () => {
+      if (videoRef.current) {
+        const videoElement = videoRef.current;
+        setLandscapeBoll(videoElement.videoWidth > videoElement.videoHeight)
+      }
+    };
+
+    const videoElement = videoRef.current;
+    if (videoElement) {
+      videoElement.addEventListener('loadedmetadata', handleMetadataLoaded);
+    }
+    return () => {
+      if (videoElement) {
+        videoElement.removeEventListener('loadedmetadata', handleMetadataLoaded);
+      }
+    };
   }, [videoUrl, previewVideoUrl])
 
   useEffect(() => {
@@ -480,7 +498,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
                 <video
                   ref={videoRef}
                   src={previewVideoUrl || videoUrl}
-                  style={{ display: previewVideoUrl ? 'block' : 'block', width: '243px' }}
+                  style={{ display: previewVideoUrl ? 'block' : 'block', width: landscapeBoll ? "100%": '243px' }}
                   preload="metadata"
                   autoPlay
                   playsInline

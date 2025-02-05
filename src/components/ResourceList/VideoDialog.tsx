@@ -1,6 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Image from '@/components/Image/Image'
-import playIcon from '@/assets/icons/videoSwitch.svg'
 import closeIcon from '@/assets/icons/closeIcon.svg'
 import { useSafeArea } from '@/hooks/useSafeArea'
 import { useStore } from '@/store'
@@ -11,7 +10,6 @@ import { videoScale } from '@/utils/video'
 import { getTimeStringAutoShort } from '@/utils/utils'
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { follow, getSomeoneProfile } from '@/api'
-import { useSafeState } from 'ahooks'
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import { UserItem } from '@/types'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
@@ -20,6 +18,7 @@ import { HStack, Text } from '@chakra-ui/react'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import PurchaseButton from './PurchaseButton'
 import { ReplayTrangleIcon } from '@/assets/icons'
+import { useDailyTaskActions } from '@/hooks/useDailyTask'
 
 const PlayButton = memo(({ onClick }: { onClick: () => void }) => (
   <div
@@ -31,22 +30,29 @@ const PlayButton = memo(({ onClick }: { onClick: () => void }) => (
 ))
 
 const ReplayButton = memo(({ onClick }: { onClick: () => void }) => (
-    <HStack
-      position="fixed"
-      top="0"
-      left="0"
-      width="100%"
-      height="90%"
-      bg="rgba(0,0,0,.5)"
-      zIndex={13}
-      flexDirection="column"
-      justifyContent="center"
-      alignItems="center"
+  <HStack
+    position="fixed"
+    top="0"
+    left="0"
+    width="100%"
+    height="90%"
+    bg="rgba(0,0,0,.5)"
+    zIndex={13}
+    flexDirection="column"
+    justifyContent="center"
+    alignItems="center"
+  >
+    <Text color="#fff" fontSize="14px">
+      Unlock now to view the full video.
+    </Text>
+    <div
+      className="flex items-center gap-1 bg-white px-[12px] py-[8px] rounded-[20px] mt-[12px]"
+      onClick={onClick}
     >
-    <Text color="#fff" fontSize="14px">Unlock now to view the full video.</Text>
-    <div className="flex items-center gap-1 bg-white px-[12px] py-[8px] rounded-[20px] mt-[12px]" onClick={onClick}>
       <img src={ReplayTrangleIcon} alt="replay" className="w-[12px] h-[12px]" />
-      <Text color="#333" fontSize="14px">Replay</Text>
+      <Text color="#333" fontSize="14px">
+        Replay
+      </Text>
     </div>
   </HStack>
 ))
@@ -129,7 +135,12 @@ export const UserInfo = memo(
       const picUrl = medias.find((item) => !item.endsWith('.m3u8'))
       const media = medias.find((item) => item.endsWith('.m3u8'))
       if (media) {
-        setVideoResource({ ...info, media: [media], mediaCover: picUrl ?? '', ...options } as FormatterListItem)
+        setVideoResource({
+          ...info,
+          media: [media],
+          mediaCover: picUrl ?? '',
+          ...options,
+        } as FormatterListItem)
       }
     }
 
@@ -187,7 +198,12 @@ export const UserInfo = memo(
         <MoreText textColor={'#fff'} text={content || ''} bgColor={'#000'} />
         {info?.price && info?.price > 0 && !info?.is_pay && info?.uid !== current_uid && (
           <div className="mt-2">
-            <PurchaseButton price={info?.price || 0} post_id={info?.id || 0 } resourcesEve={resourcesEve} setIsPaid={setIsPaid} />
+            <PurchaseButton
+              price={info?.price || 0}
+              post_id={info?.id || 0}
+              resourcesEve={resourcesEve}
+              setIsPaid={setIsPaid}
+            />
           </div>
         )}
       </div>
@@ -199,8 +215,8 @@ const VideoDialog = () => {
   const progressBarRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const videoContainerRef = useRef<HTMLDivElement>(null)
-  const hlsRef = useRef(null)
   const { bottom } = useSafeArea()
+  const { runDailyWatch } = useDailyTaskActions()
 
   const [url, setUrl] = useState('')
   const [playing, setPlaying] = useState(false)
@@ -231,6 +247,10 @@ const VideoDialog = () => {
   useEffect(() => {
     if (videoRef?.current) {
       videoRef.current.currentTime = 0
+    }
+
+    if (info) {
+      runDailyWatch(info.id)
     }
 
     setUrl('')
@@ -411,9 +431,13 @@ const VideoDialog = () => {
               <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin" />
             </div>
           )}
-          {
-            !isLoading && !playing ? info?.price && !info?.is_pay && ended ? <ReplayButton onClick={togglePlay} /> : <PlayButton onClick={togglePlay} /> : null
-          }
+          {!isLoading && !playing ? (
+            info?.price && !info?.is_pay && ended ? (
+              <ReplayButton onClick={togglePlay} />
+            ) : (
+              <PlayButton onClick={togglePlay} />
+            )
+          ) : null}
           <div
             ref={progressBarRef}
             className="absolute bottom-[-6px] left-0 right-0  touch-none z-20"

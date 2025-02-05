@@ -8,7 +8,6 @@ import { PlayButton } from '@/components/ResourceList/ResourceList'
 import { useStore } from '@/store'
 import { CardRecommendProvider } from '@/utils/constants'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
-import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { VolumeMuteIcon, VolumeSpeakerIcon } from '@/assets/icons'
 import { useNavigate } from 'react-router-dom'
 
@@ -23,7 +22,6 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const cacheVideoIndex = useStore((state) => state.cacheVideoIndex)
   const setVideoResource = useStore((state) => state.setVideoResource)
-  const { runDailyWatch } = useDailyTaskActions()
   const navigate = useNavigate()
   const { ttMode } = useStore((state) => ({
     ttMode: state.ttMode,
@@ -43,7 +41,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
         return
       }
       const videoDom = videoCardContainer?.current?.querySelector('video')
-      runDailyWatch(video.id)
+      console.log('video card')
       setCacheVideoIndex(video.id)
       setVideoResource(video)
       if (videoDom) {
@@ -134,7 +132,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
                   wrapperClassName=" overflow-hidden z-[3]"
                   errorClassName="rounded-[0px] h-[150px]"
                   className="object-left w-[100%] m-[auto]"
-                  onClick={() => handleVideoClick(data)}
+                  // onClick={() => handleVideoClick(data)}
                 />
                 {data.media?.[0] && <PlayButton onClick={() => handleVideoClick(data)} />}
               </div>

@@ -137,7 +137,7 @@ export const UserInfo = memo(
       <div
         className="absolute left-4 right-4 z-[14] flex flex-col cursor-pointer no-tap pb-4"
         style={{
-          bottom: `${bottom}px`,
+          bottom: `20px`,
         }}
       >
         <div className="flex items-center justify-between">
@@ -151,13 +151,15 @@ export const UserInfo = memo(
               onClick={handleToProfilePage}
             />
             <div className=" flex-col pl-2">
-              <span className="text-white text-[16px]" onClick={handleToProfilePage}>
-                {username}
-              </span>
-              <div className="text-white text-[12px] flex">
+              <div>
+                <span className="text-white text-[16px] font-[500]" onClick={handleToProfilePage}>
+                  {username}
+                </span>
                 {created_at && (
-                  <span>{getTimeStringAutoShort(new Date(created_at).getTime(), true)}</span>
+                  <span className="ml-[4px] text-white text-[12px] font-[400]">{getTimeStringAutoShort(new Date(created_at).getTime(), true)}</span>
                 )}
+              </div>
+              <div className="text-white text-[12px] flex">
                 {!is_follow && current_uid !== uid && (
                   <div className="pl-1.5 text-white text-[12px]">Bae selected</div>
                 )}

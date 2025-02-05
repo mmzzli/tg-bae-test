@@ -9,7 +9,7 @@ import { useStore } from '@/store'
 import { getFollowingList } from '@/api'
 import './index.css'
 // import FireworksAnimation from '../../components/Fireworks'
-const SCROLL_THRESHOLD = 100
+const SCROLL_THRESHOLD = 214
 
 const Profile: FC = () => {
   const { launchParams } = useTMAUtils()

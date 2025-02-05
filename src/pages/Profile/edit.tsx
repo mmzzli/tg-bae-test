@@ -11,7 +11,7 @@ import { useStore } from '@/store/store'
 import { UserInfoProfile } from '@/types'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import BaseButton from '@/components/BaseButton/BaseButton'
-const SCROLL_THRESHOLD = 130
+const SCROLL_THRESHOLD = 134
 
 const ProfileEdit: FC = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
@@ -24,12 +24,10 @@ const ProfileEdit: FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isFocused, setIsFocused] = useState<boolean>(false)
   const setUserInfo = useStore((state) => state.setUserInfo)
-  const userInfo = useStore((state) => state.userInfo)
   const [initLoading, setInitLoading] = useState<boolean>(false)
   const [errBoll, setErrBoll] = useState<boolean>(false)
   const titleRef = useRef<HTMLHeadingElement>(null)
   const [showTopTitle, setShowTopTitle] = useState(false)
-  const scrollDivRef = useRef<HTMLDivElement>(null)
   const [scale, setScale] = useState(1) // 控制背景图片的缩放
 
 

@@ -77,6 +77,10 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsF
     const div = editorRef.current
     if (!div) return
 
+    if(div.innerHTML === '<br>') {
+      div.innerHTML = '<span class="text-[#999]">Say something ...</span>'
+    }
+
     // 获取当前选择范围
     const selection = window.getSelection()
     if (!selection || selection.rangeCount === 0) return
@@ -306,6 +310,14 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsF
     setTimeout(() => {
       isMobileDevice() && setIsFocused(boll)
       setFeatureBoll(boll)
+
+      if (boll && editorRef.current) {
+        const placeholderSpan = editorRef.current.querySelector('span.text-\\[\\#999\\]')
+
+        if (placeholderSpan && placeholderSpan.textContent === 'Say something ...') {
+          editorRef.current.innerHTML = ''
+        }
+      }
     }, 0)
   }
 

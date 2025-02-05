@@ -10,6 +10,8 @@ import { getFollowingList } from '@/api'
 import './index.css'
 // import FireworksAnimation from '../../components/Fireworks'
 const SCROLL_THRESHOLD = 214
+const SCROLL_HEADER_THRESHOLD = 130
+
 
 const Profile: FC = () => {
   const { launchParams } = useTMAUtils()
@@ -17,6 +19,7 @@ const Profile: FC = () => {
   const userInfo = useStore((state) => state.userInfo)
   const titleRef = useRef<HTMLHeadingElement>(null)
   const [showTopTitle, setShowTopTitle] = useState(false)
+  const [showHeader, setShowHeader] = useState(false)
   const [scale, setScale] = useState(1) // 控制背景图片的缩放
 
   const { token, myFollow, setMyFollow } = useStore((state) => ({
@@ -42,8 +45,10 @@ const Profile: FC = () => {
 
       // 控制标题显示
       const shouldShowTitle = scrollTop >= SCROLL_THRESHOLD
+      const shouldShowHeader = scrollTop >= SCROLL_HEADER_THRESHOLD
       setShowTopTitle(shouldShowTitle)
-      if (shouldShowTitle) {
+      setShowHeader(shouldShowHeader)
+      if (shouldShowHeader) {
         window.Telegram?.WebApp?.setHeaderColor('#ffffff')
       } else {
         window.Telegram?.WebApp?.setHeaderColor('#000000')
@@ -65,7 +70,7 @@ const Profile: FC = () => {
       getFollowingList(current_uid).then((res) => setMyFollow(res))
     }
   }, [token])
-
+  console.log('showHeader', showHeader)
   return (
     <div
       className="relative w-full overflow-auto bg-white dark:bg-black scrollbar-hide"
@@ -76,10 +81,11 @@ const Profile: FC = () => {
           'calc(100vh - 84px - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top))',
       }}
     >
+
       <div
         className="fixed top-0 left-0 right-0 bg-white dark:bg-black z-10"
         style={{
-          display: showTopTitle ? 'block' : 'none',
+          display: showHeader ? 'block' : 'none',
           height: `${
             parseInt(
               getComputedStyle(document.documentElement).getPropertyValue(
@@ -100,7 +106,7 @@ const Profile: FC = () => {
         className="bg-area fixed top-0 left-0 "
         style={{
           backgroundImage: `url('${imgUrl}')`,
-          display: showTopTitle ? 'none' : 'block',
+          display: showHeader ? 'none' : 'block',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           transform: `scale(${scale})`,

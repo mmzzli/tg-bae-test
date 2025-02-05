@@ -11,7 +11,7 @@ import { useStore } from '@/store/store'
 import { UserInfoProfile } from '@/types'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import BaseButton from '@/components/BaseButton/BaseButton'
-const SCROLL_THRESHOLD = 130
+const SCROLL_THRESHOLD = 134
 
 const ProfileEdit: FC = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
@@ -24,12 +24,10 @@ const ProfileEdit: FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isFocused, setIsFocused] = useState<boolean>(false)
   const setUserInfo = useStore((state) => state.setUserInfo)
-  const userInfo = useStore((state) => state.userInfo)
   const [initLoading, setInitLoading] = useState<boolean>(false)
   const [errBoll, setErrBoll] = useState<boolean>(false)
   const titleRef = useRef<HTMLHeadingElement>(null)
   const [showTopTitle, setShowTopTitle] = useState(false)
-  const scrollDivRef = useRef<HTMLDivElement>(null)
   const [scale, setScale] = useState(1) // 控制背景图片的缩放
 
 
@@ -289,11 +287,13 @@ const ProfileEdit: FC = () => {
   }, [])
   useEffect(() => {
     if (isFocused) {
-      const scrollable: any = document.getElementById('scrollable')
-      scrollable.scrollTo({
-        top: 100000,
-        behavior: 'smooth',
-      })
+      const scrollable: any = document.getElementById('profileScrollableDiv')
+      if(scrollable){
+        scrollable.scrollTo({
+          top: 100000,
+          behavior: 'smooth',
+        })
+      }
     }
   }, [isFocused])
 
@@ -377,13 +377,13 @@ const ProfileEdit: FC = () => {
           top: 'calc(174px - var(--tg-safe-area-inset-top))',
         }}
       >
-        <div className={`text-[20px] text-[#0F1233] font-[500] ${showTopTitle ? 'opacity-0' : ''}`}>
+        <div className={`text-[20px] text-[#0F1233] font-[600] ${showTopTitle ? 'opacity-0' : ''}`}>
           Profile
         </div>
 
         {profileData.avatar ? (
           <>
-            <div className="mt-[38px]">
+            <div className="mt-[28px]">
               <p className="w-[88px] h-[88px] m-[auto] rounded-[50px] relative">
                 <img
                   src={profileData?.avatar}
@@ -426,7 +426,7 @@ const ProfileEdit: FC = () => {
                   <p className="text-[#888] text-[12px]">{profileData?.bio.length}/500</p>
                 </div>
                 <textarea
-                  className="w-[100%] h-[218px] rounded-[10px] text-[#333] text-[14px] border-[0.5px] border-[#CDCDD4] px-[16px] py-[15px]"
+                  className="w-[100%] h-[142px] rounded-[10px] text-[#333] text-[14px] border-[0.5px] border-[#CDCDD4] px-[16px] py-[15px]"
                   value={profileData?.bio}
                   onChange={(e) => changeEve(e, 'bio')}
                   onFocus={() => {

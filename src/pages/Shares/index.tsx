@@ -1,11 +1,13 @@
-import { FC, useRef } from 'react'
+import { FC, useRef, useState } from 'react'
 import ResourceList from '@/components/ResourceList/ResourceList'
 import RecommendList from '@/components/RecommendList/RecommendList'
 import { useSharedList } from '@/store/hook/useResourceList'
+import { CardRecommendProvider } from '@/utils/constants'
 import { useNavigate } from 'react-router-dom'
 
 const Shares: FC = () => {
   const { sharedPostList } = useSharedList()
+  const [videoOpen, setVideoOpen] = useState(false)
   const navigate = useNavigate()
   const containerRef = useRef<HTMLDivElement>(null)
   return (
@@ -36,7 +38,7 @@ const Shares: FC = () => {
         <div className="ml-auto flex gap-[13px] z-[1111] relative">
           <div
             className="w-[48px] h-[48px] p-[12px] bg-[#F5F3F3] rounded-[50px] flex items-center justify-center cursor-pointer"
-            onClick={() => navigate('/home/searching')}
+            onClick={() => navigate('/searching')}
           >
             <i className="iconfont icon-search-line text-[#333333] text-[24px]"></i>
           </div>
@@ -51,7 +53,10 @@ const Shares: FC = () => {
       <div className="font-bold text-xl dark:text-[#E0E2F6] text-black mt-4 mx-4">
         Selected Posts
       </div>
-      <RecommendList className="mb-12" containerRef={containerRef} />
+
+      <CardRecommendProvider.Provider value={{ recommend: true, setVideoOpen }}>
+        <RecommendList className="mb-12" containerRef={containerRef} onlySelected={true} />
+      </CardRecommendProvider.Provider>
     </div>
   )
 }

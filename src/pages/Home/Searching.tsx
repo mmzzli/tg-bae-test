@@ -127,12 +127,12 @@ const Searching = () => {
                 <div className="flex-shrink-0">
                   <Image
                     rect
-                    width={56}
-                    height={56}
+                    width={44}
+                    height={44}
                     type="avatar"
                     src={item.avatar}
                     alt="Avatar"
-                    className="w-[56px] h-[56px] rounded-full"
+                    className="w-[44px] h-[44px] rounded-full"
                     loaderClassName="rounded-full"
                   />
                 </div>

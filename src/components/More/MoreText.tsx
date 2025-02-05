@@ -148,6 +148,7 @@ const MoreText: React.FC<MoreTextProps> = ({
             style={{
               color: moreColor,
             }}
+            className="pl-2"
             onClick={() => setIsExpanded(!isExpanded)}
           >
             {isExpanded ? 'Less' : 'More'}

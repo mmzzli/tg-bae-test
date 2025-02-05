@@ -8,6 +8,7 @@ import { CardRecommendProvider } from '@/utils/constants'
 import { throttle } from '@/utils/chat/schedulers'
 import { PullToRefresh } from 'antd-mobile'
 import { useToast } from '@chakra-ui/react'
+import loadingGif from '@/assets/loading.gif'
 
 interface ChildRef {
   refresh: () => void
@@ -100,7 +101,7 @@ const HomePage: FC = () => {
     if (import.meta.env.MODE === 'production') {
       return
     }
-    setClickCount(prev => prev + 1)
+    setClickCount((prev) => prev + 1)
     // 清除之前的定时器
     if (clickTimeoutRef.current) {
       clearTimeout(clickTimeoutRef.current)
@@ -180,8 +181,8 @@ const HomePage: FC = () => {
                 opacity: showTopTitle ? 0 : 1,
               }}
               onClick={(e) => {
-                e.stopPropagation();
-                consecutiveHits();
+                e.stopPropagation()
+                consecutiveHits()
               }}
             >
               {title}
@@ -222,9 +223,17 @@ const HomePage: FC = () => {
         renderText={(status) => {
           return (
             <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-              <div
+              {/* <div
                 className={`w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254FF]`}
-              ></div>
+              ></div> */}
+              <img
+                style={{
+                  width: '32px',
+                  height: '32px',
+                }}
+                src={loadingGif}
+                alt="loading"
+              />
             </div>
           )
         }}

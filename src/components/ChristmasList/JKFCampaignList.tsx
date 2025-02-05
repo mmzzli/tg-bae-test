@@ -91,7 +91,7 @@ const JKFCampaignList = ({ containerRef }: PostListProps) => {
 
   if (isLoading) {
     return (
-      <div className="mt-12">
+      <div className="mt-12 px-4">
         <PostSkeleton />
       </div>
     );
@@ -111,7 +111,7 @@ const JKFCampaignList = ({ containerRef }: PostListProps) => {
         <Campaign voteDetail={voteDetail} loadVoteDetail={loadVoteDetail} />
       </div>
       {isLoading && hasMore && (
-        <div className="mt-12">
+        <div className="mt-12 px-4">
           <PostSkeleton />
         </div>
       )}

@@ -139,6 +139,7 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsF
         mt="10px"
         color="#333"
         fontWeight="400"
+        lineHeight="6"
         p="0"
         fontSize="14px"
         border="none"

@@ -33,7 +33,7 @@ import { videoHls } from '@/utils/video/videoHls'
 
 import Links from '@/components/ResourceList/Links'
 
-interface ShareDataProps {
+export interface ShareDataProps {
   pid: number
   uid: number
 }
@@ -192,10 +192,14 @@ const ResourceList = ({
   resources: initialResources,
   type,
   hasMore,
+  setCurrentShareData,
+  getShareLink,
 }: {
   resources: FormatterListItem[]
   type?: string
   hasMore?: boolean
+  setCurrentShareData: (data: ShareDataProps) => void
+  getShareLink: (title: string, pid: number, uid: number) => Promise<void>
 }) => {
   const navigate = useNavigate()
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
@@ -224,7 +228,7 @@ const ResourceList = ({
     shareLink: '',
     copyLink: '',
   })
-  const [currentShareData, setCurrentShareData] = useState<ShareDataProps | null>(null)
+  // const [currentShareData, setCurrentShareData] = useState<ShareDataProps | null>(null)
 
   const jumpToProfilePage = useProfileNavigation()
   const { runDailyWatch } = useDailyTaskActions()
@@ -367,13 +371,13 @@ const ResourceList = ({
     setSaveds(data)
     favRun(data)
   }
-  const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
-    toggle()
-    setIsLoading(false)
-    const { shareLink, copyLink } = await genShareLinkFn(title, pid, uid, getLinkHandlerAsync)
-    setLinks({ shareLink, copyLink: decodeURIComponent(copyLink) })
-    setIsLoading(true)
-  })
+  // const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
+  //   toggle()
+  //   setIsLoading(false)
+  //   const { shareLink, copyLink } = await genShareLinkFn(title, pid, uid, getLinkHandlerAsync)
+  //   setLinks({ shareLink, copyLink: decodeURIComponent(copyLink) })
+  //   setIsLoading(true)
+  // })
 
   const resourcesEve = (post_id: number, url: string, is_pay?: boolean) => {
     const updatedUsers = resources.map((item) => {
@@ -503,14 +507,6 @@ const ResourceList = ({
             </Box>
           )
         })}
-        <ShareModal
-          isBaseModalOpen={isBaseModalOpen}
-          off={off}
-          currentShareData={currentShareData}
-          links={links}
-          isLoading={isLoading}
-          setIsLoading={setIsLoading}
-        ></ShareModal>
       </div>
     </>
   )

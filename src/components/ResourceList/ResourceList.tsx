@@ -205,18 +205,13 @@ const ResourceList = ({ resources: initialResources, type, hasMore }: Props) => 
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const toast = useToast()
   const { sharedPostList } = useSharedList()
-
   const saveds = useStore((state) => state.save)
-
   const initPatchSaves = useStore((state) => state.initPatchSave)
-
   const setSaveds = useStore((state) => state.setPatchSave)
-
   const setImageResource = useStore((state) => state.setImageResource)
   const setFollowResource = useStore((state) => state.setFollowResource)
   const followResource = useStore((state) => state.followResource)
   const videoInfo = useStore((state) => state.videoResource)
-
   const { launchParams } = useTMAUtils()
   const [isBaseModalOpen, { toggle, off }] = useBoolean(false)
   const [links, setLinks] = useSetState<ShreLinkProps>({
@@ -224,7 +219,7 @@ const ResourceList = ({ resources: initialResources, type, hasMore }: Props) => 
     copyLink: '',
   })
   const [currentShareData, setCurrentShareData] = useState<ShareDataProps | null>(null)
-
+  const [reportVisible, setReportVisible] = useState(false)
   const jumpToProfilePage = useProfileNavigation()
   const { runDailyWatch } = useDailyTaskActions()
 
@@ -435,16 +430,18 @@ const ResourceList = ({ resources: initialResources, type, hasMore }: Props) => 
       ></Empty>
     )
   }
-  const [reportVisible, setReportVisible] = useState(false)
+
   const getUrl = (act_type: number) => {
     switch (act_type) {
       case 1:
         return '/christmas'
       case 2:
         return '/jkf-campaign'
+      default:
+        return '/christmas'
     }
-    return '/christmas'
   }
+
   return (
     <>
       {reportVisible && <Report isOpen={reportVisible} onClose={setReportVisible} />}

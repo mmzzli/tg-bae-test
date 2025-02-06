@@ -109,6 +109,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       isOpen={isBaseModalOpen}
       onClose={off}
       height="351px"
+      usePortal={true}
       animation={{
         duration: 400,
         timingFunction: 'ease-in-out',

@@ -17,7 +17,6 @@ interface MentionFeatureProps {
   title: string
   setTitle: (str: string) => void
   setIsFocused: (bool: boolean) => void
-  isFocused: boolean
   featureRefBoll: any
   height?: string
 }
@@ -26,7 +25,6 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({
   title,
   setTitle,
   setIsFocused,
-  isFocused,
   featureRefBoll,
   height = '200px',
 }) => {

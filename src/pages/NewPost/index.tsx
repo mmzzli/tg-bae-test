@@ -42,6 +42,7 @@ export const NewPost: FC = () => {
   const [title, setTitle] = useState<string>('')
   const [isLoading, setIsLoading] = useState(false)
   const [firstFileType, setFirstFileType] = useState<string>('image')
+  const [firstSelectFileType, setFirstSelectFileType] = useState<string>('')
   const [imgAttr, setImgAttr] = useState<any[]>([])
   const [files, setFiles] = useState<File[]>([])
   const token = useStore((state) => state.token)
@@ -74,7 +75,11 @@ export const NewPost: FC = () => {
         console.error(`Failed to load: ${imgitem}`)
       }
     })
-  }, [imgAttr])
+    if ((!imgAttr || !imgAttr.length) && !videoSrc) {
+      setFirstSelectFileType('')
+    }
+    
+  }, [imgAttr, files, videoSrc])
 
   // upload states
   const { addUploadThread, updateUploadThread, addUploadTask, resetUploadTask } = useStore(
@@ -411,14 +416,15 @@ export const NewPost: FC = () => {
   }
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('file type...', firstFileType)
     const newFiles = event.target.files
     if (!newFiles || newFiles.length === 0) return
     const fileArray = Array.from(newFiles)
-    const firstFileType = fileArray[0].type.startsWith('image/') ? 'image' : 'video'
+    const _firstFileType = fileArray[0].type.startsWith('image/') ? 'image' : 'video'
     const allSameType = fileArray.every(
       (file) =>
-        (file.type.startsWith('image/') && firstFileType === 'image') ||
-        (file.type.startsWith('video/') && firstFileType === 'video')
+        (file.type.startsWith('image/') && _firstFileType === 'image') ||
+        (file.type.startsWith('video/') && _firstFileType === 'video')
     )
     if (!allSameType) {
       toast({
@@ -434,8 +440,9 @@ export const NewPost: FC = () => {
       })
       return
     }
-    setFirstFileType(firstFileType)
-    if (firstFileType === 'video') {
+    setFirstFileType(_firstFileType)
+    setFirstSelectFileType(_firstFileType)
+    if (_firstFileType === 'video') {
       if (fileArray.length > 1) {
         toast({
           render: () => {
@@ -554,7 +561,7 @@ export const NewPost: FC = () => {
         <Box pt="66px">
           <Input
             type="file"
-            accept=".png,.jpg,.jpeg,.mp4,.webm"
+            accept={!firstSelectFileType ? ".png,.jpg,.jpeg,.mp4,.webm" : firstSelectFileType === 'image' ? ".png,.jpg,.jpeg" : ".mp4,.webm"}
             multiple
             onChange={handleFileChange}
             style={{ display: 'none' }}

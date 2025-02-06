@@ -5,6 +5,8 @@ import { DrawSkeletonItem } from '@/components/Skeketon/ChatSkeleton'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import { useSharedList } from '@/store/hook/useResourceList'
 
+import Report from '@/components/SecondaryMenu/Report'
+
 import { favDel, favPost, postLike } from '@/api'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { BaseModal } from '../Modal/BaseModal'
@@ -17,7 +19,6 @@ import Image from '../Image/Image'
 import SecondaryMenu from '../SecondaryMenu/SecondaryMenu'
 import { getLink, getShareInlineMessageId } from '@/api/list'
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
-import playIcon from '@/assets/icons/videoSwitch.svg'
 import Empty from '../comm/Empty'
 import Icon from '../comm/Icon'
 import Lottie from 'lottie-react'
@@ -30,8 +31,6 @@ import { genShareLinkFn, getTimeStringAutoShort, formatNumber } from '@/utils/ut
 import MoreText from '@/components/More/MoreText'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { videoHls } from '@/utils/video/videoHls'
-
-import Links from '@/components/ResourceList/Links'
 
 export interface ShareDataProps {
   pid: number
@@ -189,18 +188,14 @@ const POST_TYPE_IMAGE = 1
 const POST_TYPE_VIDEO = 0
 
 interface Props {
-  resources: FormatterListItem[];
-  type?: string;
-  hasMore?: boolean;
-  setCurrentShareData?: (data: ShareDataProps) => void;
-  getShareLink?: (title: string, pid: number, uid: number) => Promise<void>;
+  resources: FormatterListItem[]
+  type?: string
+  hasMore?: boolean
+  setCurrentShareData?: (data: ShareDataProps) => void
+  getShareLink?: (title: string, pid: number, uid: number) => Promise<void>
 }
 
-const ResourceList = ({
-  resources: initialResources,
-  type,
-  hasMore
-}: Props) => {
+const ResourceList = ({ resources: initialResources, type, hasMore }: Props) => {
   const navigate = useNavigate()
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const [resources, setResources] = useState<FormatterListItem[]>([])
@@ -440,6 +435,7 @@ const ResourceList = ({
       ></Empty>
     )
   }
+  const [reportVisible, setReportVisible] = useState(false)
   const getUrl = (act_type: number) => {
     switch (act_type) {
       case 1:
@@ -451,6 +447,7 @@ const ResourceList = ({
   }
   return (
     <>
+      {reportVisible && <Report isOpen={reportVisible} onClose={setReportVisible} />}
       <div className="pt-[24px] bg-white">
         {resources.map((data, index: number) => {
           return (
@@ -460,6 +457,7 @@ const ResourceList = ({
                 currentUid={launchParams.initData?.user?.id ?? 0}
                 onProfileClick={jumpToProfilePage}
                 type={type}
+                setReportVisible={setReportVisible}
               />
               <Box position="relative">
                 {(data.act_type === 1 || data.act_type === 2) && type === 'recommend' && (
@@ -528,6 +526,7 @@ interface ResourceHeaderProps {
   data: FormatterListItem
   currentUid: number
   onProfileClick: (data: FormatterListItem) => void
+  setReportVisible: (boll: boolean) => void
   type?: string
 }
 
@@ -541,54 +540,60 @@ interface ResourceFooterProps {
   type?: string
 }
 
-const ResourceHeader = memo<ResourceHeaderProps>(({ data, currentUid, onProfileClick, type }) => {
-  const cardValue = useContext(CardRecommendProvider)
-  return (
-    <div className="pl-4 pr-4 pb-4 flex items-center">
-      <div className="flex items-center justify-between gap-2" onClick={() => onProfileClick(data)}>
-        <div className="w-[48px] h-[48px] overflow-hidden rounded-[50%]">
-          <Image
-            rect
-            width={48}
-            height={48}
-            className="rounded-full"
-            src={data.avatar}
-            type={'avatar'}
-            alt={data.username}
-          />
-        </div>
-        <div className="flex flex-col">
-          <div className="flex items-center gap-1.5">
-            <div className="text-[#0F1233] dark:text-[#E0E2F6]  font-bold text-base">
-              {data.username}
+const ResourceHeader = memo<ResourceHeaderProps>(
+  ({ data, currentUid, onProfileClick, type, setReportVisible }) => {
+    const cardValue = useContext(CardRecommendProvider)
+    return (
+      <div className="pl-4 pr-4 pb-4 flex items-center">
+        <div
+          className="flex items-center justify-between gap-2"
+          onClick={() => onProfileClick(data)}
+        >
+          <div className="w-[48px] h-[48px] overflow-hidden rounded-[50%]">
+            <Image
+              rect
+              width={48}
+              height={48}
+              className="rounded-full"
+              src={data.avatar}
+              type={'avatar'}
+              alt={data.username}
+            />
+          </div>
+          <div className="flex flex-col">
+            <div className="flex items-center gap-1.5">
+              <div className="text-[#0F1233] dark:text-[#E0E2F6]  font-bold text-base">
+                {data.username}
+              </div>
+              <p className="text-[#868686] dark:text-[#424048] text-xs">
+                {getTimeStringAutoShort(
+                  new Date(data.created_at).getTime() - new Date().getTimezoneOffset() * 60000,
+                  true
+                )}
+              </p>
             </div>
-            <p className="text-[#868686] dark:text-[#424048] text-xs">
-              {getTimeStringAutoShort(
-                new Date(data.created_at).getTime() - new Date().getTimezoneOffset() * 60000,
-                true
+            <div className="flex gap-1.5 items-center">
+              {data.act_type === 1 && type === 'recommend' ? (
+                <div className="text-[#333333] text-[12px]">Featured</div>
+              ) : (
+                cardValue?.recommend &&
+                !data.is_follow && <div className="text-[#333333] text-[12px]">Bae selected</div>
               )}
-            </p>
-          </div>
-          <div className="flex gap-1.5 items-center">
-            {data.act_type === 1 && type === 'recommend' ? (
-              <div className="text-[#333333] text-[12px]">Featured</div>
-            ) : (
-              cardValue?.recommend &&
-              !data.is_follow && <div className="text-[#333333] text-[12px]">Bae selected</div>
-            )}
+            </div>
           </div>
         </div>
+        <SecondaryMenu
+          className="ml-auto"
+          key={data.id}
+          mediaData={data}
+          currentUid={currentUid}
+          type={type}
+          setReportVisible={setReportVisible}
+        />
       </div>
-      <SecondaryMenu
-        className="ml-auto"
-        key={data.id}
-        mediaData={data}
-        currentUid={currentUid}
-        type={type}
-      />
-    </div>
-  )
-})
+    )
+  }
+)
 
 const ResourceFooter = memo<ResourceFooterProps>(({ data, linkEve, onShare, savedEve, type }) => {
   const likes = useStore((state) => state.like)

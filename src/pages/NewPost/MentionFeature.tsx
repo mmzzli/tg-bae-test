@@ -73,6 +73,10 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({
 
   useEffect(() => {
     if (editorRef.current) {
+      // Add iOS specific styles
+      editorRef.current.style.webkitUserSelect = 'text'
+      editorRef.current.style.userSelect = 'text'
+
       if (!title) {
         editorRef.current.innerHTML = '<span class="text-[#999]">Say something ...</span>'
       } else {
@@ -320,6 +324,21 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({
     setTimeout(() => {
       if (isMobileDevice()) {
         setIsFocused(boll)
+        // 在 iOS 上强制flow以确保光标可见性
+        if (boll && editorRef.current) {
+          editorRef.current.style.webkitUserSelect = 'text'
+          editorRef.current.style.userSelect = 'text'
+          editorRef.current.style.webkitTransform = 'translateZ(0)'
+
+          // 在 iOS 上强制光标可见
+          const selection = window.getSelection()
+          const range = document.createRange()
+          range.selectNodeContents(editorRef.current)
+          range.collapse(false)
+          selection?.removeAllRanges()
+          selection?.addRange(range)
+        }
+
         const selection = window.getSelection()
         if (selection && selection.rangeCount > 0) {
           const range = selection.getRangeAt(0)
@@ -379,6 +398,38 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({
         onInput={handleInput}
         onFocus={() => mentionEve(true)}
         onBlur={() => mentionEve(false)}
+        onCompositionStart={(e) => {
+          // 处理输入法组合开始
+          e.preventDefault()
+        }}
+        onCompositionEnd={(e) => {
+          // 处理输入法组合结束，确保文本正确插入
+          if (editorRef.current) {
+            const text = e.data
+            if (text) {
+              const selection = window.getSelection()
+              if (selection && selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0)
+                const textNode = document.createTextNode(text)
+                range.insertNode(textNode)
+                range.setStartAfter(textNode)
+                range.setEndAfter(textNode)
+                selection.removeAllRanges()
+                selection.addRange(range)
+                handleInput()
+              }
+            }
+          }
+        }}
+        style={{
+          WebkitUserSelect: 'text',
+          userSelect: 'text',
+          cursor: 'text',
+          WebkitTextSizeAdjust: 'none',
+          WebkitTapHighlightColor: 'rgba(0, 0, 0, 0)',
+          WebkitTouchCallout: 'none',
+          caretColor: '#333'
+        }}
       />
       {featureBoll && showMentionList && filteredCandidates.length > 0 && (
         <ul

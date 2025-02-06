@@ -66,7 +66,8 @@ const TransparentSlider: React.FC<SliderProps> = ({
     setSelectedTime(time);
     const adjustedStart = Math.max(0, time);
     const adjustedEnd = Math.min(videoDuration, time + 6);
-    setStartTime(adjustedStart);
+    console.log(adjustedStart, adjustedEnd)
+    setStartTime(adjustedStart === adjustedEnd ? adjustedStart - 6 : adjustedStart);
     setEndTime(adjustedEnd);
   };
 
@@ -226,7 +227,22 @@ const TransparentSlider: React.FC<SliderProps> = ({
               pointerEvents: 'none',
             }}
           >
-            <p className="text-[18px] text-[#fff] text-center h-[60px] leading-[60px]">5S</p>
+            <p className="text-[18px] text-[#fff] text-center h-[60px] leading-[60px] absolute"
+              style={{
+                transform: 'translate(-50%, -50%)',
+                zIndex: 11,
+                top: "50%",
+                left: "50%"
+              }}
+            >5S</p>
+
+            <div className='absolute left-[0px] top-[0px] w-[100%] h-[100%]'
+              style={{
+                backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                zIndex: 10,
+              }}
+            ></div>
+
             <video
               ref={videoRef1}
               className='object-cover absolute top-[0px] h-[100%] w-[100%]'

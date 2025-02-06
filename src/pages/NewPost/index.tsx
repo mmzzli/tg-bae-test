@@ -112,9 +112,12 @@ export const NewPost: FC = () => {
     const allSuccessHandler = async (result: UploadThread[]) => {
       const fileLinks = result[0].result.urls.join(',')
       try {
+        // 过滤HTML标签
+        const filteredTitle = title.replace(/<[^>]*>/g, '')
+
         await postResources({
           media: fileLinks,
-          ...(title ? { title } : {}),
+          ...(filteredTitle ? { title: filteredTitle } : {}),
           type: 1,
           currency: 0,
           price: price || 0,

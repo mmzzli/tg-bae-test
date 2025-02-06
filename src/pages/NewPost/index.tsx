@@ -1,21 +1,9 @@
 import React, { FC, useState, useEffect, useRef, useMemo } from 'react'
-import {
-  HStack,
-  Heading,
-  Image,
-  Button,
-  Box,
-  Textarea,
-  Input,
-  createStandaloneToast,
-  useToast,
-  Grid,
-  GridItem,
-} from '@chakra-ui/react'
+import { Image, Button, Box, Input, useToast, Grid, GridItem } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import axios, { AxiosResponse } from 'axios'
 import { postResources, postReq } from '@/api'
-import {PostResourceReq} from '@/types'
+import { PostResourceReq } from '@/types'
 import StarsPage from '@/components/NewPost/Stars'
 import AddPreview from '@/components/NewPost/AddPreview'
 import { PostIcon, PostAddIcon, RemoveIcon, VideoSwitchIcon } from '@/assets/icons'
@@ -29,6 +17,11 @@ import { error } from 'console'
 import { useGetDailyTask } from '@/hooks/useDailyTask'
 import { useViewList } from '@/store/hook/useResourceList'
 import MentionFeature from './MentionFeature'
+import { debounce } from '@/utils/chat/schedulers'
+
+const isIOS = () => {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
+}
 
 export const NewPost: FC = () => {
   const navigate = useNavigate()
@@ -46,6 +39,8 @@ export const NewPost: FC = () => {
   const [files, setFiles] = useState<File[]>([])
   const token = useStore((state) => state.token)
 
+  const containerRef = useRef<HTMLDivElement>(null)
+  const postContentRef = useRef<HTMLDivElement>(null)
   // const [frameSelectorBoll, setFrameSelectorBoll] = useState<boolean>(false)
   // start
   const [price, setPrice] = useState<number | null>(null)
@@ -213,7 +208,7 @@ export const NewPost: FC = () => {
     if (!videoFile) {
       return
     }
-    if(!cover && !trailer){
+    if (!cover && !trailer) {
       toast({
         render: () => {
           return <CustomToast title="Cover not" type={typeOptions.error} />
@@ -224,7 +219,7 @@ export const NewPost: FC = () => {
     }
     try {
       setIsLoading(true)
-      if(trailer){
+      if (trailer) {
         await checkVideoURL(trailer)
       }
       const errorHandler = (error: any) => {
@@ -242,7 +237,7 @@ export const NewPost: FC = () => {
           const medias = [url]
           cover && medias.unshift([cover])
           //
-          const params:PostResourceReq = {
+          const params: PostResourceReq = {
             duration: Math.floor(videoRef?.current?.duration || 0),
             media: medias.join(','),
             ...(title ? { title } : {}),
@@ -250,7 +245,7 @@ export const NewPost: FC = () => {
             currency: 0,
             price: price || 0,
           }
-          if(params.price && trailer){
+          if (params.price && trailer) {
             params['trailer'] = trailer
           }
           await postResources(params)
@@ -482,13 +477,12 @@ export const NewPost: FC = () => {
     setFiles((prevItems) => prevItems.filter((_, index) => index !== key))
   }
 
-  const stopVideo = ()=>{
+  const stopVideo = () => {
     const video = videoRef.current
-    if(video){
+    if (video) {
       video.pause()
     }
   }
-
 
   useEffect(() => {
     return () => {
@@ -496,16 +490,80 @@ export const NewPost: FC = () => {
     }
   }, [imgAttr])
 
-  useEffect(() => {
-    const handleKeyboardHide = () => {
-      window.scrollTo(0, 0)
-    }
-    window.addEventListener('focusout', handleKeyboardHide)
+  // useEffect(() => {
+  //   const handleKeyboardHide = () => {
+  //     window.scrollTo(0, 0)
+  //   }
+  //   window.addEventListener('focusout', handleKeyboardHide)
 
+  //   return () => {
+  //     window.removeEventListener('focusout', handleKeyboardHide)
+  //   }
+  // }, [])
+
+  const stopMove = (e: any) => {
+    // const messageList = document.querySelector('.list-scroll-trigger')
+    // if (messageList && messageList.contains(e.target)) {
+    //   return
+    // }
+    // e.preventDefault()
+    window.scrollTo(0, 0)
+  }
+
+  const scroll = () => {
+    window.scrollTo(0, 0)
+  }
+
+  const keyboardUp = () => {
+    window.scrollTo(0, 0)
+    // document.body.addEventListener('touchmove', stopMove, {
+    //   passive: false,
+    // })
+    document.addEventListener('touchend', scroll)
+  }
+
+  const keyboardDown = () => {
+    // document.body.removeEventListener('touchmove', stopMove)
+    document.addEventListener('touchend', scroll)
+  }
+
+  useEffect(() => {
     return () => {
-      window.removeEventListener('focusout', handleKeyboardHide)
+      keyboardDown()
     }
   }, [])
+
+  useEffect(() => {
+    if (isFocused) {
+      keyboardUp()
+    } else {
+      keyboardDown()
+      setTimeout(() => {
+        document.body.scrollIntoView()
+      }, 100)
+    }
+  }, [isFocused])
+
+  // 移动端聚焦时 需要滚动到光标处
+  const handleFocusedTop = (top: number) => {
+    setTimeout(() => {
+      if (postContentRef.current) {
+        const viewportHeight = parseFloat(
+          getComputedStyle(document.documentElement).getPropertyValue('--tg-viewport-stable-height')
+        )
+        const safeAreaHeight = parseFloat(
+          getComputedStyle(document.documentElement).getPropertyValue('--tg-safe-area-inset-bottom')
+        )
+        // top是 距离屏幕顶部的 距离 需要加上当前元素的滚动距离
+        const scrollTop = postContentRef.current.scrollTop
+        const scrollDistance = scrollTop + top - viewportHeight + safeAreaHeight + 66
+        if (scrollDistance > 0) {
+          postContentRef.current.scrollTop += scrollDistance
+        }
+      }
+    }, 300)
+  }
+
   useEffect(() => {
     if (isFocused) {
       const scrollable: any = document.getElementById('scrollable')
@@ -517,41 +575,50 @@ export const NewPost: FC = () => {
   }, [isFocused])
   const featureRefBoll = useRef(false)
 
-
-
   return (
-    <Box
-      h="100vh"
-      overflow="hidden"
-      className="fixed w-screen h-screen bg-[#fff] z-10 overflow-auto scrollbar-hide"
+    <div
+      ref={containerRef}
+      className="fixed top-0 w-screen bg-[#fff] z-10 overflow-hidden scrollbar-hide"
+      style={{
+        paddingTop: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
+        height: 'calc(var(--tg-safe-area-inset-bottom) + var(--tg-viewport-stable-height))',
+      }}
       id="scrollable"
     >
-      <Box p="0 16px" maxH="500px" overflow="auto">
-        <Box>
-          <HStack justifyContent="space-between" position="fixed" w="100%" left="0px" p="12px 16px" bg="#fff" zIndex={11}>
-            <Heading as="h3" fontSize="20px" color="#000">
-              New Post
-            </Heading>
-            <Button
-              size="xl"
-              fontSize="14px"
-              variant="primary-dark"
-              w="82px"
-              h="35px"
-              onClick={handleUpload}
-              isLoading={isLoading}
-              isDisabled={firstFileType === 'image' ? files.length === 0 : videoFile == null}
-              _hover={{
-                bg: (firstFileType === 'image' ? files.length === 0 : videoFile == null)
-                  ? '#D1D0DE'
-                  : '#6254FF',
-              }}
-            >
-              <Image src={PostIcon} mr="5px" /> Post
-            </Button>
-          </HStack>
-        </Box>
-        <Box pt="66px">
+      <div
+        ref={postContentRef}
+        className="absolute left-0 right-0 px-4 overflow-auto list-scroll-trigger"
+        style={{
+          top: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
+          bottom: isFocused
+            ? '0'
+            : price != null && price > 0 && firstFileType === 'video' && videoSrc
+              ? '210px'
+              : '120px',
+        }}
+      >
+        {/* Page Header */}
+        <div className="fixed flex justify-between items-center left-0 right-0 h-[60px] px-4 py-3 bg-white z-[11]">
+          <h3 className="text-[20px] font-bold text-black">New Post</h3>
+          <Button
+            size="xl"
+            fontSize="14px"
+            variant="primary-dark"
+            w="82px"
+            h="35px"
+            onClick={handleUpload}
+            isLoading={isLoading}
+            isDisabled={firstFileType === 'image' ? files.length === 0 : videoFile == null}
+            _hover={{
+              bg: (firstFileType === 'image' ? files.length === 0 : videoFile == null)
+                ? '#D1D0DE'
+                : '#6254FF',
+            }}
+          >
+            <Image src={PostIcon} mr="5px" /> Post
+          </Button>
+        </div>
+        <div className="pt-[66px]">
           <Input
             type="file"
             accept=".png,.jpg,.jpeg,.mp4,.webm"
@@ -561,7 +628,8 @@ export const NewPost: FC = () => {
             ref={inputRef}
           />
 
-          <Box>
+          {/* POST Media Content */}
+          <div>
             {firstFileType === 'video' && (
               <>
                 {videoSrc ? (
@@ -572,7 +640,11 @@ export const NewPost: FC = () => {
                       src={videoSrc}
                       style={{ borderRadius: '4px', maxHeight: '380px' }}
                     />
-                    <VideoFrameSelector videoRef={videoRefCover} setCover={setCover} videoSrc={videoSrc} />
+                    <VideoFrameSelector
+                      videoRef={videoRefCover}
+                      setCover={setCover}
+                      videoSrc={videoSrc}
+                    />
                     <Image
                       onClick={() => {
                         setVideoSrc('')
@@ -634,42 +706,35 @@ export const NewPost: FC = () => {
                 )}
               </Grid>
             )}
-          </Box>
-          {/* <Textarea
-            className="placeholder-[#999] mt-6"
-            value={title}
-            onFocus={() => {
-              isMobileDevice() && setIsFocused(true)
-            }}
-            onBlur={() => {
-              isMobileDevice() && setIsFocused(false)
-            }}
-            onChange={(event) => setTitle(event.target.value)}
-            mt="10px"
-            color="#333"
-            fontWeight="400"
-            p="0"
-            fontSize="14px"
-            border="none"
-            placeholder="Say something ..."
-            h="80px"
-          /> */}
+          </div>
+          {/* POST Text Content */}
           <MentionFeature
             title={title}
             setTitle={setTitle}
             setIsFocused={setIsFocused}
-            isFocused={isFocused}
             featureRefBoll={featureRefBoll}
-            />
-        </Box>
-        {!isFocused && <div>
-          <div onClick={()=>stopVideo()}>
-            {(price != null && price > 0 && firstFileType === 'video' && videoSrc) && <AddPreview videoRef={videoRefCover} setCover={setCover} videoSrc={videoSrc || ""} trailer={trailer} setTrailer={setTrailer} videoFile={videoFile} />}
+            height="auto"
+            focusedTop={handleFocusedTop}
+          />
+        </div>
+        {!isFocused && (
+          <div>
+            <div onClick={() => stopVideo()}>
+              {price != null && price > 0 && firstFileType === 'video' && videoSrc && (
+                <AddPreview
+                  videoRef={videoRefCover}
+                  setCover={setCover}
+                  videoSrc={videoSrc || ''}
+                  trailer={trailer}
+                  setTrailer={setTrailer}
+                  videoFile={videoFile}
+                />
+              )}
+            </div>
+            <StarsPage setPrice={setPrice} price={price || 0} featureRefBoll={featureRefBoll} />
           </div>
-          <StarsPage setPrice={setPrice} price={price || 0} featureRefBoll={featureRefBoll} />
-        </div>}
-      </Box>
-      <Box h={`${isFocused ? '700px' : ''}`}></Box>
-    </Box>
+        )}
+      </div>
+    </div>
   )
 }

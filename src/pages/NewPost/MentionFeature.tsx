@@ -60,13 +60,9 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({
           return element.textContent || ''
         }
         // 处理其他元素的子节点
-        if (element.childNodes.length > 0) {
-          return Array.from(element.childNodes)
-            .map((child) => processNode(child))
-            .join('')
-        }
-        // 如果元素没有子节点，直接返回其文本内容
-        return element.textContent || ''
+        return Array.from(node.childNodes)
+          .map((child) => processNode(child))
+          .join('')
       }
 
       return ''

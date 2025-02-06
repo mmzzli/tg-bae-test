@@ -199,9 +199,7 @@ interface Props {
 const ResourceList = ({
   resources: initialResources,
   type,
-  hasMore,
-  setCurrentShareData,
-  getShareLink,
+  hasMore
 }: Props) => {
   const navigate = useNavigate()
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
@@ -230,7 +228,7 @@ const ResourceList = ({
     shareLink: '',
     copyLink: '',
   })
-  // const [currentShareData, setCurrentShareData] = useState<ShareDataProps | null>(null)
+  const [currentShareData, setCurrentShareData] = useState<ShareDataProps | null>(null)
 
   const jumpToProfilePage = useProfileNavigation()
   const { runDailyWatch } = useDailyTaskActions()
@@ -373,13 +371,13 @@ const ResourceList = ({
     setSaveds(data)
     favRun(data)
   }
-  // const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
-  //   toggle()
-  //   setIsLoading(false)
-  //   const { shareLink, copyLink } = await genShareLinkFn(title, pid, uid, getLinkHandlerAsync)
-  //   setLinks({ shareLink, copyLink: decodeURIComponent(copyLink) })
-  //   setIsLoading(true)
-  // })
+  const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
+    toggle()
+    setIsLoading(false)
+    const { shareLink, copyLink } = await genShareLinkFn(title, pid, uid, getLinkHandlerAsync)
+    setLinks({ shareLink, copyLink: decodeURIComponent(copyLink) })
+    setIsLoading(true)
+  })
 
   const resourcesEve = (post_id: number, url: string, is_pay?: boolean) => {
     const updatedUsers = resources.map((item) => {
@@ -513,6 +511,14 @@ const ResourceList = ({
             </Box>
           )
         })}
+        <ShareModal
+          isBaseModalOpen={isBaseModalOpen}
+          off={off}
+          currentShareData={currentShareData}
+          links={links}
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+        ></ShareModal>
       </div>
     </>
   )

@@ -169,15 +169,6 @@ const ViewList = ({ className }: PostListProps) => {
             <FavList key={'saved'} setCurrentShareData={setCurrentShareData} getShareLink={getShareLink} />
           </Swiper.Item>
         </Swiper>
-
-        <ShareModal
-          isBaseModalOpen={isBaseModalOpen}
-          off={off}
-          currentShareData={currentShareData}
-          links={links}
-          isLoading={isLoading}
-          setIsLoading={setIsLoading}
-        ></ShareModal>
       </div>
     </>
   )
@@ -223,7 +214,7 @@ const MyPosts = ({ setCurrentShareData, getShareLink }: { setCurrentShareData: (
       scrollThreshold={0.8}
       style={{ overflow: 'visible' }}
     >
-      <ResourceList resources={list} type="view" setCurrentShareData={setCurrentShareData} getShareLink={getShareLink} />
+      <ResourceList resources={list} type="view" />
     </InfiniteScroll>
   )
 }
@@ -267,7 +258,7 @@ const FavList = ({ setCurrentShareData, getShareLink }: { setCurrentShareData: (
       scrollThreshold={0.8}
       style={{ overflow: 'visible' }}
     >
-      <ResourceList resources={list} type="fav" hasMore={hasMore} setCurrentShareData={setCurrentShareData} getShareLink={getShareLink} />
+      <ResourceList resources={list} type="fav" hasMore={hasMore}/>
     </InfiniteScroll>
   )
 }
@@ -311,7 +302,7 @@ const OrderList = ({ setCurrentShareData, getShareLink }: { setCurrentShareData:
       scrollThreshold={0.8}
       style={{ overflow: 'visible' }}
     >
-      <ResourceList resources={list} type="payment" setCurrentShareData={setCurrentShareData} getShareLink={getShareLink} />
+      <ResourceList resources={list} type="payment"/>
     </InfiniteScroll>
   )
 }

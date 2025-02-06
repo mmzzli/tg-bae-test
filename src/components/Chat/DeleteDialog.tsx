@@ -45,9 +45,9 @@ export function DeleteDialog({
 
       <Dialog open={isOpen} onOpenChange={handleCancel}>
         <DialogContent>
-          <div className="w-[312px] h-[172px] dark:bg-[#1C1C1C] text-base font-medium bg-white dark:text-white text-[#333] text-center rounded-[16px]">
-            <div className="mt-[40px]">{title}</div>
-            <div className="flex justify-center gap-4 mt-[44px]">
+          <div className="w-[312px] pb-[24px] dark:bg-[#1C1C1C] text-base font-medium bg-white dark:text-white text-[#333] text-center rounded-[16px]">
+            <div className="mt-[30px] font-[500] text-[18px]">{title}</div>
+            <div className="flex justify-center gap-4 mt-[30px]">
               <div
                 className="cursor-pointer flex items-center justify-center w-[120px] h-[40px] border dark:border-white border-[#ccc] rounded-[20px] text-sm"
                 onClick={handleCancel}
@@ -125,10 +125,10 @@ export const DeleteDialogWarp = NiceModal.create(
     return (
       <Dialog open={visible}>
         <DialogContent>
-          <div className="w-[312px] pb-4 bg-[#fff] text-white text-center rounded-[16px]">
-            <div className="mt-[40px] text-[#333] font-[500] text-[18px] ">{title}</div>
+          <div className="w-[312px] pb-[24px] bg-[#fff] text-white text-center rounded-[16px]">
+            <div className="mt-[30px] text-[#333] font-[500] text-[18px] ">{title}</div>
             {value && <div className='text-[#333] mt-2 px-6 text-[14px]'>{value}</div>}
-            <div className="flex justify-center gap-4 mt-[44px]">
+            <div className="flex justify-center gap-4 mt-[30px]">
               <div
                 className="cursor-pointer flex items-center justify-center w-[120px] h-[40px] border-[#CCC] border rounded-[20px] text-[#333] text-[14px] font-[500]"
                 onClick={hide}

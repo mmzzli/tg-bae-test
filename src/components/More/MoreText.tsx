@@ -29,18 +29,22 @@ const MoreText: React.FC<MoreTextProps> = ({
   const [displayText, setDisplayText] = useState(processedText)
   const textRef = useRef<HTMLDivElement | null>(null)
 
-  const highlightMentions = (text: string): string => {
+  const highlightMentions = (text: string): React.ReactNode[] => {
     const mentionRegex = /@\w+/g
-    const mentionedText = text.split(mentionRegex).reduce<string>((acc, part, index, array) => {
+    return text.split(mentionRegex).reduce<React.ReactNode[]>((acc, part, index, array) => {
       if (index < array.length - 1) {
         const mentions = text.match(mentionRegex) || []
         const name = mentions[index].replace(/@/g, '')
-        return `${acc}${part}<a href="/profile/${name}" class="text-[#6254FF]">${mentions[index]}</a>`
+        return [
+          ...acc,
+          part,
+          <a onClick={() => navigate(`/profile/${name}`)} key={index} className="text-[#6254FF]">
+            {mentions[index]}
+          </a>,
+        ]
       }
-      return acc + part
-    }, '')
-
-    return `${mentionedText}${isTextClipped ? `<span style="color: ${moreColor}" class="pl-2" onclick="this.parentElement.dispatchEvent(new CustomEvent('toggleExpand'))">${isExpanded ? 'Less' : 'More'}</span>` : ''}`
+      return [...acc, part]
+    }, [])
   }
 
   useEffect(() => {
@@ -124,22 +128,6 @@ const MoreText: React.FC<MoreTextProps> = ({
     }
   }, [text, isExpanded, processedText])
 
-  useEffect(() => {
-    const element = textRef.current
-    if (!element) return
-
-    const handleToggleExpand = () => {
-      setIsExpanded(!isExpanded)
-    }
-
-    element.addEventListener('toggleExpand', handleToggleExpand)
-    return () => {
-      element.removeEventListener('toggleExpand', handleToggleExpand)
-    }
-  }, [isExpanded])
-
-  const _displayText = type === 'post' ? highlightMentions(displayText) : displayText + (isTextClipped ? `<span style="color: ${moreColor}" class="pl-2" onclick="this.parentElement.dispatchEvent(new CustomEvent('toggleExpand'))">${isExpanded ? 'Less' : 'More'}</span>` : '')
-
   return (
     <div className="relative mt-[8px]">
       <div
@@ -153,8 +141,20 @@ const MoreText: React.FC<MoreTextProps> = ({
           wordWrap: 'break-word',
           hyphens: 'auto',
         }}
-        dangerouslySetInnerHTML={{ __html: _displayText }}
-      />
+      >
+        {type === 'post' ? highlightMentions(displayText) : displayText}
+        {isTextClipped && (
+          <span
+            style={{
+              color: moreColor,
+            }}
+            className="pl-2"
+            onClick={() => setIsExpanded(!isExpanded)}
+          >
+            {isExpanded ? 'Less' : 'More'}
+          </span>
+        )}
+      </div>
     </div>
   )
 }

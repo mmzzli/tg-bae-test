@@ -19,9 +19,17 @@ interface MentionFeatureProps {
   setIsFocused: (bool: boolean) => void
   isFocused: boolean
   featureRefBoll: any
+  height?: string
 }
 
-const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsFocused, isFocused, featureRefBoll }) => {
+const MentionFeature: React.FC<MentionFeatureProps> = ({
+  title,
+  setTitle,
+  setIsFocused,
+  isFocused,
+  featureRefBoll,
+  height = '200px',
+}) => {
   const [mentionCandidates, setMentionCandidates] = useState<MentionCandidate[]>([])
   const [showMentionList, setShowMentionList] = useState<boolean>(false)
   const [filteredCandidates, setFilteredCandidates] = useState<MentionCandidate[]>([])
@@ -53,7 +61,7 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsF
         }
         // 处理其他元素的子节点
         return Array.from(node.childNodes)
-          .map(child => processNode(child))
+          .map((child) => processNode(child))
           .join('')
       }
 
@@ -77,7 +85,7 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsF
     const div = editorRef.current
     if (!div) return
 
-    if(div.innerHTML === '<br>') {
+    if (div.innerHTML === '<br>') {
       div.innerHTML = '<span class="text-[#999]">Say something ...</span>'
     }
 
@@ -103,7 +111,7 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsF
     }
 
     // 获取光标前的文本用于检测 @ 符号
-    const textBeforeCursor = range.startContainer.textContent?.slice(0, range.startOffset) || ""
+    const textBeforeCursor = range.startContainer.textContent?.slice(0, range.startOffset) || ''
 
     // 检查 @ 符号 - 现在可以处理紧跟在其他文本后面的 @
     const lastAtIndex = textBeforeCursor.lastIndexOf('@')
@@ -133,16 +141,17 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsF
 
     // 在任何操作前存储当前选择范围
     const currentSelection = window.getSelection()
-    let savedRange = currentSelection && currentSelection.rangeCount > 0
-      ? currentSelection.getRangeAt(0).cloneRange()
-      : null
+    let savedRange =
+      currentSelection && currentSelection.rangeCount > 0
+        ? currentSelection.getRangeAt(0).cloneRange()
+        : null
 
     // 如果失去选择范围（在移动设备上常见），恢复焦点并查找 @ 位置
     if (!savedRange) {
       div.focus()
       // 查找最后一个 @ 符号
-      const content = div.textContent || ""
-      const lastAtIndex = content.lastIndexOf("@")
+      const content = div.textContent || ''
+      const lastAtIndex = content.lastIndexOf('@')
 
       if (lastAtIndex >= 0) {
         // 查找包含 @ 符号的文本节点
@@ -152,7 +161,7 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsF
         let accumulatedLength = 0
 
         while (currentNode && !foundNode) {
-          const nodeText = currentNode.textContent || ""
+          const nodeText = currentNode.textContent || ''
           const newLength = accumulatedLength + nodeText.length
 
           if (accumulatedLength <= lastAtIndex && lastAtIndex < newLength) {
@@ -188,11 +197,11 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsF
     }
 
     // 创建带样式的提及标签
-    const span = document.createElement("span")
+    const span = document.createElement('span')
     span.textContent = `@${candidate.tgname} `
-    span.style.color = "#6761FF"
-    span.contentEditable = "false"
-    span.className = "mention-tag"
+    span.style.color = '#6761FF'
+    span.contentEditable = 'false'
+    span.className = 'mention-tag'
 
     // 现在应该有一个有效的范围
     const range = savedRange
@@ -200,8 +209,8 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsF
     const offset = range.startOffset
 
     if (container.nodeType === Node.TEXT_NODE) {
-      const text = container.textContent || ""
-      const atIndex = text.lastIndexOf("@")
+      const text = container.textContent || ''
+      const atIndex = text.lastIndexOf('@')
 
       if (atIndex >= 0) {
         // 移除 @ 符号和光标之前的任何文本
@@ -344,14 +353,14 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({ title, setTitle, setIsF
       }
     }
 
-    window.addEventListener("resize", handleResize)
+    window.addEventListener('resize', handleResize)
     return () => {
-      window.removeEventListener("resize", handleResize)
+      window.removeEventListener('resize', handleResize)
     }
   }, [initialHeight])
 
   return (
-    <div className="relative h-[280px]">
+    <div className="relative" style={{ height: height }}>
       <div
         ref={editorRef}
         contentEditable

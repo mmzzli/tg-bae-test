@@ -78,7 +78,7 @@ export const NewPost: FC = () => {
     if ((!imgAttr || !imgAttr.length) && !videoSrc) {
       setFirstSelectFileType('')
     }
-    
+
   }, [imgAttr, files, videoSrc])
 
   // upload states
@@ -561,7 +561,11 @@ export const NewPost: FC = () => {
         <Box pt="66px">
           <Input
             type="file"
-            accept={!firstSelectFileType ? ".png,.jpg,.jpeg,.mp4,.webm" : firstSelectFileType === 'image' ? ".png,.jpg,.jpeg" : ".mp4,.webm"}
+            accept={!firstSelectFileType
+              ? "image/png,image/jpeg,image/jpg,video/mp4,video/webm"
+              : firstSelectFileType === 'image'
+                ? "image/png,image/jpeg,image/jpg"
+                : "video/mp4,video/webm"}
             multiple
             onChange={handleFileChange}
             style={{ display: 'none' }}

@@ -66,7 +66,8 @@ const TransparentSlider: React.FC<SliderProps> = ({
     setSelectedTime(time);
     const adjustedStart = Math.max(0, time);
     const adjustedEnd = Math.min(videoDuration, time + 6);
-    setStartTime(adjustedStart);
+    console.log(adjustedStart, adjustedEnd)
+    setStartTime(adjustedStart === adjustedEnd ? adjustedStart - 6 : adjustedStart);
     setEndTime(adjustedEnd);
   };
 

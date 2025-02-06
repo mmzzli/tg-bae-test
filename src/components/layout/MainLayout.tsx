@@ -103,8 +103,7 @@ export const MainLayout: React.FC = () => {
     let userInfo
     try {
       const { initDataRaw } = retrieveLaunchParams()
-      userInfo = initDataRaw
-      // userInfo = DEV_INIT_DATA_RAW
+      userInfo = import.meta.env.VITE_APP_ENV === 'dev' ? DEV_INIT_DATA_RAW : initDataRaw
       log('userInfo finally', userInfo)
     } catch (error) {
       userInfo = DEV_INIT_DATA_RAW

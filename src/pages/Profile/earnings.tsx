@@ -178,18 +178,18 @@ const Earnings = () => {
             <ul className="flex justify-between items-center">
               <li>
                 <p className="text-[#999] text-[12px]">Cryptos received</p>
-                <h3 className="text-[#000] text-[22px] my-4">
+                <h3 className="text-[#000] text-[22px] my-1">
                   {formatUSD(totalGifts.gifts, true)}
                 </h3>
               </li>
               <li>
                 <p className="text-[#999] text-[12px]">Available to withdraw</p>
-                <h3 className="text-[#000] text-[22px] my-4">
+                <h3 className="text-[#000] text-[22px] my-1">
                   {formatUSD(totalGifts.withdraw_gifts, true)}
                 </h3>
               </li>
             </ul>
-            <div>
+            <div className="text-[#666]">
               This shows the estimated total value of crypto you received from others, subject to
               market fluctuations.
             </div>

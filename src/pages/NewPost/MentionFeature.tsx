@@ -142,7 +142,6 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({
     const plainText = extractTextContent(div.innerHTML)
     // 更新内容
     setTitle(plainText)
-    setShowMentionList(false)
   }
 
   const handleMentionClick = (candidate: MentionCandidate): void => {

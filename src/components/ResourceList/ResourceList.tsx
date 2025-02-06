@@ -188,19 +188,21 @@ interface Saveds {
 const POST_TYPE_IMAGE = 1
 const POST_TYPE_VIDEO = 0
 
+interface Props {
+  resources: FormatterListItem[];
+  type?: string;
+  hasMore?: boolean;
+  setCurrentShareData?: (data: ShareDataProps) => void;
+  getShareLink?: (title: string, pid: number, uid: number) => Promise<void>;
+}
+
 const ResourceList = ({
   resources: initialResources,
   type,
   hasMore,
   setCurrentShareData,
   getShareLink,
-}: {
-  resources: FormatterListItem[]
-  type?: string
-  hasMore?: boolean
-  setCurrentShareData: (data: ShareDataProps) => void
-  getShareLink: (title: string, pid: number, uid: number) => Promise<void>
-}) => {
+}: Props) => {
   const navigate = useNavigate()
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const [resources, setResources] = useState<FormatterListItem[]>([])
@@ -497,11 +499,15 @@ const ResourceList = ({
                 savedEve={savedEve}
                 type={type}
                 onShare={() => {
-                  getShareLink(data.title, data.id, data.uid)
-                  setCurrentShareData({
-                    pid: data.id,
-                    uid: data.uid,
-                  })
+                  if (getShareLink) {
+                    getShareLink(data.title, data.id, data.uid)
+                  }
+                  if (setCurrentShareData) {
+                    setCurrentShareData({
+                      pid: data.id,
+                      uid: data.uid,
+                    })
+                  }
                 }}
               />
             </Box>

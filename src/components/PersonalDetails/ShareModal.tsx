@@ -147,6 +147,7 @@ const ShareModal = forwardRef<ChildMethods>(({}, ref) => {
         isOpen={isBaseModalOpen}
         onClose={off}
         height="342px"
+        usePortal={true}
         animation={{
           duration: 400,
           timingFunction: 'ease-in-out',

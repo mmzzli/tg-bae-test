@@ -19,6 +19,8 @@ interface SliderProps {
   videoRef: RefObject<HTMLVideoElement>;
   setLoadingSkeleton: (boll: boolean) => void;
   setPreviewVideoUrl: (str: string) => void;
+  previewVideoUrl:string
+  startTime: number
 }
 
 const TransparentSlider: React.FC<SliderProps> = ({
@@ -31,8 +33,11 @@ const TransparentSlider: React.FC<SliderProps> = ({
   videoRef,
   setLoadingSkeleton,
   setPreviewVideoUrl,
+  previewVideoUrl,
+  startTime
 }) => {
   const toast = useToast();
+  const videoRef1 = useRef<HTMLVideoElement | null>(null);
   const [selectedTime, setSelectedTime] = useState(0);
   const [frames, setFrames] = useState<Frame[]>([]);
   const sliderRef = useRef<HTMLDivElement | null>(null);
@@ -159,6 +164,14 @@ const TransparentSlider: React.FC<SliderProps> = ({
     }
   }, [videoRef]);
 
+  useEffect(() => {
+    const video = videoRef1.current
+    if (video) {
+      video.currentTime = startTime // Set the initial time to the start time
+    }
+  },[startTime])
+
+
   return (
     <div className="w-[100%]" onClick={() => { setPreviewVideoUrl(''); setTrailerBoll(false); }}>
       <div
@@ -176,6 +189,11 @@ const TransparentSlider: React.FC<SliderProps> = ({
           overflow: 'hidden',
         }}
       >
+        <div className='absolute left-[0px] top-[0px] w-[100%] h-[100%]'
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.5)'
+          }}
+        ></div>
         {frames.length > 0 && (
           <div className="w-[1000%]">
             {frames.map((frame, index) => (
@@ -187,9 +205,11 @@ const TransparentSlider: React.FC<SliderProps> = ({
           <p className="text-[18px] text-[#fff] text-center h-[60px] leading-[60px] absolute w-[100%]">Video should be over 5s.</p>
         )}
         {duration > 5 && !trailerBoll && (
+          <div className='relative h-[100%]'>
           <div
             style={{
               position: 'absolute',
+              overflow: 'hidden',
               top: '50%',
               left: `calc(${
                 Math.min(
@@ -207,6 +227,16 @@ const TransparentSlider: React.FC<SliderProps> = ({
             }}
           >
             <p className="text-[18px] text-[#fff] text-center h-[60px] leading-[60px]">5S</p>
+            <video
+              ref={videoRef1}
+              className='object-cover absolute top-[0px] h-[100%] w-[100%]'
+              src={previewVideoUrl}
+              preload="metadata"
+              // autoPlay
+              playsInline
+              muted
+            />
+          </div>
           </div>
         )}
       </div>

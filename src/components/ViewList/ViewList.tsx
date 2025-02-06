@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
-import { Tabs } from 'antd-mobile'
+import { useState, useEffect, useRef } from 'react'
+import { Tabs, Swiper } from 'antd-mobile'
 import { Box } from '@chakra-ui/react'
 import InfiniteScroll from 'react-infinite-scroll-component'
+import type { SwiperRef } from 'antd-mobile/es/components/swiper'
 
 import ResourceList from '../ResourceList/ResourceList'
 import Empty from '../comm/Empty'
@@ -14,14 +15,41 @@ interface PostListProps {
   className?: string
 }
 
-type Align = 'start' | 'center' | 'end'
+const tabItems = [
+  { key: 'posts', title: 'My posts' },
+  { key: 'purchased', title: 'Purchased' },
+  { key: 'saved', title: 'Saved' },
+]
+
 const ViewList = ({ className }: PostListProps) => {
   const { initialize } = useFavList()
-  const [ids, setIsd] = useState<string>('posts')
+  const [activeIndex, setActiveIndex] = useState<number>(0)
+  const swiperRef = useRef<SwiperRef>(null)
+  const [stickyScrollPosition, setStickyScrollPosition] = useState<number | null>(null)
 
   const handleTabChange = (key: string) => {
     initialize()
-    setIsd(key)
+    const scrollableDiv = document.getElementById('profileScrollableDiv')
+    if (scrollableDiv && targetBoll && stickyScrollPosition !== null) {
+      scrollableDiv.scrollTo({
+        top: stickyScrollPosition,
+        behavior: 'smooth'
+      })
+    }
+    const index = tabItems.findIndex(item => item.key === key)
+    setActiveIndex(index)
+    swiperRef.current?.swipeTo(index)
+  }
+
+  const handleSwipeChange = (index: number) => {
+    const scrollableDiv = document.getElementById('profileScrollableDiv')
+    if (scrollableDiv && targetBoll && stickyScrollPosition !== null) {
+      scrollableDiv.scrollTo({
+        top: stickyScrollPosition,
+        behavior: 'smooth'
+      })
+    }
+    setActiveIndex(index)
   }
 
   const [targetBoll, setTargetBoll] = useState<boolean>(false)
@@ -39,11 +67,16 @@ const ViewList = ({ className }: PostListProps) => {
           .getPropertyValue('--tg-content-safe-area-inset-top')
         const safeTopNum = Number(safeTop.replace('px', ''))
         const contentTopNum = Number(contentTop.replace('px', ''))
-        console.log(contentTopNum, '|', safeTopNum, '|', rect.top)
-        if (rect.top - 35 - (safeTopNum + contentTopNum) >= 0) {
-          setTargetBoll(false)
-        } else {
+
+        if (rect.top <= safeTopNum + contentTopNum) {
           setTargetBoll(true)
+          // 记录刚开始吸顶时的滚动位置
+          if (!targetBoll) {
+            setStickyScrollPosition(element.scrollTop)
+          }
+        } else {
+          setTargetBoll(false)
+          setStickyScrollPosition(null)
         }
       }
     }
@@ -55,37 +88,53 @@ const ViewList = ({ className }: PostListProps) => {
         element.removeEventListener('scroll', handleScroll)
       }
     }
-  }, [])
+  }, [targetBoll])
 
   return (
     <>
-      <div
-        className={targetBoll ? `fixed top-0 w-full bg-white z-[111]` : ''}
-        style={{
-          paddingTop: targetBoll
-            ? `calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))`
-            : '',
-        }}
-      >
-        <Tabs
-          activeKey={ids}
-          onChange={handleTabChange}
-          activeLineMode="fixed"
+      <div id="targetElement" className="relative">
+        <div
+          className={`${
+            targetBoll ? 'fixed left-0 right-0' : ''
+          } w-full bg-white dark:bg-black z-[111]`}
           style={{
-            '--active-line-color': '#6254FF',
-            '--active-title-color': '#0F1233',
+            top: targetBoll
+              ? `calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))`
+              : '',
           }}
         >
-          <Tabs.Tab title="My posts" key="posts">
+          <Tabs
+            activeKey={tabItems[activeIndex].key}
+            onChange={handleTabChange}
+            activeLineMode="fixed"
+            style={{
+              '--active-line-color': '#6254FF',
+              '--active-title-color': '#0F1233',
+            }}
+          >
+            {tabItems.map(item => (
+              <Tabs.Tab title={item.title} key={item.key} />
+            ))}
+          </Tabs>
+        </div>
+        {targetBoll && <div style={{ height: '44px' }} />}
+        <Swiper
+          direction='horizontal'
+          indicator={() => null}
+          ref={swiperRef}
+          defaultIndex={activeIndex}
+          onIndexChange={handleSwipeChange}
+        >
+          <Swiper.Item>
             <MyPosts key={'posts'} />
-          </Tabs.Tab>
-          <Tabs.Tab title="Purchased" key="purchased">
+          </Swiper.Item>
+          <Swiper.Item>
             <OrderList key={'purchased'} />
-          </Tabs.Tab>
-          <Tabs.Tab title="Saved" key="saved">
+          </Swiper.Item>
+          <Swiper.Item>
             <FavList key={'saved'} />
-          </Tabs.Tab>
-        </Tabs>
+          </Swiper.Item>
+        </Swiper>
       </div>
     </>
   )

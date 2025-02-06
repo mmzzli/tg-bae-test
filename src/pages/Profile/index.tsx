@@ -41,7 +41,6 @@ const Profile: FC = () => {
 
     const handleScroll = throttle(() => {
       const scrollTop = scrollDiv.scrollTop
-      console.log('scrollTop', scrollTop)
 
       // 控制标题显示
       const shouldShowTitle = scrollTop >= SCROLL_THRESHOLD
@@ -70,7 +69,7 @@ const Profile: FC = () => {
       getFollowingList(current_uid).then((res) => setMyFollow(res))
     }
   }, [token])
-  console.log('showHeader', showHeader)
+
   return (
     <div
       className="relative w-full overflow-auto bg-white dark:bg-black scrollbar-hide"
@@ -134,7 +133,7 @@ const Profile: FC = () => {
       </h3>
       <div
         ref={titleRef}
-        className="content-area absolute left-0 w-full h-full  bg-white dark:bg-black"
+        className="content-area absolute left-0 w-full h-full bg-white dark:bg-black"
         style={{
           top: 'calc(174px - var(--tg-safe-area-inset-top))',
         }}

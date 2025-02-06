@@ -19,6 +19,7 @@ interface MentionFeatureProps {
   setIsFocused: (bool: boolean) => void
   featureRefBoll: any
   height?: string
+  focusedTop?: (top: number) => void
 }
 
 const MentionFeature: React.FC<MentionFeatureProps> = ({
@@ -27,6 +28,7 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({
   setIsFocused,
   featureRefBoll,
   height = '200px',
+  focusedTop,
 }) => {
   const [mentionCandidates, setMentionCandidates] = useState<MentionCandidate[]>([])
   const [showMentionList, setShowMentionList] = useState<boolean>(false)
@@ -90,6 +92,7 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({
     // 获取当前选择范围
     const selection = window.getSelection()
     if (!selection || selection.rangeCount === 0) return
+
     const range = selection.getRangeAt(0)
 
     // 处理占位符文本
@@ -315,7 +318,17 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({
 
   const mentionEve = (boll: boolean) => {
     setTimeout(() => {
-      isMobileDevice() && setIsFocused(boll)
+      if (isMobileDevice()) {
+        setIsFocused(boll)
+        const selection = window.getSelection()
+        if (selection && selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0)
+          const rect = range.getBoundingClientRect()
+          const scrollY = window.scrollY || window.pageYOffset
+          const cursorTopDistance = rect.top + scrollY
+          focusedTop && focusedTop(cursorTopDistance)
+        }
+      }
       setFeatureBoll(boll)
 
       if (boll && editorRef.current) {

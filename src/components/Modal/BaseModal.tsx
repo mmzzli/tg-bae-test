@@ -1,4 +1,5 @@
 import React, { useEffect, ReactNode, FC } from 'react'
+import { createPortal } from 'react-dom'
 import { CloseIcon } from '@/assets/icons'
 import { Image } from '@chakra-ui/react'
 
@@ -37,6 +38,8 @@ interface BottomSheetProps extends Partial<Position> {
   style?: React.CSSProperties
   closeOnBackdropClick?: boolean
   showHandle?: boolean
+  usePortal?: boolean
+  portalContainer?: HTMLElement
 }
 
 const DEFAULT_ANIMATION: Required<AnimationConfig> = {
@@ -64,6 +67,8 @@ export const BaseModal: FC<BottomSheetProps> = ({
   style = {},
   closeOnBackdropClick = true,
   showHandle = true,
+  usePortal = false,
+  portalContainer,
 }) => {
   const getTelegramTheme = (): { isDark: boolean; backgroundColor: string } => {
     try {
@@ -115,7 +120,7 @@ export const BaseModal: FC<BottomSheetProps> = ({
     }
   }, [isOpen])
 
-  return (
+  const modalContent = (
     <div
       className={`fixed inset-0 z-[9999] ${
         isOpen ? 'visible dark:bg-black/80 bg-black/70' : 'invisible'
@@ -139,22 +144,10 @@ export const BaseModal: FC<BottomSheetProps> = ({
             role="presentation"
           />
         )}
-        {/*
-        <div
-          className="absolute top-[12px] right-[14px] flex items-center justify-center bg-[#F5F5FA] rounded-full ml-auto no-tap mb-3"
-          style={{ height: '36px', width: '36px' }}
-        >
-          <i
-            onClick={handleBackdropClick}
-            className="iconfont icon-icon_close text-[#12122A] dark:text-[#E0E2F6] text-[20px]"
-          ></i>
-        </div> */}
-
         <div
           className="px-4 py-3 overflow-y-auto bg-[#fff] dark:bg-[#1C1C1C] text-[#E0E2F6] rounded-t-2xl rounded-b-none border-[#1c1c1c]"
           style={{ height: 'calc(100%)' }}
         >
-          {/* <Image src={CloseIcon} className="cursor-pointer" onClick={handleBackdropClick} /> */}
           <div
             className="flex items-center justify-center bg-[#F5F5FA] rounded-full ml-auto no-tap mb-3"
             style={{ height: '36px', width: '36px' }}
@@ -169,4 +162,6 @@ export const BaseModal: FC<BottomSheetProps> = ({
       </div>
     </div>
   )
+
+  return usePortal ? createPortal(modalContent, portalContainer || document.body) : modalContent
 }

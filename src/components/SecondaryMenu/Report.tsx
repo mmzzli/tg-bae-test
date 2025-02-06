@@ -28,6 +28,7 @@ const Report: React.FC<ReportProps> = ({ isOpen, onClose }) => {
         onClose(false)
       }}
       height="467px"
+      usePortal={true}
       animation={{
         duration: 400,
         timingFunction: 'ease-in-out',

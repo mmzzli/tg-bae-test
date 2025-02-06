@@ -403,11 +403,12 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
     }
   }, []);
   useEffect(() => {
+    const video = videoRef.current
+    if(!video)return
     if(!isBaseModalOpen){
-      const video = videoRef.current
-      if(video){
-        video.pause()
-      }
+      video.pause()
+    }else{
+      video.currentTime = 0
     }
   },[isBaseModalOpen])
 
@@ -547,6 +548,8 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
                     videoRef={videoRef}
                     setLoadingSkeleton={setLoadingSkeleton}
                     setPreviewVideoUrl={setPreviewVideoUrl}
+                    previewVideoUrl={videoUrl}
+                    startTime={startTime}
                   />
                 </div>
 

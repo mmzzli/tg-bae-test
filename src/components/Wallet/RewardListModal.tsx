@@ -464,6 +464,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
 
             {evmChainList.map((chain) => (
               <div
+                key={chain.id}
                 className="flex items-center px-5 h-[72px] rounded-lg bg-[#F7F9FC] mt-2 cursor-pointer"
                 style={{
                   border: currentChain?.id == chain.id ? '2px solid #D1CFE3' : '2px solid #F7F9FC',

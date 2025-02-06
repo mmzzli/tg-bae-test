@@ -138,6 +138,11 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({
     } else {
       setShowMentionList(false)
     }
+    // 提取纯文本内容
+    const plainText = extractTextContent(div.innerHTML)
+    // 更新内容
+    setTitle(plainText)
+    setShowMentionList(false)
   }
 
   const handleMentionClick = (candidate: MentionCandidate): void => {
@@ -428,7 +433,7 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({
           WebkitTextSizeAdjust: 'none',
           WebkitTapHighlightColor: 'rgba(0, 0, 0, 0)',
           WebkitTouchCallout: 'none',
-          caretColor: '#333'
+          caretColor: '#333',
         }}
       />
       {featureBoll && showMentionList && filteredCandidates.length > 0 && (

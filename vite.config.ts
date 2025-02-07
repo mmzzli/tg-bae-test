@@ -27,9 +27,11 @@ const cacheBusterPlugin = () => {
 }
 
 export default defineConfig(({ mode }) => {
-  console.log(mode)
   return {
     plugins: [react(), nodePolyfills(), mkcert(), cacheBusterPlugin()],
+    css: {
+      postcss: './postcss.config.js', // 引入 PostCSS 配置文件
+    },
     build: {
       chunkSizeWarningLimit: 1000,
       rollupOptions: {

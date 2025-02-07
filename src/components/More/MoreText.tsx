@@ -48,57 +48,58 @@ const MoreText: React.FC<MoreTextProps> = ({
     const checkTextClipping = () => {
       if (quillRef.current) {
         const editor = quillRef.current.getEditor()
-        const editorHeight = editor.root.clientHeight
-        const lineHeight = parseInt(window.getComputedStyle(editor.root).lineHeight)
-        const numberOfLines = Math.floor(editorHeight / lineHeight)
 
-        // 检查文本是否超过最大行数并存储状态
-        if (!shouldShowButton) {
-          setShouldShowButton(numberOfLines > maxLines)
-        }
-
-        // 根据当前展开状态设置文本裁剪状态
-        setIsTextClipped(shouldShowButton)
-
-        // 直接应用样式到编辑器
-        if (!isExpanded) {
+        // 确保内容已经渲染完成
+        setTimeout(() => {
           const editorRoot = editor.root
-          editorRoot.style.display = '-webkit-box'
-          editorRoot.style.webkitBoxOrient = 'vertical'
-          editorRoot.style.webkitLineClamp = maxLines
-          editorRoot.style.overflow = 'hidden'
-          editorRoot.style.textOverflow = 'ellipsis'
-
-          // 为最后一个段落添加样式
-          const style = document.createElement('style')
-          const randomId = `quill-container-${Math.random().toString(36).substr(2, 9)}`
-          editorRoot.id = randomId
-          style.textContent = `
-            #${randomId} p:last-child {
-              padding-right: 40px;
-            }
-          `
-          document.head.appendChild(style)
-          editor.root._lastStyle = style
-        } else {
-          const editorRoot = editor.root
+          // 强制重新计算布局
           editorRoot.style.display = 'block'
-          editorRoot.style.webkitLineClamp = 'unset'
-          editorRoot.style.overflow = 'visible'
-          editorRoot.style.textOverflow = 'clip'
+          const editorHeight = editorRoot.clientHeight
+          const lineHeight = parseInt(window.getComputedStyle(editorRoot).lineHeight)
+          const numberOfLines = Math.floor(editorHeight / lineHeight)
 
-          // 移除最后一个段落的样式
-          if (editor.root._lastStyle) {
-            editor.root._lastStyle.remove()
-            editor.root._lastStyle = null
+          // 检查文本是否超过最大行数并存储状态
+          setShouldShowButton(numberOfLines > maxLines)
+          setIsTextClipped(numberOfLines > maxLines)
+
+          // 直接应用样式到编辑器
+          if (!isExpanded) {
+            editorRoot.style.display = '-webkit-box'
+            editorRoot.style.webkitBoxOrient = 'vertical'
+            editorRoot.style.webkitLineClamp = maxLines
+            editorRoot.style.overflow = 'hidden'
+            editorRoot.style.textOverflow = 'ellipsis'
+
+            // 为最后一个段落添加样式
+            const style = document.createElement('style')
+            const randomId = `quill-container-${Math.random().toString(36).substr(2, 9)}`
+            editorRoot.id = randomId
+            style.textContent = `
+              #${randomId} p:last-child {
+                padding-right: 40px;
+              }
+            `
+            document.head.appendChild(style)
+            editor.root._lastStyle = style
+          } else {
+            editorRoot.style.display = 'block'
+            editorRoot.style.webkitLineClamp = 'unset'
+            editorRoot.style.overflow = 'visible'
+            editorRoot.style.textOverflow = 'clip'
+
+            // 移除最后一个段落的样式
+            if (editor.root._lastStyle) {
+              editor.root._lastStyle.remove()
+              editor.root._lastStyle = null
+            }
           }
-        }
-        editor.root.style.padding = '0'
+          editorRoot.style.padding = '0'
+        }, 50) // 给予足够的时间让样式完全应用
       }
     }
 
     // 组件挂载后的初始检查
-    setTimeout(checkTextClipping, 50)
+    setTimeout(checkTextClipping, 100)
 
     // 监听窗口大小变化
     window.addEventListener('resize', checkTextClipping)
@@ -151,6 +152,7 @@ const MoreText: React.FC<MoreTextProps> = ({
             modules={{
               toolbar: false,
             }}
+            style={{ color: textColor }}
           />
           {isTextClipped && (
             <p

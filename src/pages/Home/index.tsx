@@ -228,8 +228,7 @@ const HomePage: FC = () => {
               ></div> */}
               <img
                 style={{
-                  width: '32px',
-                  height: '32px',
+                  width: '58px',
                 }}
                 src={loadingGif}
                 alt="loading"

@@ -132,16 +132,21 @@ const Searching = () => {
                     type="avatar"
                     src={item.avatar}
                     alt="Avatar"
-                    className="w-[44px] h-[44px] rounded-full"
+                    className="w-[100%] h-[100%] rounded-full"
                     loaderClassName="rounded-full"
                   />
                 </div>
-                <h3 className="text-[#333] text-[16px] w-[16ch] whitespace-nowrap overflow-hidden text-ellipsis">
-                  {item.tgname}
-                </h3>
+                <div>
+                  <h3 className="text-[#333] text-[16px] w-[16ch] whitespace-nowrap overflow-hidden text-ellipsis">
+                    {item.tgname}
+                  </h3>
+                  <p className='text-[#999] text-[12px] font-normal'>
+                    {item.fans_num} followers
+                  </p>
+                </div>
               </div>
               {item.tg_id !== currentUid && (
-                <FollowButton tgid={item.tg_id} avatar={item.avatar} username={item.tgname} />
+                <FollowButton tgid={item.tg_id} avatar={item.avatar} username={item.tgname} className='w-[80px]' />
               )}
             </div>
           ))

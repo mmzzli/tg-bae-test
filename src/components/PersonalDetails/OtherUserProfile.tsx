@@ -42,14 +42,9 @@ const OtherUserProfile: FC = () => {
   }
   const childRef = useRef<ChildMethods>(null)
   return (
-    <Box
-      p="0px 16px"
-      mt="-26px"
-      className="no-tap"
-    >
+    <Box p="0px 16px" mt="-26px" className="no-tap">
       <HStack gap="16px" pl="8px" justifyContent="space-between">
-
-      <div className="w-[82px] h-[82px] overflow-hidden rounded-[50%] bg-white flex items-center justify-center">
+        <div className="w-[82px] h-[82px] overflow-hidden rounded-[50%] bg-white flex items-center justify-center">
           <Image
             rect
             type="avatar"
@@ -61,7 +56,7 @@ const OtherUserProfile: FC = () => {
           />
         </div>
 
-{/*
+        {/*
         <Image
           rect
           type="avatar"
@@ -120,7 +115,7 @@ const OtherUserProfile: FC = () => {
       </Heading>
       <MoreText text={userInfo.bio} className={'leading-4'}></MoreText>
       <HStack p="24px 0" gap="56px">
-        <Box>
+        <Box textAlign="center">
           <Heading
             fontSize="20px"
             color="#0F1233"
@@ -133,7 +128,7 @@ const OtherUserProfile: FC = () => {
             followers
           </Text>
         </Box>
-        <Box>
+        <Box textAlign="center">
           <Heading
             fontSize="20px"
             color="#0F1233"

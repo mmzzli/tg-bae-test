@@ -8,8 +8,7 @@
 
 @font-face {
   font-family: 'Switzer';
-  src: url('./assets/fonts/Switzer-Medium.ttf') format('opentype');
-  font-weight: 500;
+  src: url('./assets/fonts/Switzer-Regular.ttf') format('opentype');
   font-style: normal;
   font-display: swap;
 }

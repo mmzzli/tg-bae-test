@@ -147,9 +147,9 @@ video {
 }
 
 .ql-container.ql-snow {
-  border: none;
+  border: none !important;
 }
 
 .ql-editor {
-  padding: 0;
+  padding: 0 !important;
 }

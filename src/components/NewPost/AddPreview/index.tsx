@@ -527,7 +527,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
               ></canvas> */}
 
               <div className="bg-[#fff] rounded-tl-[16px] rounded-tr-[16px]">
-                <p className="text-[#999] pt-[30px] pb-[18px]">
+                <p className="text-[#999] pt-[30px] pb-[18px] font-normal">
                   Select a clip from the video to use as a preview, or upload a video from album.
                 </p>
 

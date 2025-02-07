@@ -39,6 +39,17 @@ if (import.meta.env.MODE === 'production') {
   document.head.appendChild(umamiScript)
 }
 
+function setRem() {
+  const baseSize = 16;
+  const designWidth = 375;
+  const html = document.documentElement;
+  const clientWidth = html.clientWidth;
+  html.style.fontSize = `${(clientWidth / designWidth) * baseSize}px`;
+}
+setRem();
+window.addEventListener('resize', setRem);
+
+
 Sentry.init({
   dsn: 'https://0201b69ad2e7cf4be3c444e2782ed79f@o4508635704590336.ingest.us.sentry.io/4508635707211776',
   integrations: [Sentry.browserTracingIntegration(), Sentry.replayIntegration()],

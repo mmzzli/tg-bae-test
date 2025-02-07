@@ -26,6 +26,7 @@ export interface Follow {
   avatar: string
   tg_id: number
   tgname: string
+  fans_num?: number
 }
 
 export enum NotificationType {
@@ -61,6 +62,7 @@ export interface Search {
   tgname: string
   if_follow: boolean
   fans_id: number
+  fans_num?: number
 }
 
 export type SearchItem = { users: Array<Search> }

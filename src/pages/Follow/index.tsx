@@ -101,6 +101,9 @@ const FollowPage: FC = () => {
           className="flex-1 ml-3 truncate overflow-hidden whitespace-nowrap text-[#333] dark:text-black text-base"
         >
           {item.tgname}
+          <p className='text-[#999] text-[12px] font-normal'>
+            {item.fans_num} followers
+          </p>
         </div>
         {item.tg_id !== currentUid && (
           <FollowButton
@@ -121,7 +124,7 @@ const FollowPage: FC = () => {
         paddingTop: `calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 24px)`,
       }}
     >
-      <h1 className="text-[24px] font-bold text-black dark:text-white">{title}</h1>
+      <h1 className="text-[20px] font-bold text-black dark:text-white">{title}</h1>
       <div className="flex-1 overflow-hidden">
         <div className="flex flex-col h-full overflow-auto scrollbar-hide">
           {loading ? (

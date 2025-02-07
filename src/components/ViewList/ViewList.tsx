@@ -40,7 +40,7 @@ const ViewList = ({ className }: PostListProps) => {
   const [stickyScrollPosition, setStickyScrollPosition] = useState<number | null>(null)
 
   const handleTabChange = (key: string) => {
-    initialize()
+    // initialize()
     const scrollableDiv = document.getElementById('profileScrollableDiv')
     if (scrollableDiv && targetBoll && stickyScrollPosition !== null) {
       scrollableDiv.scrollTo({

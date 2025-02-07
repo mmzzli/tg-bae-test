@@ -66,7 +66,7 @@ const ConnectModal = forwardRef<ChildMethods, Props>(({ afterConnect }, ref) => 
           }
           off()
         }}
-        height="269px"
+        height="289px"
         animation={{
           duration: 400,
           timingFunction: 'ease-in-out',

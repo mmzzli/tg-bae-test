@@ -101,6 +101,9 @@ const FollowPage: FC = () => {
           className="flex-1 ml-3 truncate overflow-hidden whitespace-nowrap text-[#333] dark:text-black text-base"
         >
           {item.tgname}
+          <p className='text-[#999] text-[12px] font-normal'>
+            {item.fans_num} followers
+          </p>
         </div>
         {item.tg_id !== currentUid && (
           <FollowButton

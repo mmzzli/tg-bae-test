@@ -198,7 +198,7 @@ export const UserInfo = memo(
           </div>
         </div>
         <MoreText textColor={'#fff'} text={content || ''} bgColor={'#000'} />
-        {info?.price && info?.price > 0 && !info?.is_pay && info?.uid !== current_uid && (
+        {info && info?.price > 0 && !info?.is_pay && info?.uid !== current_uid && (
           <div className="mt-2">
             <PurchaseButton
               price={info?.price || 0}

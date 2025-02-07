@@ -1,4 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
+import ReactQuill from 'react-quill'
+
+import 'quill/dist/quill.snow.css' // Add css for snow theme
 
 import { getFansFollowers } from '@/api'
 import { isMobileDevice } from '@/utils/utils'
@@ -34,286 +37,14 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({
   const [showMentionList, setShowMentionList] = useState<boolean>(false)
   const [filteredCandidates, setFilteredCandidates] = useState<MentionCandidate[]>([])
   const [mentionTop, setMentionTop] = useState<number>(0)
-  const editorRef = useRef<HTMLDivElement>(null)
-  const [featureBoll, setFeatureBoll] = useState<boolean>(false)
+  const [mentionLeft, setMentionLeft] = useState<number>(0)
+  const [richTextValue, setRichTextValue] = useState('')
+  const [searchTerm, setSearchTerm] = useState('')
+  const quillRef = useRef<any>(null)
 
   const token = useStore((state) => state.token)
   const { getCurrentUid } = useTMAUtils()
   const current_uid = getCurrentUid()
-
-  // 提取所有文本内容，包括提及标签中的文本
-  const extractTextContent = (html: string): string => {
-    // 创建临时 div 来解析 HTML
-    const tempDiv = document.createElement('div')
-    tempDiv.innerHTML = html
-
-    // 递归处理节点的函数
-    const processNode = (node: Node): string => {
-      if (node.nodeType === Node.TEXT_NODE) {
-        return node.textContent || ''
-      }
-
-      if (node.nodeType === Node.ELEMENT_NODE) {
-        const element = node as Element
-        // 如果是提及标签，提取其文本
-        if (element.classList.contains('mention-tag')) {
-          return element.textContent || ''
-        }
-        // 处理其他元素的子节点
-        return Array.from(node.childNodes)
-          .map((child) => processNode(child))
-          .join('')
-      }
-
-      return ''
-    }
-
-    return processNode(tempDiv)
-  }
-
-  useEffect(() => {
-    if (editorRef.current) {
-      // Add iOS specific styles
-      editorRef.current.style.webkitUserSelect = 'text'
-      editorRef.current.style.userSelect = 'text'
-
-      if (!title) {
-        editorRef.current.innerHTML = '<span class="text-[#999]">Say something ...</span>'
-      } else {
-        editorRef.current.innerHTML = title
-      }
-    }
-  }, [])
-
-  const handleInput = () => {
-    const div = editorRef.current
-    if (!div) return
-
-    if (div.innerHTML === '<br>') {
-      div.innerHTML = '<span class="text-[#999]">Say something ...</span>'
-    }
-
-    // 获取当前选择范围
-    const selection = window.getSelection()
-    if (!selection || selection.rangeCount === 0) return
-
-    const range = selection.getRangeAt(0)
-
-    // 处理占位符文本
-    const placeholderSpan = div.querySelector('span.text-\\[\\#999\\]')
-    if (placeholderSpan && div.textContent !== 'Say something ...') {
-      placeholderSpan.remove()
-    }
-
-    const text = div.innerHTML
-    if (text !== title) {
-      setTitle(text)
-    }
-
-    if (div) {
-      const rect = div.getBoundingClientRect()
-      setMentionTop(rect.height + 40 - 14)
-    }
-
-    // 获取光标前的文本用于检测 @ 符号
-    const textBeforeCursor = range.startContainer.textContent?.slice(0, range.startOffset) || ''
-
-    // 检查 @ 符号 - 现在可以处理紧跟在其他文本后面的 @
-    const lastAtIndex = textBeforeCursor.lastIndexOf('@')
-    if (lastAtIndex !== -1) {
-      // 获取从 @ 到光标的文本
-      const textAfterAt = textBeforeCursor.slice(lastAtIndex + 1)
-      // 仅在实际输入 @ 后触发
-      if (lastAtIndex === textBeforeCursor.length - 1 || !textAfterAt.includes(' ')) {
-        const query = textAfterAt
-        setFilteredCandidates(
-          mentionCandidates.filter((candidate) =>
-            candidate.tgname.toLowerCase().includes(query.toLowerCase())
-          )
-        )
-        setShowMentionList(true)
-      } else {
-        setShowMentionList(false)
-      }
-    } else {
-      setShowMentionList(false)
-    }
-    // 提取纯文本内容
-    const plainText = extractTextContent(div.innerHTML)
-    // 更新内容
-    setTitle(plainText)
-  }
-
-  const handleMentionClick = (candidate: MentionCandidate): void => {
-    const div = editorRef.current
-    if (!div) return
-
-    // 在任何操作前存储当前选择范围
-    const currentSelection = window.getSelection()
-    let savedRange =
-      currentSelection && currentSelection.rangeCount > 0
-        ? currentSelection.getRangeAt(0).cloneRange()
-        : null
-
-    // 如果失去选择范围（在移动设备上常见），恢复焦点并查找 @ 位置
-    if (!savedRange) {
-      div.focus()
-      // 查找最后一个 @ 符号
-      const content = div.textContent || ''
-      const lastAtIndex = content.lastIndexOf('@')
-
-      if (lastAtIndex >= 0) {
-        // 查找包含 @ 符号的文本节点
-        const walker = document.createTreeWalker(div, NodeFilter.SHOW_TEXT)
-        let currentNode = walker.nextNode()
-        let foundNode: Text | null = null
-        let accumulatedLength = 0
-
-        while (currentNode && !foundNode) {
-          const nodeText = currentNode.textContent || ''
-          const newLength = accumulatedLength + nodeText.length
-
-          if (accumulatedLength <= lastAtIndex && lastAtIndex < newLength) {
-            foundNode = currentNode as Text
-            const localOffset = lastAtIndex - accumulatedLength
-            savedRange = document.createRange()
-            savedRange.setStart(foundNode, localOffset)
-            savedRange.setEnd(foundNode, localOffset + 1)
-          }
-
-          accumulatedLength = newLength
-          currentNode = walker.nextNode()
-        }
-      }
-
-      // 如果仍然没有范围，创建一个在末尾的范围
-      if (!savedRange) {
-        savedRange = document.createRange()
-        savedRange.selectNodeContents(div)
-        savedRange.collapse(false)
-      }
-
-      // 应用范围
-      const selection = window.getSelection()
-      selection?.removeAllRanges()
-      selection?.addRange(savedRange)
-    }
-
-    // 移除占位符（如果存在）
-    const placeholderSpan = div.querySelector('span.text-\\[\\#999\\]')
-    if (placeholderSpan) {
-      placeholderSpan.remove()
-    }
-
-    // 创建带样式的提及标签
-    const span = document.createElement('span')
-    span.textContent = `@${candidate.tgname} `
-    span.style.color = '#6761FF'
-    span.contentEditable = 'false'
-    span.className = 'mention-tag'
-
-    // 现在应该有一个有效的范围
-    const range = savedRange
-    const container = range.startContainer
-    const offset = range.startOffset
-
-    if (container.nodeType === Node.TEXT_NODE) {
-      const text = container.textContent || ''
-      const atIndex = text.lastIndexOf('@')
-
-      if (atIndex >= 0) {
-        // 移除 @ 符号和光标之前的任何文本
-        const beforeAt = text.substring(0, atIndex)
-        // 获取光标后的文本，跳过 @ 和光标之间的文本
-        const afterCursor = text.substring(Math.max(offset, atIndex + 1))
-
-        // 只保留 @ 之前的文本
-        container.textContent = beforeAt
-
-        // 为光标后的内容创建文本节点
-        let afterTextNode: Text | null = null
-        if (afterCursor.trim()) {
-          afterTextNode = document.createTextNode(afterCursor)
-        }
-
-        // 插入提及标签和后续文本（如果存在）
-        if (container.nextSibling) {
-          container.parentNode?.insertBefore(span, container.nextSibling)
-          if (afterTextNode) {
-            container.parentNode?.insertBefore(afterTextNode, container.nextSibling)
-          }
-        } else {
-          container.parentNode?.appendChild(span)
-          if (afterTextNode) {
-            container.parentNode?.appendChild(afterTextNode)
-          }
-        }
-      } else {
-        // 如果没有找到 @ 符号，就在光标位置插入
-        const beforeCursor = text.substring(0, offset)
-        const afterCursor = text.substring(offset)
-
-        container.textContent = beforeCursor
-
-        // 为光标后的内容创建文本节点
-        let afterTextNode: Text | null = null
-        if (afterCursor.trim()) {
-          afterTextNode = document.createTextNode(afterCursor)
-        }
-
-        // 插入提及标签和后续文本（如果存在）
-        if (container.nextSibling) {
-          container.parentNode?.insertBefore(span, container.nextSibling)
-          if (afterTextNode) {
-            container.parentNode?.insertBefore(afterTextNode, container.nextSibling)
-          }
-        } else {
-          container.parentNode?.appendChild(span)
-          if (afterTextNode) {
-            container.parentNode?.appendChild(afterTextNode)
-          }
-        }
-      }
-    } else {
-      range.insertNode(span)
-    }
-
-    // 提取纯文本内容
-    const plainText = extractTextContent(div.innerHTML)
-    // 更新内容
-    setTitle(plainText)
-    setShowMentionList(false)
-
-    // 在提及标签后创建一个空的文本节点
-    const emptyTextNode = document.createTextNode('')
-    span.parentNode?.insertBefore(emptyTextNode, span.nextSibling)
-
-    // 将光标设置到空文本节点
-    const newRange = document.createRange()
-    newRange.setStart(emptyTextNode, 0)
-    newRange.collapse(true)
-
-    // 应用新的选择范围
-    const selection = window.getSelection()
-    selection?.removeAllRanges()
-    selection?.addRange(newRange)
-
-    // 聚焦编辑器
-    div.focus()
-
-    // 对于移动设备，需要确保光标位置保持不变
-    if (isMobileDevice()) {
-      setTimeout(() => {
-        const finalRange = document.createRange()
-        finalRange.setStart(emptyTextNode, 0)
-        finalRange.collapse(true)
-        const finalSelection = window.getSelection()
-        finalSelection?.removeAllRanges()
-        finalSelection?.addRange(finalRange)
-        div.focus()
-      }, 0)
-    }
-  }
 
   const loadCandidates = async () => {
     try {
@@ -324,139 +55,120 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({
     }
   }
 
-  const mentionEve = (boll: boolean) => {
-    setTimeout(() => {
-      if (isMobileDevice()) {
-        setIsFocused(boll)
-        // 在 iOS 上强制flow以确保光标可见性
-        if (boll && editorRef.current) {
-          editorRef.current.style.webkitUserSelect = 'text'
-          editorRef.current.style.userSelect = 'text'
-          editorRef.current.style.webkitTransform = 'translateZ(0)'
-
-          // 在 iOS 上强制光标可见
-          const selection = window.getSelection()
-          const range = document.createRange()
-          range.selectNodeContents(editorRef.current)
-          range.collapse(false)
-          selection?.removeAllRanges()
-          selection?.addRange(range)
-        }
-
-        const selection = window.getSelection()
-        if (selection && selection.rangeCount > 0) {
-          const range = selection.getRangeAt(0)
-          const rect = range.getBoundingClientRect()
-          const scrollY = window.scrollY || window.pageYOffset
-          const cursorTopDistance = rect.top + scrollY
-          focusedTop && focusedTop(cursorTopDistance)
-        }
-      }
-      setFeatureBoll(boll)
-
-      if (boll && editorRef.current) {
-        const placeholderSpan = editorRef.current.querySelector('span.text-\\[\\#999\\]')
-
-        if (placeholderSpan && placeholderSpan.textContent === 'Say something ...') {
-          editorRef.current.innerHTML = ''
-        }
-      }
-    }, 0)
-  }
-
   useEffect(() => {
     if (token && current_uid) {
       loadCandidates()
-      if (!isMobileDevice()) {
-        setFeatureBoll(true)
-      }
     }
   }, [current_uid, token])
 
-  const [initialHeight, setInitialHeight] = useState(window.innerHeight)
+  const handleMentionClick = (candidate: MentionCandidate) => {
+    const quill = quillRef.current?.getEditor()
+    if (!quill) return
 
-  useEffect(() => {
-    const handleResize = () => {
-      const currentHeight = window.innerHeight
-      if (!featureRefBoll.current) {
-        if (currentHeight < initialHeight) {
-          setIsFocused(true)
-        } else {
-          setIsFocused(false)
-        }
+    // Get the current selection
+    const range = quill.getSelection(true)
+    const mentionStartIndex = range.index - (searchTerm.length + 1)
+
+    // Delete the search term including @
+    quill.deleteText(mentionStartIndex, searchTerm.length + 1)
+
+    // Insert the mention with special color
+    quill.insertText(mentionStartIndex, `@${candidate.tgname}`, {
+      color: '#6761FF',
+      mention: true,
+    })
+
+    // Insert a space with default formatting
+    quill.insertText(mentionStartIndex + candidate.tgname.length + 1, ' ', {
+      color: '#000000',
+      mention: false,
+    })
+
+    // Move cursor to the end of the mention
+    quill.setSelection(mentionStartIndex + candidate.tgname.length + 2, 0)
+
+    setShowMentionList(false)
+    setSearchTerm('')
+  }
+
+  const onChangeRichText = (value: string, delta: any, source: string, editor: any) => {
+    setRichTextValue(value)
+    setTitle(value)
+    console.log(value, 'value')
+
+    if (source !== 'user') return
+
+    const selection = editor.getSelection()
+    if (!selection) return
+    const text = editor.getText() || ''
+
+    // Find the position of @ before cursor
+    const cursorPosition = selection.index
+    const textBeforeCursor = text.slice(0, cursorPosition)
+
+    const atIndex = textBeforeCursor.lastIndexOf('@')
+
+    if (atIndex !== -1) {
+      const searchText = textBeforeCursor.slice(atIndex + 1)
+
+      // Only show mention list if @ is followed by valid search text
+      if (!searchText.includes(' ')) {
+        setSearchTerm(searchText)
+        const filtered = mentionCandidates.filter((candidate) => {
+          return candidate.tgname.toLowerCase().includes(searchText.toLowerCase())
+        })
+        setFilteredCandidates(filtered)
+
+        // Get cursor position for mention list
+        const bounds = quillRef.current?.getEditor().getBounds(cursorPosition)
+        setMentionTop(bounds.top + bounds.height)
+        setMentionLeft(bounds.left)
+
+        setShowMentionList(true)
+      } else {
+        setShowMentionList(false)
       }
+    } else {
+      setShowMentionList(false)
     }
-
-    window.addEventListener('resize', handleResize)
-    return () => {
-      window.removeEventListener('resize', handleResize)
-    }
-  }, [initialHeight])
+  }
 
   return (
-    <div className="relative" style={{ height: height }}>
-      <div
-        ref={editorRef}
-        contentEditable
-        className="mt-6 outline-none min-h-[80px] text-[14px] text-[#333] font-normal placeholder-[#999]"
-        onInput={handleInput}
-        onFocus={() => mentionEve(true)}
-        onBlur={() => mentionEve(false)}
-        onCompositionStart={(e) => {
-          // 处理输入法组合开始
-          e.preventDefault()
-        }}
-        onCompositionEnd={(e) => {
-          // 处理输入法组合结束，确保文本正确插入
-          if (editorRef.current) {
-            const text = e.data
-            if (text) {
-              const selection = window.getSelection()
-              if (selection && selection.rangeCount > 0) {
-                const range = selection.getRangeAt(0)
-                const textNode = document.createTextNode(text)
-                range.insertNode(textNode)
-                range.setStartAfter(textNode)
-                range.setEndAfter(textNode)
-                selection.removeAllRanges()
-                selection.addRange(range)
-                handleInput()
-              }
-            }
-          }
-        }}
-        style={{
-          WebkitUserSelect: 'text',
-          userSelect: 'text',
-          cursor: 'text',
-          WebkitTextSizeAdjust: 'none',
-          WebkitTapHighlightColor: 'rgba(0, 0, 0, 0)',
-          WebkitTouchCallout: 'none',
-          caretColor: '#333',
-        }}
-      />
-      {featureBoll && showMentionList && filteredCandidates.length > 0 && (
+    <div className="relative mt-4" style={{ height: height }}>
+      <div style={{ width: '100%', minHeight: '200px' }}>
+        <ReactQuill
+          ref={quillRef}
+          className="w-[100%] h-[200px]"
+          theme="snow"
+          value={richTextValue}
+          onChange={onChangeRichText}
+          modules={{
+            toolbar: false,
+          }}
+          placeholder="Say something..."
+        />
+      </div>
+
+      {showMentionList && filteredCandidates.length > 0 && (
         <ul
           className="absolute left-0 z-[111] w-[100%] border-t border-gray-300 bg-white h-[200px] overflow-auto"
-          style={{ top: `${mentionTop}px` }}
-          onClick={() => {
-            if (editorRef.current) {
-              editorRef.current.focus()
-            }
+          style={{
+            top: `${mentionTop + 10}px`,
+            left: `${mentionLeft}px`,
           }}
         >
           {filteredCandidates.map((candidate) => (
             <li
               key={candidate.tgname}
               onClick={() => handleMentionClick(candidate)}
-              className="p-2 cursor-pointer flex items-center"
+              className="p-2 cursor-pointer flex items-center hover:bg-gray-100"
             >
               <img
                 src={candidate.avatar}
                 alt={candidate.tgname}
-                className="w-9 h-9 rounded-full mr-3 object-cover"
+                className="w-8 h-8 rounded-full mr-2 object-cover"
               />
-              <p className="text-4 text-[#333]">{candidate.tgname}</p>
+              <p className="text-sm text-[#333]">{candidate.tgname}</p>
             </li>
           ))}
         </ul>

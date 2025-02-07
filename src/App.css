@@ -145,3 +145,11 @@ video {
 .adm-tabs-tab-active {
   font-weight: 500;
 }
+
+.ql-container.ql-snow {
+  border: none;
+}
+
+.ql-editor {
+  padding: 0;
+}

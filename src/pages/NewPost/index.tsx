@@ -113,11 +113,11 @@ export const NewPost: FC = () => {
       const fileLinks = result[0].result.urls.join(',')
       try {
         // 过滤HTML标签
-        const filteredTitle = title.replace(/<[^>]*>/g, '')
+        // const filteredTitle = title.replace(/<[^>]*>/g, '')
 
         await postResources({
           media: fileLinks,
-          ...(filteredTitle ? { title: filteredTitle } : {}),
+          ...(title ? { title } : {}),
           type: 1,
           currency: 0,
           price: price || 0,
@@ -600,11 +600,11 @@ export const NewPost: FC = () => {
         className="absolute left-0 right-0 px-4 overflow-auto list-scroll-trigger"
         style={{
           top: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
-          bottom: isFocused
-            ? '0'
-            : price != null && price > 0 && firstFileType === 'video' && videoSrc
-              ? '210px'
-              : '120px',
+          // bottom: isFocused
+          //   ? '0'
+          //   : price != null && price > 0 && firstFileType === 'video' && videoSrc
+          //     ? '210px'
+          //     : '120px',
         }}
       >
         {/* Page Header */}
@@ -727,7 +727,7 @@ export const NewPost: FC = () => {
             setTitle={setTitle}
             setIsFocused={setIsFocused}
             featureRefBoll={featureRefBoll}
-            height="auto"
+            height="500px"
             focusedTop={handleFocusedTop}
           />
         </div>

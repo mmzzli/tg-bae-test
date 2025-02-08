@@ -21,12 +21,11 @@ interface NavItem {
 }
 
 const OtherUserProfile: FC = () => {
+  const [reportVisible, setReportVisible] = useSafeState(false)
   const { userInfo } = useStore((state) => ({
     userInfo: state.othersUserInfo,
   }))
-
   const navigate = useNavigate()
-  const [reportVisible, setReportVisible] = useSafeState(false)
   const [navList, setNavList] = useState<NavItem[]>([
     { name: 'Share', url: ShareIcon, id: 'share' },
     { name: 'Report', url: ReportIcon, id: 'report' },

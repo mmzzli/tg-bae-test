@@ -406,7 +406,7 @@ export const NewPost: FC = () => {
     } catch (e) {
       toast({
         render: () => {
-          return <CustomToast title="Your post failed to send." type={typeOptions.error} />
+          return <CustomToast title="Post unsuccessful" type={typeOptions.error} />
         },
         position: 'bottom',
       })

@@ -7,6 +7,7 @@ import { useSearchParams } from 'react-router-dom'
 import { useStore } from '@/store/store'
 import { accountdetailList, getGiftHistory } from '@/api'
 import InfiniteScroll from 'react-infinite-scroll-component'
+import loadingGif from '@/assets/loading.gif'
 
 import Icon from '@/components/comm/Icon'
 import Skeleton from '@/components/Skeketon/Skeleton'
@@ -55,7 +56,10 @@ const TelegramStars = ({
         hasMore={hasMore}
         loader={
           <Box textAlign="center" m="0 0" className="p-4">
-            <Skeleton childClassName="w-full h-[60px] m-[auto] mb-[20px]" />
+            {/* <Skeleton childClassName="w-full h-[60px] m-[auto] mb-[20px]" /> */}
+            <div
+              className={"w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254ff] m-[auto] mt-[130px]"}
+            ></div>
           </Box>
         }
         scrollableTarget="starsScrollableDiv"
@@ -117,7 +121,10 @@ const Cryptos = ({
         hasMore={giftHasMore}
         loader={
           <Box textAlign="center" m="0 0" className="p-4">
-            <Skeleton childClassName="w-full h-[60px] m-[auto] mb-[20px]" />
+            {/* <Skeleton childClassName="w-full h-[60px] m-[auto] mb-[20px]" /> */}
+            <div
+              className={"w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254ff] m-[auto] mt-[130px]"}
+            ></div>
           </Box>
         }
         scrollableTarget="cryptoScrollableDiv"

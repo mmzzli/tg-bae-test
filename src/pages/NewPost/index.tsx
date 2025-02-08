@@ -53,6 +53,8 @@ export const NewPost: FC = () => {
   const [widths, setWidths] = useState<number[]>([])
   const [heights, setHeights] = useState<number[]>([])
   const [isFocused, setIsFocused] = useState<boolean>(false)
+  const [initTgViewportHeight, setInitTgViewportHeight] = useState(0)
+  const initTgViewportHeightRef = useRef(0)
 
   const { runGetDailyTask } = useGetDailyTask()
   const { refresh } = useViewList()
@@ -73,7 +75,6 @@ export const NewPost: FC = () => {
     if ((!imgAttr || !imgAttr.length) && !videoSrc) {
       setFirstSelectFileType('')
     }
-
   }, [imgAttr, files, videoSrc])
 
   // upload states
@@ -406,7 +407,7 @@ export const NewPost: FC = () => {
     } catch (e) {
       toast({
         render: () => {
-          return <CustomToast title="Your post failed to send." type={typeOptions.error} />
+          return <CustomToast title="Post unsuccessful" type={typeOptions.error} />
         },
         position: 'bottom',
       })
@@ -501,22 +502,37 @@ export const NewPost: FC = () => {
   }, [imgAttr])
 
   // useEffect(() => {
-  //   const handleKeyboardHide = () => {
-  //     window.scrollTo(0, 0)
-  //   }
-  //   window.addEventListener('focusout', handleKeyboardHide)
+  // const handleKeyboardHide = () => {
+  //   window.scrollTo(0, 0)
+  // }
+  // window.addEventListener('focusout', handleKeyboardHide)
 
-  //   return () => {
-  //     window.removeEventListener('focusout', handleKeyboardHide)
-  //   }
+  // return () => {
+  //   window.removeEventListener('focusout', handleKeyboardHide)
+  // }
   // }, [])
+  useEffect(() => {
+    // const onFocusIn = () => {
+    //   setIsFocused(true)
+    // }
+    // const onFocusOut = () => {
+    //   setIsFocused(false)
+    // }
+    // document.addEventListener('focusin', onFocusIn)
+    // document.addEventListener('focusout', onFocusOut)
+    // return () => {
+    //   document.removeEventListener('focusin', onFocusIn)
+    //   document.removeEventListener('focusout', onFocusOut)
+    // }
+  }, [])
 
   const stopMove = (e: any) => {
-    // const messageList = document.querySelector('.list-scroll-trigger')
-    // if (messageList && messageList.contains(e.target)) {
-    //   return
-    // }
-    // e.preventDefault()
+    const messageList = document.querySelector('.list-scroll-trigger')
+    if (messageList && messageList.contains(e.target)) {
+      return
+    }
+    console.log('cant scroll')
+    e.preventDefault()
     window.scrollTo(0, 0)
   }
 
@@ -526,22 +542,59 @@ export const NewPost: FC = () => {
 
   const keyboardUp = () => {
     window.scrollTo(0, 0)
-    // document.body.addEventListener('touchmove', stopMove, {
-    //   passive: false,
-    // })
+    document.body.addEventListener('touchmove', stopMove, {
+      passive: false,
+    })
     document.addEventListener('touchend', scroll)
   }
 
   const keyboardDown = () => {
-    // document.body.removeEventListener('touchmove', stopMove)
+    document.body.removeEventListener('touchmove', stopMove)
     document.addEventListener('touchend', scroll)
   }
 
   useEffect(() => {
+    const parentElement = document.getElementById('post-editor')
+    const onFocusIn = () => {
+      setIsFocused(true)
+    }
+    const onFocusOut = () => {
+      setIsFocused(false)
+    }
+
+    if (parentElement) {
+      parentElement.addEventListener('focusin', onFocusIn, true)
+
+      parentElement.addEventListener('focusout', onFocusOut, true)
+    }
+
+    const handleViewportChange = () => {
+      const tg = window.Telegram?.WebApp
+      if (tg.viewportStableHeight < initTgViewportHeightRef.current) {
+        console.log('keyboard up')
+        // setIsFocused(true)
+      } else {
+        console.log('keyboard down')
+        // setIsFocused(false)
+      }
+    }
+
+    const tg = window.Telegram?.WebApp
+    setInitTgViewportHeight(tg.viewportStableHeight)
+    tg?.onEvent('viewportChanged', handleViewportChange)
+
     return () => {
       keyboardDown()
+      if (parentElement) {
+        parentElement.removeEventListener('focusin', onFocusIn)
+        parentElement.removeEventListener('focusout', onFocusOut)
+      }
     }
   }, [])
+
+  useEffect(() => {
+    initTgViewportHeightRef.current = initTgViewportHeight
+  }, [initTgViewportHeight])
 
   useEffect(() => {
     if (isFocused) {
@@ -588,23 +641,22 @@ export const NewPost: FC = () => {
   return (
     <div
       ref={containerRef}
-      className="fixed top-0 w-screen bg-[#fff] z-10 overflow-hidden scrollbar-hide"
+      className="fixed top-0 w-screen bg-[#fff] z-10 overflow-hidden scrollbar-hide new-post-section"
       style={{
         paddingTop: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
         height: 'calc(var(--tg-safe-area-inset-bottom) + var(--tg-viewport-stable-height))',
       }}
-      id="scrollable"
     >
       <div
         ref={postContentRef}
-        className="absolute left-0 right-0 px-4 overflow-auto list-scroll-trigger"
+        className="absolute left-0 right-0 px-4 overflow-auto"
         style={{
           top: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
-          // bottom: isFocused
-          //   ? '0'
-          //   : price != null && price > 0 && firstFileType === 'video' && videoSrc
-          //     ? '210px'
-          //     : '120px',
+          bottom: isFocused
+            ? '32px'
+            : price != null && price > 0 && firstFileType === 'video' && videoSrc
+              ? '229px'
+              : '140px',
         }}
       >
         {/* Page Header */}
@@ -628,14 +680,16 @@ export const NewPost: FC = () => {
             <Image src={PostIcon} mr="5px" /> Post
           </Button>
         </div>
-        <div className="pt-[66px]">
+        <div className="list-scroll-trigger pt-[66px]" id="scrollable">
           <Input
             type="file"
-            accept={!firstSelectFileType
-              ? "image/png,image/jpeg,image/jpg,video/mp4,video/webm"
-              : firstSelectFileType === 'image'
-                ? "image/png,image/jpeg,image/jpg"
-                : "video/mp4,video/webm"}
+            accept={
+              !firstSelectFileType
+                ? 'image/png,image/jpeg,image/jpg,video/mp4,video/webm'
+                : firstSelectFileType === 'image'
+                  ? 'image/png,image/jpeg,image/jpg'
+                  : 'video/mp4,video/webm'
+            }
             multiple
             onChange={handleFileChange}
             style={{ display: 'none' }}
@@ -722,32 +776,34 @@ export const NewPost: FC = () => {
             )}
           </div>
           {/* POST Text Content */}
-          <MentionFeature
-            title={title}
-            setTitle={setTitle}
-            setIsFocused={setIsFocused}
-            featureRefBoll={featureRefBoll}
-            height="500px"
-            focusedTop={handleFocusedTop}
-          />
-        </div>
-        {!isFocused && (
-          <div>
-            <div onClick={() => stopVideo()}>
-              {price != null && price > 0 && firstFileType === 'video' && videoSrc && (
-                <AddPreview
-                  videoRef={videoRefCover}
-                  setCover={setCover}
-                  videoSrc={videoSrc || ''}
-                  trailer={trailer}
-                  setTrailer={setTrailer}
-                  videoFile={videoFile}
-                />
-              )}
-            </div>
-            <StarsPage setPrice={setPrice} price={price || 0} featureRefBoll={featureRefBoll} />
+          <div id="post-editor">
+            <MentionFeature
+              title={title}
+              setTitle={setTitle}
+              setIsFocused={setIsFocused}
+              featureRefBoll={featureRefBoll}
+              height="auto"
+              focusedTop={handleFocusedTop}
+            />
           </div>
-        )}
+        </div>
+        {/* {!isFocused && ( */}
+        <div>
+          <div onClick={() => stopVideo()}>
+            {price != null && price > 0 && firstFileType === 'video' && videoSrc && (
+              <AddPreview
+                videoRef={videoRefCover}
+                setCover={setCover}
+                videoSrc={videoSrc || ''}
+                trailer={trailer}
+                setTrailer={setTrailer}
+                videoFile={videoFile}
+              />
+            )}
+          </div>
+          <StarsPage setPrice={setPrice} price={price || 0} featureRefBoll={featureRefBoll} />
+        </div>
+        {/* )} */}
       </div>
     </div>
   )

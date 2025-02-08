@@ -18,6 +18,11 @@ const isIOS = () => {
   return /iphone|ipad|ipod/.test(userAgent)
 }
 
+const isAndroid = () => {
+  const userAgent = window.navigator.userAgent.toLowerCase()
+  return /android/.test(userAgent)
+}
+
 interface TooltipProps {
   content: WrappedMessage
   user: OthersUserInfo | IUserInfo | null
@@ -45,6 +50,7 @@ const Tooltip: React.FC<TooltipProps> = ({
   const toast = useToast()
 
   const isIOSDevice = isIOS()
+  const isAndroidDevice = isAndroid()
   const [isLeftSide, setIsLeftSide] = useState(false)
   const setReplyMessage = useStore((state) => state.setReplyMessage)
   const hideTooltip = useCallback(() => {
@@ -56,6 +62,7 @@ const Tooltip: React.FC<TooltipProps> = ({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      console.log('handleClickOutside', visible, tooltipRef.current, targetRef.current)
       if (
         visible &&
         tooltipRef.current &&
@@ -145,36 +152,55 @@ const Tooltip: React.FC<TooltipProps> = ({
     }
   }, [content.url, content.text, isIOSDevice, id, config.enableDownload])
 
+  const forceFocus = () => {
+    const activeElement = document.activeElement as HTMLInputElement;
+    if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+      // 保存当前光标位置
+      const cursorPosition = activeElement.selectionStart;
+      // 使用 requestAnimationFrame 确保在下一帧重新聚焦
+      requestAnimationFrame(() => {
+        activeElement.focus();
+        // 恢复光标位置
+        activeElement.setSelectionRange(cursorPosition, cursorPosition);
+      });
+    }
+  };
+
   const longPressEvent = useLongPress({
     delay: delay,
     onLongPress: () => {
+      forceFocus();
       if (visible) {
-        hideTooltip()
+        hideTooltip();
       } else {
-        showTooltip()
+        showTooltip();
       }
     },
     onClick: hideTooltip,
-  })
+  });
 
-  const handleDownload = useCallback(async () => {
-    try {
-      if (content.url) {
-        window.Telegram?.WebApp?.downloadFile({ url: content.url, file_name: `pic-${id}` })
-      }
-    } catch (error) {
-      console.error('Failed to download:', error)
-    } finally {
-      hideTooltip()
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const activeElement = document.activeElement as HTMLInputElement;
+    if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+      activeElement.focus();
     }
-  }, [content.url, hideTooltip])
+  }, []);
 
-  const handleReply = useCallback(() => {
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const activeElement = document.activeElement as HTMLInputElement;
+    if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+      activeElement.focus();
+    }
+  }, []);
+
+  const handleReply = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     console.log('handleReply', content, content.text || content.url || '')
-    // postEvent('web_app_trigger_haptic_feedback', {
-    //   type: 'impact',
-    //   impact_style: 'light',
-    // })
     let message = content.text || content.url || ''
     // 处理页面数组不更新问题
     if (!message) {
@@ -202,7 +228,9 @@ const Tooltip: React.FC<TooltipProps> = ({
     hideTooltip()
   }, [hideTooltip])
 
-  const handleCopy = useCallback(() => {
+  const handleCopy = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     try {
       if (content.text) {
         copy(content.text)
@@ -210,7 +238,7 @@ const Tooltip: React.FC<TooltipProps> = ({
           render: () => {
             return <CustomToast title="Copied to clipboard!" type={typeOptions.success} />
           },
-          position: 'bottom',
+          position: 'top',
         })
       }
     } catch (error) {
@@ -219,6 +247,42 @@ const Tooltip: React.FC<TooltipProps> = ({
       hideTooltip()
     }
   }, [content.text, copy, hideTooltip])
+
+  const handleDownload = useCallback(async (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      if (content.url) {
+        window.Telegram?.WebApp?.downloadFile({ url: content.url, file_name: `pic-${id}` })
+      }
+    } catch (error) {
+      console.error('Failed to download:', error)
+    } finally {
+      hideTooltip()
+    }
+  }, [content.url, hideTooltip])
+
+  useEffect(() => {
+    const handleFocus = () => {
+      if (tooltipRef.current) {
+        tooltipRef.current.style.pointerEvents = 'none';
+      }
+    };
+
+    const handleBlur = () => {
+      if (tooltipRef.current) {
+        tooltipRef.current.style.pointerEvents = 'auto';
+      }
+    };
+
+    window.addEventListener('focus', handleFocus, true);
+    window.addEventListener('blur', handleBlur, true);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus, true);
+      window.removeEventListener('blur', handleBlur, true);
+    };
+  }, []);
 
   return (
     <>
@@ -233,6 +297,8 @@ const Tooltip: React.FC<TooltipProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 10 }}
             transition={{ type: 'spring', duration: 0.3 }}
+            onMouseDown={handleMouseDown}
+            onTouchStart={handleTouchStart}
             style={{
               display: 'flex',
               gap: '20px',
@@ -251,14 +317,26 @@ const Tooltip: React.FC<TooltipProps> = ({
               whiteSpace: 'nowrap',
               zIndex: 10009999999999,
               boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+              touchAction: 'none',
+              userSelect: 'none',
+              WebkitUserSelect: 'none',
+              WebkitTapHighlightColor: 'transparent',
+              WebkitTouchCallout: 'none',
             }}
           >
             {config.enableReply && (
               <motion.div
                 className="flex flex-col items-center cursor-pointer text-[12px]"
                 onClick={handleReply}
+                onMouseDown={handleMouseDown}
+                onTouchStart={handleTouchStart}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
+                style={{
+                  touchAction: 'manipulation',
+                  WebkitTapHighlightColor: 'transparent',
+                  WebkitTouchCallout: 'none'
+                }}
               >
                 <i
                   className="iconfont icon-reply-line"
@@ -271,8 +349,15 @@ const Tooltip: React.FC<TooltipProps> = ({
               <motion.div
                 className="flex flex-col items-center cursor-pointer text-[12px]"
                 onClick={handleCopy}
+                onMouseDown={handleMouseDown}
+                onTouchStart={handleTouchStart}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
+                style={{
+                  touchAction: 'manipulation',
+                  WebkitTapHighlightColor: 'transparent',
+                  WebkitTouchCallout: 'none'
+                }}
               >
                 <i
                   className="iconfont icon-file-copy-line"
@@ -285,8 +370,15 @@ const Tooltip: React.FC<TooltipProps> = ({
               <motion.div
                 className="flex flex-col items-center cursor-pointer text-[12px]"
                 onClick={handleDownload}
+                onMouseDown={handleMouseDown}
+                onTouchStart={handleTouchStart}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
+                style={{
+                  touchAction: 'manipulation',
+                  WebkitTapHighlightColor: 'transparent',
+                  WebkitTouchCallout: 'none'
+                }}
               >
                 <i
                   className="iconfont icon-download-line"

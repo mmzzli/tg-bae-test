@@ -66,9 +66,11 @@ const Splash: FC = () => {
 
   useEffect(() => {
     if (userInfo.user_id && token && isCached) {
-      const ageGateBoll = localStorage.getItem(`ageGate-${current_uid}`)
+      const isAgeVerified = localStorage.getItem(`ageGate-${current_uid}`) === '1'
+      // const tempAgeVerified = sessionStorage.getItem(`temp-ageGate-${current_uid}`) === '1'
+      // const ageGateBoll = localStorage.getItem(`ageGate-${current_uid}`)
       if (!isInTMA || !startParam || history.length > 2) {
-        if (ageGateBoll) {
+        if (isAgeVerified) {
           return navigate('/home')
         } else {
           return navigate('/ageGate')
@@ -90,7 +92,7 @@ const Splash: FC = () => {
         setBackToHome(true)
         handleNavigate(sharedRef)
       } else {
-        if (ageGateBoll) {
+        if (isAgeVerified) {
           navigate('/home')
         } else {
           navigate('/ageGate')
@@ -101,30 +103,35 @@ const Splash: FC = () => {
 
   const handleNavigate = async (ref: string) => {
     console.log('token ready, navigating...')
-    const ageGateBoll = localStorage.getItem(`ageGate-${current_uid}`)
+    const isAgeVerified = localStorage.getItem(`ageGate-${current_uid}`)
     if (!token) return
     try {
       const data = await getSingleMedia(ref)
       console.log('getSingleMedia', data)
       if (data.type === SHARE_POST) {
         setSharedPostList(data.media)
-        if(ageGateBoll){
+        if (isAgeVerified) {
           navigate(`/shares?ref=${ref}`)
-        }else{
+        } else {
           navigate(`/ageGate?ref=${ref}`)
         }
       } else if (data.type === SHARE_PROFILE) {
         setOthersUserInfo({ ...data.userInfo, uid: data.userInfo.user_id })
-        if(ageGateBoll){
+        if (isAgeVerified) {
           navigate(`/profile/${data.userInfo.uid || data.userInfo.user_id}`)
-        }else{
+        } else {
           navigate(`/ageGate?ref=${data.userInfo.uid || data.userInfo.user_id}&type=${data.type}`)
         }
       }
     } catch (error) {
       toast({
         render: () => {
-          return <CustomToast title="This content has been deleted by the creator and cannot be accessed." type={typeOptions.warning} />
+          return (
+            <CustomToast
+              title="This content has been deleted by the creator and cannot be accessed."
+              type={typeOptions.warning}
+            />
+          )
         },
         position: 'top',
       })
@@ -134,6 +141,9 @@ const Splash: FC = () => {
   }
 
   useEffect(() => {
+    console.log('isInTMA', isInTMA)
+    console.log('startParam', startParam)
+    console.log('history.length', history.length)
     if (!isInTMA || !startParam || history.length > 2) return
     const params = startParam.split('_')
     console.log('startParam', params)
@@ -146,31 +156,31 @@ const Splash: FC = () => {
     })
   }, [startParam, isInTMA])
 
-  const isProd = import.meta.env.MODE === 'production'
-  if (!isProd) {
-    return null
-  }
+  // const isProd = import.meta.env.MODE === 'production'
+  // if (!isProd) {
+  //   return null
+  // }
   return (
     <div className="fixed top-0 bottom-0 left-0 right-0 dark:bg-[#0D0D0D] bg-white flex justify-center items-center z-10 flex-col">
-        <svg
-          version="1.0"
-          xmlns="http://www.w3.org/2000/svg"
-          width="1124.000000pt"
-          height="2436.000000pt"
-          viewBox="0 0 1124.000000 2436.000000"
-          preserveAspectRatio="xMidYMid meet"
+      <svg
+        version="1.0"
+        xmlns="http://www.w3.org/2000/svg"
+        width="1124.000000pt"
+        height="2436.000000pt"
+        viewBox="0 0 1124.000000 2436.000000"
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <g
+          transform="translate(0.000000,2436.000000) scale(0.100000,-0.100000)"
+          fill="#6661ff"
+          stroke="none"
         >
-          <g
-            transform="translate(0.000000,2436.000000) scale(0.100000,-0.100000)"
-            fill="#6661ff"
-            stroke="none"
-          >
-            <path
-              d="M2807 24353 c1547 -2 4079 -2 5625 0 1547 1 282 2 -2812 2 -3094 0
+          <path
+            d="M2807 24353 c1547 -2 4079 -2 5625 0 1547 1 282 2 -2812 2 -3094 0
               -4359 -1 -2813 -2z"
-            />
-            <path
-              d="M2972 15400 c-122 -13 -184 -27 -317 -72 -139 -47 -303 -132 -430
+          />
+          <path
+            d="M2972 15400 c-122 -13 -184 -27 -317 -72 -139 -47 -303 -132 -430
                 -223 -153 -109 -353 -309 -480 -480 -166 -223 -311 -536 -389 -841 -30 -118
                 -75 -392 -86 -518 -13 -165 -13 -531 0 -711 10 -134 66 -523 96 -670 25 -126
                 101 -428 139 -555 37 -126 122 -381 129 -388 2 -2 18 4 36 13 29 15 94 41 355
@@ -212,13 +222,13 @@ const Splash: FC = () => {
                 739 669 803 53 12 139 4 178 -17z m-3139 -1318 c111 -19 163 -40 147 -58 -27
                 -34 -353 -186 -456 -213 -117 -32 -292 -6 -330 49 -14 20 -13 23 16 53 63 65
                 240 136 424 169 93 17 99 17 199 0z"
-            />
-            <path
-              d="M0 10 c0 -7 1880 -10 5620 -10 3740 0 5620 3 5620 10 0 7 -1880 10
+          />
+          <path
+            d="M0 10 c0 -7 1880 -10 5620 -10 3740 0 5620 3 5620 10 0 7 -1880 10
 -5620 10 -3740 0 -5620 -3 -5620 -10z"
-            />
-          </g>
-        </svg>
+          />
+        </g>
+      </svg>
     </div>
   )
 }

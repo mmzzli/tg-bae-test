@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import ReactQuill from 'react-quill'
 
 import 'quill/dist/quill.snow.css' // Add css for snow theme
+import './mention.css'
 
 import { getFansFollowers } from '@/api'
 import { isMobileDevice } from '@/utils/utils'
@@ -138,7 +139,7 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({
       <div style={{ width: '100%', minHeight: '200px' }}>
         <ReactQuill
           ref={quillRef}
-          className="w-[100%] h-[200px]"
+          className="w-[100%] h-[100%] font-switzer"
           theme="snow"
           value={richTextValue}
           onChange={onChangeRichText}

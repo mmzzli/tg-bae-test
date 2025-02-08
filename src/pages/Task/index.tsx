@@ -431,10 +431,11 @@ const Tasks: FC = () => {
               style={{
                 boxShadow: 'rgba(0, 0, 0, 0.1) 0px 2px 16px 0px',
                 opacity: isTooltipOpen ? 1 : 0,
+                zIndex: isTooltipOpen ? 1 : -1,
                 transition: 'opacity 0.3s ease-in-out',
               }}
             >
-              <p className="text-sm text-[#666666] font-normal">
+              <p className="text-[14px] text-[#666666] font-normal">
                 For every Telegram star you spend to unlock a post, you earn 10 points.
               </p>
             </div>

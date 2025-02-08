@@ -371,59 +371,80 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
 
     const handleMetadataLoaded = () => {
       if (videoRef.current) {
-        const videoElement = videoRef.current;
+        const videoElement = videoRef.current
         setLandscapeBoll(videoElement.videoWidth > videoElement.videoHeight)
       }
-    };
+    }
 
-    const videoElement = videoRef.current;
+    const videoElement = videoRef.current
     if (videoElement) {
-      videoElement.addEventListener('loadedmetadata', handleMetadataLoaded);
+      videoElement.addEventListener('loadedmetadata', handleMetadataLoaded)
     }
     return () => {
       if (videoElement) {
-        videoElement.removeEventListener('loadedmetadata', handleMetadataLoaded);
+        videoElement.removeEventListener('loadedmetadata', handleMetadataLoaded)
       }
-    };
+    }
   }, [videoUrl, previewVideoUrl])
 
   useEffect(() => {
-    const video = videoRef.current;
+    const video = videoRef.current
     if (video) {
-      const handlePlay = () => setIsPlaying(true);
-      const handlePause = () => setIsPlaying(false);
+      const handlePlay = () => setIsPlaying(true)
+      const handlePause = () => setIsPlaying(false)
 
-      video.addEventListener('play', handlePlay);
-      video.addEventListener('pause', handlePause);
+      video.addEventListener('play', handlePlay)
+      video.addEventListener('pause', handlePause)
 
       return () => {
-        video.removeEventListener('play', handlePlay);
-        video.removeEventListener('pause', handlePause);
-      };
+        video.removeEventListener('play', handlePlay)
+        video.removeEventListener('pause', handlePause)
+      }
     }
-  }, []);
+  }, [])
   useEffect(() => {
     const video = videoRef.current
-    if(!video)return
-    if(!isBaseModalOpen){
+    if (!video) return
+    if (!isBaseModalOpen) {
       video.pause()
-    }else{
+    } else {
       video.currentTime = 0
     }
-  },[isBaseModalOpen])
-
+  }, [isBaseModalOpen])
 
   return (
     <>
-      <div className="fixed bottom-[133px] left-0 w-[100%]">
-        <div className="px-7 flex justify-between gap-2 flex-none">
+      <div
+        className="fixed left-0 w-[100%]"
+        style={{
+          bottom: '133px',
+        }}
+      >
+        <div
+          className="flex justify-between  flex-none"
+          style={{
+            gap: '8px',
+            padding: '0 28px',
+          }}
+        >
           <div>
-            <p className="text-[16px] text-[#000]">Add a preview</p>
-            <p className="text-[12px] text-[#8E8E92] font-light">
+            <p
+              className=" text-[#000]"
+              style={{
+                fontSize: '16px',
+              }}
+            >
+              Add a preview
+            </p>
+            <p
+              className="text-[#8E8E92] font-light"
+              style={{
+                fontSize: '12px',
+              }}
+            >
               Give your fans a sneak peek before they unlock the content!
             </p>
           </div>
-          {/* className="w-full h-full flex items-center justify-center border-dashed border border-[#CDCDD4] rounded-lg cursor-pointer" */}
 
           {trailer ? (
             <TrailerVideo
@@ -434,7 +455,11 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
             />
           ) : (
             <p
-              className="h-[64px] w-[64px] bg-[#F7F9FC] rounded-md flex-none flex items-center justify-center"
+              className="bg-[#F7F9FC] rounded-md flex-none flex items-center justify-center"
+              style={{
+                height: '64px',
+                width: '64px',
+              }}
               onClick={() => toggle()}
             >
               <i className="iconfont icon-add text-[#999999] text-[20px]"></i>
@@ -487,19 +512,10 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
             <div className="pt-[24px]">
               {/* Video Element */}
               <div className="relative max-h-[330px] min-h-[100px] overflow-hidden w-[fit-content] rounded-[8px]">
-                {/* <video
-                ref={previewVideoRef}
-                src={previewVideoUrl}
-                style={{ display: previewVideoUrl ? "block" : "none", width: "243px" }}
-                preload="metadata"
-                playsInline
-                muted
-                onClick={handleVideoClick1}
-              /> */}
                 <video
                   ref={videoRef}
                   src={previewVideoUrl || videoUrl}
-                  style={{ display: previewVideoUrl ? 'block' : 'block', width: landscapeBoll ? "100%": '243px' }}
+                  style={{ display: previewVideoUrl ? 'block' : 'block', width: landscapeBoll ? "100%" : '243px', minHeight: "200px" }}
                   preload="metadata"
                   autoPlay
                   playsInline
@@ -514,17 +530,6 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
                   />
                 )}
               </div>
-              {/* <canvas
-                ref={canvasRef}
-                width={243}
-                height={315}
-                style={{
-                  marginTop: "16px",
-                  display: "block",
-                  width: "243px",
-                  height: "315px",
-                }}
-              ></canvas> */}
 
               <div className="bg-[#fff] rounded-tl-[16px] rounded-tr-[16px]">
                 <p className="text-[#999] pt-[30px] pb-[18px] font-normal">

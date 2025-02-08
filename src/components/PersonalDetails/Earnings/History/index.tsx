@@ -237,6 +237,9 @@ const EarningsHistory = () => {
   }
 
   useEffect(() => {
+    // 设置头部颜色
+    window.Telegram?.WebApp?.setHeaderColor('#fff')
+
     if (token) {
       if (activeKey === '1') {
         setPage(1)

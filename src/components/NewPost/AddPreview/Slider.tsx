@@ -208,6 +208,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
         {duration > 5 && !trailerBoll && (
           <div className='relative h-[100%]'>
           <div
+            className='mx-[1px]'
             style={{
               position: 'absolute',
               overflow: 'hidden',
@@ -227,7 +228,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
               pointerEvents: 'none',
             }}
           >
-            <p className="text-[18px] text-[#fff] text-center h-[60px] leading-[60px] absolute"
+            <p className="text-[14px] text-[#fff] text-center h-[60px] leading-[60px] absolute"
               style={{
                 transform: 'translate(-50%, -50%)',
                 zIndex: 11,

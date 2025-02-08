@@ -67,10 +67,10 @@ const Splash: FC = () => {
   useEffect(() => {
     if (userInfo.user_id && token && isCached) {
       const isAgeVerified = localStorage.getItem(`ageGate-${current_uid}`) === '1'
-      const tempAgeVerified = sessionStorage.getItem(`temp-ageGate-${current_uid}`) === '1'
+      // const tempAgeVerified = sessionStorage.getItem(`temp-ageGate-${current_uid}`) === '1'
       // const ageGateBoll = localStorage.getItem(`ageGate-${current_uid}`)
       if (!isInTMA || !startParam || history.length > 2) {
-        if (!isAgeVerified && !tempAgeVerified) {
+        if (isAgeVerified) {
           return navigate('/home')
         } else {
           return navigate('/ageGate')
@@ -92,7 +92,7 @@ const Splash: FC = () => {
         setBackToHome(true)
         handleNavigate(sharedRef)
       } else {
-        if (!isAgeVerified && !tempAgeVerified) {
+        if (isAgeVerified) {
           navigate('/home')
         } else {
           navigate('/ageGate')
@@ -103,21 +103,21 @@ const Splash: FC = () => {
 
   const handleNavigate = async (ref: string) => {
     console.log('token ready, navigating...')
-    const ageGateBoll = localStorage.getItem(`ageGate-${current_uid}`)
+    const isAgeVerified = localStorage.getItem(`ageGate-${current_uid}`)
     if (!token) return
     try {
       const data = await getSingleMedia(ref)
       console.log('getSingleMedia', data)
       if (data.type === SHARE_POST) {
         setSharedPostList(data.media)
-        if (ageGateBoll) {
+        if (isAgeVerified) {
           navigate(`/shares?ref=${ref}`)
         } else {
           navigate(`/ageGate?ref=${ref}`)
         }
       } else if (data.type === SHARE_PROFILE) {
         setOthersUserInfo({ ...data.userInfo, uid: data.userInfo.user_id })
-        if (ageGateBoll) {
+        if (isAgeVerified) {
           navigate(`/profile/${data.userInfo.uid || data.userInfo.user_id}`)
         } else {
           navigate(`/ageGate?ref=${data.userInfo.uid || data.userInfo.user_id}&type=${data.type}`)

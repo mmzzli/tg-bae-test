@@ -8,7 +8,8 @@
 
 @font-face {
   font-family: 'Switzer';
-  src: url('./assets/fonts/Switzer-Regular.ttf') format('opentype');
+  src: url('./assets/fonts/Switzer-Medium.ttf') format('opentype');
+  font-style: normal;
   font-style: normal;
   font-display: swap;
 }
@@ -57,12 +58,12 @@ h3,
 h4,
 h5 {
   font-weight: 700;
-  font-family: 'Switzer', sans-serif !important;
+  font-family: 'Roboto', 'Switzer', sans-serif !important;
 }
 
 p {
   font-weight: 500;
-  font-family: 'Switzer', sans-serif !important;
+  font-family: 'Roboto', 'Switzer', sans-serif !important;
 }
 
 input:focus,

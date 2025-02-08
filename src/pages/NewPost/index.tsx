@@ -542,14 +542,10 @@ export const NewPost: FC = () => {
 
   const keyboardUp = () => {
     window.scrollTo(0, 0)
-    document.body.addEventListener('touchmove', stopMove, {
-      passive: false,
-    })
     document.addEventListener('touchend', scroll)
   }
 
   const keyboardDown = () => {
-    document.body.removeEventListener('touchmove', stopMove)
     document.addEventListener('touchend', scroll)
   }
 
@@ -576,6 +572,7 @@ export const NewPost: FC = () => {
       } else {
         console.log('keyboard down')
         // setIsFocused(false)
+        keyboardDown()
       }
     }
 
@@ -583,7 +580,12 @@ export const NewPost: FC = () => {
     setInitTgViewportHeight(tg.viewportStableHeight)
     tg?.onEvent('viewportChanged', handleViewportChange)
 
+    document.body.addEventListener('touchmove', stopMove, {
+      passive: false,
+    })
+
     return () => {
+      document.body.removeEventListener('touchmove', stopMove)
       keyboardDown()
       if (parentElement) {
         parentElement.removeEventListener('focusin', onFocusIn)

@@ -145,12 +145,6 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({
           modules={{
             toolbar: false,
           }}
-          onFocus={() => {
-            isMobileDevice() && setIsFocused(true)
-          }}
-          onBlur={() => {
-            setIsFocused(false)
-          }}
           placeholder="Say something..."
         />
       </div>

@@ -21,9 +21,17 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Roboto';
+  src: url('./assets/fonts/Roboto-Regular.ttf') format('opentype');
+  font-style: normal;
+  font-weight: normal;
+  unicode-range: U+30-39;
+}
+
 html,
 body {
-  font-family: 'Switzer', sans-serif !important;
+  font-family: 'Roboto', 'Switzer', sans-serif !important;
 }
 
 body {

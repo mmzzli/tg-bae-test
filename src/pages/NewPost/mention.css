@@ -1,0 +1,8 @@
+.ql-editor.ql-blank::before {
+  left: 0 !important;
+  font-style: normal !important;
+  font-family: 'Roboto', 'Switzer', sans-serif !important;
+}
+.ql-container {
+  font-family: 'Roboto', 'Switzer', sans-serif !important;
+}

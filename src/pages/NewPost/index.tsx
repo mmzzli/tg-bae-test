@@ -552,8 +552,26 @@ export const NewPost: FC = () => {
   }
 
   useEffect(() => {
+    const parentElement = document.getElementById('post-editor')
+    const onFocusIn = () => {
+      setIsFocused(true)
+    }
+    const onFocusOut = () => {
+      setIsFocused(false)
+    }
+
+    if (parentElement) {
+      parentElement.addEventListener('focusin', onFocusIn, true)
+
+      parentElement.addEventListener('focusout', onFocusOut, true)
+    }
+
     return () => {
       keyboardDown()
+      if (parentElement) {
+        parentElement.removeEventListener('focusin', onFocusIn)
+        parentElement.removeEventListener('focusout', onFocusOut)
+      }
     }
   }, [])
 
@@ -738,14 +756,16 @@ export const NewPost: FC = () => {
             )}
           </div>
           {/* POST Text Content */}
-          <MentionFeature
-            title={title}
-            setTitle={setTitle}
-            setIsFocused={setIsFocused}
-            featureRefBoll={featureRefBoll}
-            height="auto"
-            focusedTop={handleFocusedTop}
-          />
+          <div id="post-editor">
+            <MentionFeature
+              title={title}
+              setTitle={setTitle}
+              setIsFocused={setIsFocused}
+              featureRefBoll={featureRefBoll}
+              height="auto"
+              focusedTop={handleFocusedTop}
+            />
+          </div>
         </div>
         {!isFocused && (
           <div>

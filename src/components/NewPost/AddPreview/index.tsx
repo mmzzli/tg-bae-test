@@ -515,7 +515,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
                 <video
                   ref={videoRef}
                   src={previewVideoUrl || videoUrl}
-                  style={{ display: previewVideoUrl ? 'block' : 'block', width: landscapeBoll ? "100%" : '243px' }}
+                  style={{ display: previewVideoUrl ? 'block' : 'block', width: landscapeBoll ? "100%" : '243px', minHeight: "200px" }}
                   preload="metadata"
                   autoPlay
                   playsInline

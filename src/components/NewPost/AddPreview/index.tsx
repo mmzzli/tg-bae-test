@@ -404,13 +404,13 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
   }, []);
   useEffect(() => {
     const video = videoRef.current
-    if(!video)return
-    if(!isBaseModalOpen){
+    if (!video) return
+    if (!isBaseModalOpen) {
       video.pause()
-    }else{
+    } else {
       video.currentTime = 0
     }
-  },[isBaseModalOpen])
+  }, [isBaseModalOpen])
 
 
   return (
@@ -423,7 +423,6 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
               Give your fans a sneak peek before they unlock the content!
             </p>
           </div>
-          {/* className="w-full h-full flex items-center justify-center border-dashed border border-[#CDCDD4] rounded-lg cursor-pointer" */}
 
           {trailer ? (
             <TrailerVideo
@@ -487,19 +486,10 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
             <div className="pt-[24px]">
               {/* Video Element */}
               <div className="relative max-h-[330px] min-h-[100px] overflow-hidden w-[fit-content] rounded-[8px]">
-                {/* <video
-                ref={previewVideoRef}
-                src={previewVideoUrl}
-                style={{ display: previewVideoUrl ? "block" : "none", width: "243px" }}
-                preload="metadata"
-                playsInline
-                muted
-                onClick={handleVideoClick1}
-              /> */}
                 <video
                   ref={videoRef}
                   src={previewVideoUrl || videoUrl}
-                  style={{ display: previewVideoUrl ? 'block' : 'block', width: landscapeBoll ? "100%": '243px' }}
+                  style={{ display: previewVideoUrl ? 'block' : 'block', width: landscapeBoll ? "100%" : '243px' }}
                   preload="metadata"
                   autoPlay
                   playsInline
@@ -514,17 +504,6 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
                   />
                 )}
               </div>
-              {/* <canvas
-                ref={canvasRef}
-                width={243}
-                height={315}
-                style={{
-                  marginTop: "16px",
-                  display: "block",
-                  width: "243px",
-                  height: "315px",
-                }}
-              ></canvas> */}
 
               <div className="bg-[#fff] rounded-tl-[16px] rounded-tr-[16px]">
                 <p className="text-[#999] pt-[30px] pb-[18px] font-normal">

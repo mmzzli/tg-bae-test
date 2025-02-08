@@ -114,6 +114,7 @@ const Christmas: FC = () => {
               style={{
                 top: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top)) + 18px',
                 opacity: showTopTitle ? 0 : 1,
+                transition: 'opacity .5s ease-in-out',
               }}
             >
               {titleTextRef.current}
@@ -129,6 +130,7 @@ const Christmas: FC = () => {
                     ? 'calc(var(--tg-safe-area-inset-top) + 10px)'
                     : 'calc(var(--tg-safe-area-inset-top) + 24px)'
                 }`,
+                transition: 'opacity .5s ease-in-out, top .5s ease-in-out',
               }}
             >
               {titleTextRef.current}

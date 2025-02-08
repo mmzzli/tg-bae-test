@@ -576,6 +576,7 @@ export const NewPost: FC = () => {
       } else {
         console.log('keyboard down')
         // setIsFocused(false)
+        keyboardDown()
       }
     }
 

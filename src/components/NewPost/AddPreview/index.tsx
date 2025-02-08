@@ -371,37 +371,37 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
 
     const handleMetadataLoaded = () => {
       if (videoRef.current) {
-        const videoElement = videoRef.current;
+        const videoElement = videoRef.current
         setLandscapeBoll(videoElement.videoWidth > videoElement.videoHeight)
       }
-    };
+    }
 
-    const videoElement = videoRef.current;
+    const videoElement = videoRef.current
     if (videoElement) {
-      videoElement.addEventListener('loadedmetadata', handleMetadataLoaded);
+      videoElement.addEventListener('loadedmetadata', handleMetadataLoaded)
     }
     return () => {
       if (videoElement) {
-        videoElement.removeEventListener('loadedmetadata', handleMetadataLoaded);
+        videoElement.removeEventListener('loadedmetadata', handleMetadataLoaded)
       }
-    };
+    }
   }, [videoUrl, previewVideoUrl])
 
   useEffect(() => {
-    const video = videoRef.current;
+    const video = videoRef.current
     if (video) {
-      const handlePlay = () => setIsPlaying(true);
-      const handlePause = () => setIsPlaying(false);
+      const handlePlay = () => setIsPlaying(true)
+      const handlePause = () => setIsPlaying(false)
 
-      video.addEventListener('play', handlePlay);
-      video.addEventListener('pause', handlePause);
+      video.addEventListener('play', handlePlay)
+      video.addEventListener('pause', handlePause)
 
       return () => {
-        video.removeEventListener('play', handlePlay);
-        video.removeEventListener('pause', handlePause);
-      };
+        video.removeEventListener('play', handlePlay)
+        video.removeEventListener('pause', handlePause)
+      }
     }
-  }, []);
+  }, [])
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
@@ -412,14 +412,36 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
     }
   }, [isBaseModalOpen])
 
-
   return (
     <>
-      <div className="fixed bottom-[133px] left-0 w-[100%]">
-        <div className="px-7 flex justify-between gap-2 flex-none">
+      <div
+        className="fixed left-0 w-[100%]"
+        style={{
+          bottom: '133px',
+        }}
+      >
+        <div
+          className="flex justify-between  flex-none"
+          style={{
+            gap: '8px',
+            padding: '0 28px',
+          }}
+        >
           <div>
-            <p className="text-[16px] text-[#000]">Add a preview</p>
-            <p className="text-[12px] text-[#8E8E92] font-light">
+            <p
+              className=" text-[#000]"
+              style={{
+                fontSize: '16px',
+              }}
+            >
+              Add a preview
+            </p>
+            <p
+              className="text-[#8E8E92] font-light"
+              style={{
+                fontSize: '12px',
+              }}
+            >
               Give your fans a sneak peek before they unlock the content!
             </p>
           </div>
@@ -433,7 +455,11 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
             />
           ) : (
             <p
-              className="h-[64px] w-[64px] bg-[#F7F9FC] rounded-md flex-none flex items-center justify-center"
+              className="bg-[#F7F9FC] rounded-md flex-none flex items-center justify-center"
+              style={{
+                height: '64px',
+                width: '64px',
+              }}
               onClick={() => toggle()}
             >
               <i className="iconfont icon-add text-[#999999] text-[20px]"></i>

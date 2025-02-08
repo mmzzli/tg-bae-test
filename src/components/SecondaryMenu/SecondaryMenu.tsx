@@ -15,7 +15,7 @@ import { useTMAUtils } from '@/hooks/useTMAUtils'
 type Props = {
   mediaData: FormatterListItem
   currentUid: number
-  setReportVisible?:(boll:boolean)=>void
+  setReportVisible?: (boll: boolean) => void
   className?: string
   type?: string
 }
@@ -118,18 +118,26 @@ const SecondaryMenu = ({ mediaData, currentUid, className, type, setReportVisibl
       </div>
 
       {visible && (
-        <div className="absolute border rounded-lg right-0 top-[36px] mt-1 dark:bg-[#19191E] dark:border-[#19191E] bg-white dark:text-[#E0E2F6] text-[#333] border-[#EBEBF4] font-medium text-xs rounded-[4px] z-50">
+        <div
+          className="absolute rounded-lg right-0 top-[36px] mt-1 dark:bg-[#19191E] bg-white dark:text-[#E0E2F6] text-[#333] font-medium text-xs z-50"
+          style={{
+            boxShadow: 'rgba(0, 0, 0, 0.1) 0px 2px 16px 0px',
+          }}
+        >
           {currentUid === uid && (
             <button
               onClick={() => {
                 deleteDialogWrap.show({
                   data: mediaData,
                   title: 'Delete this post?',
-                  value: mediaData.price > 0 ? `Users who unlocked it can still view it, but won't be able to engage with it.`: ''
+                  value:
+                    mediaData.price > 0
+                      ? `Users who unlocked it can still view it, but won't be able to engage with it.`
+                      : '',
                 })
                 setVisible(false)
               }}
-              className="w-[83px] h-[40px] rounded-[4px] flex items-center justify-center gap-1 text-[#FF684A]"
+              className="w-[83px] h-[40px] rounded-[4px] flex items-center justify-center gap-1 text-xs text-[#FF684A]"
             >
               <i className="iconfont icon-delete-bin-line text-base"></i>
               Delete
@@ -137,7 +145,7 @@ const SecondaryMenu = ({ mediaData, currentUid, className, type, setReportVisibl
           )}
           {currentUid !== uid && (
             <button
-              className="w-[83px] h-[40px] rounded-[4px] flex items-center justify-center gap-1"
+              className="w-[83px] h-[40px] rounded-[4px] flex items-center justify-center gap-1 text-xs text-[#333333]"
               onClick={() => {
                 handleOptionClick('report')
                 setVisible(false)

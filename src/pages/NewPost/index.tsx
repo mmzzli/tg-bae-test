@@ -529,7 +529,7 @@ export const NewPost: FC = () => {
     if (messageList && messageList.contains(e.target)) {
       return
     }
-    console.log('can scroll')
+    console.log('cant scroll')
     e.preventDefault()
     window.scrollTo(0, 0)
   }
@@ -660,7 +660,7 @@ export const NewPost: FC = () => {
             <Image src={PostIcon} mr="5px" /> Post
           </Button>
         </div>
-        <div className="list-scroll-trigger" style={{ paddingTop: '66px' }}>
+        <div className="list-scroll-trigger pt-[66px]">
           <Input
             type="file"
             accept={

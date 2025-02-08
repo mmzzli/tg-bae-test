@@ -500,22 +500,37 @@ export const NewPost: FC = () => {
   }, [imgAttr])
 
   // useEffect(() => {
-  //   const handleKeyboardHide = () => {
-  //     window.scrollTo(0, 0)
-  //   }
-  //   window.addEventListener('focusout', handleKeyboardHide)
+  // const handleKeyboardHide = () => {
+  //   window.scrollTo(0, 0)
+  // }
+  // window.addEventListener('focusout', handleKeyboardHide)
 
-  //   return () => {
-  //     window.removeEventListener('focusout', handleKeyboardHide)
-  //   }
+  // return () => {
+  //   window.removeEventListener('focusout', handleKeyboardHide)
+  // }
   // }, [])
+  useEffect(() => {
+    // const onFocusIn = () => {
+    //   setIsFocused(true)
+    // }
+    // const onFocusOut = () => {
+    //   setIsFocused(false)
+    // }
+    // document.addEventListener('focusin', onFocusIn)
+    // document.addEventListener('focusout', onFocusOut)
+    // return () => {
+    //   document.removeEventListener('focusin', onFocusIn)
+    //   document.removeEventListener('focusout', onFocusOut)
+    // }
+  }, [])
 
   const stopMove = (e: any) => {
-    // const messageList = document.querySelector('.list-scroll-trigger')
-    // if (messageList && messageList.contains(e.target)) {
-    //   return
-    // }
-    // e.preventDefault()
+    const messageList = document.querySelector('.list-scroll-trigger')
+    if (messageList && messageList.contains(e.target)) {
+      return
+    }
+    console.log('can scroll')
+    e.preventDefault()
     window.scrollTo(0, 0)
   }
 
@@ -525,14 +540,14 @@ export const NewPost: FC = () => {
 
   const keyboardUp = () => {
     window.scrollTo(0, 0)
-    // document.body.addEventListener('touchmove', stopMove, {
-    //   passive: false,
-    // })
+    document.body.addEventListener('touchmove', stopMove, {
+      passive: false,
+    })
     document.addEventListener('touchend', scroll)
   }
 
   const keyboardDown = () => {
-    // document.body.removeEventListener('touchmove', stopMove)
+    document.body.removeEventListener('touchmove', stopMove)
     document.addEventListener('touchend', scroll)
   }
 
@@ -587,7 +602,7 @@ export const NewPost: FC = () => {
   return (
     <div
       ref={containerRef}
-      className="fixed top-0 w-screen bg-[#fff] z-10 overflow-hidden scrollbar-hide"
+      className="fixed top-0 w-screen bg-[#fff] z-10 overflow-hidden scrollbar-hide new-post-section"
       style={{
         paddingTop: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
         height: 'calc(var(--tg-safe-area-inset-bottom) + var(--tg-viewport-stable-height))',
@@ -596,7 +611,7 @@ export const NewPost: FC = () => {
     >
       <div
         ref={postContentRef}
-        className="absolute left-0 right-0 px-4 overflow-auto list-scroll-trigger"
+        className="absolute left-0 right-0 px-4 overflow-auto"
         style={{
           top: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
           bottom: isFocused
@@ -627,7 +642,7 @@ export const NewPost: FC = () => {
             <Image src={PostIcon} mr="5px" /> Post
           </Button>
         </div>
-        <div className="pt-[66px]">
+        <div className="list-scroll-trigger" style={{ paddingTop: '66px' }}>
           <Input
             type="file"
             accept={

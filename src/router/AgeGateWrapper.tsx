@@ -27,10 +27,12 @@ export const AgeGateWrapper = ({ children }: { children: React.ReactNode }) => {
 
     if (location.pathname === '/ageGate') {
       if (isAgeVerified || tempAgeVerified) {
+        console.log('startParam in age gate', startParam)
         if (startParam) {
           navigate('/splash')
         } else {
-          navigate('/home')
+          navigate('/splash')
+          // navigate('/home')
         }
       }
       return

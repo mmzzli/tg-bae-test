@@ -2,14 +2,12 @@ import { useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 
 import { useTMAUtils } from '@/hooks/useTMAUtils'
-import { retrieveLaunchParams } from '@tma.js/sdk'
 
 export const AgeGateWrapper = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate()
   const location = useLocation()
   const { getCurrentUid } = useTMAUtils()
   const current_uid = getCurrentUid()
-  const { startParam } = retrieveLaunchParams()
 
   useEffect(() => {
     if (location.pathname === '/splash') {
@@ -27,20 +25,14 @@ export const AgeGateWrapper = ({ children }: { children: React.ReactNode }) => {
 
     if (location.pathname === '/ageGate') {
       if (isAgeVerified || tempAgeVerified) {
-        console.log('startParam in age gate', startParam)
-        if (startParam) {
-          navigate('/splash')
-        } else {
-          navigate('/splash')
-          // navigate('/home')
-        }
+        navigate('/home')
       }
       return
     }
 
-    if (!isAgeVerified && !tempAgeVerified) {
-      navigate('/ageGate')
-    }
+    // if (!isAgeVerified && !tempAgeVerified) {
+    //   navigate('/ageGate')
+    // }
   }, [location.pathname, current_uid])
 
   return <>{children}</>

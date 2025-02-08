@@ -66,9 +66,11 @@ const Splash: FC = () => {
 
   useEffect(() => {
     if (userInfo.user_id && token && isCached) {
-      const ageGateBoll = localStorage.getItem(`ageGate-${current_uid}`)
+      const isAgeVerified = localStorage.getItem(`ageGate-${current_uid}`) === '1'
+      const tempAgeVerified = sessionStorage.getItem(`temp-ageGate-${current_uid}`) === '1'
+      // const ageGateBoll = localStorage.getItem(`ageGate-${current_uid}`)
       if (!isInTMA || !startParam || history.length > 2) {
-        if (ageGateBoll) {
+        if (!isAgeVerified && !tempAgeVerified) {
           return navigate('/home')
         } else {
           return navigate('/ageGate')
@@ -90,7 +92,7 @@ const Splash: FC = () => {
         setBackToHome(true)
         handleNavigate(sharedRef)
       } else {
-        if (ageGateBoll) {
+        if (!isAgeVerified && !tempAgeVerified) {
           navigate('/home')
         } else {
           navigate('/ageGate')

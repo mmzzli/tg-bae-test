@@ -138,12 +138,18 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({
       <div style={{ width: '100%', minHeight: '200px' }}>
         <ReactQuill
           ref={quillRef}
-          className="w-[100%] h-[200px]"
+          className="w-[100%] h-[100%]"
           theme="snow"
           value={richTextValue}
           onChange={onChangeRichText}
           modules={{
             toolbar: false,
+          }}
+          onFocus={() => {
+            isMobileDevice() && setIsFocused(true)
+          }}
+          onBlur={() => {
+            setIsFocused(false)
           }}
           placeholder="Say something..."
         />

@@ -7,6 +7,7 @@ import { useSearchParams } from 'react-router-dom'
 import { useStore } from '@/store/store'
 import { accountdetailList, getGiftHistory } from '@/api'
 import InfiniteScroll from 'react-infinite-scroll-component'
+import loadingGif from '@/assets/loading.gif'
 
 import Icon from '@/components/comm/Icon'
 import Skeleton from '@/components/Skeketon/Skeleton'
@@ -43,7 +44,7 @@ const TelegramStars = ({
 }: TelegramStarsProps) => {
   return (
     <div
-      className="relative overflow-y-auto"
+      className="relative overflow-y-auto px-[20px]"
       style={{
         height: `calc(100vh - 164px - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top) - var(--tg-safe-area-inset-bottom) - var(--tg-content-safe-area-inset-bottom) )`,
       }}
@@ -55,7 +56,10 @@ const TelegramStars = ({
         hasMore={hasMore}
         loader={
           <Box textAlign="center" m="0 0" className="p-4">
-            <Skeleton childClassName="w-full h-[60px] m-[auto] mb-[20px]" />
+            {/* <Skeleton childClassName="w-full h-[60px] m-[auto] mb-[20px]" /> */}
+            <div
+              className={"w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254ff] m-[auto] mt-[130px]"}
+            ></div>
           </Box>
         }
         scrollableTarget="starsScrollableDiv"
@@ -66,7 +70,7 @@ const TelegramStars = ({
       >
         {data.accounts.map((item, key) => (
           <div
-            className="flex justify-between py-[20px] px-[24px] border-b border-[#EBEBF4] last:border-b-0"
+            className="flex justify-between py-[20px] border-b border-[#EBEBF4] last:border-b-0"
             key={key}
           >
             <div>
@@ -105,7 +109,7 @@ const Cryptos = ({
 }: CryptosProps) => {
   return (
     <div
-      className="relative overflow-y-auto"
+      className="relative overflow-y-auto px-[20px]"
       style={{
         height: `calc(100vh - 164px - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top) - var(--tg-safe-area-inset-bottom) - var(--tg-content-safe-area-inset-bottom) )`,
       }}
@@ -117,7 +121,10 @@ const Cryptos = ({
         hasMore={giftHasMore}
         loader={
           <Box textAlign="center" m="0 0" className="p-4">
-            <Skeleton childClassName="w-full h-[60px] m-[auto] mb-[20px]" />
+            {/* <Skeleton childClassName="w-full h-[60px] m-[auto] mb-[20px]" /> */}
+            <div
+              className={"w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254ff] m-[auto] mt-[130px]"}
+            ></div>
           </Box>
         }
         scrollableTarget="cryptoScrollableDiv"
@@ -129,7 +136,7 @@ const Cryptos = ({
         {giftData.map((item, index) => (
           <div
             key={index}
-            className="py-[20px] px-[24px] border-b border-[#EBEBF4] last:border-b-0"
+            className="py-[20px] border-b border-[#EBEBF4] last:border-b-0"
             onClick={() => handleClick(item.chain_id, item.hash)}
           >
             <ul className="flex justify-between items-center">
@@ -230,6 +237,9 @@ const EarningsHistory = () => {
   }
 
   useEffect(() => {
+    // 设置头部颜色
+    window.Telegram?.WebApp?.setHeaderColor('#fff')
+
     if (token) {
       if (activeKey === '1') {
         setPage(1)
@@ -300,8 +310,9 @@ const EarningsHistory = () => {
           activeKey={activeKey}
           onChange={(key) => handleChange(key)}
           activeLineMode="fixed"
+          stretch={false}
         >
-          <Tabs.Tab title="Telegram stars" key="1" className="px-[16px]">
+          <Tabs.Tab title="Telegram stars" key="1" className="px-[18px]">
             <TelegramStars
               data={data}
               exchangeRate={exchangeRate}
@@ -310,7 +321,7 @@ const EarningsHistory = () => {
               starsLoading={starsLoading}
             />
           </Tabs.Tab>
-          <Tabs.Tab title="Cryptos" key="2" className="px-[16px]">
+          <Tabs.Tab title="Cryptos" key="2" className="px-[18px] ml-[30px]">
             <Cryptos
               giftData={giftData}
               fetchMoreGiftData={fetchMoreGiftData}

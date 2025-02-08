@@ -228,6 +228,7 @@ const ResourceList = ({
   const toast = useToast()
   const { sharedPostList } = useSharedList()
   const videoInfo = useStore((state) => state.videoResource)
+  const [reportVisible, setReportVisible] = useState(false)
 
   const saveds = useStore((state) => state.save)
 
@@ -338,8 +339,6 @@ const ResourceList = ({
       if (item.id === post_id) {
         const options = is_pay ? { is_pay } : {}
 
-        console.log(item.act_type, '=======jacob')
-        console.log(url, '=======jacob')
         // runDailyWatch(post_id)
         if (item.act_type === 0 || item.act_type === 1) {
           const medias = url.split(',')
@@ -394,7 +393,6 @@ const ResourceList = ({
       ></Empty>
     )
   }
-  const [reportVisible, setReportVisible] = useState(false)
   const getUrl = (act_type: number) => {
     switch (act_type) {
       case 1:

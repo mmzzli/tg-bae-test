@@ -43,6 +43,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const isDraggingRef = useRef<boolean>(false); // 是否正在拖动
   const [sliderWidth, setSliderWidth] = useState(0);
+  const [isLandscape, setIsLandscape] = useState(false);
 
   const videoDuration = duration; // 视频总时长（秒）
 
@@ -172,6 +173,12 @@ const TransparentSlider: React.FC<SliderProps> = ({
     }
   },[startTime])
 
+  useEffect(() => {
+    if (frames.length > 0) {
+      const firstFrame = frames[0];
+      setIsLandscape(firstFrame.width > firstFrame.height);
+    }
+  }, [frames]);
 
   return (
     <div className="w-[100%]" onClick={() => { setPreviewVideoUrl(''); setTrailerBoll(false); }}>
@@ -208,17 +215,18 @@ const TransparentSlider: React.FC<SliderProps> = ({
         {duration > 5 && !trailerBoll && (
           <div className='relative h-[100%]'>
           <div
+            className='mx-[1px]'
             style={{
               position: 'absolute',
               overflow: 'hidden',
               top: '50%',
               left: `calc(${
                 Math.min(
-                  Math.max((selectedTime / videoDuration) * 100, (107 / 2) / sliderRef.current!.offsetWidth * 100),
-                  100 - (107 / 2) / sliderRef.current!.offsetWidth * 100
+                  Math.max((selectedTime / videoDuration) * 100, (isLandscape ? 106 : 44) / 2 / sliderRef.current!.offsetWidth * 100),
+                  100 - (isLandscape ? 106 : 44) / 2 / sliderRef.current!.offsetWidth * 100
                 )
               }%)`,
-              width: '107px',
+              width: isLandscape ? '106px' : '44px',
               height: '60px',
               border: '2px solid #FFF',
               backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -227,7 +235,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
               pointerEvents: 'none',
             }}
           >
-            <p className="text-[18px] text-[#fff] text-center h-[60px] leading-[60px] absolute"
+            <p className="text-[14px] text-[#fff] text-center h-[60px] leading-[60px] absolute"
               style={{
                 transform: 'translate(-50%, -50%)',
                 zIndex: 11,

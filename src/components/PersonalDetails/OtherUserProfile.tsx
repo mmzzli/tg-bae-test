@@ -21,12 +21,11 @@ interface NavItem {
 }
 
 const OtherUserProfile: FC = () => {
+  const [reportVisible, setReportVisible] = useSafeState(false)
   const { userInfo } = useStore((state) => ({
     userInfo: state.othersUserInfo,
   }))
-
   const navigate = useNavigate()
-  const [reportVisible, setReportVisible] = useSafeState(false)
   const [navList, setNavList] = useState<NavItem[]>([
     { name: 'Share', url: ShareIcon, id: 'share' },
     { name: 'Report', url: ReportIcon, id: 'report' },
@@ -83,10 +82,10 @@ const OtherUserProfile: FC = () => {
             <MenuList
               minW="84px"
               bg="#fff"
-              border="1px solid #EBEBF4"
-              borderRadius="4px"
+              border="none"
+              borderRadius="8px"
               p="12px"
-              boxShadow="none"
+              boxShadow="rgba(0, 0, 0, 0.1) 0px 2px 16px 0px"
             >
               {navList.map((item, key) => (
                 <Box>
@@ -100,7 +99,7 @@ const OtherUserProfile: FC = () => {
                   >
                     <HStack gap="4px">
                       <Image src={item.url} />
-                      <Text>{item.name}</Text>
+                      <span className="text-xs text-[#333333]">{item.name}</span>
                     </HStack>
                   </MenuItem>
                   {navList.length - 1 > key && <Text h="1px" bg="#EBEBF4" m="16px 0"></Text>}

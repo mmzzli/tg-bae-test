@@ -53,6 +53,8 @@ export const NewPost: FC = () => {
   const [widths, setWidths] = useState<number[]>([])
   const [heights, setHeights] = useState<number[]>([])
   const [isFocused, setIsFocused] = useState<boolean>(false)
+  const [initTgViewportHeight, setInitTgViewportHeight] = useState(0)
+  const initTgViewportHeightRef = useRef(0)
 
   const { runGetDailyTask } = useGetDailyTask()
   const { refresh } = useViewList()
@@ -566,6 +568,21 @@ export const NewPost: FC = () => {
       parentElement.addEventListener('focusout', onFocusOut, true)
     }
 
+    const handleViewportChange = () => {
+      const tg = window.Telegram?.WebApp
+      if (tg.viewportStableHeight < initTgViewportHeightRef.current) {
+        console.log('keyboard up')
+        // setIsFocused(true)
+      } else {
+        console.log('keyboard down')
+        // setIsFocused(false)
+      }
+    }
+
+    const tg = window.Telegram?.WebApp
+    setInitTgViewportHeight(tg.viewportStableHeight)
+    tg?.onEvent('viewportChanged', handleViewportChange)
+
     return () => {
       keyboardDown()
       if (parentElement) {
@@ -574,6 +591,10 @@ export const NewPost: FC = () => {
       }
     }
   }, [])
+
+  useEffect(() => {
+    initTgViewportHeightRef.current = initTgViewportHeight
+  }, [initTgViewportHeight])
 
   useEffect(() => {
     if (isFocused) {
@@ -625,7 +646,6 @@ export const NewPost: FC = () => {
         paddingTop: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
         height: 'calc(var(--tg-safe-area-inset-bottom) + var(--tg-viewport-stable-height))',
       }}
-      id="scrollable"
     >
       <div
         ref={postContentRef}
@@ -660,7 +680,7 @@ export const NewPost: FC = () => {
             <Image src={PostIcon} mr="5px" /> Post
           </Button>
         </div>
-        <div className="list-scroll-trigger pt-[66px]">
+        <div className="list-scroll-trigger pt-[66px]" id="scrollable">
           <Input
             type="file"
             accept={
@@ -767,23 +787,23 @@ export const NewPost: FC = () => {
             />
           </div>
         </div>
-        {!isFocused && (
-          <div>
-            <div onClick={() => stopVideo()}>
-              {price != null && price > 0 && firstFileType === 'video' && videoSrc && (
-                <AddPreview
-                  videoRef={videoRefCover}
-                  setCover={setCover}
-                  videoSrc={videoSrc || ''}
-                  trailer={trailer}
-                  setTrailer={setTrailer}
-                  videoFile={videoFile}
-                />
-              )}
-            </div>
-            <StarsPage setPrice={setPrice} price={price || 0} featureRefBoll={featureRefBoll} />
+        {/* {!isFocused && ( */}
+        <div>
+          <div onClick={() => stopVideo()}>
+            {price != null && price > 0 && firstFileType === 'video' && videoSrc && (
+              <AddPreview
+                videoRef={videoRefCover}
+                setCover={setCover}
+                videoSrc={videoSrc || ''}
+                trailer={trailer}
+                setTrailer={setTrailer}
+                videoFile={videoFile}
+              />
+            )}
           </div>
-        )}
+          <StarsPage setPrice={setPrice} price={price || 0} featureRefBoll={featureRefBoll} />
+        </div>
+        {/* )} */}
       </div>
     </div>
   )

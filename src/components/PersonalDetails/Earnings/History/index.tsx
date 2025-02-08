@@ -57,9 +57,12 @@ const TelegramStars = ({
         loader={
           <Box textAlign="center" m="0 0" className="p-4">
             {/* <Skeleton childClassName="w-full h-[60px] m-[auto] mb-[20px]" /> */}
-            <div
-              className={"w-10 h-10 border-4 border-t-4 border-transparent rounded-full animate-spin border-t-[#6254ff] m-[auto] mt-[130px]"}
-            ></div>
+            <div className="flex items-center justify-center h-full pb-40 mt-[130px]">
+              <i
+                className="iconfont icon-loading animate-spin text-[#6254FF]"
+                style={{ fontSize: '40px' }}
+              />
+            </div>
           </Box>
         }
         scrollableTarget="starsScrollableDiv"
@@ -122,9 +125,12 @@ const Cryptos = ({
         loader={
           <Box textAlign="center" m="0 0" className="p-4">
             {/* <Skeleton childClassName="w-full h-[60px] m-[auto] mb-[20px]" /> */}
-            <div
-              className={"w-10 h-10 border-4 border-t-4 border-transparent rounded-full animate-spin border-t-[#6254ff] m-[auto] mt-[130px]"}
-            ></div>
+            <div className="flex items-center justify-center h-full pb-40 mt-[130px]">
+              <i
+                className="iconfont icon-loading animate-spin text-[#6254FF]"
+                style={{ fontSize: '40px' }}
+              />
+            </div>
           </Box>
         }
         scrollableTarget="cryptoScrollableDiv"

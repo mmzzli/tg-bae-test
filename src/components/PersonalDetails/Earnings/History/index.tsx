@@ -58,7 +58,7 @@ const TelegramStars = ({
           <Box textAlign="center" m="0 0" className="p-4">
             {/* <Skeleton childClassName="w-full h-[60px] m-[auto] mb-[20px]" /> */}
             <div
-              className={"w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254ff] m-[auto] mt-[130px]"}
+              className={"w-10 h-10 border-4 border-t-4 border-transparent rounded-full animate-spin border-t-[#6254ff] m-[auto] mt-[130px]"}
             ></div>
           </Box>
         }
@@ -123,7 +123,7 @@ const Cryptos = ({
           <Box textAlign="center" m="0 0" className="p-4">
             {/* <Skeleton childClassName="w-full h-[60px] m-[auto] mb-[20px]" /> */}
             <div
-              className={"w-5 h-5 border-2 border-t-2 border-transparent rounded-full animate-spin border-t-[#6254ff] m-[auto] mt-[130px]"}
+              className={"w-10 h-10 border-4 border-t-4 border-transparent rounded-full animate-spin border-t-[#6254ff] m-[auto] mt-[130px]"}
             ></div>
           </Box>
         }

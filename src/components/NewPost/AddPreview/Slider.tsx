@@ -213,6 +213,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
           <p className="text-[18px] text-[#fff] text-center h-[60px] leading-[60px] absolute w-[100%]">Video should be over 5s.</p>
         )}
         {duration > 5 && !trailerBoll && (
+          <div className='h-[100%] w-[100%] pr-[2px]'>
           <div className='relative h-[100%]'>
           <div
             className='mx-[1px]'
@@ -260,6 +261,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
               playsInline
               muted
             />
+          </div>
           </div>
           </div>
         )}

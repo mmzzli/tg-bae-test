@@ -135,6 +135,9 @@ video {
 
 .adm-tabs-tab {
   font-family: 'Switzer';
+  font-weight: 400;
+  font-size: 16px;
+  color: #666;
 }
 
 .adm-tabs {
@@ -144,6 +147,7 @@ video {
 
 .adm-tabs-tab-active {
   font-weight: 500;
+  color: #0f1233;
 }
 
 .ql-container.ql-snow {

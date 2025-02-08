@@ -37,7 +37,33 @@ const ViewList = ({ className }: PostListProps) => {
   const { initialize } = useFavList()
   const [activeIndex, setActiveIndex] = useState<number>(0)
   const swiperRef = useRef<SwiperRef>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [containerHeight, setContainerHeight] = useState('auto') // 动态高度
   const [stickyScrollPosition, setStickyScrollPosition] = useState<number | null>(null)
+  const [isBaseModalOpen, { toggle, off }] = useBoolean(false)
+  const [currentShareData, setCurrentShareData] = useState<ShareDataProps | null>(null)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [links, setLinks] = useSetState<ShreLinkProps>({
+    shareLink: '',
+    copyLink: '',
+  })
+
+  const [targetBoll, setTargetBoll] = useState<boolean>(false)
+
+  const { runAsync: getLinkHandlerAsync } = useRequest(getLink, {
+    manual: true,
+    onSuccess(res) {
+      console.log(res)
+    },
+  })
+
+  const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
+    toggle()
+    setIsLoading(false)
+    const { shareLink, copyLink } = await genShareLinkFn(title, pid, uid, getLinkHandlerAsync)
+    setLinks({ shareLink, copyLink: decodeURIComponent(copyLink) })
+    setIsLoading(true)
+  })
 
   const handleTabChange = (key: string) => {
     // initialize()
@@ -45,12 +71,27 @@ const ViewList = ({ className }: PostListProps) => {
     if (scrollableDiv && targetBoll && stickyScrollPosition !== null) {
       scrollableDiv.scrollTo({
         top: stickyScrollPosition,
-        behavior: 'smooth'
+        behavior: 'smooth',
       })
     }
-    const index = tabItems.findIndex(item => item.key === key)
+    const index = tabItems.findIndex((item) => item.key === key)
     setActiveIndex(index)
     swiperRef.current?.swipeTo(index)
+  }
+
+  // 初始高度设置
+  useEffect(() => {
+    updateHeight(0) // 初始化显示第一个 Item
+  }, [])
+
+  // 更新当前内容高度
+  const updateHeight = (index: number) => {
+    if (containerRef.current) {
+      const currentSlide = containerRef.current.querySelectorAll('.swiper-item-cutomer')[index]
+      if (currentSlide) {
+        setContainerHeight(`${currentSlide.scrollHeight}px`)
+      }
+    }
   }
 
   const handleSwipeChange = (index: number) => {
@@ -58,20 +99,13 @@ const ViewList = ({ className }: PostListProps) => {
     if (scrollableDiv && targetBoll && stickyScrollPosition !== null) {
       scrollableDiv.scrollTo({
         top: stickyScrollPosition,
-        behavior: 'smooth'
+        behavior: 'smooth',
       })
     }
     setActiveIndex(index)
+    updateHeight(index) // 切换时更新高度
   }
-  const [isBaseModalOpen, { toggle, off }] = useBoolean(false)
-   const [currentShareData, setCurrentShareData] = useState<ShareDataProps | null>(null)
-   const [isLoading, setIsLoading] = useState<boolean>(false)
-   const [links, setLinks] = useSetState<ShreLinkProps>({
-    shareLink: '',
-    copyLink: '',
-  })
 
-  const [targetBoll, setTargetBoll] = useState<boolean>(false)
   useEffect(() => {
     const element = document.getElementById('profileScrollableDiv')
     const target = document.getElementById('targetElement')
@@ -109,21 +143,6 @@ const ViewList = ({ className }: PostListProps) => {
     }
   }, [targetBoll])
 
-  const { runAsync: getLinkHandlerAsync } = useRequest(getLink, {
-    manual: true,
-    onSuccess(res) {
-      console.log(res)
-    },
-  })
-
-  const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
-    toggle()
-    setIsLoading(false)
-    const { shareLink, copyLink } = await genShareLinkFn(title, pid, uid, getLinkHandlerAsync)
-    setLinks({ shareLink, copyLink: decodeURIComponent(copyLink) })
-    setIsLoading(true)
-  })
-
   return (
     <>
       <div id="targetElement" className="relative">
@@ -146,34 +165,61 @@ const ViewList = ({ className }: PostListProps) => {
               '--active-title-color': '#0F1233',
             }}
           >
-            {tabItems.map(item => (
+            {tabItems.map((item) => (
               <Tabs.Tab title={item.title} key={item.key} />
             ))}
           </Tabs>
         </div>
         {targetBoll && <div style={{ height: '44px' }} />}
-        <Swiper
-          direction='horizontal'
-          indicator={() => null}
-          ref={swiperRef}
-          defaultIndex={activeIndex}
-          onIndexChange={handleSwipeChange}
+        <div
+          ref={containerRef}
+          style={{ height: containerHeight, minHeight: '200px', overflow: 'hidden', transition: 'height 0.3s' }}
+          id='test-swiper-container'
         >
-          <Swiper.Item>
-            <MyPosts key={'posts'} setCurrentShareData={setCurrentShareData} getShareLink={getShareLink} />
-          </Swiper.Item>
-          <Swiper.Item>
-            <OrderList key={'purchased'} setCurrentShareData={setCurrentShareData} getShareLink={getShareLink} />
-          </Swiper.Item>
-          <Swiper.Item>
-            <FavList key={'saved'} setCurrentShareData={setCurrentShareData} getShareLink={getShareLink} />
-          </Swiper.Item>
-        </Swiper>
+          <Swiper
+            direction="horizontal"
+            indicator={() => null}
+            ref={swiperRef}
+            defaultIndex={activeIndex}
+            onIndexChange={handleSwipeChange}
+          >
+            <Swiper.Item className='swiper-item-cutomer'>
+              <MyPosts
+                key={'posts'}
+                setCurrentShareData={setCurrentShareData}
+                getShareLink={getShareLink}
+                updateHeight={updateHeight}
+              />
+            </Swiper.Item>
+            <Swiper.Item className='swiper-item-cutomer'>
+              <OrderList
+                key={'purchased'}
+                setCurrentShareData={setCurrentShareData}
+                getShareLink={getShareLink}
+              />
+            </Swiper.Item>
+            <Swiper.Item className='swiper-item-cutomer'>
+              <FavList
+                key={'saved'}
+                setCurrentShareData={setCurrentShareData}
+                getShareLink={getShareLink}
+              />
+            </Swiper.Item>
+          </Swiper>
+        </div>
       </div>
     </>
   )
 }
-const MyPosts = ({ setCurrentShareData, getShareLink }: { setCurrentShareData: (data: ShareDataProps) => void, getShareLink: (title: string, pid: number, uid: number) => Promise<void> }) => {
+const MyPosts = ({
+  setCurrentShareData,
+  getShareLink,
+  updateHeight
+}: {
+  setCurrentShareData: (data: ShareDataProps) => void
+  getShareLink: (title: string, pid: number, uid: number) => Promise<void>,
+  updateHeight: (index: number) => void
+}) => {
   const { list, hasMore, fetchMoreData, page } = useViewList()
   // const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   // const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
@@ -200,11 +246,19 @@ const MyPosts = ({ setCurrentShareData, getShareLink }: { setCurrentShareData: (
     )
   }
 
+  useEffect(() => {
+    if(list.length) {
+      setTimeout(()=> {
+        updateHeight(0)
+      }, 0)
+    }
+  },[list])
+
   return (
     <InfiniteScroll
       dataLength={list.length}
       next={fetchMoreData}
-      hasMore={hasMore}
+      hasMore={false}
       loader={
         <Box textAlign="center" m="20px">
           <PostSkeleton />
@@ -215,10 +269,19 @@ const MyPosts = ({ setCurrentShareData, getShareLink }: { setCurrentShareData: (
       style={{ overflow: 'visible' }}
     >
       <ResourceList resources={list} type="view" />
+      {/* {list.map((item) => (
+        <div key={item.id}>{item.id}</div>
+      ))} */}
     </InfiniteScroll>
   )
 }
-const FavList = ({ setCurrentShareData, getShareLink }: { setCurrentShareData: (data: ShareDataProps) => void, getShareLink: (title: string, pid: number, uid: number) => Promise<void> }) => {
+const FavList = ({
+  setCurrentShareData,
+  getShareLink,
+}: {
+  setCurrentShareData: (data: ShareDataProps) => void
+  getShareLink: (title: string, pid: number, uid: number) => Promise<void>
+}) => {
   const { list, hasMore, fetchMoreData, page } = useFavList()
   // const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   // const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
@@ -258,11 +321,17 @@ const FavList = ({ setCurrentShareData, getShareLink }: { setCurrentShareData: (
       scrollThreshold={0.8}
       style={{ overflow: 'visible' }}
     >
-      <ResourceList resources={list} type="fav" hasMore={hasMore}/>
+      <ResourceList resources={list} type="fav" hasMore={hasMore} />
     </InfiniteScroll>
   )
 }
-const OrderList = ({ setCurrentShareData, getShareLink }: { setCurrentShareData: (data: ShareDataProps) => void, getShareLink: (title: string, pid: number, uid: number) => Promise<void> } ) => {
+const OrderList = ({
+  setCurrentShareData,
+  getShareLink,
+}: {
+  setCurrentShareData: (data: ShareDataProps) => void
+  getShareLink: (title: string, pid: number, uid: number) => Promise<void>
+}) => {
   const { list, hasMore, fetchMoreData, page } = useOrdersList()
   // const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   // const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
@@ -302,7 +371,7 @@ const OrderList = ({ setCurrentShareData, getShareLink }: { setCurrentShareData:
       scrollThreshold={0.8}
       style={{ overflow: 'visible' }}
     >
-      <ResourceList resources={list} type="payment"/>
+      <ResourceList resources={list} type="payment" />
     </InfiniteScroll>
   )
 }

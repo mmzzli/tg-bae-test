@@ -600,7 +600,7 @@ export const NewPost: FC = () => {
         style={{
           top: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
           bottom: isFocused
-            ? '0'
+            ? '32px'
             : price != null && price > 0 && firstFileType === 'video' && videoSrc
               ? '229px'
               : '140px',

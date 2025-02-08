@@ -238,7 +238,7 @@ const Tooltip: React.FC<TooltipProps> = ({
           render: () => {
             return <CustomToast title="Copied to clipboard!" type={typeOptions.success} />
           },
-          position: 'bottom',
+          position: 'top',
         })
       }
     } catch (error) {

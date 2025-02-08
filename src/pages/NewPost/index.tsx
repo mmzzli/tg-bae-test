@@ -73,7 +73,6 @@ export const NewPost: FC = () => {
     if ((!imgAttr || !imgAttr.length) && !videoSrc) {
       setFirstSelectFileType('')
     }
-
   }, [imgAttr, files, videoSrc])
 
   // upload states
@@ -600,11 +599,11 @@ export const NewPost: FC = () => {
         className="absolute left-0 right-0 px-4 overflow-auto list-scroll-trigger"
         style={{
           top: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
-          // bottom: isFocused
-          //   ? '0'
-          //   : price != null && price > 0 && firstFileType === 'video' && videoSrc
-          //     ? '210px'
-          //     : '120px',
+          bottom: isFocused
+            ? '0'
+            : price != null && price > 0 && firstFileType === 'video' && videoSrc
+              ? '229px'
+              : '140px',
         }}
       >
         {/* Page Header */}
@@ -631,11 +630,13 @@ export const NewPost: FC = () => {
         <div className="pt-[66px]">
           <Input
             type="file"
-            accept={!firstSelectFileType
-              ? "image/png,image/jpeg,image/jpg,video/mp4,video/webm"
-              : firstSelectFileType === 'image'
-                ? "image/png,image/jpeg,image/jpg"
-                : "video/mp4,video/webm"}
+            accept={
+              !firstSelectFileType
+                ? 'image/png,image/jpeg,image/jpg,video/mp4,video/webm'
+                : firstSelectFileType === 'image'
+                  ? 'image/png,image/jpeg,image/jpg'
+                  : 'video/mp4,video/webm'
+            }
             multiple
             onChange={handleFileChange}
             style={{ display: 'none' }}
@@ -727,7 +728,7 @@ export const NewPost: FC = () => {
             setTitle={setTitle}
             setIsFocused={setIsFocused}
             featureRefBoll={featureRefBoll}
-            height="500px"
+            height="auto"
             focusedTop={handleFocusedTop}
           />
         </div>

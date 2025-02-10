@@ -234,6 +234,14 @@ const MyPosts = ({
   //   'profileScrollableDiv',
   //   'video-card'
   // )
+  useEffect(() => {
+    if(list.length) {
+      setTimeout(()=> {
+        updateHeight(0)
+      }, 0)
+    }
+  },[list])
+
   if (!hasMore && !list.length) {
     return (
       <Empty
@@ -246,19 +254,12 @@ const MyPosts = ({
     )
   }
 
-  useEffect(() => {
-    if(list.length) {
-      setTimeout(()=> {
-        updateHeight(0)
-      }, 0)
-    }
-  },[list])
 
   return (
     <InfiniteScroll
       dataLength={list.length}
       next={fetchMoreData}
-      hasMore={false}
+      hasMore={hasMore}
       loader={
         <Box textAlign="center" m="20px">
           <PostSkeleton />

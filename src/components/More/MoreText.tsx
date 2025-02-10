@@ -121,8 +121,14 @@ const MoreText: React.FC<MoreTextProps> = ({
     // 将文本中的换行符替换为空格并去除首尾空格
     const trimmedText = text.replace(/\n/g, ' ').trim()
 
+    // 替换已有的颜色样式
+    const replacedText = trimmedText.replace(
+      /<span style="color: rgb\(0, 0, 0\);">(.*?)<\/span>/g,
+      '$1'
+    )
+
     // 使用正则表达式匹配@用户名
-    const parts = trimmedText.split(/(@\w+)/)
+    const parts = replacedText.split(/(@\w+)/)
     let processedText = ''
 
     parts.forEach((part) => {
@@ -130,6 +136,7 @@ const MoreText: React.FC<MoreTextProps> = ({
         // 如果是@用户名，添加带样式的span标签
         processedText += `<span style="color: #6761FF; cursor: pointer;">${part}</span>`
       } else {
+        // 普通文本不添加颜色样式包装
         processedText += part
       }
     })

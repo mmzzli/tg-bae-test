@@ -91,7 +91,11 @@ const ViewList = ({ className }: PostListProps) => {
     if (containerRef.current) {
       const currentSlide = containerRef.current.querySelectorAll('.swiper-item-cutomer')[index]
       if (currentSlide) {
-        setContainerHeight({ [index]: `${currentSlide.scrollHeight}px` })
+        console.log('currentSlide', currentSlide.scrollHeight, index)
+        setContainerHeight({ ...containerHeight, [index]: `${currentSlide.scrollHeight}px` })
+        setTimeout(() => {
+          console.log('currentSlide', containerHeight[activeIndex], index)
+        }, 0)
       }
     }
   }

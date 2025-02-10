@@ -72,8 +72,8 @@ const FollowPage: FC = () => {
           <Image
             src={item.avatar}
             alt={item.tgname}
-            width={56}
-            height={56}
+            width={44}
+            height={44}
             rect
             type="avatar"
             onClick={() => {
@@ -140,7 +140,7 @@ const FollowPage: FC = () => {
                 (follower.list.length ? (
                   <InfiniteScroll
                     dataLength={follower.list.length}
-                    next={() => {}}
+                    next={() => { }}
                     hasMore={false}
                     loader={
                       <div className="flex items-center justify-center">
@@ -171,7 +171,7 @@ const FollowPage: FC = () => {
                 (following.list.length ? (
                   <InfiniteScroll
                     dataLength={following.list.length}
-                    next={() => {}}
+                    next={() => { }}
                     hasMore={false}
                     loader={
                       <div className="flex items-center justify-center">

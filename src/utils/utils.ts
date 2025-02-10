@@ -337,6 +337,16 @@ export const splitNumberParts = (num: number) => {
   const bigNum = new BigNumber(num)
   const numStr = bigNum.toFixed() // 保持原始数字格式，不转科学计数法
 
+  // 检查是否小于最小值 0.00000001
+  if (bigNum.isGreaterThan(0) && bigNum.isLessThan('0.00000001')) {
+    return {
+      integerPart: '≈0',
+      dot: '.',
+      zeros: null,
+      decimalPart: '00',
+    }
+  }
+
   // 如果是整数，直接返回
   if (!numStr.includes('.')) {
     return {
@@ -349,27 +359,49 @@ export const splitNumberParts = (num: number) => {
 
   const [integerPart, decimalPart] = numStr.split('.')
 
+  // 处理小数部分，可以指定最大位数
+  const truncateAndTrimZeros = (decimal: string, maxDigits: number) => {
+    const truncated = decimal.slice(0, maxDigits)
+    const trimmed = truncated.replace(/0+$/, '')
+    return trimmed || null
+  }
+
   // 匹配小数点后连续的 0
   const zeroMatch = decimalPart.match(/^(0+)/)
 
   if (zeroMatch) {
     const zerosCount = zeroMatch[1].length
-    const remainingPart = decimalPart.slice(zerosCount) || null
-
-    return {
-      integerPart,
-      dot: '.0',
-      zeros: zerosCount,
-      decimalPart: remainingPart,
+    // 如果连续0的数量大于3，记录zerosCount，最多保留8位
+    if (zerosCount > 3) {
+      const remainingPart = decimalPart.slice(zerosCount)
+      // 计算剩余可用的位数 = 8 - zerosCount
+      const remainingDigits = Math.max(8 - zerosCount, 0)
+      const processedDecimal = remainingPart ? truncateAndTrimZeros(remainingPart, remainingDigits) : null
+      return {
+        integerPart,
+        dot: '.0',
+        zeros: zerosCount,
+        decimalPart: processedDecimal,
+      }
+    } else {
+      // 如果连续0的数量不大于3，保留6位小数
+      const processedDecimal = truncateAndTrimZeros(decimalPart, 6)
+      return {
+        integerPart,
+        dot: '.',
+        zeros: null,
+        decimalPart: processedDecimal,
+      }
     }
   }
 
-  // 没有连续 0 的情况
+  // 如果没有前导0，保留6位小数
+  const processedDecimal = truncateAndTrimZeros(decimalPart, 6)
   return {
-    integerPart: numStr,
-    dot: null,
+    integerPart,
+    dot: '.',
     zeros: null,
-    decimalPart: null,
+    decimalPart: processedDecimal,
   }
 }
 

@@ -40,6 +40,7 @@ interface BottomSheetProps extends Partial<Position> {
   showHandle?: boolean
   usePortal?: boolean
   portalContainer?: HTMLElement
+  id?: string
 }
 
 const DEFAULT_ANIMATION: Required<AnimationConfig> = {
@@ -69,6 +70,7 @@ export const BaseModal: FC<BottomSheetProps> = ({
   showHandle = true,
   usePortal = false,
   portalContainer,
+  id
 }) => {
   const getTelegramTheme = (): { isDark: boolean; backgroundColor: string } => {
     try {
@@ -136,6 +138,7 @@ export const BaseModal: FC<BottomSheetProps> = ({
           isOpen ? 'translate-y-0' : 'translate-y-full'
         } ${className}`}
         style={sheetStyle}
+        id={id}
       >
         {showHandle && (
           <div

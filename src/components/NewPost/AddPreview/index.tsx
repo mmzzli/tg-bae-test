@@ -471,6 +471,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
       <BaseModal
         isOpen={isBaseModalOpen}
         onClose={off}
+        id="postScroll"
         // height={isLandscape ? '70vh' : '85vh'}
         style={{
           maxHeight: isLandscape ? '70vh' : '85vh',

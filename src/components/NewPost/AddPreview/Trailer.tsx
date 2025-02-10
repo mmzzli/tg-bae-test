@@ -83,6 +83,15 @@ const Trailer: React.FC<TrailerProps> = ({
               onClick={() => {
                 setTrailerBoll(true);
                 setPreviewVideoUrl(videoSrc);
+                setTimeout(()=>{
+                  const scrollable = document.getElementById("postScroll"); // 选择 id="1" 的元素
+                  if (scrollable) {
+                    scrollable.scrollTo({
+                      top: scrollable.scrollHeight,
+                      behavior: "smooth",
+                    });
+                  }
+                },100)
               }}
               src={videoSrc}
               preload="metadata"

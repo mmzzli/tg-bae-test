@@ -27,6 +27,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
   const playerRef = useRef<Player | null>(null)
   const { bottom } = useSafeArea()
 
+  const handleClose = useCallback(() => {
+    if (playerRef.current) {
+      playerRef.current.pause()
+    }
+  }, [])
+
   useEffect(() => {
     if (playerRef.current) {
       playerRef.current.muted = allMuted
@@ -144,6 +150,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
           bottom={bottom}
           is_follow={sourceItem?.is_follow}
           created_at={sourceItem?.created_at}
+          onClose={handleClose}
         />
       </div>
       <div className="pt-3" style={{ height: '11vh' }}>

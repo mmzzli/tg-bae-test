@@ -116,7 +116,7 @@ const Profile: FC = () => {
         {/* <div onClick={handleSuccess}>点击成功</div> */}
       </div>
       <h3
-        className="fixed text-black dark:text-[#E0E2F6] text-[20px] flex items-center duration-300 ease-out"
+        className="fixed text-black dark:text-[#E0E2F6] text-[20px] duration-300 ease-out"
         style={{
           opacity: showTopTitle ? 1 : 0,
           transform: `translateX(-50%)`,
@@ -127,6 +127,11 @@ const Profile: FC = () => {
               ? 'calc(var(--tg-safe-area-inset-top) + 10px)'
               : 'calc(var(--tg-safe-area-inset-top) + 24px)'
           }`,
+          width: '170px',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          textAlign: 'center'
         }}
       >
         {userInfo?.username}

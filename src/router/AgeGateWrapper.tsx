@@ -30,9 +30,9 @@ export const AgeGateWrapper = ({ children }: { children: React.ReactNode }) => {
       return
     }
 
-    if (!isAgeVerified && !tempAgeVerified) {
-      navigate('/ageGate')
-    }
+    // if (!isAgeVerified && !tempAgeVerified) {
+    //   navigate('/ageGate')
+    // }
   }, [location.pathname, current_uid])
 
   return <>{children}</>

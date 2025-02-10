@@ -337,8 +337,8 @@ export const splitNumberParts = (num: number) => {
   const bigNum = new BigNumber(num)
   const numStr = bigNum.toFixed() // 保持原始数字格式，不转科学计数法
 
-  // 如果是整数或小数点后 <= 6 位，直接返回
-  if (!numStr.includes('.') || numStr.split('.')[1].length <= 6) {
+  // 如果是整数，直接返回
+  if (!numStr.includes('.')) {
     return {
       integerPart: numStr,
       dot: null,

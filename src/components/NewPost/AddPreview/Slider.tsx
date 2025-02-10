@@ -192,7 +192,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
           width: '100%',
           height: '64px',
           background: 'rgba(0, 0, 0, 0.2)',
-          borderRadius: '5px',
+          borderRadius: '8px',
           cursor: 'pointer',
           overflow: 'hidden',
         }}
@@ -213,9 +213,10 @@ const TransparentSlider: React.FC<SliderProps> = ({
           <p className="text-[18px] text-[#fff] text-center h-[60px] leading-[60px] absolute w-[100%]">Video should be over 5s.</p>
         )}
         {duration > 5 && !trailerBoll && (
+          <div className='h-[100%] w-[100%] px-[2.5px]'>
           <div className='relative h-[100%]'>
           <div
-            className='mx-[1px]'
+            className=''
             style={{
               position: 'absolute',
               overflow: 'hidden',
@@ -260,6 +261,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
               playsInline
               muted
             />
+          </div>
           </div>
           </div>
         )}

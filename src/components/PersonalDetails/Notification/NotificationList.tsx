@@ -298,8 +298,8 @@ const NotificationList: FC = () => {
         {isLoading && (
           <div className="py-4 flex items-center justify-center">
             <i
-              className="iconfont icon-loading animate-spin text-[#6254FF]"
-              style={{ fontSize: '40px' }}
+              className="iconfont icon-loading animate-spin text-[#999]"
+              style={{ fontSize: '20px' }}
             />
           </div>
         )}

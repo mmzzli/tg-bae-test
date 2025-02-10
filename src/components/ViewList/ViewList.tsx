@@ -83,7 +83,7 @@ const ViewList = ({ className }: PostListProps) => {
   useEffect(() => {
     setTimeout(()=> {
       updateHeight(0) // 初始化显示第一个 Item
-    }, 100)
+    }, 300)
   }, [])
 
   // 更新当前内容高度
@@ -91,11 +91,10 @@ const ViewList = ({ className }: PostListProps) => {
     if (containerRef.current) {
       const currentSlide = containerRef.current.querySelectorAll('.swiper-item-cutomer')[index]
       if (currentSlide) {
-        console.log('currentSlide', currentSlide.scrollHeight, index)
-        setContainerHeight({ ...containerHeight, [index]: `${currentSlide.scrollHeight}px` })
-        setTimeout(() => {
-          console.log('currentSlide', containerHeight[activeIndex], index)
-        }, 0)
+        requestAnimationFrame(() => {
+          const height = currentSlide.scrollHeight
+          setContainerHeight(prev => ({ ...prev, [index]: `${height}px` }))
+        })
       }
     }
   }
@@ -109,7 +108,9 @@ const ViewList = ({ className }: PostListProps) => {
       })
     }
     setActiveIndex(index)
-    updateHeight(index) // 切换时更新高度
+    setTimeout(() => {
+      updateHeight(index)
+    }, 100)
   }
 
   useEffect(() => {
@@ -244,9 +245,11 @@ const MyPosts = ({
   // )
   useEffect(() => {
     if(list.length) {
-      setTimeout(()=> {
-        updateHeight(0)
-      }, 0)
+      setTimeout(() => {
+        requestAnimationFrame(() => {
+          updateHeight(0) // index 对应各自的索引值
+        })
+      }, 100)
     }
   },[list])
 
@@ -309,9 +312,11 @@ const FavList = ({
   // )
   useEffect(() => {
     if(list.length) {
-      setTimeout(()=> {
-        updateHeight(2)
-      }, 0)
+      setTimeout(() => {
+        requestAnimationFrame(() => {
+          updateHeight(2) // index 对应各自的索引值
+        })
+      }, 100)
     }
   },[list])
   if (!hasMore && !list.length) {
@@ -368,9 +373,11 @@ const OrderList = ({
   // )
   useEffect(() => {
     if(list.length) {
-      setTimeout(()=> {
-        updateHeight(1)
-      }, 0)
+      setTimeout(() => {
+        requestAnimationFrame(() => {
+          updateHeight(1) // index 对应各自的索引值
+        })
+      }, 100)
     }
   },[list])
   if (!hasMore && !list.length) {

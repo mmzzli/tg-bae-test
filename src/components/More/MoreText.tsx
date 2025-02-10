@@ -13,6 +13,7 @@ interface MoreTextProps {
   textColor?: string
   className?: string
   type?: string
+  onTextClick?: (e: MouseEvent) => void
 }
 
 const MoreText: React.FC<MoreTextProps> = ({
@@ -23,6 +24,7 @@ const MoreText: React.FC<MoreTextProps> = ({
   textColor = '#666',
   className = '',
   type,
+  onTextClick,
 }) => {
   const navigate = useNavigate()
   const quillRef = useRef<any>(null)
@@ -38,6 +40,8 @@ const MoreText: React.FC<MoreTextProps> = ({
         const username = target.textContent.slice(1) // 移除@符号
         navigate(`/profile/${username}`)
       }
+      // 调用外部传入的回调函数
+      onTextClick?.(e)
     }
 
     if (quillRef.current) {
@@ -114,7 +118,7 @@ const MoreText: React.FC<MoreTextProps> = ({
         quillRef.current.getEditor().root._lastStyle.remove()
       }
     }
-  }, [text, isExpanded, shouldShowButton, maxLines, navigate])
+  }, [text, isExpanded, shouldShowButton, maxLines, navigate, onTextClick])
 
   // 处理@提及的函数
   const processText = (text: string) => {

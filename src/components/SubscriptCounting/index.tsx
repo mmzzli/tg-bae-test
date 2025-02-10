@@ -13,7 +13,7 @@ const SubscriptCounting: React.FC<SubscriptCountingProps> = ({
   hasDollar = false,
 }) => {
   const parts = splitNumberParts(amount)
-  const decimalPart = parts.decimalPart ? parts.decimalPart.slice(0, 4) : parts.decimalPart
+  const decimalPart = parts.decimalPart
 
   return (
     <span className={className}>

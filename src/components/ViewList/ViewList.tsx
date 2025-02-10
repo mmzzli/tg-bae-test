@@ -38,7 +38,7 @@ const ViewList = ({ className }: PostListProps) => {
   const [activeIndex, setActiveIndex] = useState<number>(0)
   const swiperRef = useRef<SwiperRef>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const [containerHeight, setContainerHeight] = useState('auto') // 动态高度
+  const [containerHeight, setContainerHeight] = useState<Record<string, string>>({}) // 动态高度
   const [stickyScrollPosition, setStickyScrollPosition] = useState<number | null>(null)
   const [isBaseModalOpen, { toggle, off }] = useBoolean(false)
   const [currentShareData, setCurrentShareData] = useState<ShareDataProps | null>(null)
@@ -81,7 +81,9 @@ const ViewList = ({ className }: PostListProps) => {
 
   // 初始高度设置
   useEffect(() => {
-    updateHeight(0) // 初始化显示第一个 Item
+    setTimeout(()=> {
+      updateHeight(0) // 初始化显示第一个 Item
+    }, 100)
   }, [])
 
   // 更新当前内容高度
@@ -89,7 +91,7 @@ const ViewList = ({ className }: PostListProps) => {
     if (containerRef.current) {
       const currentSlide = containerRef.current.querySelectorAll('.swiper-item-cutomer')[index]
       if (currentSlide) {
-        setContainerHeight(`${currentSlide.scrollHeight}px`)
+        setContainerHeight({ [index]: `${currentSlide.scrollHeight}px` })
       }
     }
   }
@@ -173,7 +175,7 @@ const ViewList = ({ className }: PostListProps) => {
         {targetBoll && <div style={{ height: '44px' }} />}
         <div
           ref={containerRef}
-          style={{ height: containerHeight, minHeight: '200px', overflow: 'hidden', transition: 'height 0.3s' }}
+          style={{ height: containerHeight[activeIndex], minHeight: '200px', overflow: 'hidden', transition: 'height 0.3s' }}
           id='test-swiper-container'
         >
           <Swiper

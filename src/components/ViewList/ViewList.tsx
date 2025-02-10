@@ -196,6 +196,7 @@ const ViewList = ({ className }: PostListProps) => {
                 key={'purchased'}
                 setCurrentShareData={setCurrentShareData}
                 getShareLink={getShareLink}
+                updateHeight={updateHeight}
               />
             </Swiper.Item>
             <Swiper.Item className='swiper-item-cutomer'>
@@ -203,6 +204,7 @@ const ViewList = ({ className }: PostListProps) => {
                 key={'saved'}
                 setCurrentShareData={setCurrentShareData}
                 getShareLink={getShareLink}
+                updateHeight={updateHeight}
               />
             </Swiper.Item>
           </Swiper>
@@ -279,9 +281,11 @@ const MyPosts = ({
 const FavList = ({
   setCurrentShareData,
   getShareLink,
+  updateHeight
 }: {
   setCurrentShareData: (data: ShareDataProps) => void
   getShareLink: (title: string, pid: number, uid: number) => Promise<void>
+  updateHeight: (index: number) => void
 }) => {
   const { list, hasMore, fetchMoreData, page } = useFavList()
   // const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
@@ -297,6 +301,13 @@ const FavList = ({
   //   'profileScrollableDiv',
   //   'video-card'
   // )
+  useEffect(() => {
+    if(list.length) {
+      setTimeout(()=> {
+        updateHeight(2)
+      }, 0)
+    }
+  },[list])
   if (!hasMore && !list.length) {
     return (
       <Empty
@@ -329,9 +340,11 @@ const FavList = ({
 const OrderList = ({
   setCurrentShareData,
   getShareLink,
+  updateHeight
 }: {
   setCurrentShareData: (data: ShareDataProps) => void
   getShareLink: (title: string, pid: number, uid: number) => Promise<void>
+  updateHeight: (index: number) => void
 }) => {
   const { list, hasMore, fetchMoreData, page } = useOrdersList()
   // const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
@@ -347,6 +360,13 @@ const OrderList = ({
   //   'profileScrollableDiv',
   //   'video-card'
   // )
+  useEffect(() => {
+    if(list.length) {
+      setTimeout(()=> {
+        updateHeight(1)
+      }, 0)
+    }
+  },[list])
   if (!hasMore && !list.length) {
     return (
       <Empty

@@ -38,7 +38,7 @@ const ViewList = ({ className }: PostListProps) => {
   const [activeIndex, setActiveIndex] = useState<number>(0)
   const swiperRef = useRef<SwiperRef>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const [containerHeight, setContainerHeight] = useState('auto') // 动态高度
+  const [containerHeight, setContainerHeight] = useState<Record<string, string>>({}) // 动态高度
   const [stickyScrollPosition, setStickyScrollPosition] = useState<number | null>(null)
   const [isBaseModalOpen, { toggle, off }] = useBoolean(false)
   const [currentShareData, setCurrentShareData] = useState<ShareDataProps | null>(null)
@@ -81,7 +81,9 @@ const ViewList = ({ className }: PostListProps) => {
 
   // 初始高度设置
   useEffect(() => {
-    updateHeight(0) // 初始化显示第一个 Item
+    setTimeout(()=> {
+      updateHeight(0) // 初始化显示第一个 Item
+    }, 300)
   }, [])
 
   // 更新当前内容高度
@@ -89,7 +91,10 @@ const ViewList = ({ className }: PostListProps) => {
     if (containerRef.current) {
       const currentSlide = containerRef.current.querySelectorAll('.swiper-item-cutomer')[index]
       if (currentSlide) {
-        setContainerHeight(`${currentSlide.scrollHeight}px`)
+        requestAnimationFrame(() => {
+          const height = currentSlide.scrollHeight
+          setContainerHeight(prev => ({ ...prev, [index]: `${height}px` }))
+        })
       }
     }
   }
@@ -103,7 +108,9 @@ const ViewList = ({ className }: PostListProps) => {
       })
     }
     setActiveIndex(index)
-    updateHeight(index) // 切换时更新高度
+    setTimeout(() => {
+      updateHeight(index)
+    }, 100)
   }
 
   useEffect(() => {
@@ -173,7 +180,7 @@ const ViewList = ({ className }: PostListProps) => {
         {targetBoll && <div style={{ height: '44px' }} />}
         <div
           ref={containerRef}
-          style={{ height: containerHeight, minHeight: '200px', overflow: 'hidden', transition: 'height 0.3s' }}
+          style={{ height: containerHeight[activeIndex], minHeight: '200px', overflow: 'hidden', transition: 'height 0.3s' }}
           id='test-swiper-container'
         >
           <Swiper
@@ -196,6 +203,7 @@ const ViewList = ({ className }: PostListProps) => {
                 key={'purchased'}
                 setCurrentShareData={setCurrentShareData}
                 getShareLink={getShareLink}
+                updateHeight={updateHeight}
               />
             </Swiper.Item>
             <Swiper.Item className='swiper-item-cutomer'>
@@ -203,6 +211,7 @@ const ViewList = ({ className }: PostListProps) => {
                 key={'saved'}
                 setCurrentShareData={setCurrentShareData}
                 getShareLink={getShareLink}
+                updateHeight={updateHeight}
               />
             </Swiper.Item>
           </Swiper>
@@ -236,9 +245,11 @@ const MyPosts = ({
   // )
   useEffect(() => {
     if(list.length) {
-      setTimeout(()=> {
-        updateHeight(0)
-      }, 0)
+      setTimeout(() => {
+        requestAnimationFrame(() => {
+          updateHeight(0) // index 对应各自的索引值
+        })
+      }, 100)
     }
   },[list])
 
@@ -279,9 +290,11 @@ const MyPosts = ({
 const FavList = ({
   setCurrentShareData,
   getShareLink,
+  updateHeight
 }: {
   setCurrentShareData: (data: ShareDataProps) => void
   getShareLink: (title: string, pid: number, uid: number) => Promise<void>
+  updateHeight: (index: number) => void
 }) => {
   const { list, hasMore, fetchMoreData, page } = useFavList()
   // const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
@@ -297,6 +310,15 @@ const FavList = ({
   //   'profileScrollableDiv',
   //   'video-card'
   // )
+  useEffect(() => {
+    if(list.length) {
+      setTimeout(() => {
+        requestAnimationFrame(() => {
+          updateHeight(2) // index 对应各自的索引值
+        })
+      }, 100)
+    }
+  },[list])
   if (!hasMore && !list.length) {
     return (
       <Empty
@@ -329,9 +351,11 @@ const FavList = ({
 const OrderList = ({
   setCurrentShareData,
   getShareLink,
+  updateHeight
 }: {
   setCurrentShareData: (data: ShareDataProps) => void
   getShareLink: (title: string, pid: number, uid: number) => Promise<void>
+  updateHeight: (index: number) => void
 }) => {
   const { list, hasMore, fetchMoreData, page } = useOrdersList()
   // const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
@@ -347,6 +371,15 @@ const OrderList = ({
   //   'profileScrollableDiv',
   //   'video-card'
   // )
+  useEffect(() => {
+    if(list.length) {
+      setTimeout(() => {
+        requestAnimationFrame(() => {
+          updateHeight(1) // index 对应各自的索引值
+        })
+      }, 100)
+    }
+  },[list])
   if (!hasMore && !list.length) {
     return (
       <Empty

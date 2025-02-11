@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Input } from '@chakra-ui/react';
+import React, { useState, useEffect, useRef } from 'react'
+import { Input } from '@chakra-ui/react'
 
 interface TrailerProps {
-  trailerBoll: boolean;
-  setTrailerBoll: (boll: boolean) => void;
-  setVideoRefTrailer: (file: File | null) => void;
-  setPreviewVideoUrl: (str: string) => void;
+  trailerBoll: boolean
+  setTrailerBoll: (boll: boolean) => void
+  setVideoRefTrailer: (file: File | null) => void
+  setPreviewVideoUrl: (str: string) => void
 }
 
 const Trailer: React.FC<TrailerProps> = ({
@@ -14,45 +14,45 @@ const Trailer: React.FC<TrailerProps> = ({
   setVideoRefTrailer,
   setPreviewVideoUrl,
 }) => {
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [videoSrc, setVideoSrc] = useState('');
+  const inputRef = useRef<HTMLInputElement | null>(null)
+  const videoRef = useRef<HTMLVideoElement | null>(null)
+  const [videoSrc, setVideoSrc] = useState('')
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newFiles = event.target.files;
-    if (!newFiles || newFiles.length === 0) return;
+    const newFiles = event.target.files
+    if (!newFiles || newFiles.length === 0) return
 
-    const file = newFiles[0];
-    setVideoRefTrailer(file);
+    const file = newFiles[0]
+    setVideoRefTrailer(file)
 
-    const videoUrl = URL.createObjectURL(file);
-    setVideoSrc(videoUrl);
-    setTrailerBoll(true);
+    const videoUrl = URL.createObjectURL(file)
+    setVideoSrc(videoUrl)
+    setTrailerBoll(true)
 
-    console.log('File selected:', file);
-    console.log('Video URL:', videoUrl);
-  };
+    console.log('File selected:', file)
+    console.log('Video URL:', videoUrl)
+  }
 
   useEffect(() => {
     if (videoSrc && videoRef.current) {
-      setPreviewVideoUrl(videoSrc);
+      setPreviewVideoUrl(videoSrc)
       setTimeout(() => {
-        videoRef.current?.load();
-      }, 100);
-      console.log('Video source set:', videoSrc);
+        videoRef.current?.load()
+      }, 100)
+      console.log('Video source set:', videoSrc)
     }
-  }, [videoSrc, videoRef]);
+  }, [videoSrc, videoRef])
 
   const handleChooseFile = () => {
-    inputRef.current?.click();
-  };
+    inputRef.current?.click()
+  }
 
   const clearVideo = () => {
-    setVideoSrc("");
-    setPreviewVideoUrl("")
-    setTrailerBoll(false);
-    setVideoRefTrailer(null);
-  };
+    setVideoSrc('')
+    setPreviewVideoUrl('')
+    setTrailerBoll(false)
+    setVideoRefTrailer(null)
+  }
 
   return (
     <div className="relative">
@@ -81,15 +81,15 @@ const Trailer: React.FC<TrailerProps> = ({
               ref={videoRef}
               className="h-[64px] w-[64px] object-cover cursor-pointer rounded-md"
               onClick={() => {
-                setTrailerBoll(true);
-                setPreviewVideoUrl(videoSrc);
+                setTrailerBoll(true)
+                setPreviewVideoUrl(videoSrc)
                 setTimeout(() => {
-                  const scrollable = document.getElementById("postScroll");
+                  const scrollable = document.getElementById('postScroll')
                   if (scrollable) {
                     scrollable.scrollTo({
                       top: scrollable.scrollHeight,
-                      behavior: "smooth",
-                    });
+                      behavior: 'smooth',
+                    })
                   }
                 }, 100)
               }}
@@ -98,7 +98,7 @@ const Trailer: React.FC<TrailerProps> = ({
               autoPlay
               playsInline
               muted
-            // controls
+              // controls
             />
           </div>
         </div>
@@ -111,7 +111,7 @@ const Trailer: React.FC<TrailerProps> = ({
         ref={inputRef}
       />
     </div>
-  );
-};
+  )
+}
 
-export default Trailer;
+export default Trailer

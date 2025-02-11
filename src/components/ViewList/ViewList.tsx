@@ -34,7 +34,9 @@ const tabItems = [
 ]
 
 const ViewList = ({ className }: PostListProps) => {
-  const { initialize } = useFavList()
+  const { refresh: refreshFav } = useFavList()
+  const { refresh: refreshOrders } = useOrdersList()
+  const { refresh: refreshView } = useViewList()
   const [activeIndex, setActiveIndex] = useState<number>(0)
   const swiperRef = useRef<SwiperRef>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -66,7 +68,6 @@ const ViewList = ({ className }: PostListProps) => {
   })
 
   const handleTabChange = (key: string) => {
-    // initialize()
     const scrollableDiv = document.getElementById('profileScrollableDiv')
     if (scrollableDiv && targetBoll && stickyScrollPosition !== null) {
       scrollableDiv.scrollTo({
@@ -81,7 +82,7 @@ const ViewList = ({ className }: PostListProps) => {
 
   // 初始高度设置
   useEffect(() => {
-    setTimeout(()=> {
+    setTimeout(() => {
       updateHeight(0) // 初始化显示第一个 Item
     }, 300)
   }, [])
@@ -93,7 +94,7 @@ const ViewList = ({ className }: PostListProps) => {
       if (currentSlide) {
         requestAnimationFrame(() => {
           const height = currentSlide.scrollHeight
-          setContainerHeight(prev => ({ ...prev, [index]: `${height}px` }))
+          setContainerHeight((prev) => ({ ...prev, [index]: `${height}px` }))
         })
       }
     }
@@ -111,6 +112,19 @@ const ViewList = ({ className }: PostListProps) => {
     setTimeout(() => {
       updateHeight(index)
     }, 100)
+
+    // Refresh data based on swiper index
+    switch (tabItems[index].key) {
+      case 'posts':
+        refreshView()
+        break
+      case 'purchased':
+        refreshOrders()
+        break
+      case 'saved':
+        refreshFav()
+        break
+    }
   }
 
   useEffect(() => {
@@ -180,8 +194,13 @@ const ViewList = ({ className }: PostListProps) => {
         {targetBoll && <div style={{ height: '44px' }} />}
         <div
           ref={containerRef}
-          style={{ height: containerHeight[activeIndex], minHeight: '200px', overflow: 'hidden', transition: 'height 0.3s' }}
-          id='test-swiper-container'
+          style={{
+            height: containerHeight[activeIndex],
+            minHeight: '200px',
+            overflow: 'hidden',
+            transition: 'height 0.3s',
+          }}
+          id="test-swiper-container"
         >
           <Swiper
             direction="horizontal"
@@ -190,7 +209,7 @@ const ViewList = ({ className }: PostListProps) => {
             defaultIndex={activeIndex}
             onIndexChange={handleSwipeChange}
           >
-            <Swiper.Item className='swiper-item-cutomer'>
+            <Swiper.Item className="swiper-item-cutomer">
               <MyPosts
                 key={'posts'}
                 setCurrentShareData={setCurrentShareData}
@@ -198,7 +217,7 @@ const ViewList = ({ className }: PostListProps) => {
                 updateHeight={updateHeight}
               />
             </Swiper.Item>
-            <Swiper.Item className='swiper-item-cutomer'>
+            <Swiper.Item className="swiper-item-cutomer">
               <OrderList
                 key={'purchased'}
                 setCurrentShareData={setCurrentShareData}
@@ -206,7 +225,7 @@ const ViewList = ({ className }: PostListProps) => {
                 updateHeight={updateHeight}
               />
             </Swiper.Item>
-            <Swiper.Item className='swiper-item-cutomer'>
+            <Swiper.Item className="swiper-item-cutomer">
               <FavList
                 key={'saved'}
                 setCurrentShareData={setCurrentShareData}
@@ -223,35 +242,23 @@ const ViewList = ({ className }: PostListProps) => {
 const MyPosts = ({
   setCurrentShareData,
   getShareLink,
-  updateHeight
+  updateHeight,
 }: {
   setCurrentShareData: (data: ShareDataProps) => void
-  getShareLink: (title: string, pid: number, uid: number) => Promise<void>,
+  getShareLink: (title: string, pid: number, uid: number) => Promise<void>
   updateHeight: (index: number) => void
 }) => {
   const { list, hasMore, fetchMoreData, page } = useViewList()
-  // const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
-  // const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
-  // const updateCache = useStore((state) => state.updateCache)
-  //
-  // useCacheVideo(
-  //   list,
-  //   page,
-  //   setCacheVideoIndex,
-  //   getCacheVideoindex,
-  //   updateCache,
-  //   'profileScrollableDiv',
-  //   'video-card'
-  // )
+
   useEffect(() => {
-    if(list.length) {
+    if (list.length) {
       setTimeout(() => {
         requestAnimationFrame(() => {
           updateHeight(0) // index 对应各自的索引值
         })
       }, 100)
     }
-  },[list])
+  }, [list])
 
   if (!hasMore && !list.length) {
     return (
@@ -265,14 +272,13 @@ const MyPosts = ({
     )
   }
 
-
   return (
     <InfiniteScroll
       dataLength={list.length}
       next={fetchMoreData}
       hasMore={hasMore}
       loader={
-        <Box textAlign="center" m="20px">
+        <Box textAlign="center" className='pt-[24px]'>
           <PostSkeleton />
         </Box>
       }
@@ -281,45 +287,30 @@ const MyPosts = ({
       style={{ overflow: 'visible' }}
     >
       <ResourceList resources={list} type="view" />
-      {/* {list.map((item) => (
-        <div key={item.id}>{item.id}</div>
-      ))} */}
     </InfiniteScroll>
   )
 }
 const FavList = ({
   setCurrentShareData,
   getShareLink,
-  updateHeight
+  updateHeight,
 }: {
   setCurrentShareData: (data: ShareDataProps) => void
   getShareLink: (title: string, pid: number, uid: number) => Promise<void>
   updateHeight: (index: number) => void
 }) => {
   const { list, hasMore, fetchMoreData, page } = useFavList()
-  // const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
-  // const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
-  // const updateCache = useStore((state) => state.updateCache)
-  //
-  // useCacheVideo(
-  //   list,
-  //   page,
-  //   setCacheVideoIndex,
-  //   getCacheVideoindex,
-  //   updateCache,
-  //   'profileScrollableDiv',
-  //   'video-card'
-  // )
+
   useEffect(() => {
-    if(list.length) {
+    if (list.length) {
       setTimeout(() => {
         requestAnimationFrame(() => {
           updateHeight(2) // index 对应各自的索引值
         })
       }, 100)
     }
-  },[list])
-  if (!hasMore && !list.length) {
+  }, [list])
+  if (!hasMore && list.length <= 0) {
     return (
       <Empty
         title="No post yet."
@@ -336,7 +327,7 @@ const FavList = ({
       next={fetchMoreData}
       hasMore={hasMore}
       loader={
-        <Box textAlign="center" m="20px ">
+        <Box textAlign="center" className="pt-[24px]">
           <PostSkeleton />
         </Box>
       }
@@ -351,35 +342,23 @@ const FavList = ({
 const OrderList = ({
   setCurrentShareData,
   getShareLink,
-  updateHeight
+  updateHeight,
 }: {
   setCurrentShareData: (data: ShareDataProps) => void
   getShareLink: (title: string, pid: number, uid: number) => Promise<void>
   updateHeight: (index: number) => void
 }) => {
   const { list, hasMore, fetchMoreData, page } = useOrdersList()
-  // const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
-  // const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
-  // const updateCache = useStore((state) => state.updateCache)
-  //
-  // useCacheVideo(
-  //   list,
-  //   page,
-  //   setCacheVideoIndex,
-  //   getCacheVideoindex,
-  //   updateCache,
-  //   'profileScrollableDiv',
-  //   'video-card'
-  // )
+
   useEffect(() => {
-    if(list.length) {
+    if (list.length) {
       setTimeout(() => {
         requestAnimationFrame(() => {
           updateHeight(1) // index 对应各自的索引值
         })
       }, 100)
     }
-  },[list])
+  }, [list])
   if (!hasMore && !list.length) {
     return (
       <Empty
@@ -397,7 +376,7 @@ const OrderList = ({
       next={fetchMoreData}
       hasMore={hasMore}
       loader={
-        <Box textAlign="center" m="20px">
+        <Box textAlign="center" className="pt-[24px]">
           <PostSkeleton />
         </Box>
       }

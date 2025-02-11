@@ -46,6 +46,10 @@ export interface SystemSlice {
   latestReadNotificationId: number
   setLatestReadNotificationId: (id: number) => void
 
+  // Profile Tab State
+  profileActiveTab: number
+  setProfileActiveTab: (index: number) => void
+
   // Daily Task
   totalTaskPoints: number
   totalFollowTaskPoints: number
@@ -93,6 +97,13 @@ export const createSystemSlice: StateCreator<SystemSlice> = (set) => ({
   setLatestReadNotificationId: (id) => {
     set({ latestReadNotificationId: id })
   },
+
+  // Profile Tab State
+  profileActiveTab: 0,
+  setProfileActiveTab: (index) => {
+    set({ profileActiveTab: index })
+  },
+
   dailyTaskList: [],
   setDailyTaskList: (list) => {
     list = list.filter((task) => !followTaskId.includes(task.task_type))

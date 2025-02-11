@@ -388,15 +388,15 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
   }, [videoUrl, previewVideoUrl])
 
 
-  // useEffect(() => {
-  //   const scrollable = document.getElementById('postScroll')
-  //   if (scrollable) {
-  //     scrollable.scrollTo({
-  //       top: scrollable.scrollHeight,
-  //       behavior: 'smooth',
-  //     })
-  //   }
-  // },[landscapeBoll, videoUrl, previewVideoUrl])
+  useEffect(() => {
+    const scrollable = document.getElementById('postScroll')
+    if (scrollable) {
+      scrollable.scrollTo({
+        top: scrollable.scrollHeight,
+        behavior: 'smooth',
+      })
+    }
+  },[landscapeBoll, videoUrl, previewVideoUrl])
 
   useEffect(() => {
     const video = videoRef.current
@@ -483,12 +483,11 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
         isOpen={isBaseModalOpen}
         onClose={off}
         id="postScroll"
-        height={isLandscape ? '70vh' : '85vh'}
+        // height={isLandscape ? '70vh' : '85vh'}
         style={{
-          // maxHeight: isLandscape ? '70vh' : '85vh',
-          // height={isLandscape ? '70vh' : '85vh'}
-          // height: '90vh',
-          // overflow: 'auto',
+          maxHeight: isLandscape ? '70vh' : '85vh',
+          height: 'auto',
+          overflow: 'auto',
         }}
         animation={{ duration: 400, timingFunction: 'ease-in-out' }}
         theme={{

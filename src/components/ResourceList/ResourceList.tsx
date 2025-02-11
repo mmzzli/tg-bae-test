@@ -31,6 +31,7 @@ import { genShareLinkFn, getTimeStringAutoShort, formatNumber } from '@/utils/ut
 import MoreText from '@/components/More/MoreText'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { videoHls } from '@/utils/video/videoHls'
+import { totalAvailableInvoice } from '@/api'
 
 export interface ShareDataProps {
   pid: number
@@ -203,7 +204,11 @@ const ResourceList = ({ resources: initialResources, type, hasMore }: Props) => 
   const setLikes = useStore((state) => state.setPatchLike)
   const initPatchLikes = useStore((state) => state.initPatchLike)
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [exchangeRate, setExchangeRate] = useState<number>(0)
   const toast = useToast()
+  const { token } = useStore((state) => ({
+    token: state.token,
+  }))
   const { sharedPostList } = useSharedList()
   const saveds = useStore((state) => state.save)
   const initPatchSaves = useStore((state) => state.initPatchSave)
@@ -237,6 +242,18 @@ const ResourceList = ({ resources: initialResources, type, hasMore }: Props) => 
       console.log(res)
     },
   })
+
+  useEffect(() => {
+
+    if(token) {
+      const fetchExchangeRate = async () => {
+        const response = await totalAvailableInvoice()
+        console.log('response', response)
+        setExchangeRate(response.exchange_rate)
+      }
+      fetchExchangeRate()
+    }
+  }, [])
 
   useEffect(() => {
     const attr: followPreview[] = []
@@ -358,8 +375,16 @@ const ResourceList = ({ resources: initialResources, type, hasMore }: Props) => 
   )
 
   const savedEve = async (data: FormatterListItem) => {
+    const isSaved = !saveds.find((item) => item.id === data.id)?.saveds
     setSaveds(data)
-    favRun(data)
+    await favRun(data)
+    toast({
+      render: () => {
+        return <CustomToast title={isSaved ? "Saved!" : "Unsaved"} type={typeOptions.success} />
+      },
+      duration: 1000,
+      position: 'bottom',
+    })
   }
   const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
     toggle()
@@ -474,14 +499,24 @@ const ResourceList = ({ resources: initialResources, type, hasMore }: Props) => 
                     </HStack>
                   </Box>
                 )}
-                {data.type === POST_TYPE_IMAGE ? (
+                {data.type === POST_TYPE_VIDEO ? (
+                  <VideoCard
+                    data={data}
+                    resourcesEve={resourcesEve}
+                    exchangeRate={exchangeRate}
+                  />
+                ) : data.type === POST_TYPE_IMAGE ? (
                   <ImageCard
                     data={data}
                     handleImageClick={(images, index) => handleImageClick(images, index, data.id)}
                     resourcesEve={resourcesEve}
+                    exchangeRate={exchangeRate}
                   />
-                ) : (
-                  <VideoCard resourcesEve={resourcesEve} data={data} />
+                ) : ( <VideoCard
+                  data={data}
+                  resourcesEve={resourcesEve}
+                  exchangeRate={exchangeRate}
+                />
                 )}
               </Box>
               <ResourceFooter

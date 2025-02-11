@@ -89,6 +89,7 @@ export const UserInfo = memo(
     created_at,
     id,
     info,
+    onClose,
   }: {
     id: number | undefined
     avatar: string | undefined
@@ -99,6 +100,7 @@ export const UserInfo = memo(
     is_follow?: boolean
     created_at?: number | string
     info: FormatterListItem | null
+    onClose: () => void
   }) => {
     const followResource = useStore((state) => state.followResource)
     const setFollowResource = useStore((state) => state.setFollowResource)
@@ -197,7 +199,7 @@ export const UserInfo = memo(
             )}
           </div>
         </div>
-        <MoreText textColor={'#fff'} text={content || ''} bgColor={'#000'} />
+        <MoreText textColor={'#fff'} text={content || ''} bgColor={'#000'} onTextClick={onClose}/>
         {info && info?.price > 0 && !info?.is_pay && info?.uid !== current_uid && (
           <div className="mt-2">
             <PurchaseButton
@@ -470,6 +472,7 @@ const VideoDialog = () => {
             bottom={bottom}
             is_follow={info?.is_follow}
             created_at={info?.created_at}
+            onClose={onClose}
           />
         </div>
 

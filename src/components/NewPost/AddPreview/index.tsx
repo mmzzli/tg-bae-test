@@ -388,15 +388,15 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
   }, [videoUrl, previewVideoUrl])
 
 
-  useEffect(() => {
-    const scrollable = document.getElementById('postScroll')
-    if (scrollable) {
-      scrollable.scrollTo({
-        top: scrollable.scrollHeight,
-        behavior: 'smooth',
-      })
-    }
-  },[landscapeBoll, videoUrl, previewVideoUrl])
+  // useEffect(() => {
+  //   const scrollable = document.getElementById('postScroll')
+  //   if (scrollable) {
+  //     scrollable.scrollTo({
+  //       top: scrollable.scrollHeight,
+  //       behavior: 'smooth',
+  //     })
+  //   }
+  // },[landscapeBoll, videoUrl, previewVideoUrl])
 
   useEffect(() => {
     const video = videoRef.current
@@ -521,7 +521,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
           <h2 className="text-[24px] text-[#333]">Add a preview</h2>
 
           {videoUrl && (
-            <div className="pt-[24px]">
+            <div className="pt-[14px]">
               {/* Video Element */}
               <div className="relative max-h-[330px] min-h-[100px] overflow-hidden w-[fit-content] rounded-[8px]">
                 <video
@@ -544,7 +544,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
               </div>
 
               <div className="bg-[#fff] rounded-tl-[16px] rounded-tr-[16px]">
-                <p className="text-[#999] pt-[30px] pb-[18px] font-normal">
+                <p className="text-[#999] pt-[20px] pb-[12px] font-normal">
                   Select a clip from the video to use as a preview, or upload a video from album.
                 </p>
 

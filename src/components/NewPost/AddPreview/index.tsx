@@ -387,6 +387,17 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
     }
   }, [videoUrl, previewVideoUrl])
 
+
+  useEffect(() => {
+    const scrollable = document.getElementById('postScroll')
+    if (scrollable) {
+      scrollable.scrollTo({
+        top: scrollable.scrollHeight,
+        behavior: 'smooth',
+      })
+    }
+  },[landscapeBoll, videoUrl, previewVideoUrl])
+
   useEffect(() => {
     const video = videoRef.current
     if (video) {

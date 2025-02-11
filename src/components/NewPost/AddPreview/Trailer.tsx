@@ -83,15 +83,15 @@ const Trailer: React.FC<TrailerProps> = ({
               onClick={() => {
                 setTrailerBoll(true)
                 setPreviewVideoUrl(videoSrc)
-                setTimeout(() => {
-                  const scrollable = document.getElementById('postScroll')
-                  if (scrollable) {
-                    scrollable.scrollTo({
-                      top: scrollable.scrollHeight,
-                      behavior: 'smooth',
-                    })
-                  }
-                }, 100)
+                // setTimeout(() => {
+                //   const scrollable = document.getElementById('postScroll')
+                //   if (scrollable) {
+                //     scrollable.scrollTo({
+                //       top: scrollable.scrollHeight,
+                //       behavior: 'smooth',
+                //     })
+                //   }
+                // }, 300)
               }}
               src={videoSrc}
               preload="metadata"

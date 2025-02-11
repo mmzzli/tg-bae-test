@@ -518,7 +518,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
             display: loadingSkeleton ? 'none' : 'block',
           }}
         >
-          <h2 className="text-[24px] text-[#333] mt-[24px]">Add a preview</h2>
+          <h2 className="text-[24px] text-[#333]">Add a preview</h2>
 
           {videoUrl && (
             <div className="pt-[24px]">

@@ -362,9 +362,22 @@ const ResourceList = ({ resources: initialResources, type, hasMore }: Props) => 
             position: 'bottom',
           })
           setSaveds(data)
+        }else {
+          toast({
+            render: () => {
+              return <CustomToast title="Saved!" type={typeOptions.success} />
+            },
+            position: 'bottom',
+          })
         }
       } else {
         await favDel(data.id)
+        toast({
+          render: () => {
+            return <CustomToast title="Unsaved!" type={typeOptions.success} />
+          },
+          position: 'bottom',
+        })
       }
 
       if (type === 'fav') {

@@ -9,7 +9,7 @@ import ResourceFooter from '@/components/ResourceList/ResourceFooter'
 import { videoScale } from '@/utils/video'
 import { getTimeStringAutoShort } from '@/utils/utils'
 import BaseButton from '@/components/BaseButton/BaseButton'
-import { follow, getSomeoneProfile } from '@/api'
+import { follow, getSomeoneProfile, totalAvailableInvoice } from '@/api'
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import { UserItem } from '@/types'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
@@ -90,6 +90,7 @@ export const UserInfo = memo(
     id,
     info,
     onClose,
+    exchangeRate,
   }: {
     id: number | undefined
     avatar: string | undefined
@@ -101,6 +102,7 @@ export const UserInfo = memo(
     created_at?: number | string
     info: FormatterListItem | null
     onClose: () => void
+    exchangeRate?: number
   }) => {
     const followResource = useStore((state) => state.followResource)
     const setFollowResource = useStore((state) => state.setFollowResource)
@@ -207,6 +209,7 @@ export const UserInfo = memo(
               post_id={info?.id || 0}
               resourcesEve={resourcesEve}
               setIsPaid={setIsPaid}
+              exchangeRate={exchangeRate || 0}
             />
           </div>
         )}
@@ -231,11 +234,23 @@ const VideoDialog = () => {
   const [progress, setProgress] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const [ended, setEnded] = useState(false)
+  const [exchangeRate, setExchangeRate] = useState<number>(0)
 
   const info = useStore((state) => state.videoResource)
   const setVideoResource = useStore((state) => state.setVideoResource)
   const isExpanded = useStore((state) => state.expand)
   const { getCurrentUid } = useTMAUtils()
+  const token = useStore((state) => state.token)
+
+  useEffect(() => {
+    if (token) {
+      const fetchExchangeRate = async () => {
+        const response = await totalAvailableInvoice()
+        setExchangeRate(response.exchange_rate)
+      }
+      fetchExchangeRate()
+    }
+  }, [token])
 
   const onClose = () => {
     if (videoRef?.current) {
@@ -473,6 +488,7 @@ const VideoDialog = () => {
             is_follow={info?.is_follow}
             created_at={info?.created_at}
             onClose={onClose}
+            exchangeRate={exchangeRate}
           />
         </div>
 

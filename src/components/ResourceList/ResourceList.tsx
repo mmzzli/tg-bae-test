@@ -388,16 +388,8 @@ const ResourceList = ({ resources: initialResources, type, hasMore }: Props) => 
   )
 
   const savedEve = async (data: FormatterListItem) => {
-    const isSaved = !saveds.find((item) => item.id === data.id)?.saveds
     setSaveds(data)
     await favRun(data)
-    toast({
-      render: () => {
-        return <CustomToast title={isSaved ? "Saved!" : "Unsaved"} type={typeOptions.success} />
-      },
-      duration: 1000,
-      position: 'bottom',
-    })
   }
   const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
     toggle()
@@ -457,7 +449,7 @@ const ResourceList = ({ resources: initialResources, type, hasMore }: Props) => 
     }
   }, [videoInfo])
 
-  if (type === 'fav' && !hasMore && !resources.length) {
+  if (type === 'fav' && !hasMore && resources.length <= 0) {
     return (
       <Empty
         title="No post yet."

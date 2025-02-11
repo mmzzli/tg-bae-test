@@ -81,14 +81,14 @@ const FollowButton: FC<{
       text="Following"
       loading={followLoading}
       handler={doFollow}
-      className={`bg-transparent border text-[#333333] border-[#CDCDD4] w-[104px] ${followingButtonClassName} ${className}`}
+      className={`bg-transparent border text-[#333333] border-[#CDCDD4] w-[90px] ${followingButtonClassName} ${className}`}
       loadingColor="border-t-[#999]"
     />
   ) : (
     <BaseButton
       text="Follow"
       handler={doFollow}
-      className={`w-[104px] ${followButtonClassName} ${className}`}
+      className={`w-[90px] ${followButtonClassName} ${className}`}
       loading={followLoading}
     />
   )

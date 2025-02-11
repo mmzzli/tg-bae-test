@@ -67,7 +67,7 @@ const FollowPage: FC = () => {
 
   const FollowItem = ({ item }: { item: Follow }) => {
     return (
-      <div key={item.tg_id} className="flex items-center h-[80px] my-3">
+      <div key={item.tg_id} className="flex items-center h-[60px] my-3">
         <div className="rounded-full overflow-hidden">
           <Image
             src={item.avatar}

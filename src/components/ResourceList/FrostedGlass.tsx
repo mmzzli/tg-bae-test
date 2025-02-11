@@ -17,10 +17,12 @@ type FrostedGlassProps = {
   post_id: number
   resourcesEve: (post_id: number, url: string, is_pay?: boolean) => void
   maskOnClick?: () => void
+  exchangeRate: number
 }
 
-const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve, maskOnClick }) => {
+const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve, maskOnClick, exchangeRate }) => {
   const [isPaid, setIsPaid] = useState<boolean>(false)
+
   return (
     <>
       {!isPaid && (
@@ -44,7 +46,13 @@ const FrostedGlass: FC<FrostedGlassProps> = ({ price, post_id, resourcesEve, mas
             w="220px"
             zIndex={666}
           >
-            <PurchaseButton price={price} post_id={post_id} resourcesEve={resourcesEve} setIsPaid={setIsPaid} />
+            <PurchaseButton
+              price={price}
+              post_id={post_id}
+              resourcesEve={resourcesEve}
+              setIsPaid={setIsPaid}
+              exchangeRate={exchangeRate}
+            />
           </Box>
 
         </HStack>

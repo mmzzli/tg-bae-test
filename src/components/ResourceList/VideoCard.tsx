@@ -14,8 +14,9 @@ import { useNavigate } from 'react-router-dom'
 interface VideoCardProps {
   data: FormatterListItem
   resourcesEve: (post_id: number, url: string, is_pay?: boolean) => void
+  exchangeRate?: number
 }
-const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
+const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve, exchangeRate }) => {
   const videoCardContainer = useRef<HTMLDivElement>(null)
   const homeVideoMuted = useStore((state) => state.homeVideoMuted)
   const setHomeVideoMuted = useStore((state) => state.setHomeVideoMuted)
@@ -223,6 +224,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve }) => {
                         handleVideoClick(data)
                       }
                     }}
+                    exchangeRate={exchangeRate || 0}
                   />
                 </>
               )}

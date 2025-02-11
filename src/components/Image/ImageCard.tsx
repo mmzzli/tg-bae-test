@@ -1,4 +1,3 @@
-
 import { Swiper } from 'antd-mobile'
 import React, { useEffect, useMemo, useState } from 'react'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
@@ -15,8 +14,9 @@ interface ImageCardProps {
   data: FormatterListItem
   handleImageClick: (images: string[], index: number) => void
   resourcesEve: (post_id: number, url: string, is_pay?: boolean) => void
+  exchangeRate?: number
 }
-const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resourcesEve }) => {
+const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resourcesEve, exchangeRate }) => {
   const { getCurrentUid } = useTMAUtils()
   const { ttMode } = useStore((state) => ({
     ttMode: state.ttMode,
@@ -94,7 +94,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
           })}
         </Swiper>
         {data.uid !== getCurrentUid() && !data.is_pay && data.price > 0 && (
-          <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} />
+          <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} exchangeRate={exchangeRate || 0} />
         )}
         {data && data.type === 1 ? (
           <div className={'absolute z-10 top-0 right-0'}>

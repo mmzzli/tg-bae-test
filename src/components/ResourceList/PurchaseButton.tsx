@@ -12,24 +12,16 @@ type PurchaseButtonProps = {
   post_id: number
   resourcesEve: (post_id: number, url: string, is_pay?: boolean) => void
   setIsPaid?: (is_paid: boolean) => void
+  exchangeRate: number
 }
 
-const PurchaseButton: FC<PurchaseButtonProps> = ({ price, post_id, resourcesEve, setIsPaid }) => {
+const PurchaseButton: FC<PurchaseButtonProps> = ({ price, post_id, resourcesEve, setIsPaid, exchangeRate }) => {
   const userInfo = useStore((state) => state.userInfo)
   const { launchParams, openLink } = useTMAUtils()
   const { initData } = launchParams
   const [loading, setLoading] = useState<boolean>(false)
   const [isPay, setIsPay] = useState<boolean>(true)
-  const [exchange_rate, setExchangeRate] = useState<number>(0)
   const { trackPurchase } = useGA4EventTrackingReporting()
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await totalAvailableInvoice()
-      setExchangeRate(response.exchange_rate)
-    }
-    fetchData()
-  }, [])
 
   const invoiceEve = async () => {
     setLoading(true)
@@ -89,7 +81,7 @@ const PurchaseButton: FC<PurchaseButtonProps> = ({ price, post_id, resourcesEve,
             })
 
             window.umami.track('purchase', {
-              revenue: price * exchange_rate,
+              revenue: price * exchangeRate,
               currency: 'USD',
               transaction_id: `${initData?.user?.id}_${post_id}_${timestamp}`,
               item_id: String(post_id),

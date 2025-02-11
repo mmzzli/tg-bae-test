@@ -9,8 +9,9 @@ interface ImageGridProps {
   data: FormatterListItem
   handleImageClick: (images: string[], index: number) => void
   resourcesEve: (post_id: number, url: string) => void
+  exchangeRate: number
 }
-const ImageGrid: React.FC<ImageGridProps> = ({ data, handleImageClick, resourcesEve }) => {
+const ImageGrid: React.FC<ImageGridProps> = ({ data, handleImageClick, resourcesEve, exchangeRate }) => {
   if (data.media.length === 1) {
     return (
       <div className="relative" style={{ minHeight: data.media?.[0] === '' ? '200px' : '' }}>
@@ -27,7 +28,7 @@ const ImageGrid: React.FC<ImageGridProps> = ({ data, handleImageClick, resources
           onClick={() => handleImageClick([data.media?.[0] ?? data?.media ?? ''], 0)}
         />
         {data.media?.[0] === '' && (
-          <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} />
+          <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} exchangeRate={exchangeRate} />
         )}
       </div>
     )
@@ -52,7 +53,7 @@ const ImageGrid: React.FC<ImageGridProps> = ({ data, handleImageClick, resources
           <div className=""></div>
         </div>
         {data.media?.[0] == '' && (
-          <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} />
+          <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} exchangeRate={exchangeRate} />
         )}
       </div>
     )
@@ -73,7 +74,7 @@ const ImageGrid: React.FC<ImageGridProps> = ({ data, handleImageClick, resources
         ))}
       </div>
       {data.media?.[0] == '' && (
-        <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} />
+        <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} exchangeRate={exchangeRate} />
       )}
     </div>
   )

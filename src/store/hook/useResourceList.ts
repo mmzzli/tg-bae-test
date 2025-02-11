@@ -254,19 +254,6 @@ export const useOthersViewList = () => {
     loadOthersViewList(page)
   }, [page, token, othersUserInfo.uid])
 
-  // useEffect(() => {
-  //   return () => {
-  //     resetOthersViewList()
-  //   }
-  // }, [])
-
-  // useEffect(() => {
-  //   console.log('othersUserInfo.uid', othersUserInfo.uid)
-  //   if (othersUserInfo.uid != -1) {
-  //     resetOthersViewList()
-  //     loadOthersViewList(page)
-  //   }
-  // }, [othersUserInfo.uid])
 
   const fetchMoreData = () => {
     if (!isLoading && hasMore) {

@@ -32,8 +32,8 @@ const BaseButton = ({
         className={cn(
           'relative no-tap flex items-center justify-center gap-2 bg-[#6254FF] dark:bg-[#4A3AFF] rounded-[42px] text-white dark:text-[#E0E2F6] text-sm font-medium cursor-pointer',
           disabled
-          ? 'dark:bg-[#6a5cfc] bg-[#D1D0DE] cursor-not-allowed text-white border-[#D1D0DE]'
-          : '',
+            ? 'dark:bg-[#6a5cfc] bg-[#D1D0DE] cursor-not-allowed text-white border-[#D1D0DE]'
+            : '',
           className,
         )}
         onClick={() => !loading && !disabled && handler()}

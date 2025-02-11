@@ -20,7 +20,7 @@ const BaseButton = ({
   iconRight,
   handler,
   width,
-  height = '36px',
+  height = '2.3rem',
   className,
   loading = false,
   disabled = false,

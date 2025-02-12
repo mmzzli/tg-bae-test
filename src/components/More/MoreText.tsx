@@ -86,13 +86,12 @@ const MoreText: React.FC<MoreTextProps> = ({
       const editorHeight = editorRoot.clientHeight
       const lineHeight = parseInt(window.getComputedStyle(editorRoot).lineHeight)
       const numberOfLines = Math.floor(editorHeight / lineHeight)
-
       // 检查文本是否超过最大行数并存储状态
       setShouldShowButton(numberOfLines > maxLines)
       setIsTextClipped(numberOfLines > maxLines)
 
       // 直接应用样式到编辑器
-      if (!isExpanded) {
+      if (!isExpanded && numberOfLines > maxLines) {
         editorRoot.style.display = '-webkit-box'
         editorRoot.style.webkitBoxOrient = 'vertical'
         editorRoot.style.webkitLineClamp = maxLines

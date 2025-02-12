@@ -81,7 +81,7 @@ const MentionFeature: React.FC<MentionFeatureProps> = ({
 
     // Insert a space with default formatting
     quill.insertText(mentionStartIndex + candidate.tgname.length + 1, ' ', {
-      color: '#000000',
+      color: '#333',
       mention: false,
     })
 

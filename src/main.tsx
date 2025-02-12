@@ -39,15 +39,15 @@ if (import.meta.env.MODE === 'production') {
   document.head.appendChild(umamiScript)
 }
 
-function setRem() {
-  const baseSize = 16;
-  const designWidth = 375;
-  const html = document.documentElement;
-  const clientWidth = html.clientWidth;
-  html.style.fontSize = `${(clientWidth / designWidth) * baseSize}px`;
-}
-setRem();
-window.addEventListener('resize', setRem);
+// function setRem() {
+//   const baseSize = 16;
+//   const designWidth = 375;
+//   const html = document.documentElement;
+//   const clientWidth = html.clientWidth;
+//   html.style.fontSize = `${(clientWidth / designWidth) * baseSize}px`;
+// }
+// setRem();
+// window.addEventListener('resize', setRem);
 
 
 Sentry.init({

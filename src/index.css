@@ -40,7 +40,7 @@
 
 html,
 body {
-  font-family: 'Roboto', 'Switzer', sans-serif !important;
+  font-family: 'Switzer', sans-serif !important;
 }
 
 body {
@@ -66,12 +66,12 @@ h3,
 h4,
 h5 {
   font-weight: 700;
-  font-family: 'Roboto', 'Switzer', sans-serif !important;
+  font-family: 'Switzer', sans-serif !important;
 }
 
 p {
   font-weight: 500;
-  font-family: 'Roboto', 'Switzer', sans-serif !important;
+  font-family: 'Switzer', sans-serif !important;
 }
 
 input:focus,

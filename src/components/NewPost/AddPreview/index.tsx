@@ -440,7 +440,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
         >
           <div>
             <p
-              className=" text-[#000]"
+              className=" text-[#333]"
               style={{
                 fontSize: '16px',
               }}

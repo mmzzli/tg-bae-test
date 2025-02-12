@@ -1,4 +1,6 @@
-import { observable, action } from 'mobx'
+import { StateCreator } from 'zustand'
+import { StoreState, useStore } from '../store'
+import { shallow } from 'zustand/shallow'
 import {
   UserType,
   UserState,
@@ -32,35 +34,47 @@ export interface IUserStore {
     data: InitDataUnsafe | undefined
     query: string | undefined
   }
+  userInfoRefresh: number
   userState: UserState
-  userInfo: UserType
+  walletUserInfo: UserType
   updateUserStateAction: (userState: UserState) => void
   updateTgAction: (data: InitDataUnsafe, query: string) => void
   updateUserInfoAction: (info: UserType) => void
   fetchUserInfoAction: () => void
 }
 
-const userStore: IUserStore = observable({
+export const createUserStore: StateCreator<IUserStore> = (set, get) => ({
   tgData: {
     data: undefined,
     query: undefined
   },
+  userInfoRefresh: 0,
   userState: initUserState(),
-  userInfo: initUserInfo(),
-  updateUserStateAction: action((userState: UserState) => {
-    userStore.userState = {
-      ...userStore.userState,
-      ...userState
-    }
-    localStorage.setItem('userState', JSON.stringify(userState))
-  }),
-  updateTgAction: action((data: InitDataUnsafe, query: string) => {
-    userStore.tgData = { data, query }
-  }),
-  updateUserInfoAction: action((info: UserType) => {
-    userStore.userInfo = info
+  walletUserInfo: initUserInfo(),
+  updateUserStateAction: (info: UserState) => {
+    set((state) => {
+      return { userState: { ...state.userState, ...info }}
+    })
+    localStorage.setItem('userState', JSON.stringify(info))
+  },
+  updateTgAction: (data: InitDataUnsafe, query: string) => {
+    set((state) => {
+      return { tgData: { data, query }}
+    })
+
+  },
+  updateUserInfoAction: (info: UserType) => {
+    set((state) => {
+      return { walletUserInfo: info }
+    })
     localStorage.setItem('user', JSON.stringify(info))
-  })
+  },
+  fetchUserInfoAction: () => {
+    set((state) => {
+      return { userInfoRefresh: new Date().getTime() }
+    })
+
+  },
 })
 
-export default userStore
+export const useUserStore = () => useStore((state) => state, shallow)

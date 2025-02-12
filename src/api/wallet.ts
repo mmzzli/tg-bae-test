@@ -40,7 +40,7 @@ export const getAllTokenBalancesByAccount = async (params: {
 
 export const loginJavaApi = async (initData: string) => {
   const res = await walletPost(
-    'socialLogin/projectUser/loginByTelegramMini',
+    'socialLogin/projectUser/bae/loginByTelegramMini',
     {
       telegramAuthData: initData
     }

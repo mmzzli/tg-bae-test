@@ -485,7 +485,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
                 <span className="flex-1 overflow-hidden text-base font-medium text-[#333333]">
                   {chain.name}
                 </span>
-                <span className="text-[20px] font-semibold text-[#000]">
+                <span className="text-[20px] font-semibold text-[#333]">
                   {formatUSD(
                     withdraw.filter((item) => item.chain_id === chain.id)[0]?.withdraw_gifts,
                     true

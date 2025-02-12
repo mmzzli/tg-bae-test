@@ -68,7 +68,7 @@ const TransparentSlider = () => {
         height: '400px',
       }}
     >
-      <h1 style={{ color: '#000' }}>视频封面选择器</h1>
+      <h1 style={{ color: '#333' }}>视频封面选择器</h1>
       <div
         ref={sliderRef}
         onMouseDown={handleMouseDown}
@@ -101,7 +101,7 @@ const TransparentSlider = () => {
           }}
         />
       </div>
-      <p style={{ color: '#000' }}>选中时间：{selectedTime.toFixed(1)} 秒</p>
+      <p style={{ color: '#333' }}>选中时间：{selectedTime.toFixed(1)} 秒</p>
     </div>
   );
 };

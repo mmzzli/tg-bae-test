@@ -24,7 +24,15 @@
 
 @font-face {
   font-family: 'Roboto';
-  src: url('./assets/fonts/Roboto-Regular.ttf') format('opentype');
+  @supports (-webkit-touch-callout: none) {
+    /* iOS 设备 */
+    src: url('./assets/fonts/Roboto-Medium.ttf') format('opentype');
+  }
+
+  @supports not (-webkit-touch-callout: none) {
+    /* Android 设备 */
+    src: url('./assets/fonts/Roboto-Regular.ttf') format('opentype');
+  }
   font-style: normal;
   font-weight: normal;
   unicode-range: U+30-39;
@@ -32,7 +40,7 @@
 
 html,
 body {
-  font-family: 'Roboto', 'Switzer', sans-serif !important;
+  font-family: 'Switzer', sans-serif !important;
 }
 
 body {
@@ -58,12 +66,12 @@ h3,
 h4,
 h5 {
   font-weight: 700;
-  font-family: 'Roboto', 'Switzer', sans-serif !important;
+  font-family: 'Switzer', sans-serif !important;
 }
 
 p {
   font-weight: 500;
-  font-family: 'Roboto', 'Switzer', sans-serif !important;
+  font-family: 'Switzer', sans-serif !important;
 }
 
 input:focus,
@@ -80,5 +88,5 @@ button:focus {
   align-items: center;
   height: 100vh !important;
   font-size: 3rem;
-  color: #000;
+  color: #333;
 }

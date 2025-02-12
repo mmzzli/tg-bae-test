@@ -453,11 +453,11 @@ const ResourceList = ({ resources: initialResources, type, hasMore }: Props) => 
     return (
       <Empty
         title="No post yet."
-        className="w-full fixed top-[63%] left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+        className="w-full min-h-[240px]"
         icon={
           <Icon name="icon-Empty_white_post" style={{ width: '164px', height: '164px' }}></Icon>
         }
-      ></Empty>
+      />
     )
   }
 

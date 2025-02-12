@@ -19,7 +19,7 @@ interface SliderProps {
   videoRef: RefObject<HTMLVideoElement>;
   setLoadingSkeleton: (boll: boolean) => void;
   setPreviewVideoUrl: (str: string) => void;
-  previewVideoUrl:string
+  previewVideoUrl: string
   startTime: number
 }
 
@@ -110,9 +110,15 @@ const TransparentSlider: React.FC<SliderProps> = ({
   };
 
   const handleClick = (e: React.MouseEvent) => {
+    // 清空数据
+    setPreviewVideoUrl('');
     if (duration < 5) return;
-    const time = calculateSelectedTime(e.clientX);
-    updateSliderPosition(time);
+    if (trailerBoll) {
+      updateSliderPosition(0);
+    } else {
+      const time = calculateSelectedTime(e.clientX);
+      updateSliderPosition(time);
+    }
     setTrailerBoll(false);
   };
 
@@ -171,7 +177,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
     if (video) {
       video.currentTime = startTime // Set the initial time to the start time
     }
-  },[startTime])
+  }, [startTime])
 
   useEffect(() => {
     if (frames.length > 0) {
@@ -181,7 +187,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
   }, [frames]);
 
   return (
-    <div className="w-[100%]" onClick={() => { setPreviewVideoUrl(''); setTrailerBoll(false); }}>
+    <div className="w-[100%]">
       <div
         ref={sliderRef}
         onMouseDown={handleMouseDown}
@@ -214,55 +220,54 @@ const TransparentSlider: React.FC<SliderProps> = ({
         )}
         {duration > 5 && !trailerBoll && (
           <div className='h-[100%] w-[100%] px-[2.5px]'>
-          <div className='relative h-[100%]'>
-          <div
-            className=''
-            style={{
-              position: 'absolute',
-              overflow: 'hidden',
-              top: '50%',
-              left: `calc(${
-                Math.min(
-                  Math.max((selectedTime / videoDuration) * 100, (isLandscape ? 106 : 44) / 2 / sliderRef.current!.offsetWidth * 100),
-                  100 - (isLandscape ? 106 : 44) / 2 / sliderRef.current!.offsetWidth * 100
-                )
-              }%)`,
-              width: isLandscape ? '106px' : '44px',
-              height: '60px',
-              border: '2px solid #FFF',
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              borderRadius: '8px',
-              transform: 'translate(-50%, -50%)',
-              pointerEvents: 'none',
-            }}
-          >
-            <p className="text-[14px] text-[#fff] text-center h-[60px] leading-[60px] absolute"
-              style={{
-                transform: 'translate(-50%, -50%)',
-                zIndex: 11,
-                top: "50%",
-                left: "50%"
-              }}
-            >5S</p>
+            <div className='relative h-[100%]'>
+              <div
+                className=''
+                style={{
+                  position: 'absolute',
+                  overflow: 'hidden',
+                  top: '50%',
+                  left: `calc(${Math.min(
+                    Math.max((selectedTime / videoDuration) * 100, (isLandscape ? 106 : 44) / 2 / sliderRef.current!.offsetWidth * 100),
+                    100 - (isLandscape ? 106 : 44) / 2 / sliderRef.current!.offsetWidth * 100
+                  )
+                    }%)`,
+                  width: isLandscape ? '106px' : '44px',
+                  height: '60px',
+                  border: '2px solid #FFF',
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                  borderRadius: '8px',
+                  transform: 'translate(-50%, -50%)',
+                  pointerEvents: 'none',
+                }}
+              >
+                <p className="text-[14px] text-[#fff] text-center h-[60px] leading-[60px] absolute"
+                  style={{
+                    transform: 'translate(-50%, -50%)',
+                    zIndex: 11,
+                    top: "50%",
+                    left: "50%"
+                  }}
+                >5S</p>
 
-            <div className='absolute left-[0px] top-[0px] w-[100%] h-[100%]'
-              style={{
-                backgroundColor: 'rgba(0, 0, 0, 0.2)',
-                zIndex: 10,
-              }}
-            ></div>
+                <div className='absolute left-[0px] top-[0px] w-[100%] h-[100%]'
+                  style={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                    zIndex: 10,
+                  }}
+                ></div>
 
-            <video
-              ref={videoRef1}
-              className='object-cover absolute top-[0px] h-[100%] w-[100%]'
-              src={previewVideoUrl}
-              preload="metadata"
-              // autoPlay
-              playsInline
-              muted
-            />
-          </div>
-          </div>
+                <video
+                  ref={videoRef1}
+                  className='object-cover absolute top-[0px] h-[100%] w-[100%]'
+                  src={previewVideoUrl}
+                  preload="metadata"
+                  // autoPlay
+                  playsInline
+                  muted
+                />
+              </div>
+            </div>
           </div>
         )}
       </div>

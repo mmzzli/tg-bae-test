@@ -382,7 +382,6 @@ const Tasks: FC = () => {
             <span
               style={{
                 color: '#6254FF',
-                fontFamily: 'Roboto',
                 fontSize: '16px',
                 fontStyle: 'normal',
                 fontWeight: '600',

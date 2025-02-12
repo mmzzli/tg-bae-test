@@ -6,6 +6,7 @@ import {
   UserState,
 } from './type'
 import { InitDataUnsafe } from '@vkruglikov/react-telegram-web-app'
+import { STORAGE_KEY } from './util/tokenHelper'
 
 
 export const initUserInfo = () => {
@@ -55,7 +56,7 @@ export const createUserStore: StateCreator<IUserStore> = (set, get) => ({
     set((state) => {
       return { userState: { ...state.userState, ...info }}
     })
-    localStorage.setItem('userState', JSON.stringify(info))
+    localStorage.setItem(STORAGE_KEY.userState, JSON.stringify(info))
   },
   updateTgAction: (data: InitDataUnsafe, query: string) => {
     set((state) => {
@@ -67,7 +68,7 @@ export const createUserStore: StateCreator<IUserStore> = (set, get) => ({
     set((state) => {
       return { walletUserInfo: info }
     })
-    localStorage.setItem('user', JSON.stringify(info))
+    localStorage.setItem(STORAGE_KEY.user, JSON.stringify(info))
   },
   fetchUserInfoAction: () => {
     set((state) => {

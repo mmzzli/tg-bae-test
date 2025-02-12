@@ -37,3 +37,30 @@ export const getAllTokenBalancesByAccount = async (params: {
   )
   return ret.data.result[0].tokenAssets
 }
+
+export const loginJavaApi = async (initData: string) => {
+  const res = await walletPost(
+    'socialLogin/projectUser/loginByTelegramMini',
+    {
+      telegramAuthData: initData
+    }
+  )
+  return res.data
+}
+
+export const getTelegramUserInfoApi = async () => {
+  const res = await walletGet(`socialLogin/teleGram/userInfo`)
+  return res.data
+}
+
+export const getDefaultWalletAddressApi = async (userId: number) => {
+  const res = await walletGet(
+    `socialLogin/projectWallet/getDefaultWalletByUserId?userId=${userId}`
+  )
+  return res.data
+}
+
+export const getOkxWalletAccountApi = async () => {
+  const res = await walletGet('socialLogin/projectWallet/okxWalletAccount')
+  return res.data
+}

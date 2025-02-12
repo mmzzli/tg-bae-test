@@ -2,10 +2,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { getAllHistoryByAccount, getAllTokenBalancesByAccount } from '@/api/wallet'
 import { BalanceToken } from '../tokenType/BalanceToken'
+import { useUserStore } from '../walletUser'
 
-const ZKSYNC_NATIVETOKEN = '0x000000000000000000000000000000000000800a'
-
-// okx support : evm, tron
 const getBalanceFromOkxAccount = async (params: {
   accountId: string
   chains: string
@@ -34,7 +32,7 @@ export const getHistoryFromOkxAccount = async (params: {
 }
 
 export const useOkxBalanceAccount = (chains: string) => {
-  const { user } = useUserStore()
+  const { walletUserInfo: user } = useUserStore()
 
   const query = useQuery({
     queryKey: ['getBalanceFromOkxAccount', user.okxAccount, chains],
@@ -90,7 +88,7 @@ export const useOkxBalanceAccount = (chains: string) => {
 }
 
 export const useOkxHistoryAccount = (cursor: string, chainIndex: string) => {
-  const { user } = useUserStore()
+  const { walletUserInfo: user } = useUserStore()
 
   const query = useQuery({
     queryKey: ['getHistoryFromOkxAccount', user.okxAccount, cursor],

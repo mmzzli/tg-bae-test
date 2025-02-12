@@ -20,7 +20,6 @@ export const getAllHistoryByAccount = async (params: {
   return ret.data.result[0]
 }
 
-
 export const getAllTokenBalancesByAccount = async (params: {
   accountId: string
   chains: string //1,56,42161,8453,81457,43114,137,534352,10,59144,195,501

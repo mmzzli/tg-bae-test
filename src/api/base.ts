@@ -139,10 +139,13 @@ const getStoreToken = () => {
 }
 
 const httpClient = new HttpClient(import.meta.env.VITE_API_URL, getStoreToken)
-
 export const get = httpClient.get.bind(httpClient)
 export const post = httpClient.post.bind(httpClient)
 export const put = httpClient.put.bind(httpClient)
 export const deleteRequest = httpClient.delete.bind(httpClient)
 export const patch = httpClient.patch.bind(httpClient)
 export const del = httpClient.delete.bind(httpClient)
+
+const walletClient = new HttpClient(import.meta.env.VITE_TOMO_WALLET_API, getStoreToken)
+export const walletGet = walletClient.get.bind(walletClient)
+export const walletPost = walletClient.post.bind(walletClient)

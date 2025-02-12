@@ -20,6 +20,7 @@ import OthersProfile from '@/pages/OthersProfile'
 import ProfileGuard from '@/pages/OthersProfile/routeGuard'
 import MessagePageRouteGuard from '@/pages/Chat/MessagePageRouteGuard'
 import TTPlayer from '@/pages/TTPlayer'
+import Wallet from '@/pages/Wallet'
 
 const Task = lazy(() => import('@/pages/Task'))
 
@@ -87,6 +88,7 @@ export const routes = [
       { path: 'chat', element: <></> },
       { path: 'chat/:uid', element: <MessagePageRouteGuard /> },
       { path: 'ageGate', element: <AgeGate /> },
+      { path: 'wallet', element: <Wallet />}
     ],
   },
 ]

@@ -167,7 +167,7 @@ const Searching = () => {
                   />
                 </div>
                 <div>
-                  <h3 className="text-[#333] text-[16px] w-[16ch] whitespace-nowrap overflow-hidden text-ellipsis">
+                  <h3 className="text-[#333] text-[16px] w-[16ch] whitespace-nowrap overflow-hidden text-ellipsis font-medium">
                     {item.tgname}
                   </h3>
                   <p className='text-[#999] text-[12px] font-normal'>
@@ -240,7 +240,7 @@ const Recent: React.FC<RecentProps> = ({searchHistory, setSearchHistory})=>{
               />
             </div>
             <div>
-              <h3 className="text-[#333] text-[16px] w-[16ch] whitespace-nowrap overflow-hidden text-ellipsis">
+              <h3 className="text-[#333] text-[16px] w-[16ch] whitespace-nowrap overflow-hidden text-ellipsis font-medium">
                 {item.tgname}
               </h3>
               <p className='text-[#999] text-[12px] font-normal'>

@@ -3,7 +3,7 @@ import { DEV_INIT_DATA_RAW } from "@/utils/constants"
 import { retrieveLaunchParams } from "@telegram-apps/sdk"
 
 const WalletTest = () => {
-  const {tgLogin} = useInitUser()
+  const {tgLogin, getUserInfo} = useInitUser()
 
   const connect = async () => {
     let userInfo
@@ -15,7 +15,8 @@ const WalletTest = () => {
       userInfo = DEV_INIT_DATA_RAW
     }
 
-    await tgLogin(userInfo);
+    // await tgLogin(userInfo);
+    await getUserInfo()
   }
 
   return <button onClick={connect}>connect</button>

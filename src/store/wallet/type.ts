@@ -40,7 +40,7 @@ export type UserState = {
   newUser: boolean
   frozen: boolean
   loginTime: number
-  tokenExpired: number
+  tokenExpiredAt: number
   setTradePassword: boolean
   email?: string
   token: string

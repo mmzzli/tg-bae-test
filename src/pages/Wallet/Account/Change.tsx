@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import PayPinBase, { PayPinBaseRefType } from './components/PaypinBase'
-import { errorContents } from '@/config/const'
+import { errorContents } from '@/config/wallet/const'
 // import useTradePwd from '@/hooks/useTradePwd'
 // import { TToast as toast, TContainer, Toast } from '@/components/tmd'
 import { useNavigate } from 'react-router-dom'

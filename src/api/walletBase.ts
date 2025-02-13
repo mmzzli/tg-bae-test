@@ -7,7 +7,7 @@ import axios, {
 import { createStandaloneToast, ToastId } from '@chakra-ui/react'
 import { useStore } from '@/store'
 
-interface ApiResponse<T = any> {
+export interface WalletApiResponse<T = any> {
   code: number
   message?: string
   msg?: string
@@ -64,7 +64,7 @@ class WalletHttpClient {
     )
 
     this.instance.interceptors.response.use(
-      (response: AxiosResponse<ApiResponse>) => {
+      (response: AxiosResponse<WalletApiResponse>) => {
         const { data } = response
         const { code, message, msg, success, result } = data
 

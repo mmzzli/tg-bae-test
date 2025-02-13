@@ -1,4 +1,4 @@
-import { errorContents } from '@/config/const'
+import { errorContents } from '@/config/wallet/const'
 
 export const buildErrMsg = (failedCnt: number) => {
   switch (failedCnt) {

@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 // import Container from '@/components/Container'
-import { errorContents } from '@/config/const'
+import { errorContents } from '@/config/wallet/const'
 import { md5 } from '@/utils/helper'
 import useTradePwd from '@/hooks/useTradePwd'
 // import toast from '@/components/Toast'

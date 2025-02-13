@@ -1,15 +1,12 @@
 import { useMemo, useRef, useState, useEffect } from 'react'
 import { errorContents } from '@/config/wallet/const'
-// import useTradePwd from '@/hooks/useTradePwd'
 import PayPinBase, { PayPinBaseRefType } from './PaypinBase'
 import { useNavigate } from 'react-router-dom'
+import useTradePwd from '@/hooks/wallet/useTradePwd'
 
 const PaypinSet = () => {
   const navigate = useNavigate()
-  // const { setTradePwd } = useTradePwd()
-
-  const queryParams = new URLSearchParams(location.search)
-  const redirectTo = queryParams.get('redirect') || '/'
+  const { setTradePwd } = useTradePwd()
 
   const payPinRef = useRef<PayPinBaseRefType>(null)
   const [loading, setLoading] = useState(false)
@@ -51,30 +48,26 @@ const PaypinSet = () => {
       payPinRef.current?.handleInit()
       return
     }
-    try {
-      setLoading(true)
-      // const result = await setTradePwd(pass)
-      // if (result) {
-      //   setIsError(false)
-      //   finished(pass)
-      // } else {
-      //   setStep('set')
-      //   setOld('')
-      //   setIsError(true)
-      //   setErrMsg(errorContents.paypinErrors.wrong1)
-      //   payPinRef.current?.handleInit()
-      // }
-    } catch (err) {
-      setStep('set')
-      setOld('')
-      setIsError(true)
-      setErrMsg(typeof err == 'string' ? err : errorContents.paypinErrors.wrong1)
-      payPinRef.current?.handleInit()
-    }
+
+    setLoading(true)
+    const { success, message } = await setTradePwd(pass)
     setLoading(false)
+    if (success) {
+      setIsError(false)
+      finished(pass)
+      return
+    }
+
+    setStep('set')
+    setOld('')
+    setIsError(true)
+    setErrMsg(message)
+    payPinRef.current?.handleInit()
   }
 
-  const finished = (pass: string) => {}
+  const finished = (pass: string) => {
+    navigate('/account/backup', { replace: true })
+  }
 
   const onConfirm = async (pass: string) => {
     if (!pass) {

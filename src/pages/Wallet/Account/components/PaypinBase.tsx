@@ -1,12 +1,11 @@
 import { Space } from 'antd-mobile'
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
-// import { TIcon } from '@/components/tmd'
-import { MyPasscodeInputRef } from '@/components/PasscodeInput'
+import { TIcon } from '@/components/tmd'
 import { useNavigate } from 'react-router-dom'
 // import { tgDeskPlatform } from '@/utils/telegram'
 import clsx from 'clsx'
 import BaseButton from '@/components/BaseButton/BaseButton'
-import { TPasscodeInput } from '@/components/tmd'
+import { TPasscodeInput, TPasscodeInputRef } from '@/components/tmd'
 
 export type PayPinType = 'reset' | 'confirm' | 'set' | 'change'
 export type PayPinBaseRefType = {
@@ -52,7 +51,7 @@ const PaypinBase = forwardRef<PayPinBaseRefType, PayPinBaseType>(
     // const { userState } = useUserStore()
     const navigate = useNavigate()
     const [pass, setPass] = useState('')
-    const passcodeRef = useRef<MyPasscodeInputRef | any>()
+    const passcodeRef = useRef<TPasscodeInputRef | any>()
     const length = 6
 
     useImperativeHandle(ref, () => ({
@@ -148,11 +147,11 @@ const PaypinBase = forwardRef<PayPinBaseRefType, PayPinBaseType>(
             {plainTip && (
               <div className="mt-[16px] flex w-full items-center justify-center">
                 <button className="flex items-center gap-1 text-t3" onClick={plainChange}>
-                  {/* <TIcon
+                  <TIcon
                     name={plain ? 'tg_wallet_signal' : 'tg_wallet_implicit'}
                     fontSize="14"
                     className="text-sm"
-                  /> */}
+                  />
                   <span className="text-xs">{plain ? 'Hide' : 'Show'} Password</span>
                 </button>
               </div>
@@ -167,6 +166,7 @@ const PaypinBase = forwardRef<PayPinBaseRefType, PayPinBaseType>(
               handler={handleConfirm}
               loading={loading}
               text="Confirm"
+              height="52px"
             />
           </div>
         )}

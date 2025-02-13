@@ -13,7 +13,10 @@ export default {
         'white-opacity-15': 'rgba(255, 255, 255, 0.15)', // 自定义颜色
         'white-close': '#E0E2F6',
         /** for wallet page start */
-        't1': '#000000',
+        t1: '#000000',
+        bg3: '#f5f5fa',
+        red: '#F21F7F',
+        red2: '#EB4B6D',
         /** for wallet page end */
       },
       backgroundImage: {
@@ -56,35 +59,35 @@ export default {
         n2: [
           '42px',
           {
-            lineHeight: '1.2'
-          }
+            lineHeight: '1.2',
+          },
         ],
         n3: [
           '36px',
           {
-            lineHeight: '1.2'
-          }
+            lineHeight: '1.2',
+          },
         ],
         h1: [
           '32px',
           {
-            lineHeight: '1.2'
-          }
+            lineHeight: '1.2',
+          },
         ],
         h2: [
           '28px',
           {
-            lineHeight: '1.2'
-          }
+            lineHeight: '1.2',
+          },
         ],
         h3: [
           '24px',
           {
-            lineHeight: '1.4'
-          }
+            lineHeight: '1.4',
+          },
         ],
         /** for wallet page end */
-      }
+      },
     },
   },
   plugins: [

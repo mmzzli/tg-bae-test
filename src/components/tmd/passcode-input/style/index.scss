@@ -1,14 +1,14 @@
-.tmd-passcode{
-  .adm-passcode-input-cell{
+.tmd-passcode {
+  .adm-passcode-input-cell {
     @apply bg-transparent text-h2 text-t1 font-semibold;
-    &.adm-passcode-input-cell-focused{
+    &.adm-passcode-input-cell-focused {
       @apply border-t1 shadow-none;
     }
   }
-  .adm-passcode-input-cell-caret{
+  .adm-passcode-input-cell-caret {
     @apply after:bg-red;
   }
-  .adm-passcode-input-cell-dot{
-    @apply before:bg-t1;
-  }
+  // .adm-passcode-input-cell-dot {
+  //   @apply before:bg-t1;
+  // }
 }

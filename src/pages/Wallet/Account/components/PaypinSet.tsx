@@ -8,7 +8,6 @@ const PaypinSet = () => {
   const navigate = useNavigate()
   // const { setTradePwd } = useTradePwd()
 
-
   const queryParams = new URLSearchParams(location.search)
   const redirectTo = queryParams.get('redirect') || '/'
 
@@ -69,19 +68,13 @@ const PaypinSet = () => {
       setStep('set')
       setOld('')
       setIsError(true)
-      setErrMsg(
-        typeof err == 'string' ? err : errorContents.paypinErrors.wrong1
-      )
+      setErrMsg(typeof err == 'string' ? err : errorContents.paypinErrors.wrong1)
       payPinRef.current?.handleInit()
     }
     setLoading(false)
   }
 
-  const finished = (pass: string) => {
-
-
-
-  }
+  const finished = (pass: string) => {}
 
   const onConfirm = async (pass: string) => {
     if (!pass) {
@@ -94,14 +87,12 @@ const PaypinSet = () => {
     }
   }
 
-
-
   const onChange = (value: string) => {
     value && setIsError(false)
   }
 
   return (
-    <div className="h-full !px-[20px] pb-[16px] pt-[4px]">
+    <div className="h-full flex px-[20px] pb-[16px] pt-[4px]">
       <PayPinBase
         from="set"
         title={title}
@@ -118,10 +109,9 @@ const PaypinSet = () => {
         loading={loading}
       >
         <p className="mt-[4px] text-sm text-t3">
-          To ensure seamless access across devices, please set up your Pay
-          PIN. This will serve as an alternative authentication method for
-          both login and transactions, particularly when biometric
-          verification is unavailable
+          To ensure seamless access across devices, please set up your Pay PIN. This will serve as
+          an alternative authentication method for both login and transactions, particularly when
+          biometric verification is unavailable
         </p>
       </PayPinBase>
     </div>

@@ -21,6 +21,8 @@ import ProfileGuard from '@/pages/OthersProfile/routeGuard'
 import MessagePageRouteGuard from '@/pages/Chat/MessagePageRouteGuard'
 import TTPlayer from '@/pages/TTPlayer'
 import Wallet from '@/pages/Wallet'
+import SelectSendToken from '@/pages/Wallet/Send/SelectSendToken'
+import SendInputAddress from '@/pages/Wallet/Send/InputAddress'
 import SetPage from '@/pages/Wallet/Account/Set'
 import ChangePage from '@/pages/Wallet/Account/Change'
 import ForgetPage from '@/pages/Wallet/Account/Forget'
@@ -91,7 +93,14 @@ export const routes = [
       { path: 'chat', element: <></> },
       { path: 'chat/:uid', element: <MessagePageRouteGuard /> },
       { path: 'ageGate', element: <AgeGate /> },
-      { path: 'wallet', element: <Wallet /> },
+      {
+        path: 'wallet',
+        children: [
+          { index: true, element: <Wallet /> },
+          { path: 'send/select-token', element: <SelectSendToken /> },
+          { path: 'send/input-address', element: <SendInputAddress /> },
+        ]
+      },
       {
         path: 'account',
         children: [

@@ -7,7 +7,7 @@ import BaseButton from '@/components/BaseButton/BaseButton'
 import { TPasscodeInput, TPasscodeInputRef } from '@/components/tmd'
 import { IconEyeOpen } from '@/components/tmd/icons/eyeOpen'
 import { IconEyeClose } from '@/components/tmd/icons/eyeClose'
-import { useStore } from '@/store'
+// import { useStore } from '@/store'
 
 export type PayPinType = 'reset' | 'confirm' | 'set' | 'change'
 export type PayPinBaseRefType = {
@@ -85,13 +85,13 @@ const PaypinBase = forwardRef<PayPinBaseRefType, PayPinBaseType>(
     }
 
     const forgetClick = () => {
-      if (useStore.getState().userState?.email) {
-        navigate('/account/forget', {
-          replace: true,
-        })
-      } else {
-        navigate('/account/backup')
-      }
+      // if (useStore.getState().userState?.email) {
+      navigate('/account/forget', {
+        replace: false,
+      })
+      // } else {
+      //   navigate('/account/backup')
+      // }
     }
 
     const calculatedGap = useMemo(() => {
@@ -103,7 +103,9 @@ const PaypinBase = forwardRef<PayPinBaseRefType, PayPinBaseType>(
 
     return (
       <div
-        className={clsx('flex w-full flex-1 flex-col items-center justify-between transition-all')}
+        className={clsx(
+          'flex size-full flex-1 flex-col items-center justify-between transition-all'
+        )}
         // style={{
         //   paddingBottom: sp
         // }}

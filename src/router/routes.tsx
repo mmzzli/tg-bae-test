@@ -26,6 +26,7 @@ import ChangePage from '@/pages/Wallet/Account/Change'
 import ForgetPage from '@/pages/Wallet/Account/Forget'
 import WalletTest from '@/pages/Wallet/Test'
 import RecoveryEmail from '@/pages/Wallet/Account/RecoveryEmail'
+import Freeze from '@/pages/Wallet/Account/Freeze'
 
 const Task = lazy(() => import('@/pages/Task'))
 
@@ -99,6 +100,7 @@ export const routes = [
           { path: 'recovery', element: <RecoveryEmail /> },
           { path: 'test', element: <WalletTest /> },
           { path: 'forget', element: <ForgetPage /> },
+          { path: 'freeze', element: <Freeze /> },
         ],
       },
     ],

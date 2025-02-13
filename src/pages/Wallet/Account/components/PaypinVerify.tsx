@@ -1,9 +1,9 @@
 import { useRef, useState } from 'react'
 import PayPinBase, { PayPinBaseRefType } from './PaypinBase'
 import { errorContents } from '@/config/wallet/const'
-// import useTradePwd from '@/hooks/useTradePwd'
-// import userStore from '@/stores/userStore'
-// import { useNavigate } from 'react-router-dom'
+import useTradePwd from '@/hooks/wallet/useTradePwd'
+import { useNavigate } from 'react-router-dom'
+import { useUserStore } from '@/store/wallet/walletUser'
 
 const PaypinVerify = ({
   onSuccess,
@@ -14,8 +14,9 @@ const PaypinVerify = ({
   onFailed: (err: string) => void
   titleFlag?: boolean
 }) => {
-  // const navigate = useNavigate()
-  // const { verifyTradePwd } = useTradePwd()
+  const navigate = useNavigate()
+  const { verifyTradePwd } = useTradePwd()
+  const { updateUserStateAction, userState } = useUserStore()
 
   const [isError, setIsError] = useState(false)
   const [errMsg, setErrMsg] = useState('')
@@ -32,37 +33,30 @@ const PaypinVerify = ({
     }
 
     if (btnLoading) return
-    try {
-      setBtnLoading(true)
-      onSuccess('mfaTokenmfaTokenmfaToken', '')
-      // const { validateFlag, failedCnt, mfaToken, prompt } = await verifyTradePwd(pass)
-      // setBtnLoading(false)
-      // if (validateFlag) {
-      //   setIsError(false)
-      //   setErrMsg('')
-      //   onSuccess(mfaToken, pass)
-      //   setFailedCnt(0)
-      // } else {
-      //   setIsError(true)
-      //   setFailedCnt(failedCnt)
-      //   setErrMsg(prompt)
-      //   payPinRef.current?.handleInit()
-      //   if (failedCnt === 5) {
-      //     // userStore.updateUserStateAction({
-      //     //   ...userStore.userState,
-      //     //   frozen: true
-      //     // })
-      //     // navigate('/login', { replace: true })
-      //   }
-      //   onFailed(prompt)
-      // }
-    } catch (err) {
-      setBtnLoading(false)
-      setIsError(true)
-      setErrMsg(errorContents.serverError)
-      payPinRef.current?.handleInit()
-      onFailed(errorContents.serverError)
+
+    setBtnLoading(true)
+    const { validateFlag, failedCnt, mfaToken, prompt } = await verifyTradePwd(pass)
+    setBtnLoading(false)
+    if (validateFlag) {
+      setIsError(false)
+      setErrMsg('')
+      onSuccess(mfaToken, pass)
+      setFailedCnt(0)
+      return
     }
+
+    setIsError(true)
+    setFailedCnt(failedCnt)
+    setErrMsg(prompt)
+    payPinRef.current?.handleInit()
+    if (failedCnt === 5) {
+      updateUserStateAction({
+        ...userState,
+        frozen: true,
+      })
+      navigate('/account/freeze', { replace: true })
+    }
+    onFailed(prompt)
   }
 
   const onChange = (value: string) => {

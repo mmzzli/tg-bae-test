@@ -195,13 +195,25 @@ const Searching = () => {
 }
 
 const Recent: React.FC<RecentProps> = ({searchHistory, setSearchHistory})=>{
+
+  const { getCurrentUid } = useTMAUtils()
+  const navigate = useNavigate()
+  const currentUid = getCurrentUid()
+
   const remove = (key:number)=>{
     searchHistory.splice(key,1)
     localStorage.setItem("searchHistory", JSON.stringify(searchHistory))
     setSearchHistory([...searchHistory])
   }
   return (
-    <div className='h-[100vh]'>
+    <div
+    className='overflow-auto scrollbar-hide'
+    style={{
+      height: 'calc(var(--tg-viewport-stable-height) + var(--tg-safe-area-inset-bottom) - 180px)',
+      // paddingBottom:
+      // 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 64px)',
+    }}
+    >
       <div className='flex items-center justify-between pt-[24px]'>
         <h3 className='text-[18px]'>Recent</h3>
         <i className="iconfont icon-delete-bin-line text-[#333333] text-[20px]"
@@ -213,6 +225,7 @@ const Recent: React.FC<RecentProps> = ({searchHistory, setSearchHistory})=>{
         <div className="flex items-center justify-between py-[12px] mb-[12px]">
           <div
             className="flex gap-[12px] items-center"
+            onClick={() => item.tg_id !== currentUid ? navigate(`/profile/${item.tg_id}`) : navigate(`/profile`)}
           >
             <div className="flex-shrink-0">
               <Image

@@ -1,12 +1,11 @@
-import React, { useMemo } from 'react'
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
-import useLoginInfo from '../../../../hooks/useLoginInfo'
-import useGetTokenList from '@/stores/tokenStore/hooks/source/useGetTokenList'
-import { BalanceToken } from '../../type/BalanceToken'
-import chains from '@/proviers/web3Provider/chains'
-import { getTokenBalance, tonDecimals } from 'config/ton'
-import { formatUnits, Hex } from 'viem'
-import commonStore from '@/stores/commonStore'
+import { useMemo } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { getTokenBalance, tonDecimals } from '../config/ton'
+import { formatUnits } from 'viem'
+import { useUserStore } from '../walletUser'
+import { BalanceToken } from '../tokenType/BalanceToken'
+import chains from '../chains'
+import useGetTokenList from './useGetTokenList'
 
 const getTonBalance = async ({
   token,
@@ -37,9 +36,8 @@ const getTonBalance = async ({
 }
 
 const useTonJettonsBalance = () => {
-  const { tonAddress } = useLoginInfo()
+  const { walletUserInfo: user } = useUserStore()
   const { tonToken } = useGetTokenList()
-  const { balanceFetchSwitch } = commonStore
 
   const jettonTokens = tonToken.filter((item) => {
     return !!item.address
@@ -48,24 +46,23 @@ const useTonJettonsBalance = () => {
   const jettonTokenBalancesQuery = useQuery({
     queryKey: [
       'TonJettonsBalance',
-      tonAddress,
+      user.tonAddress,
       ...jettonTokens.map((item) => {
         return item.address
       })
     ],
     staleTime: 0,
-    enabled: balanceFetchSwitch,
     refetchInterval: 20_000,
     queryFn: async () => {
-      console.log('useToken useTonJettonsBalance1', tonAddress)
-      if (tonAddress) {
+      console.log('useToken useTonJettonsBalance1', user.tonAddress)
+      if (user.tonAddress) {
         try {
           const querys = jettonTokens.map((item) => {
             return getTonBalance({
               token: item?.address,
               decimals: item?.decimals,
               symbol: item?.symbol,
-              tonAddress
+              tonAddress: user.tonAddress
             })
           })
           const balances = await Promise.allSettled(querys)

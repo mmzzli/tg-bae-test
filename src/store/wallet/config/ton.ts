@@ -1,34 +1,19 @@
-// import { Config, getHttpEndpoint, Network } from '@orbs-network/ton-access'
 import TonWeb from 'tonweb'
 import { AddressType } from 'tonweb/dist/types'
+//@ts-ignore
 import tonUtils from 'tonweb/src/utils/Utils'
 import axios from 'axios'
 import { getHttpEndpoint } from '@orbs-network/ton-access'
 import {
   Address,
-  BitBuilder,
-  BitReader,
-  Builder,
-  Dictionary,
   JettonMaster,
   JettonWallet,
-  Slice,
   TonClient,
   fromNano,
-  toNano,
   SendMode,
-  Cell as tonCell
+  Cell
 } from '@ton/ton'
 import { TonTxRequestStandard } from '../util/tgSdkJavascript/ton/types'
-import { DexTransaction, UserType } from '../type'
-import {
-  sendRawTransactionByCenterApi,
-  SendTransactionByCenterParamsType
-} from '@/hooks/api/chain'
-import { getChainByChainId } from '@/stores/walletStore/utils'
-import { getTransactionHash, pollForMethods } from '@/api/chain'
-import { CenterSubmitResult } from '@/api/type'
-import { errorContents } from './const'
 
 export type TonSigningTransactionType = {
   fromAddress: string
@@ -61,17 +46,11 @@ export const tonDecimals = 9
 export const tonSymbol = 'TON'
 export const minTonBalance = 0.05
 
-// String get tonRpc => 'https://toncenter.com/api/v2/jsonRPC';
-
-// String get tonRpcKey =>
-//     '1b312c91c3b691255130350a49ac5a0742454725f910756aff94dfe44858388e';
-
 export const apiKey: string =
   '1b312c91c3b691255130350a49ac5a0742454725f910756aff94dfe44858388e'
 export const tonRpc: string = 'https://toncenter.com/api/v2/jsonRPC'
 const hashHttp: string = 'https://toncenter.com/api/index/v1'
 export const tonScanUrl: string = 'https://tonviewer.com/transaction/'
-export const tonAddressScanUrl: string = 'https://tonviewer.com/'
 
 export async function getClient() {
   return new TonClient({
@@ -91,10 +70,6 @@ export async function getTonWebProvider() {
   return new TonWeb(new TonWeb.HttpProvider(tonRpc, { apiKey: apiKey }))
 }
 
-/** no reference */
-// export function getTonProvider() {
-//   return new TonWeb.HttpProvider(tonRpc, { apiKey: apiKey })
-// }
 export const getTonBalance = async ({
   tonAddress,
   tokenContractAddress,
@@ -104,10 +79,8 @@ export const getTonBalance = async ({
   tokenContractAddress?: AddressType
   tokenPrecision?: number
 }) => {
-  // get the decentralized RPC endpoint
   const tonWeb = await getTonWebProvider()
   const wallet = tonWeb.wallet.create({ address: tonAddress }) // if your know only address at this moment
-  // const wallet = tonWeb.wallet.create({publicKey: TonWeb.utils.hexToBytes(publicKey)});
 
   const address = await wallet.getAddress()
   if (tokenContractAddress) {
@@ -117,7 +90,6 @@ export const getTonBalance = async ({
     })
     const jettonWalletAddress =
       await jettonMinter.getJettonWalletAddress(address)
-    // console.log('My jetton wallet for ' + name + ' is ' + jettonWalletAddress.toString(true, true, true));
     const jettonWallet = new (await getTonWebAsync()).token.jetton.JettonWallet(
       tonWeb.provider,
       {
@@ -138,77 +110,6 @@ export const getTonBalance = async ({
   }
 }
 
-// export const getTokenBalance = async ({
-//   tonAddress,
-//   tokenAddress
-// }: {
-//   tokenAddress: string
-//   tonAddress: string
-// }) => {
-//   const tonWeb = await getTonWebProvider()
-//   const wallet = tonWeb.wallet.create({ address: tonAddress }) // if your know only address at this moment
-//   const address = await wallet.getAddress()
-
-//   const tokenContract = new tonWeb.Contract(tonWeb.provider, {
-//     address: tokenAddress
-//   })
-
-//   // const methods = [
-//   //   {
-//   //     method: 'balanceOf',
-//   //     params: [tonAddress]
-//   //   },
-//   //   {
-//   //     method: 'decimals',
-//   //     params: []
-//   //   }
-//   // ]
-
-//   try {
-//     const query = await tokenContract.methods
-//     // const results = await Promise.all(
-//     //   methods.map(async (method) => {
-//     //     // return tokenContract.methods.(method)
-//     //   })
-//     // )
-
-//     // const valueResult = results[0]
-//     // const decimalsResult = results[1]
-
-//     // const value = valueResult.stack[0].toString()
-//     // const decimals = decimalsResult.stack[0].toNumber()
-
-//     return {}
-//     // return { value, decimals }
-//   } catch (error) {
-//     console.error('Error getting token balance and decimals:', error)
-//     throw error
-//   }
-// }
-
-// function parseCell(cell: codeCell) {
-//   const slice = cell
-
-//   // 读取整数 (例如 64 位整数)
-//   const someInteger = slice.readUint(64)
-
-//   // 读取地址
-//   const someAddress = slice.readAddress()
-
-//   // 读取布尔值
-//   const someBoolean = slice.readBit()
-
-//   // 读取子 Cell
-//   const maybeRefCell = slice.readCell() // 子 Cell，如果存在
-
-//   return {
-//     someInteger,
-//     someAddress,
-//     someBoolean,
-//     maybeRefCell
-//   }
-// }
-
 export const getTokenBalance = async ({
   tonAddress,
   tokenAddress
@@ -227,9 +128,6 @@ export const getTokenBalance = async ({
     const jettonWallet = client.open(JettonWallet.create(jettonWalletAddress))
 
     const balance = await jettonWallet.getBalance()
-
-    // const data = await jettonMaster.getJettonData()
-    // const buffer = data.content.toBoc({ idx: false })
 
     return { value: balance }
   } catch (error) {
@@ -387,71 +285,6 @@ export async function createSigningTransaction(
   }
 }
 
-// export async function createSigningTransactionData(
-//   data: TonSendTransactionParams & {
-//     publicKey: string
-//   }
-// ) {
-//   try {
-//     const tonWeb = await getTonWebProvider()
-//     const WalletClass = tonWeb.wallet.all['v4R2']
-//     const wallet = new WalletClass(tonWeb.provider, {
-//       publicKey: tonWeb.utils.hexToBytes(data.publicKey),
-//       wc: 0
-//     })
-//     const seqno = (await wallet.methods.seqno().call()) || 0
-//     let stateInit = null
-//     if (seqno == 0) {
-//       const deploy = await wallet.createStateInit()
-//       stateInit = deploy.stateInit
-//     }
-
-//     const signingMessage = data.data
-
-//     let stateInitBoc
-
-//     if (stateInit) {
-//       const cellBase641 = await stateInit.toBoc(false)
-//       stateInitBoc = tonWeb.utils.bytesToHex(cellBase641)
-//     }
-
-//     return {
-//       signingMessageBoc: signingMessage,
-//       stateInitBoc: stateInitBoc ? stateInitBoc : ''
-//     }
-//   } catch (e) {
-//     console.error(e)
-//   }
-// }
-
-export const pushTonTx = async ({
-  signedTransaction,
-  apiParams
-}: {
-  signedTransaction: string
-  apiParams?: {
-    user: UserType
-    type: string
-    params: DexTransaction
-  }
-}) => {
-  if (apiParams) {
-    const hash = await sendRawTransactionByCenterApi({
-      apiParams,
-      callData: signedTransaction,
-      tx: ''
-    })
-    if (hash) return hash
-  }
-
-  const tranRes = await sendTransaction(signedTransaction)
-  if (tranRes && tranRes['@type'] == 'ok') {
-    return tranRes.msgHash as string
-  } else {
-    throw new Error(errorContents.transactionError)
-  }
-}
-
 export async function sendTransaction(signedTransaction: string) {
   const tonWeb = await getTonWebProvider()
 
@@ -512,7 +345,6 @@ export async function createSigningTransactionPure(
       publicKey: tonWeb.utils.hexToBytes(transactionInfo.publicKey as string),
       wc: 0
     })
-    // console.log('tonWallet ==>', window.tonWeb = tonWeb, window.tonWallet = wallet)
     const seqno = (await wallet.methods.seqno().call()) || 0
     let stateInit = null
     if (seqno == 0) {
@@ -537,11 +369,23 @@ export async function createSigningTransactionPure(
         sendMode = SendMode.CARRY_ALL_REMAINING_BALANCE //128
       }
 
+      let toAddress: AddressType = new TonWeb.utils.Address(
+        item.address
+      ).toString(true, true, true)
+      const info = await tonWeb.provider.getAddressInfo(toAddress)
+
+      if (info.state !== 'active') {
+        toAddress = new TonWeb.utils.Address(toAddress).toString(
+          true,
+          true,
+          false
+        ) // convert to non-bounce
+      }
+
       return {
-        toAddress: item.address,
+        toAddress,
         sendMode,
         amount: transferTonAmount,
-        bounce: true,
         payload: item.payload
           ? tonWeb.boc.Cell.oneFromBoc(
               new Uint8Array(Buffer.from(item.payload, 'base64'))

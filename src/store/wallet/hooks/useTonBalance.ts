@@ -1,27 +1,24 @@
 import { getTonBalance } from '../config/ton'
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
-import useLoginInfo from '../../../../hooks/useLoginInfo'
-import commonStore from '@/stores/commonStore'
+import { useQuery } from '@tanstack/react-query'
+import { useUserStore } from '../walletUser'
 
 interface useTonBalanceReturnType {
   balance: string
   formatted: string
 }
 const useTonBalance = () => {
-  const { tonAddress } = useLoginInfo()
-  const { balanceFetchSwitch } = commonStore
+  const { walletUserInfo: user } = useUserStore()
 
   return useQuery({
-    queryKey: ['TonBalance', tonAddress],
+    queryKey: ['TonBalance', user?.tonAddress],
     staleTime: 0,
-    enabled: balanceFetchSwitch,
     refetchInterval: 30_000,
     queryFn: async () => {
       console.log('useToken useTonBalance1')
-      if (tonAddress) {
+      if (user?.tonAddress) {
         try {
           const value = (await getTonBalance({
-            tonAddress
+            tonAddress: user?.tonAddress
           })) as useTonBalanceReturnType
 
           console.log('useToken useTonBalance2', value)

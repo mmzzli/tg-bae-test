@@ -1,10 +1,11 @@
 import { useEffect, useCallback, useState } from 'react'
+import { InitData, useInitData, useWebApp } from '@vkruglikov/react-telegram-web-app'
 import {
-  InitData,
-  useInitData,
-  useWebApp
-} from '@vkruglikov/react-telegram-web-app'
-import { getDefaultWalletAddressApi, getOkxWalletAccountApi, getTelegramUserInfoApi, loginJavaApi } from '@/api/wallet'
+  getDefaultWalletAddressApi,
+  getOkxWalletAccountApi,
+  getTelegramUserInfoApi,
+  loginJavaApi,
+} from '@/api/wallet'
 import { useStore } from '@/store'
 import { shallow } from 'zustand/shallow'
 import { UserState, UserType } from '../type'
@@ -33,7 +34,6 @@ import { errorContents } from '@/config/wallet/const'
 // import * as Sentry from '@sentry/react'
 // import useApp from '@/hooks/oauth/useApp'
 
-
 const useInitUser = () => {
   // const [initDataUnsafe, initData] = useInitData()
   // const webApp = useWebApp()
@@ -43,30 +43,40 @@ const useInitUser = () => {
   const toast = useToast()
   const navigate = useNavigate()
 
-  const { updateUserStateAction, updateUserInfoAction, tokensReSetActions, fetchUserInfoAction, updateTgAction, walletUserInfo: userInfo, userState } = useStore(
-      (state) => ({
-        updateUserStateAction: state.updateUserStateAction,
-        updateUserInfoAction: state.updateUserInfoAction,
-        fetchUserInfoAction: state.fetchUserInfoAction,
-        updateTgAction: state.updateTgAction,
-        tokensReSetActions: state.tokensReSetActions,
-        walletUserInfo: state.walletUserInfo,
-        userState: state.userState
-      }),
-      shallow
-    )
+  const {
+    updateUserStateAction,
+    updateUserInfoAction,
+    tokensReSetActions,
+    fetchUserInfoAction,
+    updateTgAction,
+    walletUserInfo: userInfo,
+    userState,
+  } = useStore(
+    (state) => ({
+      updateUserStateAction: state.updateUserStateAction,
+      updateUserInfoAction: state.updateUserInfoAction,
+      fetchUserInfoAction: state.fetchUserInfoAction,
+      updateTgAction: state.updateTgAction,
+      tokensReSetActions: state.tokensReSetActions,
+      walletUserInfo: state.walletUserInfo,
+      userState: state.userState,
+    }),
+    shallow
+  )
 
   const getUserInfo = async () => {
     // toast
     try {
-      const {code, result, message} = await getTelegramUserInfoApi()
+      const { code, result, message } = await getTelegramUserInfoApi()
       if (code !== 10000 || !result?.id) {
         toast({
           render: () => {
-            return <CustomToast title={errorContents.loginErrors.userInfo} type={typeOptions.success} />
+            return (
+              <CustomToast title={errorContents.loginErrors.userInfo} type={typeOptions.success} />
+            )
           },
           position: 'bottom',
-          duration: 2000
+          duration: 2000,
         })
         return
       }
@@ -80,15 +90,14 @@ const useInitUser = () => {
       const userInfo = {
         ...AddrResp.result,
         ...result,
-        okxAccount: okxAccountResp.result
+        okxAccount: okxAccountResp.result,
       }
       updateUserInfoAction(userInfo)
       updateUserStateAction({
         ...userState,
-        loginTime: new Date().getTime()
+        loginTime: new Date().getTime(),
       })
       // Toast.clear()
-
     } catch (e) {
       // Toast.clear()
       // toast.warn(errorContents.serverError)
@@ -105,10 +114,15 @@ const useInitUser = () => {
         // toast.warn(resp?.message || "wallet login error")
         toast({
           render: () => {
-            return <CustomToast title={resp?.message || "wallet login error"} type={typeOptions.success} />
+            return (
+              <CustomToast
+                title={resp?.message || 'wallet login error'}
+                type={typeOptions.success}
+              />
+            )
           },
           position: 'bottom',
-          duration: 2000
+          duration: 2000,
         })
         return
       }
@@ -120,21 +134,18 @@ const useInitUser = () => {
       }
       updateUserStateAction(userState as UserState)
 
-      if (
-        userInfo.id &&
-        Number(userState.userId) !== userInfo.id
-      ) {
+      if (userInfo.id && Number(userState.userId) !== userInfo.id) {
         updateUserInfoAction({} as UserType)
         tokensReSetActions()
       }
       if (userState.frozen) {
         // to freeze
-        navigate('/account/freeze');
+        navigate('/account/freeze')
         return
       }
       //new user, not set pin
       if (userState.newUser || !userState.setTradePassword) {
-        navigate('/account/set');
+        navigate('/account/set')
         return
       }
       //new mobile phone
@@ -145,7 +156,7 @@ const useInitUser = () => {
       //change user
       if (userState.tgId !== userState.tgId) {
         updateUserInfoAction({} as UserType)
-        navigate('/account/verify');
+        navigate('/account/verify')
         return
       }
 
@@ -160,14 +171,13 @@ const useInitUser = () => {
       }
 
       // userStore.updateAutoLoginAction()
-
     } catch (e) {
       toast({
         render: () => {
-          return <CustomToast title={errorContents.serverError} type={typeOptions.success} />
+          return <CustomToast title={errorContents.serverError} type={typeOptions.error} />
         },
         position: 'bottom',
-        duration: 2000
+        duration: 2000,
       })
 
       // console.warn('login error', e)

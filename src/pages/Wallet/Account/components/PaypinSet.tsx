@@ -66,7 +66,7 @@ const PaypinSet = () => {
   }
 
   const finished = (pass: string) => {
-    navigate('/account/backup', { replace: true })
+    navigate('/account/recovery', { replace: true })
   }
 
   const onConfirm = async (pass: string) => {

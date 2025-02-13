@@ -47,11 +47,11 @@ const useTradePwd = () => {
         tradePassword: await hashWithWebCrypto(tradePassword),
       })
       if (code === successCode) {
-        return true
+        return { success: true, message }
       }
-      throw message
+      return { success: false, message }
     } catch (err: any) {
-      throw err?.message || err || ''
+      return { success: false, message: err?.message || errorContents.serverError }
     }
   }
 

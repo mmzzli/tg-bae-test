@@ -1,20 +1,18 @@
 import { useMemo, useRef, useState } from 'react'
-// import Container from '@/components/Container'
 import { errorContents } from '@/config/wallet/const'
-import { md5 } from '@/utils/helper'
-import useTradePwd from '@/hooks/useTradePwd'
-// import toast from '@/components/Toast'
-// import toast from '@/components/tmd/toast/Toast'
 import { useNavigate } from 'react-router-dom'
-import { SafeArea } from 'antd-mobile'
 import PayPinBase, { PayPinBaseRefType } from './PaypinBase'
 import EmailConfirm from './EmailConfirm'
-// import useUserStore from '@/stores/userStore/hooks/useUserStore'
+import useTradePwd from '@/hooks/wallet/useTradePwd'
+import { useUserStore } from '@/store/wallet/walletUser'
+import { useToast } from '@chakra-ui/react'
+import { CustomToast, typeOptions } from '@/components/comm/Toast'
 
 const Forget = () => {
   const navigate = useNavigate()
   const { resetTradePwd } = useTradePwd()
-  // const { userState } = useUserStore()
+  const { userState } = useUserStore()
+  const toast = useToast()
 
   const from = 'reset'
   const payPinRef = useRef<PayPinBaseRefType>(null)
@@ -28,10 +26,6 @@ const Forget = () => {
   const title = useMemo(() => {
     return step == 'set' ? 'Set a Pay PIn' : 'Confirm The Pay PIN'
   }, [step])
-
-  const countdownKey = useMemo(() => {
-    return `be${md5(userState?.email || '')}`
-  }, [userState?.email])
 
   const onEmailConfirm = (code: string) => {
     if (code) {
@@ -68,23 +62,30 @@ const Forget = () => {
       return
     }
 
-    try {
-      setBtnLoading(true)
-      await resetTradePwd(mailCode, pass)
+    setBtnLoading(true)
+    const { success, message } = await resetTradePwd(mailCode, pass)
+    if (success) {
       setIsError(false)
       setErrMsg('')
-      // toast.success('set pin success')
+      toast({
+        render: () => {
+          return <CustomToast title={'Successfully.'} type={typeOptions.success} />
+        },
+        position: 'bottom',
+        duration: 2000,
+      })
       setTimeout(() => {
         navigate(-1)
       }, 1000)
-    } catch (err) {
-      // toast.error(err as string)
-      setStep('mail')
-      setOld('')
-      setIsError(true)
-      setErrMsg(err as string)
-      payPinRef.current?.handleInit()
+      return
     }
+
+    setStep('mail')
+    setOld('')
+    setIsError(true)
+    setErrMsg(message)
+    payPinRef.current?.handleInit()
+
     setBtnLoading(false)
   }
 
@@ -101,40 +102,32 @@ const Forget = () => {
   }
 
   return (
-    <div className="h-full bg-bg1 px-[20px] pb-[16px] pt-[4px]">
-      {step == 'mail' && (
-        <>
-          <EmailConfirm
-            countdownKey={countdownKey}
-            onConfirm={onEmailConfirm}
-            email={userState?.email || ''}
-            initSend={true}
-            from={from}
-            isError={isError}
-            errMsg={errMsg}
-            onChange={() => {
-              setIsError(false)
-              setErrMsg('')
-            }}
-          />
-          <SafeArea position="bottom" />
-        </>
-      )}
-      {(step == 'set' || step == 'confirm') && (
-        <>
-          <PayPinBase
-            from={from}
-            onConfirm={onPaypinConfirm}
-            isError={isError}
-            errMsg={errMsg}
-            ref={payPinRef}
-            loading={btnLoading}
-            title={title}
-            autoFill={step == 'set'}
-            onChange={onChange}
-          />
-          {/* <SafeArea position="bottom" /> */}
-        </>
+    <div className="size-full flex bg-bg1 px-[20px] pb-[16px] pt-[4px]">
+      {step == 'mail' ? (
+        <EmailConfirm
+          onConfirm={onEmailConfirm}
+          email={userState?.email || ''}
+          initSend={true}
+          from={from}
+          isError={isError}
+          errMsg={errMsg}
+          onChange={() => {
+            setIsError(false)
+            setErrMsg('')
+          }}
+        />
+      ) : (
+        <PayPinBase
+          from={from}
+          onConfirm={onPaypinConfirm}
+          isError={isError}
+          errMsg={errMsg}
+          ref={payPinRef}
+          loading={btnLoading}
+          title={title}
+          autoFill={step == 'set'}
+          onChange={onChange}
+        />
       )}
     </div>
   )

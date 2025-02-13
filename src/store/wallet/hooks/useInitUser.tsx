@@ -115,10 +115,7 @@ const useInitUser = () => {
         toast({
           render: () => {
             return (
-              <CustomToast
-                title={resp?.message || 'wallet login error'}
-                type={typeOptions.success}
-              />
+              <CustomToast title={resp?.message || 'wallet login error'} type={typeOptions.error} />
             )
           },
           position: 'bottom',

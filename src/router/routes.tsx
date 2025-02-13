@@ -98,7 +98,7 @@ export const routes = [
           { path: 'change', element: <ChangePage /> },
           { path: 'recovery', element: <RecoveryEmail /> },
           { path: 'test', element: <WalletTest /> },
-          // { path: 'forget', element: <ForgetPage /> },
+          { path: 'forget', element: <ForgetPage /> },
         ],
       },
     ],

@@ -209,7 +209,7 @@ const Recent: React.FC<RecentProps> = ({searchHistory, setSearchHistory})=>{
     <div
     className='overflow-auto scrollbar-hide'
     style={{
-      height: 'calc(var(--tg-viewport-stable-height) + var(--tg-safe-area-inset-bottom) - 120px)',
+      height: 'calc(var(--tg-viewport-stable-height) + var(--tg-safe-area-inset-bottom) - 180px)',
       // paddingBottom:
       // 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 64px)',
     }}

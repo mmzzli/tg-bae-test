@@ -4,9 +4,12 @@ import useUserTokens from './useUserTokens'
 
 // Get Token List
 const useGetTokenList = () => {
-  const { isLoading: userTokensLoading, refetch: userTokensRefetch, customTokens,
-    whiteTokens } =
-    useUserTokens()
+  const {
+    isLoading: userTokensLoading,
+    refetch: userTokensRefetch,
+    customTokens,
+    whiteTokens,
+  } = useUserTokens()
 
   const isLoading = userTokensLoading
 
@@ -16,14 +19,11 @@ const useGetTokenList = () => {
 
   const tokens = mergeTokensData({
     whiteTokens,
-    customTokens
+    customTokens,
   })
 
   const reqEvmTokens = tokens.filter((token) => {
-    return (
-      token.chainId !== chains.solana.id &&
-      token.chainId !== chains.ton.id
-    )
+    return token.chainId !== chains.solana.id && token.chainId !== chains.ton.id
   })
 
   const reqSolTokens = tokens.filter((token) => {
@@ -34,7 +34,6 @@ const useGetTokenList = () => {
     return token.chainId === chains.ton.id
   })
 
-  
   const evmToken = [...reqEvmTokens]
   const solToken = [...reqSolTokens]
   const tonToken = [...reqJettonTokens]
@@ -44,7 +43,7 @@ const useGetTokenList = () => {
     solToken,
     tonToken,
     isLoading,
-    refetch
+    refetch,
   }
 }
 

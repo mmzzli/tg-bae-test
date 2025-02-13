@@ -1,0 +1,11 @@
+.tmd-number-keyboard{
+  .tmd-number-keyboard-main{
+    @apply grid gap-x-[35px] gap-y-[10px] grid-cols-3 text-t1 text-h2 font-semibold;
+  }
+  .tmd-number-keyboard-key{
+    @apply h-[42px] flex items-center justify-center active:bg-bg3 touch-manipulation;
+    &.active{
+      @apply bg-bg3;
+    }
+  }
+}

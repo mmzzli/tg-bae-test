@@ -1,0 +1,38 @@
+import React from 'react'
+import classNames from 'classnames'
+import { mergeProps } from '../utils/get-default-props'
+import { addUnit } from '../utils/format/unit'
+import { IconProps } from './PropsType'
+
+export function Icon(p: IconProps) {
+  const props = mergeProps(p, {
+    fontSize: 16
+  })
+  const size = addUnit(props.fontSize)
+  const iconClass = `icon-${props.name}`
+
+  // use svg
+  // return (
+  //   <svg
+  //     className={classNames('icon fill-current', props.className)}
+  //     aria-hidden="true"
+  //     width={size}
+  //     height={size}
+  //   >
+  //     <use xlinkHref={`#icon-${props.name}`}></use>
+  //   </svg>
+  // );
+
+  // use iconfont
+  return (
+    <i
+      className={classNames(
+        'iconfont leading-none',
+        iconClass,
+        props.className
+      )}
+      style={{ fontSize: size }}
+      onClick={props.onClick || (() => {})}
+    ></i>
+  )
+}

@@ -1,7 +1,6 @@
 import { IOKXHistoryType, TokenOkx, UserState, UserType } from '@/store/wallet/type'
 import { WalletApiResponse, walletGet, walletPost, tomoTgGet, tomoTgPost } from './walletBase'
 
-
 export const getAllHistoryByAccount = async (params: {
   accountId: string
   begin?: string | undefined
@@ -9,15 +8,12 @@ export const getAllHistoryByAccount = async (params: {
   cursor?: string | undefined
   chainIndex?: string | undefined
 }): Promise<{ cursor: string; transactionList: IOKXHistoryType[] }> => {
-  const ret = await walletGet(
-    'socialLogin/projectWallet/getOkxWalletAccountTransaction',
-    {
-      params,
-      paramsSerializer: function (params) {
-        return new URLSearchParams(params).toString()
-      }
-    }
-  )
+  const ret = await walletGet('socialLogin/projectWallet/getOkxWalletAccountTransaction', {
+    params,
+    paramsSerializer: function (params) {
+      return new URLSearchParams(params).toString()
+    },
+  })
   return ret.result[0]
 }
 
@@ -27,10 +23,8 @@ export const getAllTokenBalancesByAccount = async (params: {
   filter?: '0' | '1' //filter risk token
 }): Promise<TokenOkx[]> => {
   console.log(params, 'params')
-  const path = new URLSearchParams(params).toString();
-  const ret = await walletGet(
-    `socialLogin/projectWallet/getOkxWalletAccountTokenBalances?${path}`
-  )
+  const path = new URLSearchParams(params).toString()
+  const ret = await walletGet(`socialLogin/projectWallet/getOkxWalletAccountTokenBalances?${path}`)
   return ret.result[0].tokenAssets
 }
 
@@ -38,7 +32,7 @@ export const loginJavaApi = async (initData: string) => {
   const res = await walletPost<WalletApiResponse<UserState>>(
     'socialLogin/projectUser/bae/loginByTelegramMini',
     {
-      telegramAuthData: initData
+      telegramAuthData: initData,
     }
   )
   return res
@@ -57,7 +51,9 @@ export const getDefaultWalletAddressApi = async (userId: number) => {
 }
 
 export const getOkxWalletAccountApi = async () => {
-  const res = await walletGet<WalletApiResponse<string>>('socialLogin/projectWallet/okxWalletAccount')
+  const res = await walletGet<WalletApiResponse<string>>(
+    'socialLogin/projectWallet/okxWalletAccount'
+  )
   return res
 }
 
@@ -82,7 +78,7 @@ export const getAllBalance = async (params: {
     display_name: string
   }[]
 > => {
-  const ret = await tomoTgGet(`tg-auth/v1/token/balance`,  params )
+  const ret = await tomoTgGet(`tg-auth/v1/token/balance`, params)
   return ret.data
 }
 
@@ -91,6 +87,32 @@ export const v1AllAssetApi = async (params: {
   pageSize: number
   chain_ids?: number[]
 }) => {
-  const res = await tomoTgGet('tg-auth/v1/asset/all', params )
+  const res = await tomoTgGet('tg-auth/v1/asset/all', params)
   return res.data
+}
+
+export const firstSetTradePasword = async (data: { newTradePassword: string }) => {
+  const ret = await walletPost<WalletApiResponse>(
+    `socialLogin/teleGram/user/firstSetTradePasword`,
+    data
+  )
+  return ret
+}
+export const setTradePasword = async (data: {
+  oldTradePassword: string
+  newTradePassword: string
+}) => {
+  const ret = await walletPost<WalletApiResponse>(`socialLogin/teleGram/user/setTradePasword`, data)
+  return ret
+}
+export const mfaAuthVerificationApi = async (data: any) => {
+  const ret = await walletPost<WalletApiResponse>(`socialLogin/mfa/auth/verification`, data)
+  return ret
+}
+export const resetTradePwdEmail = async (data: { code: string; tradePassword: string }) => {
+  const ret = await walletPost<WalletApiResponse>(
+    `socialLogin/teleGram/user/resetTradePasswordRecoverEmail`,
+    data
+  )
+  return ret
 }

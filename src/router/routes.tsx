@@ -20,15 +20,15 @@ import OthersProfile from '@/pages/OthersProfile'
 import ProfileGuard from '@/pages/OthersProfile/routeGuard'
 import MessagePageRouteGuard from '@/pages/Chat/MessagePageRouteGuard'
 import TTPlayer from '@/pages/TTPlayer'
+import SetPage from '@/pages/Account/Set'
+import ChangePage from '@/pages/Account/Change'
+import ForgetPage from '@/pages/Account/Forget'
 
 const Task = lazy(() => import('@/pages/Task'))
 
 const LoadingSpinner = () => (
   <div className="flex items-center justify-center h-full pb-10">
-    <i
-      className="iconfont icon-loading animate-spin text-[#6254FF]"
-      style={{ fontSize: '40px' }}
-    />
+    <i className="iconfont icon-loading animate-spin text-[#6254FF]" style={{ fontSize: '40px' }} />
   </div>
 )
 
@@ -87,6 +87,14 @@ export const routes = [
       { path: 'chat', element: <></> },
       { path: 'chat/:uid', element: <MessagePageRouteGuard /> },
       { path: 'ageGate', element: <AgeGate /> },
+      {
+        path: 'account',
+        children: [
+          { path: 'set', element: <SetPage /> },
+          { path: 'change', element: <ChangePage /> },
+          // { path: 'forget', element: <ForgetPage /> },
+        ],
+      },
     ],
   },
 ]

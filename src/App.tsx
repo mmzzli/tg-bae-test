@@ -81,15 +81,15 @@ function App() {
     <TomoProvider theme="light" supportedProviders={['EVM']} tomoOptions={TOMO_META_DATA}>
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
-          <NiceModal.Provider>
-            <ChakraProvider resetCSS theme={theme}>
-              <AliveScope>
-                <BrowserRouter>
+          <BrowserRouter>
+            <NiceModal.Provider>
+              <ChakraProvider resetCSS theme={theme}>
+                <AliveScope>
                   <AppRoutes />
-                </BrowserRouter>
-              </AliveScope>
-            </ChakraProvider>
-          </NiceModal.Provider>
+                </AliveScope>
+              </ChakraProvider>
+            </NiceModal.Provider>
+          </BrowserRouter>
         </QueryClientProvider>
       </WagmiProvider>
     </TomoProvider>

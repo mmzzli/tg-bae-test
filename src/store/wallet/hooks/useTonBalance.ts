@@ -1,4 +1,4 @@
-import { getTonBalance } from 'config/ton'
+import { getTonBalance } from '../config/ton'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import useLoginInfo from '../../../../hooks/useLoginInfo'
 import commonStore from '@/stores/commonStore'

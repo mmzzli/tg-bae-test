@@ -62,6 +62,8 @@
     "nouislider-react": "^3.4.2",
     "path": "^0.12.7",
     "quill": "^2.0.3",
+    "rango-sdk": "0.1.56",
+    "rango-sdk-basic": "0.1.56",
     "react": "^18.2.0",
     "react-activation": "^0.13.0",
     "react-confetti": "^6.2.2",

@@ -3,7 +3,6 @@ import TonWeb from 'tonweb'
 import { AddressType } from 'tonweb/dist/types'
 import tonUtils from 'tonweb/src/utils/Utils'
 import axios from 'axios'
-import Balance from '../components/Balance'
 import { getHttpEndpoint } from '@orbs-network/ton-access'
 import {
   Address,
@@ -20,16 +19,15 @@ import {
   SendMode,
   Cell as tonCell
 } from '@ton/ton'
-import { TonTxRequestStandard } from '@/utils/tgSdkJavascript/ton/types'
-import { amount } from '@metaplex-foundation/js'
-import { UserType } from '@/stores/userStore/type'
-import { DexTransaction } from '@/constants/types'
+import { TonTxRequestStandard } from '../util/tgSdkJavascript/ton/types'
+import { DexTransaction, UserType } from '../type'
 import {
   sendRawTransactionByCenterApi,
   SendTransactionByCenterParamsType
 } from '@/hooks/api/chain'
 import { getChainByChainId } from '@/stores/walletStore/utils'
-import { ApiParams, CenterSubmitResult } from '@/api/type'
+import { getTransactionHash, pollForMethods } from '@/api/chain'
+import { CenterSubmitResult } from '@/api/type'
 import { errorContents } from './const'
 
 export type TonSigningTransactionType = {
@@ -431,7 +429,11 @@ export const pushTonTx = async ({
   apiParams
 }: {
   signedTransaction: string
-  apiParams?: ApiParams
+  apiParams?: {
+    user: UserType
+    type: string
+    params: DexTransaction
+  }
 }) => {
   if (apiParams) {
     const hash = await sendRawTransactionByCenterApi({

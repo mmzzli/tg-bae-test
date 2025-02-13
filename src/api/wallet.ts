@@ -64,6 +64,7 @@ export const getOkxWalletAccountApi = async () => {
 export const getAllBalance = async (params: {
   evm_address: string
   solana_address: string
+  sui_address: string
 }): Promise<
   {
     balance: string
@@ -82,8 +83,7 @@ export const getAllBalance = async (params: {
   }[]
 > => {
   const ret = await tomoTgGet(`tg-auth/v1/token/balance`,  params )
-  debugger
-  return ret.data.data
+  return ret.data
 }
 
 export const v1AllAssetApi = async (params: {
@@ -92,5 +92,5 @@ export const v1AllAssetApi = async (params: {
   chain_ids?: number[]
 }) => {
   const res = await tomoTgGet('tg-auth/v1/asset/all', params )
-  return res.data.data
+  return res.data
 }

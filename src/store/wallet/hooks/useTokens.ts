@@ -11,6 +11,9 @@ const useTokens = () => {
     refetch,
     isLoading: tokenListLoading
   } = useGetTokenList()
+
+  // const tonBalanceQuery = useTonBalance()
+  // const tonJettonBalanceQuery = useTonJettonsBalance()
 }
 
 export default useTokens

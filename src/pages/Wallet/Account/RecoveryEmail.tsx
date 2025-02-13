@@ -22,11 +22,13 @@ const RecoveryEmail = () => {
   const [err, setErr] = useState({ isError: false, errMsg: '' })
   const [loading, setLoading] = useState(false)
 
-  const userState = useStore((state) => state.userState)
-  const walletUserInfo = useStore((state) => state.walletUserInfo)
-  const updateUserInfoAction = useStore((state) => state.updateUserInfoAction)
-  const fetchUserInfoAction = useStore((state) => state.fetchUserInfoAction)
-  const updateUserStateAction = useStore((state) => state.updateUserStateAction)
+  const {
+    userState,
+    walletUserInfo,
+    updateUserInfoAction,
+    fetchUserInfoAction,
+    updateUserStateAction,
+  } = useStore((state) => state)
 
   const onConfirm = async (code: string) => {
     if (loading) return

@@ -1,11 +1,13 @@
-import { Space, PasscodeInput as TPasscodeInput } from 'antd-mobile'
+import { Space } from 'antd-mobile'
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
-// import { TIcon } from '@/components/tmd'
-import { MyPasscodeInputRef } from '@/components/PasscodeInput'
 import { useNavigate } from 'react-router-dom'
 // import { tgDeskPlatform } from '@/utils/telegram'
 import clsx from 'clsx'
 import BaseButton from '@/components/BaseButton/BaseButton'
+import { TPasscodeInput, TPasscodeInputRef } from '@/components/tmd'
+import { IconEyeOpen } from '@/components/tmd/icons/eyeOpen'
+import { IconEyeClose } from '@/components/tmd/icons/eyeClose'
+import { useStore } from '@/store'
 
 export type PayPinType = 'reset' | 'confirm' | 'set' | 'change'
 export type PayPinBaseRefType = {
@@ -51,7 +53,7 @@ const PaypinBase = forwardRef<PayPinBaseRefType, PayPinBaseType>(
     // const { userState } = useUserStore()
     const navigate = useNavigate()
     const [pass, setPass] = useState('')
-    const passcodeRef = useRef<MyPasscodeInputRef | any>()
+    const passcodeRef = useRef<TPasscodeInputRef | any>()
     const length = 6
 
     useImperativeHandle(ref, () => ({
@@ -83,13 +85,13 @@ const PaypinBase = forwardRef<PayPinBaseRefType, PayPinBaseType>(
     }
 
     const forgetClick = () => {
-      // if (userState?.email) {
-      navigate('/login/forget', {
-        replace: true,
-      })
-      // } else {
-      //   navigate('/login/backup')
-      // }
+      if (useStore.getState().userState?.email) {
+        navigate('/account/forget', {
+          replace: true,
+        })
+      } else {
+        navigate('/account/backup')
+      }
     }
 
     const calculatedGap = useMemo(() => {
@@ -147,11 +149,12 @@ const PaypinBase = forwardRef<PayPinBaseRefType, PayPinBaseType>(
             {plainTip && (
               <div className="mt-[16px] flex w-full items-center justify-center">
                 <button className="flex items-center gap-1 text-t3" onClick={plainChange}>
-                  {/* <TIcon
-                    name={plain ? 'tg_wallet_signal' : 'tg_wallet_implicit'}
-                    fontSize="14"
-                    className="text-sm"
-                  /> */}
+                  {plain ? (
+                    <IconEyeOpen className="size-[14px]" />
+                  ) : (
+                    <IconEyeClose className="size-[14px]" />
+                  )}
+
                   <span className="text-xs">{plain ? 'Hide' : 'Show'} Password</span>
                 </button>
               </div>
@@ -166,6 +169,7 @@ const PaypinBase = forwardRef<PayPinBaseRefType, PayPinBaseType>(
               handler={handleConfirm}
               loading={loading}
               text="Confirm"
+              height="52px"
             />
           </div>
         )}

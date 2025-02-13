@@ -51,6 +51,7 @@
     "axios": "^1.7.2",
     "bignumber.js": "^9.1.2",
     "clsx": "^2.1.1",
+    "crypto-js": "^4.2.0",
     "dayjs": "^1.11.13",
     "file-saver": "^2.0.5",
     "framer-motion": "^11.2.10",
@@ -119,6 +120,7 @@
     "postcss-pxtorem": "^6.1.0",
     "prettier": "^3.3.3",
     "react-window": "^1.8.10",
+    "sass": "^1.84.0",
     "tailwindcss": "^3.4.14",
     "typescript": "^5.0.4",
     "vite": "^4.0.4"

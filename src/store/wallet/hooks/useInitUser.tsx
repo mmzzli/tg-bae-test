@@ -7,9 +7,11 @@ import {
 import { getDefaultWalletAddressApi, getOkxWalletAccountApi, getTelegramUserInfoApi, loginJavaApi } from '@/api/wallet'
 import { useStore } from '@/store'
 import { shallow } from 'zustand/shallow'
-import { UserType } from '../type'
+import { UserState, UserType } from '../type'
 import { useToast } from '@chakra-ui/react'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
+import { useNavigate } from 'react-router-dom'
+import { errorContents } from '@/config/wallet/const'
 
 // import {
 //   getDefaultWalletAddressApi,
@@ -39,6 +41,7 @@ const useInitUser = () => {
   //   useDeviceId()
   // const { isValidActions } = useApp()
   const toast = useToast()
+  const navigate = useNavigate()
 
   const { updateUserStateAction, updateUserInfoAction, tokensReSetActions, fetchUserInfoAction, updateTgAction, walletUserInfo: userInfo, userState } = useStore(
       (state) => ({
@@ -56,13 +59,18 @@ const useInitUser = () => {
   const getUserInfo = async () => {
     // toast
     try {
-      const infoResp = await getTelegramUserInfoApi()
-      if (infoResp.code !== 10000) {
-        // toast.warn(errorContents.loginErrors.userInfo)
-
+      const {code, result, message} = await getTelegramUserInfoApi()
+      if (code !== 10000 || !result?.id) {
+        toast({
+          render: () => {
+            return <CustomToast title={errorContents.loginErrors.userInfo} type={typeOptions.success} />
+          },
+          position: 'bottom',
+          duration: 2000
+        })
         return
       }
-      const AddrResp = await getDefaultWalletAddressApi(infoResp.result.id)
+      const AddrResp = await getDefaultWalletAddressApi(result.id)
       if (AddrResp.code !== 10000) {
         // toast.warn(errorContents.loginErrors.userInfo)
 
@@ -71,7 +79,7 @@ const useInitUser = () => {
       const okxAccountResp = await getOkxWalletAccountApi()
       const userInfo = {
         ...AddrResp.result,
-        ...infoResp.result,
+        ...result,
         okxAccount: okxAccountResp.result
       }
       updateUserInfoAction(userInfo)
@@ -91,7 +99,7 @@ const useInitUser = () => {
     // toast loading
     try {
       const resp = await loginJavaApi(data)
-      console.log('respresp',resp)
+
       // Toast.clear()
       if (resp.code !== 10000) {
         // toast.warn(resp?.message || "wallet login error")
@@ -104,19 +112,14 @@ const useInitUser = () => {
         })
         return
       }
-      toast({
-        render: () => {
-          return <CustomToast title={resp?.message || "wallet login error"} type={typeOptions.success} />
-        },
-        position: 'bottom',
-        duration: 2000
-      })
+
       const userState = {
         ...resp.result,
-        tgId: Number(resp.result.tgId),
-        tokenExpired: resp.result.tokenExpiredAt * 1000,
+        tgId: Number(resp.result?.tgId),
+        tokenExpiredAt: (resp.result?.tokenExpiredAt || 0) * 1000,
       }
-      updateUserStateAction(userState)
+      updateUserStateAction(userState as UserState)
+
       if (
         userInfo.id &&
         Number(userState.userId) !== userInfo.id
@@ -125,36 +128,48 @@ const useInitUser = () => {
         tokensReSetActions()
       }
       if (userState.frozen) {
+        // to freeze
+        navigate('/account/freeze');
         return
       }
       //new user, not set pin
       if (userState.newUser || !userState.setTradePassword) {
+        navigate('/account/set');
         return
       }
       //new mobile phone
-      if (!userState.tgId) {
-
-        return
-      }
+      // if (!userState.tgId) {
+      //   navigate('/account/verify');
+      //   return
+      // }
       //change user
       if (userState.tgId !== userState.tgId) {
-
+        updateUserInfoAction({} as UserType)
+        navigate('/account/verify');
         return
       }
 
       //go to root /
       fetchUserInfoAction()
+
+      getUserInfo()
       // without email->goto set email
       if (!userState.email) {
-
+        navigate('/account/recovery-email')
         return
       }
 
-      // if (!isValidActions) userStore.updateRouteAction('/')
       // userStore.updateAutoLoginAction()
+
     } catch (e) {
-      // Toast.clear()
-      // toast.error(errorContents.serverError)
+      toast({
+        render: () => {
+          return <CustomToast title={errorContents.serverError} type={typeOptions.success} />
+        },
+        position: 'bottom',
+        duration: 2000
+      })
+
       // console.warn('login error', e)
     }
   }

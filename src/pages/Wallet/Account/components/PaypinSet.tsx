@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, useEffect } from 'react'
-import { errorContents } from '@/config/const'
+import { errorContents } from '@/config/wallet/const'
 // import useTradePwd from '@/hooks/useTradePwd'
 import PayPinBase, { PayPinBaseRefType } from './PaypinBase'
 import { useNavigate } from 'react-router-dom'

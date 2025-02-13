@@ -24,7 +24,7 @@ export const initUserState = () => {
       newUser: false,
       frozen: false,
       loginTime: undefined,
-      tokenExpired: undefined,
+      tokenExpiredAt: undefined,
       setTradePassword: false,
       token: ''
     }

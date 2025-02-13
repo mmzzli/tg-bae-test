@@ -1,6 +1,8 @@
+import { BigNumber } from 'bignumber.js'
 import { APIToken } from "../tokenType/APIToken"
 import { AssetsToken } from "../tokenType/AssetsToken"
 import { CustomListInfo, WhiteListInfo } from "../type"
+import chains from '../chains'
 
 export const CURRENT_CACHE_VERSION = "v1"
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
@@ -272,4 +274,98 @@ export function mergeTokensData({
     }) || []
 
   return [...formattedQueryData, ...filteredCustomQueryData]
+}
+
+export function effectiveBalance(
+  balance: any,
+  length: number = 4,
+  decimalSubLen: number = 2,
+  decimalFlag: boolean = false
+) {
+  if (isNaN(parseFloat(balance))) {
+    return '0.00'
+  }
+  if (!balance || balance === '0') {
+    return 0
+  }
+  // TODO Small number is 0.00
+  if (balance < 1 / Math.pow(10, 6)) {
+    if (decimalFlag) {
+      return BigNumber(balance.toString()).toFixed()
+    }
+    return '0.00'
+  }
+  balance = new BigNumber(balance.toString()).toFixed()
+  if (balance.split('.').length === 1) {
+    return balance > 1000
+      ? `${Number(balance).toLocaleString()}.00`
+      : `${balance}.00`
+  }
+  const integer = balance.split('.')[0]
+  const decimal = balance.split('.')[1]
+  if (integer > 0) {
+    const str =
+      decimal.length === 1 ? `${decimal}0` : decimal.substr(0, decimalSubLen)
+    const res = `${integer}.${str}`
+    return Number(res) > 1000
+      ? `${Number(integer).toLocaleString()}.${str}`
+      : res
+  }
+
+  const temp: any = []
+  let tempNum = 0
+  let isNotZero = false
+  for (let i = 0; i < decimal.length; i++) {
+    if (decimal[i] != '0' && !isNotZero) {
+      isNotZero = true
+    }
+    if (isNotZero) {
+      tempNum++
+    }
+    if (tempNum <= length) {
+      temp.push(decimal[i])
+    }
+  }
+  const res = parseFloat(`${integer}.${temp.join('')}`)
+  return res > 1000
+    ? `${Number(integer).toLocaleString()}.${temp.join('')}`
+    : res
+}
+
+export const isEmpty = (data: string | object) => {
+  if (data instanceof Array) {
+    return !data.length
+  } else if (data instanceof Object) {
+    return !Object.keys(data).length
+  }
+  return !data
+}
+
+export const getChainByChainId = (chainId: number | string) => {
+  const chain = Object.values(chains).find((c) => c.id === Number(chainId))
+  return chain
+}
+
+export enum NativeTokenSymbol {
+  ETH = 'ETH',
+  TON = 'TON'
+}
+
+export const nativeTokenFilter = ({
+  isNative,
+  symbol,
+  chainId
+}: {
+  isNative: boolean
+  symbol: string
+  chainId: number
+}) => {
+  if (isNative) {
+    if (symbol.includes(NativeTokenSymbol.ETH)) {
+      return NativeTokenSymbol.ETH
+    }
+    if (symbol.includes(NativeTokenSymbol.TON) && chainId !== chains.ton.id) {
+      return NativeTokenSymbol.TON
+    }
+  }
 }

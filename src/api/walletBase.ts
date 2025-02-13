@@ -21,7 +21,7 @@ interface RequestConfig extends AxiosRequestConfig {
   skipAuthHeader?: boolean
 }
 
-class HttpClient {
+class WalletHttpClient {
   private instance: AxiosInstance
   private toastInstance = createStandaloneToast()
   private tokenGetter: () => string | null
@@ -69,19 +69,19 @@ class HttpClient {
         const { code, message, msg, success, result } = data
 
         if (code >= 500) {
-          const config = response.config as RequestConfig
-          !config.skipErrorHandler && this.showToast(message || msg || 'Server Error', 'error')
-          return Promise.reject(new Error(message || msg))
+        //   const config = response.config as RequestConfig
+        //   !config.skipErrorHandler && this.showToast(message || msg || 'Server Error', 'error')
+        //   return Promise.reject(new Error(message || msg))
         }
 
         if (code === 212) {
           // const config = response.config as RequestConfig
           // !config.skipErrorHandler && this.showToast(message || 'Warning', 'warning')
-          return Promise.reject(new Error(message))
+          // return Promise.reject(new Error(message))
         }
 
         if (code === 200) {
-          return data.data ?? true
+          // return data.data ?? true
         }
 
         if (success) {
@@ -135,13 +135,9 @@ class HttpClient {
 }
 
 const getStoreToken = () => {
-  return useStore.getState().token
+  return useStore.getState().userState.token
 }
 
-const httpClient = new HttpClient(import.meta.env.VITE_API_URL, getStoreToken)
-export const get = httpClient.get.bind(httpClient)
-export const post = httpClient.post.bind(httpClient)
-export const put = httpClient.put.bind(httpClient)
-export const deleteRequest = httpClient.delete.bind(httpClient)
-export const patch = httpClient.patch.bind(httpClient)
-export const del = httpClient.delete.bind(httpClient)
+const walletClient = new WalletHttpClient(import.meta.env.VITE_TOMO_WALLET_API, getStoreToken)
+export const walletGet = walletClient.get.bind(walletClient)
+export const walletPost = walletClient.post.bind(walletClient)

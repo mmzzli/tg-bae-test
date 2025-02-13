@@ -25,7 +25,8 @@ export const initUserState = () => {
       frozen: false,
       loginTime: undefined,
       tokenExpired: undefined,
-      setTradePassword: false
+      setTradePassword: false,
+      token: ''
     }
   return JSON.parse(userState)
 }

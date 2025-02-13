@@ -8,6 +8,8 @@ import { getDefaultWalletAddressApi, getOkxWalletAccountApi, getTelegramUserInfo
 import { useStore } from '@/store'
 import { shallow } from 'zustand/shallow'
 import { UserType } from '../type'
+import { useToast } from '@chakra-ui/react'
+import { CustomToast, typeOptions } from '@/components/comm/Toast'
 
 // import {
 //   getDefaultWalletAddressApi,
@@ -31,11 +33,12 @@ import { UserType } from '../type'
 
 
 const useInitUser = () => {
-  const [initDataUnsafe, initData] = useInitData()
-  const webApp = useWebApp()
+  // const [initDataUnsafe, initData] = useInitData()
+  // const webApp = useWebApp()
   // const { checkIsNewAccount, removeBioKey, getDeviceIdFromToken } =
   //   useDeviceId()
   // const { isValidActions } = useApp()
+  const toast = useToast()
 
   const { updateUserStateAction, updateUserInfoAction, tokensReSetActions, fetchUserInfoAction, updateTgAction, walletUserInfo: userInfo, userState } = useStore(
       (state) => ({
@@ -56,13 +59,13 @@ const useInitUser = () => {
       const infoResp = await getTelegramUserInfoApi()
       if (infoResp.code !== 10000) {
         // toast.warn(errorContents.loginErrors.userInfo)
-        
+
         return
       }
       const AddrResp = await getDefaultWalletAddressApi(infoResp.result.id)
       if (AddrResp.code !== 10000) {
         // toast.warn(errorContents.loginErrors.userInfo)
-        
+
         return
       }
       const okxAccountResp = await getOkxWalletAccountApi()
@@ -88,11 +91,26 @@ const useInitUser = () => {
     // toast loading
     try {
       const resp = await loginJavaApi(data)
+      console.log('respresp',resp)
       // Toast.clear()
       if (resp.code !== 10000) {
         // toast.warn(resp?.message || "wallet login error")
+        toast({
+          render: () => {
+            return <CustomToast title={resp?.message || "wallet login error"} type={typeOptions.success} />
+          },
+          position: 'bottom',
+          duration: 2000
+        })
         return
       }
+      toast({
+        render: () => {
+          return <CustomToast title={resp?.message || "wallet login error"} type={typeOptions.success} />
+        },
+        position: 'bottom',
+        duration: 2000
+      })
       const userState = {
         ...resp.result,
         tgId: Number(resp.result.tgId),
@@ -115,12 +133,12 @@ const useInitUser = () => {
       }
       //new mobile phone
       if (!userState.tgId) {
-        
+
         return
       }
       //change user
       if (userState.tgId !== userState.tgId) {
-        
+
         return
       }
 
@@ -128,7 +146,7 @@ const useInitUser = () => {
       fetchUserInfoAction()
       // without email->goto set email
       if (!userState.email) {
-        
+
         return
       }
 
@@ -169,7 +187,7 @@ const useInitUser = () => {
   //   }
   //   tgLogin(userStore.tgData.query)
   // }
-  
+  return { tgLogin, getUserInfo }
 }
 
 export default useInitUser

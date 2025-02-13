@@ -31,6 +31,7 @@ export type UserState = {
   tokenExpired: number
   setTradePassword: boolean
   email?: string
+  token: string
 }
 
 export interface TokenOkx {

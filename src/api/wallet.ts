@@ -1,5 +1,6 @@
 import { IOKXHistoryType, TokenOkx } from '@/store/wallet/type'
-import { walletGet, walletPost } from './base'
+import { walletGet,walletPost } from './walletBase'
+
 
 export const getAllHistoryByAccount = async (params: {
   accountId: string
@@ -17,7 +18,7 @@ export const getAllHistoryByAccount = async (params: {
       }
     }
   )
-  return ret.data.result[0]
+  return ret.result[0]
 }
 
 export const getAllTokenBalancesByAccount = async (params: {
@@ -35,7 +36,7 @@ export const getAllTokenBalancesByAccount = async (params: {
       }
     }
   )
-  return ret.data.result[0].tokenAssets
+  return ret.result[0].tokenAssets
 }
 
 export const loginJavaApi = async (initData: string) => {
@@ -45,22 +46,22 @@ export const loginJavaApi = async (initData: string) => {
       telegramAuthData: initData
     }
   )
-  return res.data
+  return res
 }
 
 export const getTelegramUserInfoApi = async () => {
   const res = await walletGet(`socialLogin/teleGram/userInfo`)
-  return res.data
+  return res
 }
 
 export const getDefaultWalletAddressApi = async (userId: number) => {
   const res = await walletGet(
     `socialLogin/projectWallet/getDefaultWalletByUserId?userId=${userId}`
   )
-  return res.data
+  return res
 }
 
 export const getOkxWalletAccountApi = async () => {
   const res = await walletGet('socialLogin/projectWallet/okxWalletAccount')
-  return res.data
+  return res
 }

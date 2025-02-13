@@ -214,15 +214,15 @@ const Recent: React.FC<RecentProps> = ({searchHistory, setSearchHistory})=>{
       // 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 64px)',
     }}
     >
-      <div className='flex items-center justify-between pt-[24px]'>
+      <div className='flex items-center justify-between pt-[24px] mb-[12px]'>
         <h3 className='text-[18px]'>Recent</h3>
         <i className="iconfont icon-delete-bin-line text-[#333333] text-[20px]"
           onClick={()=>{localStorage.setItem("searchHistory", ``);setSearchHistory([])}}
         ></i>
       </div>
 
-      {searchHistory?.map((item,key)=>(
-        <div className="flex items-center justify-between py-[12px] mb-[12px]">
+      {searchHistory.slice(0, 10)?.map((item,key)=>(
+        <div className="flex items-center justify-between py-[12px]">
           <div
             className="flex gap-[12px] items-center"
             onClick={() => item.tg_id !== currentUid ? navigate(`/profile/${item.tg_id}`) : navigate(`/profile`)}
@@ -249,7 +249,7 @@ const Recent: React.FC<RecentProps> = ({searchHistory, setSearchHistory})=>{
             </div>
           </div>
 
-          <i className="iconfont icon-icon_close text-[#CDCDD4] dark:text-[#CDCDD4] text-[20px]"
+          <i className="iconfont icon-icon_close text-[#CDCDD4] dark:text-[#CDCDD4] text-[24px]"
             onClick={()=>remove(key)}
           ></i>
 

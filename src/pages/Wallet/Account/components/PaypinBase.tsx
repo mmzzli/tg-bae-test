@@ -1,4 +1,4 @@
-import { Space, PasscodeInput as TPasscodeInput } from 'antd-mobile'
+import { Space } from 'antd-mobile'
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
 // import { TIcon } from '@/components/tmd'
 import { MyPasscodeInputRef } from '@/components/PasscodeInput'
@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 // import { tgDeskPlatform } from '@/utils/telegram'
 import clsx from 'clsx'
 import BaseButton from '@/components/BaseButton/BaseButton'
+import { TPasscodeInput } from '@/components/tmd'
 
 export type PayPinType = 'reset' | 'confirm' | 'set' | 'change'
 export type PayPinBaseRefType = {

@@ -12,6 +12,9 @@ export default {
       colors: {
         'white-opacity-15': 'rgba(255, 255, 255, 0.15)', // 自定义颜色
         'white-close': '#E0E2F6',
+        /** for wallet page start */
+        't1': '#000000',
+        /** for wallet page end */
       },
       backgroundImage: {
         'video-gradient':
@@ -48,6 +51,40 @@ export default {
         'fade-in': 'fade-in 0.2s ease-out',
         shimmer: `shimmer 1s infinite`,
       },
+      fontSize: {
+        /** for wallet page start */
+        n2: [
+          '42px',
+          {
+            lineHeight: '1.2'
+          }
+        ],
+        n3: [
+          '36px',
+          {
+            lineHeight: '1.2'
+          }
+        ],
+        h1: [
+          '32px',
+          {
+            lineHeight: '1.2'
+          }
+        ],
+        h2: [
+          '28px',
+          {
+            lineHeight: '1.2'
+          }
+        ],
+        h3: [
+          '24px',
+          {
+            lineHeight: '1.4'
+          }
+        ],
+        /** for wallet page end */
+      }
     },
   },
   plugins: [

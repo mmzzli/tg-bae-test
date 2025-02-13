@@ -22,7 +22,7 @@ const useGetTokenList = () => {
   const reqEvmTokens = tokens.filter((token) => {
     return (
       token.chainId !== chains.solana.id &&
-      token.chainId !== chains.ton.id &&
+      token.chainId !== chains.ton.id // &&
     )
   })
 
@@ -34,7 +34,7 @@ const useGetTokenList = () => {
     return token.chainId === chains.ton.id
   })
 
-  
+
   const evmToken = [...reqEvmTokens]
   const solToken = [...reqSolTokens]
   const tonToken = [...reqJettonTokens]

@@ -82,7 +82,7 @@ export const getAllBalance = async (params: {
   }[]
 > => {
   const ret = await tomoTgGet(`tg-auth/v1/token/balance`,  params )
-  debugger
+  // debugger
   return ret.data.data
 }
 

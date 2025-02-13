@@ -20,6 +20,18 @@ export type UserType = {
   okxAccount?: string
   defaultWalletId?: number
   // lastLoginTime?: number
+} & UserAddressType
+
+export type UserAddressType = {
+  ethereumAddress: string
+  solanaAddress: string
+  tronAddress: string
+  tonAddress: string
+  tonAddressTest: string
+  suiAddress: string
+  tonPublicKey?: string
+  cosmosAddress?: string
+  dogeAddress: string
 }
 
 export type UserState = {

@@ -141,3 +141,7 @@ const getStoreToken = () => {
 const walletClient = new WalletHttpClient(import.meta.env.VITE_TOMO_WALLET_API, getStoreToken)
 export const walletGet = walletClient.get.bind(walletClient)
 export const walletPost = walletClient.post.bind(walletClient)
+
+const tomoTgClient = new WalletHttpClient(import.meta.env.VITE_AVPIM_API, getStoreToken)
+export const tomoTgGet = walletClient.get.bind(tomoTgClient)
+export const tomoTgPost = walletClient.post.bind(tomoTgClient)

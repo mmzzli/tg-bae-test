@@ -1,5 +1,5 @@
 import { IOKXHistoryType, TokenOkx } from '@/store/wallet/type'
-import { walletGet,walletPost } from './walletBase'
+import { walletGet, walletPost, tomoTgGet, tomoTgPost } from './walletBase'
 
 
 export const getAllHistoryByAccount = async (params: {
@@ -27,14 +27,9 @@ export const getAllTokenBalancesByAccount = async (params: {
   filter?: '0' | '1' //filter risk token
 }): Promise<TokenOkx[]> => {
   console.log(params, 'params')
+  const path = new URLSearchParams(params).toString();
   const ret = await walletGet(
-    'socialLogin/projectWallet/getOkxWalletAccountTokenBalances',
-    {
-      params,
-      paramsSerializer: function (params) {
-        return new URLSearchParams(params).toString()
-      }
-    }
+    `socialLogin/projectWallet/getOkxWalletAccountTokenBalances?${path}`
   )
   return ret.result[0].tokenAssets
 }
@@ -64,4 +59,38 @@ export const getDefaultWalletAddressApi = async (userId: number) => {
 export const getOkxWalletAccountApi = async () => {
   const res = await walletGet('socialLogin/projectWallet/okxWalletAccount')
   return res
+}
+
+export const getAllBalance = async (params: {
+  evm_address: string
+  solana_address: string
+}): Promise<
+  {
+    balance: string
+    chain_id: number
+    contract: string
+    decimals: number
+    image: string
+    is_native: boolean
+    mercuryo_support: string
+    name: string
+    price: number
+    ramp_support: string
+    symbol: string
+    chain: string
+    display_name: string
+  }[]
+> => {
+  const ret = await tomoTgGet(`tg-auth/v1/token/balance`,  params )
+  debugger
+  return ret.data.data
+}
+
+export const v1AllAssetApi = async (params: {
+  page: number
+  pageSize: number
+  chain_ids?: number[]
+}) => {
+  const res = await tomoTgGet('tg-auth/v1/asset/all', params )
+  return res.data.data
 }

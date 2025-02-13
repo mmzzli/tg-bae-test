@@ -21,9 +21,9 @@ import ProfileGuard from '@/pages/OthersProfile/routeGuard'
 import MessagePageRouteGuard from '@/pages/Chat/MessagePageRouteGuard'
 import TTPlayer from '@/pages/TTPlayer'
 import Wallet from '@/pages/Wallet'
-import SetPage from '@/pages/Account/Set'
-import ChangePage from '@/pages/Account/Change'
-import ForgetPage from '@/pages/Account/Forget'
+import SetPage from '@/pages/Wallet/Account/Set'
+import ChangePage from '@/pages/Wallet/Account/Change'
+import ForgetPage from '@/pages/Wallet/Account/Forget'
 
 const Task = lazy(() => import('@/pages/Task'))
 
@@ -88,7 +88,7 @@ export const routes = [
       { path: 'chat', element: <></> },
       { path: 'chat/:uid', element: <MessagePageRouteGuard /> },
       { path: 'ageGate', element: <AgeGate /> },
-      { path: 'wallet', element: <Wallet />}
+      { path: 'wallet', element: <Wallet /> },
       {
         path: 'account',
         children: [

@@ -1,25 +1,25 @@
 import { useMemo, useRef, useState } from 'react'
 import PayPinBase, { PayPinBaseRefType } from './components/PaypinBase'
 import { errorContents } from '@/config/wallet/const'
-// import useTradePwd from '@/hooks/useTradePwd'
-// import { TToast as toast, TContainer, Toast } from '@/components/tmd'
 import { useNavigate } from 'react-router-dom'
 import { Toast } from 'antd-mobile'
+import useTradePwd from '@/hooks/wallet/useTradePwd'
+import { useToast } from '@chakra-ui/react'
+import { CustomToast, typeOptions } from '@/components/comm/Toast'
 
 const ChangePage = () => {
   const [isError, setIsError] = useState(false)
   const [errMsg, setErrMsg] = useState('')
   const payPinRef = useRef<PayPinBaseRefType>(null)
   const navigate = useNavigate()
-  // const { verifyTradePwd } = useTradePwd()
 
   const from = 'change'
-  // const [btnStatus, setBtnStatus] = useState<ButtonStatusType>('normal')
   const [loading, setLoading] = useState(false)
-  // const { changeTradePwd } = useTradePwd()
+  const { changeTradePwd, verifyTradePwd } = useTradePwd()
   const [step, setStep] = useState<'origin' | 'confirm'>('origin')
   const [old, setOld] = useState('')
   const [failedCnt, setFailedCnt] = useState(0)
+  const toast = useToast()
 
   const title = useMemo(() => {
     return step == 'origin' ? 'Original pay PIN' : 'Confirm pay PIN'
@@ -42,42 +42,39 @@ const ChangePage = () => {
       duration: 0,
       maskClickable: false,
       maskStyle: {
-        '--z-index': '9999'
-      }
+        '--z-index': '9999',
+      },
     })
     try {
-      // const { validateFlag, failedCnt, mfaToken, prompt } =
-      //   await verifyTradePwd(pass)
-      // if (validateFlag) {
-      //   setStep('confirm')
-      //   setOld(pass)
-      //   setIsError(false)
-      //   setErrMsg('')
-      //   setFailedCnt(0)
-      //   payPinRef.current?.handleInit()
-      // } else {
-      //   setStep('origin')
-      //   setOld('')
-      //   setIsError(true)
-      //   setFailedCnt(failedCnt)
-      //   setErrMsg(prompt)
-      //   payPinRef.current?.handleInit()
-      //   if (failedCnt === 5) {
-      //     // userStore.updateUserStateAction({
-      //     //   ...userStore.userState,
-      //     //   frozen: true
-      //     // })
-      //     navigate('/account/freeze', { replace: true })
-      //   }
-      // }
+      const { validateFlag, failedCnt, mfaToken, prompt } = await verifyTradePwd(pass)
+      if (validateFlag) {
+        setStep('confirm')
+        setOld(pass)
+        setIsError(false)
+        setErrMsg('')
+        setFailedCnt(0)
+        payPinRef.current?.handleInit()
+      } else {
+        setStep('origin')
+        setOld('')
+        setIsError(true)
+        setFailedCnt(failedCnt)
+        setErrMsg(prompt)
+        payPinRef.current?.handleInit()
+        if (failedCnt === 5) {
+          // userStore.updateUserStateAction({
+          //   ...userStore.userState,
+          //   frozen: true
+          // })
+          navigate('/account/freeze', { replace: true })
+        }
+      }
     } catch (err) {
       setStep('origin')
       setOld('')
       setIsError(true)
       setFailedCnt(failedCnt)
-      setErrMsg(
-        typeof err == 'string' ? err : errorContents.userErrors.payPinFailed
-      )
+      setErrMsg(typeof err == 'string' ? err : errorContents.userErrors.payPinFailed)
       payPinRef.current?.handleInit()
     } finally {
       setLoading(false)
@@ -95,24 +92,31 @@ const ChangePage = () => {
       return
     }
 
-    try {
-      // setLoading(true)
-      // await changeTradePwd(oldPwd, newPwd)
-      // setIsError(false)
-      // setErrMsg('')
-      // toast.success('change pin success')
-      // setTimeout(() => {
-      //   navigate(-1)
-      // }, 500)
-    } catch (err) {
-      // toast.error(err as string)
-      setStep('origin')
-      setOld('')
-      setIsError(true)
-      setErrMsg(errorContents.paypinErrors.wrong1)
-      payPinRef.current?.handleInit()
-    }
+    setLoading(true)
+    const { success, message } = await changeTradePwd(oldPwd, newPwd)
     setLoading(false)
+    setIsError(false)
+    setErrMsg('')
+
+    if (success) {
+      toast({
+        render: () => {
+          return <CustomToast title="Changed successfully." type={typeOptions.success} />
+        },
+        position: 'bottom',
+        duration: 2000,
+      })
+      setTimeout(() => {
+        navigate(-1)
+      }, 500)
+      return
+    }
+
+    setStep('origin')
+    setOld('')
+    setIsError(true)
+    setErrMsg(message)
+    payPinRef.current?.handleInit()
   }
 
   const onPaypinConfirm = async (pass: string) => {
@@ -134,7 +138,7 @@ const ChangePage = () => {
   }
 
   return (
-    <div className="flex size-full flex-1 flex-col items-center justify-between !pt-1 pb-4 transition-all">
+    <div className="h-full flex px-[20px] pb-[16px] pt-[4px]">
       <PayPinBase
         from={from}
         onConfirm={onPaypinConfirm}

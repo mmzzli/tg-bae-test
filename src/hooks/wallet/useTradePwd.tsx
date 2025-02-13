@@ -22,22 +22,21 @@ const useTradePwd = () => {
       }
       return { success: false, message: message }
     } catch (err: any) {
-      // throw err?.message || err || ''
       return { success: false, message: err?.message || errorContents.serverError }
     }
   }
   const changeTradePwd = async (oldpwd: string, newpwd: string) => {
     try {
-      const { code, data, message } = await setTradePasword({
+      const { code, message } = await setTradePasword({
         oldTradePassword: await hashWithWebCrypto(oldpwd),
         newTradePassword: await hashWithWebCrypto(newpwd),
       })
       if (code === successCode) {
-        return true
+        return { success: true, message }
       }
-      throw message
+      return { success: false, message }
     } catch (err: any) {
-      throw err?.message || err || ''
+      return { success: false, message: err?.message || errorContents.serverError }
     }
   }
 
@@ -77,7 +76,12 @@ const useTradePwd = () => {
         mfaToken: '',
       }
     } catch (err) {
-      throw errorContents.serverError
+      return {
+        validateFlag: false,
+        failedCnt: 0,
+        prompt: '',
+        mfaToken: '',
+      }
     }
   }
 

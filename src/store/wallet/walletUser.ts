@@ -10,13 +10,13 @@ import { STORAGE_KEY } from './util/tokenHelper'
 
 
 export const initUserInfo = () => {
-  const userInfo = localStorage.getItem('user')
+  const userInfo = localStorage.getItem(STORAGE_KEY.user)
   if (!userInfo || userInfo === 'null') return {}
   return JSON.parse(userInfo)
 }
 
 export const initUserState = () => {
-  const userState = localStorage.getItem('userState')
+  const userState = localStorage.getItem(STORAGE_KEY.userState)
   if (!userState)
     return {
       tgId: undefined,

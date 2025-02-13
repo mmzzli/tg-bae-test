@@ -14,6 +14,7 @@ import ImageDialog from '@/components/ResourceList/ImageDialog'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useInitDailyTask } from '@/hooks/useDailyTask'
 import WsHandler from './WsHandler'
+import useTokens from '@/store/wallet/hooks/useTokens'
 const HomePage = lazy(() => import('@/pages/Home'))
 
 const ChatListPageLoader = {
@@ -76,6 +77,7 @@ export const MainLayout: React.FC = () => {
   const { getCurrentUid } = useTMAUtils()
   const current_uid = getCurrentUid()
   const { runInitDailyTask } = useInitDailyTask()
+  useTokens()
 
   const updateMyFollow = () => {
     if (myFollow.length === 0) {

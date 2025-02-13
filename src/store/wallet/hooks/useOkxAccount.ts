@@ -33,7 +33,6 @@ export const getHistoryFromOkxAccount = async (params: {
 
 export const useOkxBalanceAccount = (chains: string) => {
   const { walletUserInfo: user } = useUserStore()
-
   const query = useQuery({
     queryKey: ['getBalanceFromOkxAccount', user.okxAccount, chains],
     refetchOnWindowFocus: false,

@@ -1,24 +1,11 @@
-import {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState
-} from 'react'
-// import classNames from 'classnames'
-// import { Space, Toast } from 'antd-mobile'
-import {
-  TButton,
-  TPasscodeInput,
-  useTranslation,
-  TIcon
-} from '@/components/tmd'
-import useCountdown from '@/hooks/useCountdown'
-import useEmail from '@/hooks/useEmail'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { TPasscodeInput, TIcon, TPasscodeInputRef } from '@/components/tmd'
 // import { useWebApp } from '@vkruglikov/react-telegram-web-app'
-import { MyPasscodeInputRef } from '@/components/PasscodeInput'
 import '../index.css'
 import clsx from 'clsx'
+import useEmail from '@/hooks/wallet/useEmail'
+import useCountdown from '@/hooks/wallet/useCountdown'
+import BaseButton from '@/components/BaseButton/BaseButton'
 // import commonStore from '@/stores/commonStore'
 
 export type EmailFromType = 'normal' | 'relogin' | 'verify' | 'reset'
@@ -27,7 +14,6 @@ export type EmailConfirmRefType = {
 }
 type EmailPropsType = {
   email: string
-  countdownKey: string
   onConfirm: (code: string) => void
   from: EmailFromType
   initSend?: boolean
@@ -41,31 +27,25 @@ const EmailConfirm = forwardRef<EmailConfirmRefType, EmailPropsType>(
   (
     {
       email,
-      countdownKey,
       onConfirm,
       from = 'normal',
       initSend = true,
       isError = false,
       loading = false,
       errMsg = '',
-      onChange
+      onChange,
     },
     ref
   ) => {
     // const { t } = useTranslation()
     // const webapp = useWebApp()
-    const { sendBindEmailCode, reLoginEmailSend, sendTradePwdEmail } =
-      useEmail()
+    const { sendBindEmailCode, sendTradePwdEmail } = useEmail()
 
-    const {
-      timeLeft: seconds,
-      startCountdown,
-      resetCountdown
-    } = useCountdown(countdownKey)
+    const { timeLeft: seconds, startCountdown, resetCountdown } = useCountdown()
 
     const codeLen = 4
     const [pass, setPass] = useState<string>('')
-    const passcodeRef = useRef<MyPasscodeInputRef | null>(null)
+    const passcodeRef = useRef<TPasscodeInputRef | null>(null)
     const [sending, setSending] = useState(false)
 
     const [err, setErr] = useState({ isError, errMsg })
@@ -73,27 +53,30 @@ const EmailConfirm = forwardRef<EmailConfirmRefType, EmailPropsType>(
     useImperativeHandle(ref, () => ({
       onReset: () => {
         passcodeRef.current?.reset()
-      }
+      },
     }))
 
     const handleResend = async () => {
       if (sending) return
+
       setSending(true)
       setErr({ isError: false, errMsg: '' })
-      let result: boolean = false
+
       try {
         if (from === 'normal') {
-          try {
-            result = await sendBindEmailCode(email)
-          } catch (error: any) {
-            setErr({ isError: true, errMsg: error })
+          const { success, message } = await sendBindEmailCode(email)
+          if (!success) {
+            setErr({ isError: true, errMsg: message })
+            return
           }
         } else if (from === 'verify' || from === 'reset') {
-          result = await sendTradePwdEmail()
-        } else {
-          result = await reLoginEmailSend()
+          const { success, message } = await sendTradePwdEmail()
+          if (!success) {
+            setErr({ isError: true, errMsg: message })
+            return
+          }
         }
-        if (result) resetCountdown()
+        resetCountdown()
       } catch (e) {
         //
       } finally {
@@ -163,9 +146,7 @@ const EmailConfirm = forwardRef<EmailConfirmRefType, EmailPropsType>(
 
     return (
       <div
-        className={clsx(
-          'flex h-full w-full flex-col items-center justify-between transition-all',
-        )}
+        className={clsx('flex h-full w-full flex-col items-center justify-between transition-all')}
         ref={ref as any}
       >
         <div className="w-full">
@@ -201,10 +182,7 @@ const EmailConfirm = forwardRef<EmailConfirmRefType, EmailPropsType>(
                 Resend {seconds} s
               </button>
             ) : (
-              <button
-                className="flex items-center gap-2 text-red"
-                onClick={handleResend}
-              >
+              <button className="flex items-center gap-2 text-red" onClick={handleResend}>
                 <TIcon
                   name="tg_wallet_refresh"
                   fontSize="14"
@@ -216,16 +194,15 @@ const EmailConfirm = forwardRef<EmailConfirmRefType, EmailPropsType>(
           </div>
         </div>
 
-        <TButton
-          disabled={pass.length < codeLen}
-          size="large"
-          block
-          onClick={handleConfirm}
-          loading={loading}
-        >
-          {/* {t('tg_wallet_login.enter_pin_btn')} */}
-          Confirm
-        </TButton>
+        <div className="w-full">
+          <BaseButton
+            disabled={pass.length < codeLen}
+            handler={handleConfirm}
+            loading={loading}
+            text="Confirm"
+            height="52px"
+          />
+        </div>
       </div>
     )
   }

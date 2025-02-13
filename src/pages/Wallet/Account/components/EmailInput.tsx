@@ -1,32 +1,27 @@
-import useCountdown from '@/hooks/useCountdown'
-import useEmail from '@/hooks/useEmail'
-import { TButton, TInput, Toast } from '@/components/tmd'
 import { useEffect, useRef, useState } from 'react'
-import { useWebApp } from '@vkruglikov/react-telegram-web-app'
-import classNames from 'classnames'
-import commonStore from '@/stores/commonStore'
+import useEmail from '@/hooks/wallet/useEmail'
+import useCountdown from '@/hooks/wallet/useCountdown'
+import classNames from 'clsx'
+import { TInput } from '@/components/tmd'
+import BaseButton from '@/components/BaseButton/BaseButton'
+
+const pattern =
+  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
 const EmailStep1 = ({
   email,
   onChange,
   onConfirm,
-  countdownKey
 }: {
   email: string
   onChange: (val: string) => void
   onConfirm: () => void
-  countdownKey: string
 }) => {
-  const pattern =
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-
   const disabled = !pattern.test(email)
-  const webapp = useWebApp()
   const { sendBindEmailCode } = useEmail()
-  const { startCountdown, resetCountdown, diffTimeLeft } =
-    useCountdown(countdownKey)
+  const { startCountdown, resetCountdown, diffTimeLeft, timeLeft } = useCountdown()
   const [err, setErr] = useState('')
-  const sendingRef = useRef(false)
+
   const [loading, setLoading] = useState(false)
 
   const handleEmail = (val: string) => {
@@ -34,26 +29,17 @@ const EmailStep1 = ({
     setErr('')
   }
   const handleConfirm = async () => {
-    if (loading) return
-    let result: boolean | number = true
+    if (loading || timeLeft > 0) return
+
     setLoading(true)
-    if (!diffTimeLeft(countdownKey)) {
-      if (sendingRef.current) {
-        setLoading(false)
-        return
-      }
-      sendingRef.current = true
-      try {
-        result = await sendBindEmailCode(email)
-        resetCountdown()
-      } catch (error: any) {
-        result = false
-        setErr(error)
-      }
-      sendingRef.current = false
-    }
+    const { success, message } = await sendBindEmailCode(email)
     setLoading(false)
-    if (!result) return
+    if (!success) {
+      setErr(message)
+      return
+    }
+
+    resetCountdown()
     onConfirm()
   }
 
@@ -63,18 +49,15 @@ const EmailStep1 = ({
 
   return (
     <div
-      className={classNames(
-        'flex h-full w-full flex-col items-center justify-between transition-all'
-      )}
+      className={classNames('flex size-full flex-col items-center justify-between transition-all')}
     >
       <div className="flex w-full flex-1 flex-col">
         <div className="flex h-[48px] items-center py-[4px]">
           <h3 className="text-h3 font-semibold text-t1">Add recovery email</h3>
         </div>
         <p className="text-sm text-t3">
-          If you lose access to your account, you can easily restore it by
-          logging into the TOMO App with your email address to complete the
-          recovery process.
+          If you lose access to your account, you can easily restore it by logging into the TOMO App
+          with your email address to complete the recovery process.
         </p>
 
         <div className="mt-[24px]">
@@ -89,15 +72,13 @@ const EmailStep1 = ({
         </div>
       </div>
       <div className="w-full flex-none">
-        <TButton
-          size="large"
+        <BaseButton
           loading={loading}
-          onClick={handleConfirm}
-          block
-          disabled={disabled}
-        >
-          Confirm
-        </TButton>
+          text={'Confirm' + `${timeLeft > 0 ? '(' + timeLeft + ')' : ''}`}
+          handler={handleConfirm}
+          height="52px"
+          disabled={disabled || timeLeft > 0}
+        />
       </div>
     </div>
   )

@@ -116,3 +116,21 @@ export const resetTradePwdEmail = async (data: { code: string; tradePassword: st
   )
   return ret
 }
+
+export const bindEmailCodeSend = async (email: string) => {
+  return await walletGet<WalletApiResponse>(`socialLogin/projectUser/bindRecoverEmailCode`, {
+    email,
+  })
+}
+export const bindEmailCodeVerify = async (params: { email: string; code: string }) => {
+  return await walletPost<WalletApiResponse>(
+    `/socialLogin/projectUser/bindRecoverEmailCodeVerifyToken`,
+    params
+  )
+}
+export const sendTradePwdEmail = async () => {
+  return await walletGet<WalletApiResponse>(
+    `socialLogin/teleGram/user/sendTradePwdRecoverEmail`,
+    {}
+  )
+}

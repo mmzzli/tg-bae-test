@@ -1,50 +1,70 @@
 import { useState, useMemo, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import 'assets/styles/pass.css'
-import useEmail from 'hooks/useEmail'
-import { md5 } from 'utils/helper'
+// import 'assets/styles/pass.css'
 import { BackButton } from '@vkruglikov/react-telegram-web-app'
 import EmailInput from './components/EmailInput'
 import EmailConfirm, { EmailConfirmRefType } from './components/EmailConfirm'
-import userStore from '@/stores/userStore'
-import { TContainer, Toast, TToast as toast } from '@/components/tmd'
-import useApp from '@/hooks/oauth/useApp'
+import useEmail from '@/hooks/wallet/useEmail'
+import { useStore } from '@/store'
+import { useToast } from '@chakra-ui/react'
+import { CustomToast, typeOptions } from '@/components/comm/Toast'
 
 const RecoveryEmail = () => {
-  const stepRef = useRef(1)
+  const toast = useToast()
   const location = useLocation()
   const { email: emailParam } = location.state || { email: '' }
-  const [step, setStep] = useState(emailParam ? 2 : 1)
+  const [step, setStep] = useState<'input' | 'confirm'>(emailParam ? 'confirm' : 'input')
   const [email, setEmail] = useState(emailParam || '')
-  const countdownKey = `be${md5(email)}`
+
   const navigate = useNavigate()
   const { verifyBindEmailCode } = useEmail()
   const passcodeRef = useRef<EmailConfirmRefType>()
   const [err, setErr] = useState({ isError: false, errMsg: '' })
   const [loading, setLoading] = useState(false)
-  const { isValidActions } = useApp()
+
+  const {
+    userState,
+    walletUserInfo,
+    updateUserInfoAction,
+    fetchUserInfoAction,
+    updateUserStateAction,
+  } = useStore((state) => state)
 
   const onConfirm = async (code: string) => {
     if (loading) return
 
     setLoading(true)
     setErr({ isError: false, errMsg: '' })
-    let result: boolean
 
     try {
-      result = await verifyBindEmailCode({ email, code: code })
-      if (result) {
-        userStore.updateUserInfoAction({ ...userStore.userInfo, email: email })
-        userStore.updateUserStateAction({
-          ...userStore.userState,
-          email: email
+      const { success, message } = await verifyBindEmailCode({ email, code: code })
+      if (success) {
+        updateUserInfoAction({ ...walletUserInfo, email: email })
+        updateUserStateAction({
+          ...userState,
+          email: email,
         })
-        userStore.fetchUserInfoAction()
-        toast.success('Success')
-        isValidActions ? navigate('/oauth') : navigate('/')
+        fetchUserInfoAction()
+        toast({
+          render: () => {
+            return <CustomToast title={'Successfully.'} type={typeOptions.success} />
+          },
+          position: 'bottom',
+          duration: 2000,
+        })
+        navigate('/')
         setLoading(false)
         return
       }
+
+      toast({
+        render: () => {
+          return <CustomToast title={message} type={typeOptions.error} />
+        },
+        position: 'bottom',
+        duration: 2000,
+      })
+
       passcodeRef.current?.onReset()
     } catch (e: any) {
       setErr({ isError: true, errMsg: e })
@@ -56,32 +76,29 @@ const RecoveryEmail = () => {
 
   return (
     <>
-      {step !== 1 && (
+      {/* {step !== 'input' && (
         <BackButton
           onClick={() => {
-            if (step == 1) {
+            if (step == 'input') {
               navigate(-1)
             } else {
-              setStep(1)
+              setStep('input')
             }
           }}
         ></BackButton>
-      )}
-      <TContainer className="flex flex-col justify-between pb-2 pt-1">
-        {step == 1 ? (
+      )} */}
+      <div className="size-full px-5 flex flex-col justify-between pb-2 pt-1">
+        {step == 'input' ? (
           <EmailInput
             onConfirm={() => {
-              stepRef.current = 2
-              setStep(2)
+              setStep('confirm')
             }}
             email={email}
             onChange={setEmail}
-            countdownKey={countdownKey}
           />
         ) : (
           <EmailConfirm
             email={email}
-            countdownKey={countdownKey}
             from="normal"
             onConfirm={onConfirm}
             isError={err.isError}
@@ -90,7 +107,7 @@ const RecoveryEmail = () => {
             ref={passcodeRef as any}
           />
         )}
-      </TContainer>
+      </div>
     </>
   )
 }

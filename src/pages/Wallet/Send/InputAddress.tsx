@@ -1,18 +1,19 @@
 import { TBottomButton, TIcon, TScrollContent } from '@/components/tmd'
 import { Button } from '@/components/tmd/button/Button'
-import { getChainByChainId } from '@/stores/walletStore/utils'
+import { TContainer } from '@/components/tmd'
+import { getChainByChainId } from '@/store/wallet/util/tokenHelper'
 import { TextArea } from 'antd-mobile'
 import classNames from 'classnames'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import AddressItem from './components/AddressItem'
-import { validateAddressFnMap } from './utils/validateAddress'
+import { validateAddressFnMap } from '@/store/wallet/util/validateAddress'
 import { URLSearchParams } from 'url'
 import { BackButton, useWebApp } from '@vkruglikov/react-telegram-web-app'
-import { TContainer } from '@/components/tmd'
 import { useAtomValue } from 'jotai'
-import { tonSendTransactionDataAtom } from '@/state/tonconnect'
-import useWalletStore from '@/stores/walletStore/hooks/useWalletStore'
+import { tonSendTransactionDataAtom } from '@/store/wallet/util/tonconnect'
+import { useTokenStore } from '@/store/wallet/walletToken'
+// import useWalletStore from '@/stores/walletStore/hooks/useWalletStore'
 
 interface BaseIconButtonType {
   onClick: () => void
@@ -73,7 +74,7 @@ export default function InputAddress() {
   const [receiveAddress, setReceiveAddress] = useState(toAddress)
   const WebApp = useWebApp()
   const tonSendTxData = useAtomValue(tonSendTransactionDataAtom)
-  const { walletReportTxs } = useWalletStore()
+  const { walletReportTxs } = useTokenStore()
 
   useEffect(() => {
     // @ts-ignore

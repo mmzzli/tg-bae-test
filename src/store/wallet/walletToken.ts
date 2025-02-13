@@ -11,7 +11,8 @@ import {
   shallowWhiteListInfoEqual,
   sortByPriceBalance
 } from './util/tokenHelper'
-import { CustomListInfo, WhiteListInfo } from './type'
+import { CustomListInfo, IHistoryType, ReportHistoryType, TransactionsType, WhiteListInfo } from './type'
+import { mergeTxs, updateSignleTx } from './util/txHelper'
 
 export interface ITokenStore {
   isLoading: boolean
@@ -19,12 +20,17 @@ export interface ITokenStore {
   tokenListKeys: string
   customTokens: CustomListInfo[]
   whiteTokens: WhiteListInfo[]
+  walletTxs: TransactionsType
+  walletReportTxs: ReportHistoryType[]
   refreshTime: number
   tokensReSetActions: () => void
   tokensActions: (tokens: AssetsToken[]) => void
   customTokensActions: (tokens: CustomListInfo[]) => void
   whiteTokensActions: (tokens: WhiteListInfo[]) => void
   updateLoadingState: (state: boolean) => void
+  walletTxsActions: (txs: TransactionsType) => void
+  walletTxUpdateActions: (tx: IHistoryType) => void
+  walletTxReportActions: (txs: ReportHistoryType[]) => void
   /**
    *
    * @warning refresh all data of tokenstore.
@@ -38,6 +44,8 @@ export const createTokenStore: StateCreator<ITokenStore> = (set, get) => ({
   tokenListKeys: '',
   customTokens: [],
   whiteTokens: [],
+  walletTxs: {},
+  walletReportTxs: [],
   refreshTime: 0,
   tokensReSetActions: () => {
     set((state) => {
@@ -86,7 +94,28 @@ export const createTokenStore: StateCreator<ITokenStore> = (set, get) => ({
     set((state) => {
       return { isLoading: loading }
     })
-  }
+  },
+  walletTxsActions: (txs: TransactionsType) => {
+    set((state) => {
+      return { walletTxs: mergeTxs(get().walletTxs, txs) }
+    })
+  },
+  walletTxUpdateActions: (history: IHistoryType) => {
+    const txs = updateSignleTx(
+      JSON.parse(JSON.stringify(get().walletTxs)),
+      history
+    )
+    if (txs) {
+      set((state) => {
+        return { walletTxs: mergeTxs(get().walletTxs, txs) }
+      })
+    }
+  },
+  walletTxReportActions: (txs: ReportHistoryType[]) => {
+    set((state) => {
+      return { walletReportTxs: txs }
+    })
+  },
 })
 
 export const useTokenStore = () => useStore((state) => state, shallow)

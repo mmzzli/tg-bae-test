@@ -1,6 +1,7 @@
 import { FeeMode } from '@/pages/Wallet/components/FeeSelect'
 import { SolanaTransaction, TronTransaction } from 'rango-sdk'
-import { IChainType, IWeb3ChainType } from './chainType'
+import { IChainId, IChainType, IWeb3ChainType } from './chainType'
+import { AssetsToken } from './tokenType/AssetsToken'
 
 export enum PlatformType {
   EVM = 'evm',
@@ -273,4 +274,98 @@ export type RouteFeeInfo = {
     | undefined
   gasPrice: string
   gasLimit: number
+}
+
+export type TransactionsType = { [key in IChainId]?: IHistoryType[] }
+
+export type IHistoryType = {
+  fromAddress: string | undefined
+  toAddress: string | undefined
+  targetAddress?: string
+  fromAmount: string | undefined
+  toAmount: string
+  nonce: number
+  fromSwapTokens: {
+    token: AssetsToken
+    chain: IWeb3ChainType | undefined
+    balance: AssetsToken | undefined
+  }
+  toSwapTokens: {
+    token: AssetsToken
+    chain: IWeb3ChainType | undefined
+    balance: AssetsToken | undefined
+  }
+  time: number
+  networkFee?: string
+  block?: number
+  hash: string
+  chain?: IWeb3ChainType | undefined
+  chainId?: IWeb3ChainType | undefined
+  type?: 'OKX' | 'Rango' | ''
+  requestId?: string | undefined
+  historyType: 'Swap' | 'Send' | 'Approve' | 'Receive' | 'Pay'
+  status?: 'success' | 'pending' | 'failed' | 'loading' | 'unknow'
+
+  blocknumber?: string | undefined
+  endTime?: number
+  gasAmount?: string | undefined
+
+  toHash?: string | undefined
+  toHashInfo:
+    | {
+        blocknumber: string | undefined
+        endTime: number
+        gasAmount: string | undefined
+      }
+    | undefined
+  routeInfo?: {
+    swapperTitle: string
+    swapperLogo: string
+    aggregatorType: Aggregator | undefined
+  }
+  source?: 'OKX' | 'TOMO' | undefined
+}
+
+export type ReportHistoryType = {
+  chainID: number
+  gas: string
+  tx: string
+  type: 'swap' | 'send'
+  userID: number
+  requestId: number
+  source: string
+  sourceType: 'cross' | 'normal'
+}
+
+export type ReportSourceType = {
+  plat: 'OKX' | 'Rango' | ''
+  sourceType: 'cross' | 'normal'
+  requestId: string
+  time: number
+  status: string
+  from: {
+    chainID: number
+    symbol: string
+    tokenAddress: string
+    amount: string
+    decimals: number
+  }
+  hash: string
+  to: {
+    chainID: number
+    symbol: string
+    tokenAddress: string
+    amount: string
+    decimals: number
+  }
+  toHash: string
+  toAddress: string
+  toBlock: string
+  routeInfo:
+    | {
+        aggregatorType: Aggregator | undefined
+        swapperLogo: string
+        swapperTitle: string
+      }
+    | undefined
 }

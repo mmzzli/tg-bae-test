@@ -1,6 +1,5 @@
-import { IHistoryType } from '@/state'
-import { shortenAddress } from '@/utils/helper'
 import WalletAvatar from './WalletAvatar'
+import { shortenAddress } from '@/store/wallet/util'
 
 export default function AddressItem({
   address,

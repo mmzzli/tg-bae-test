@@ -119,7 +119,7 @@ export default function InputAddress() {
       btcAdrType
     }
     const urlSearchParamsStr = new URLSearchParams(urlSearchParams).toString()
-    navigate(`/send/input-amount?${urlSearchParamsStr}`)
+    navigate(`/wallet/send/input-amount?${urlSearchParamsStr}`)
   }
 
   const showScanQrPopup = () => {

@@ -363,7 +363,7 @@ function InputAmount() {
   }
 
   return (
-    <TContainer className="flex flex-col size-full" scrollable>
+    <TContainer className="flex flex-col size-full px-5" scrollable>
       {/* <BackButton onClick={() => navigate(-1)} /> */}
       <div className=" mt-[24px] flex justify-center">
         <div className="flex items-center rounded-[39px] bg-bg3 p-[8px] pr-[16px]">

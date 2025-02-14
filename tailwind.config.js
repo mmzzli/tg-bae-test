@@ -15,8 +15,13 @@ export default {
         /** for wallet page start */
         t1: '#000000',
         bg3: '#f5f5fa',
+        green: '#04C159',
         red: '#F21F7F',
         red2: '#EB4B6D',
+        orange: '#FF9142',
+        yellow: '#FFB904',
+        blue: '#2B6BFF',
+        blue3: '#3478F6',
         /** for wallet page end */
       },
       backgroundImage: {

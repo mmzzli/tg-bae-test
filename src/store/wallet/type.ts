@@ -384,3 +384,10 @@ export type ChainGasFeesType = {
   fee: string
   data: ChainGasResult
 }
+
+export type ApiParams = {
+  user: UserType
+  type: string
+  params: DexTransaction
+  init?: () => void
+}

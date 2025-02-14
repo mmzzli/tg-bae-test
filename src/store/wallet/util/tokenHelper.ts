@@ -1,10 +1,10 @@
 import { BigNumber } from 'bignumber.js'
-import { APIToken } from "../tokenType/APIToken"
-import { AssetsToken } from "../tokenType/AssetsToken"
-import { CustomListInfo, WhiteListInfo } from "../type"
+import { APIToken } from '../tokenType/APIToken'
+import { AssetsToken } from '../tokenType/AssetsToken'
+import { CustomListInfo, WhiteListInfo } from '../type'
 import chains from '../chains'
 
-export const CURRENT_CACHE_VERSION = "v1"
+export const CURRENT_CACHE_VERSION = 'v1'
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 export const STORAGE_KEY = Object.freeze({
   LOGGEDIN_USER_ID: 'loggedInUserId',
@@ -21,14 +21,14 @@ export const STORAGE_KEY = Object.freeze({
   AI_DEFAULT_CHECKED_TRADE: 'AI_DEFAULT_CHECKED_TRADE',
   AI_POST: 'AI_POST',
   isAiTokenPromt: 'isAiPromt',
-  AISearchHistory: '_AI_History'
+  AISearchHistory: '_AI_History',
+  TOMO_PASS_KEY: 'pass-key',
 })
 
 export const getCacheTokens = () => {
   const list = getCache(getWalletTokensKey() as string) as AssetsToken[]
   if (list?.length) {
-    return list
-      .filter((i) => i.address !== ZERO_ADDRESS)
+    return list.filter((i) => i.address !== ZERO_ADDRESS)
   }
   return []
 }
@@ -121,7 +121,6 @@ export function shallowWhiteListInfoEqual(arr1: any[], arr2: any[]) {
   return flag === 0
 }
 
-
 export const sortByPriceBalance = (income: AssetsToken[]) => {
   const list = [...income]
   list.sort((a, b) => {
@@ -160,7 +159,6 @@ export function getCurrentUserId() {
   return userId
 }
 
-
 // Get the cache
 export const getCache = (key: string) => {
   const defaultValue = {}
@@ -198,7 +196,7 @@ export const setCache = (key: string, data: any) => {
   const userKey = `${key}_${userId}`
   const cacheToStore = JSON.stringify({
     version: CURRENT_CACHE_VERSION,
-    data
+    data,
   })
   localStorage.setItem(userKey, cacheToStore)
 }
@@ -218,7 +216,7 @@ export const migrateOldCache = (oldKey: string) => {
 
 export function mergeTokensData({
   whiteTokens,
-  customTokens
+  customTokens,
 }: {
   whiteTokens: WhiteListInfo[]
   customTokens: CustomListInfo[]
@@ -248,7 +246,7 @@ export function mergeTokensData({
             image: i.image,
             source: 'custom',
             whiteToken: undefined,
-            customToken: i
+            customToken: i,
           }) as APIToken
       ) || []
 
@@ -269,7 +267,7 @@ export function mergeTokensData({
         image: i.image,
         source: 'all',
         whiteToken: i,
-        customToken: undefined
+        customToken: undefined,
       } as APIToken
     }) || []
 
@@ -297,19 +295,14 @@ export function effectiveBalance(
   }
   balance = new BigNumber(balance.toString()).toFixed()
   if (balance.split('.').length === 1) {
-    return balance > 1000
-      ? `${Number(balance).toLocaleString()}.00`
-      : `${balance}.00`
+    return balance > 1000 ? `${Number(balance).toLocaleString()}.00` : `${balance}.00`
   }
   const integer = balance.split('.')[0]
   const decimal = balance.split('.')[1]
   if (integer > 0) {
-    const str =
-      decimal.length === 1 ? `${decimal}0` : decimal.substr(0, decimalSubLen)
+    const str = decimal.length === 1 ? `${decimal}0` : decimal.substr(0, decimalSubLen)
     const res = `${integer}.${str}`
-    return Number(res) > 1000
-      ? `${Number(integer).toLocaleString()}.${str}`
-      : res
+    return Number(res) > 1000 ? `${Number(integer).toLocaleString()}.${str}` : res
   }
 
   const temp: any = []
@@ -327,9 +320,7 @@ export function effectiveBalance(
     }
   }
   const res = parseFloat(`${integer}.${temp.join('')}`)
-  return res > 1000
-    ? `${Number(integer).toLocaleString()}.${temp.join('')}`
-    : res
+  return res > 1000 ? `${Number(integer).toLocaleString()}.${temp.join('')}` : res
 }
 
 export const isEmpty = (data: string | object) => {
@@ -348,13 +339,13 @@ export const getChainByChainId = (chainId: number | string) => {
 
 export enum NativeTokenSymbol {
   ETH = 'ETH',
-  TON = 'TON'
+  TON = 'TON',
 }
 
 export const nativeTokenFilter = ({
   isNative,
   symbol,
-  chainId
+  chainId,
 }: {
   isNative: boolean
   symbol: string

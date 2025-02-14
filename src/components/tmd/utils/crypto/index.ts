@@ -4,6 +4,7 @@
 // import { IS_DEV } from '../config/index'
 // import { mockTonChainId } from 'config/ton'
 // import { mockTronChainId } from 'config/tron'
+import { STORAGE_KEY } from '@/store/wallet/util/tokenHelper'
 import CryptoJS from 'crypto-js'
 // import { WalletType } from '@/stores/tokenStore/type/BTCToken'
 // import { TrendingToken, WhiteListInfo } from '@/api/type'
@@ -25,30 +26,30 @@ import CryptoJS from 'crypto-js'
 //   }
 // }
 
-// export const getPassKey = () => {
-//   try {
-//     const token = localStorage.getItem(TOMO_PASS_KEY)
-//     return token ?? ''
-//   } catch (e) {
-//     return null
-//   }
-// }
+export const getPassKey = () => {
+  try {
+    const token = localStorage.getItem(STORAGE_KEY.TOMO_PASS_KEY)
+    return token ?? ''
+  } catch (e) {
+    return null
+  }
+}
 
-// export const setPassKey = (key: string) => {
-//   try {
-//     localStorage.setItem(TOMO_PASS_KEY, key)
-//   } catch (e) {
-//     // do something
-//   }
-// }
+export const setPassKey = (key: string) => {
+  try {
+    localStorage.setItem(STORAGE_KEY.TOMO_PASS_KEY, key)
+  } catch (e) {
+    // do something
+  }
+}
 
-// export const removePassKey = () => {
-//   try {
-//     localStorage.removeItem(TOMO_PASS_KEY)
-//   } catch (e) {
-//     // do something
-//   }
-// }
+export const removePassKey = () => {
+  try {
+    localStorage.removeItem(STORAGE_KEY.TOMO_PASS_KEY)
+  } catch (e) {
+    // do something
+  }
+}
 
 // export const CLEAR_VERSION = '5'
 

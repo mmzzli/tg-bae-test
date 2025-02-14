@@ -134,3 +134,22 @@ export const sendTradePwdEmail = async () => {
     {}
   )
 }
+
+export const tonSignMessage = async (
+  mfa: string,
+  data: { signingMessageBoc: string; stateInitBoc: string; isTestnet?: boolean }
+) => {
+  return await walletPost<WalletApiResponse>(
+    '/socialLogin/projectWallet/ton/signTransaction',
+    {
+      ...data,
+      isTestnet: typeof data.isTestnet === 'boolean' ? data.isTestnet : false,
+    },
+    {
+      headers: {
+        // Authorization: `Bearer ${token}`,
+        MFA: mfa,
+      },
+    }
+  )
+}

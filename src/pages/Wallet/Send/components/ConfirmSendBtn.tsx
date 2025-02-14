@@ -42,12 +42,14 @@ import { UseQueryResult } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { encodeFunctionData, erc20Abi, parseUnits } from 'viem'
-import { tonSendTransactionDataAtom } from '@/store/wallet/util/tonconnect'
+// import { tonSendTransactionDataAtom } from '@/store/wallet/util/tonconnect'
 import { IconTxSuccess } from '@/components/tmd/icons/txSuccess'
 import { errorContents } from '@/config/wallet/const'
 import { getErrorContext } from '@/config/wallet/error'
 import { useToast } from '@chakra-ui/react'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
+import BaseButton from '@/components/BaseButton/BaseButton'
+import { useNewSendTransaction } from '../../hooks/useNewSendTransaction'
 
 interface ConfirmSendBtnType {
   toAddress: string
@@ -176,8 +178,8 @@ function ConfirmSendBtn({
   //   chainId: chain?.chain?.id,
   // })
 
-  // // todo ...
-  // const { sendTransaction } = useNewSendTransaction('Send')
+  // todo ...
+  const { sendTransaction } = useNewSendTransaction('Send')
   const toast = useToast()
   const [status, setStatus] = useState('confirm')
   useEffect(() => {
@@ -271,7 +273,7 @@ function ConfirmSendBtn({
                 ...tonTransData,
               }
 
-            // return await sendTransaction({ params: tonParams })
+              return await sendTransaction({ params: tonParams })
             // case Web3Type.TONTEST:
             //   // eslint-disable-next-line no-case-declarations
             //   const tonTestParams = {
@@ -295,30 +297,30 @@ function ConfirmSendBtn({
 
         const hash = await sendToken()
 
-        // if (hash) {
-        //   setStatus('success')
-        //   if (tonSendTxData) {
-        //     // TonEvent.emit(TON_EVENT_SEND_SUCCESS, { boc: data.signature })
-        //   } else {
-        //     // refetch()
-        //     setTimeout(() => {
-        //       // refetch()
-        //       const urlParams = {
-        //         to: toAddress,
-        //         amount,
-        //         symbol: token.symbol,
-        //         chain_type: chain.type || '',
-        //         hash,
-        //       }
-        //       const urlString = new URLSearchParams(urlParams).toString()
-        //       navigate(`/wallet/send/result?${urlString}`)
+        if (hash) {
+          setStatus('success')
+          // if (tonSendTxData) {
+          //   // TonEvent.emit(TON_EVENT_SEND_SUCCESS, { boc: data.signature })
+          // } else {
+          // refetch()
+          setTimeout(() => {
+            // refetch()
+            const urlParams = {
+              to: toAddress,
+              amount,
+              symbol: token.symbol,
+              chain_type: chain.type || '',
+              hash,
+            }
+            const urlString = new URLSearchParams(urlParams).toString()
+            navigate(`/wallet/send/result?${urlString}`)
 
-        //       // onClose && onClose()
-        //     }, 2000)
-        //   }
-        // } else {
-        //   // if (tonSendTxData) TonEvent.emit(TON_EVENT_SEND_FAILED)
-        // }
+            // onClose && onClose()
+          }, 2000)
+          // }
+        } else {
+          // if (tonSendTxData) TonEvent.emit(TON_EVENT_SEND_FAILED)
+        }
       } catch (error) {
         // if (tonSendTxData) {
         // TonEvent.emit(TON_EVENT_SEND_FAILED)
@@ -388,14 +390,20 @@ function ConfirmSendBtn({
   return (
     <>
       {status !== 'success' && (
-        <div className={`mt-auto flex w-full items-end`}>
+        <div className={`mt-auto w-full`}>
           {/* <StatusButton
             type={status}
             text={'Slide to Confirm'}
             onConfirm={onSign}
             disabled={isSlideDisable()}
           /> */}
-          Slide to Confirm
+          <BaseButton
+            text={'Slide to Confirm'}
+            handler={onSign}
+            disabled={isSlideDisable()}
+            height="52px"
+            loading={status == 'loading'}
+          />
         </div>
       )}
       {status === 'success' && (

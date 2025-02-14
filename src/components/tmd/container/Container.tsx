@@ -1,4 +1,4 @@
-import classNames from 'classnames'
+import classNames from 'clsx'
 import { ContainerProps } from './PropsType'
 import { mergeProps } from '../utils/get-default-props'
 import { SafeArea } from 'antd-mobile'
@@ -17,7 +17,7 @@ export function Container(p: ContainerProps) {
     <div
       {...restProps}
       className={classNames(
-        baseStyles,
+        // baseStyles,
         {
           'overflow-y-auto': scrollable,
         },

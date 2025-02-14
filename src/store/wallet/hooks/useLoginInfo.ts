@@ -5,7 +5,7 @@ import { useUserStore } from '../walletUser'
 export default function useLoginInfo() {
   const { walletUserInfo } = useUserStore()
 
-  const getAddressByToken = (token: AssetsToken) => {
+  const getAddressByToken = (token?: AssetsToken) => {
     //btcWalletType?: WalletType
     if (!token || !walletUserInfo) return ''
 

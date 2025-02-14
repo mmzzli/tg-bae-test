@@ -143,12 +143,9 @@ const Image = React.memo(
           style={{ aspectRatio: rect ? 1 : '' }}
         >
           <div className={cn(errorClassName)}>
-            <div className="flex flex-col items-center justify-center">
-              <i
-                className="iconfont icon-reset-left-line text-[#ccc] text-[42px]"
-                onClick={reloadImage}
-              ></i>
-              <p className="mt-2">Failed to load image</p>
+            <div className="flex flex-col items-center justify-center text-[#999999] ">
+              <i className="iconfont icon-reset-left-line text-[24px]" onClick={reloadImage}></i>
+              <p className="mt-[14px] text-xs">failed to load image</p>
             </div>
           </div>
         </div>

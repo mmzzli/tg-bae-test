@@ -18,4 +18,8 @@ const chains = {
   ton,
 }
 
+export const UNSUPPROT_HISTORY_CHAIN = [
+  chains.ton.id,
+]
+
 export default chains

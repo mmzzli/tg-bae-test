@@ -1,8 +1,11 @@
 import { BigNumber } from 'bignumber.js'
-import { APIToken } from '../tokenType/APIToken'
-import { AssetsToken } from '../tokenType/AssetsToken'
-import { CustomListInfo, WhiteListInfo } from '../type'
+import { APIToken } from "../tokenType/APIToken"
+import { AssetsToken } from "../tokenType/AssetsToken"
+import { CustomListInfo, UserType, WhiteListInfo } from "../type"
 import chains from '../chains'
+import { IWeb3ChainType } from '../chainType'
+import { solScanUrl } from '../config/sol'
+import { tonScanUrl } from '../config/ton'
 
 export const CURRENT_CACHE_VERSION = 'v1'
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
@@ -337,6 +340,27 @@ export const getChainByChainId = (chainId: number | string) => {
   return chain
 }
 
+export const getScanUrl = ({
+  chain,
+  hash,
+  hashTest
+}: {
+  chain: IWeb3ChainType | undefined
+  hash: string
+  hashTest: string
+}) => {
+  switch (chain?.type) {
+    case 'EVM':
+      return chain?.chain?.blockExplorers?.default.url + '/tx/' + hash
+    case 'SOL':
+      return solScanUrl + hash
+    case 'TON':
+      return tonScanUrl + hash
+    default:
+      return undefined
+  }
+}
+
 export enum NativeTokenSymbol {
   ETH = 'ETH',
   TON = 'TON',
@@ -360,3 +384,35 @@ export const nativeTokenFilter = ({
     }
   }
 }
+
+export const jsonFilter = (source: string | undefined) => {
+  if (!source) return false
+  try {
+    return !!JSON.parse(source)
+  } catch (e) {
+    return false
+  }
+}
+
+export const userChainAddressList = (user: UserType, chainId: number) => {
+  if (chainId === chains.solana.id) {
+    return user.solanaAddress
+  }
+  
+  if (chainId === chains.ton.id) {
+    return user.tonAddress
+  }
+  
+  return user.ethereumAddress
+}
+
+export const getBalance = (
+  tokenList: AssetsToken[],
+  chainId: number,
+  address: string
+) =>
+  tokenList.find(
+    (token) =>
+      token.address.toLocaleUpperCase() === address.toLocaleUpperCase() &&
+      token.chainId === chainId
+  )

@@ -1,5 +1,6 @@
 import { IOKXHistoryType, TokenOkx, UserState, UserType } from '@/store/wallet/type'
 import { WalletApiResponse, walletGet, walletPost, tomoTgGet, tomoTgPost } from './walletBase'
+import { errorContents } from '@/store/wallet/config/const'
 
 export const getAllHistoryByAccount = async (params: {
   accountId: string
@@ -98,6 +99,7 @@ export const firstSetTradePasword = async (data: { newTradePassword: string }) =
   )
   return ret
 }
+
 export const setTradePasword = async (data: {
   oldTradePassword: string
   newTradePassword: string
@@ -105,10 +107,12 @@ export const setTradePasword = async (data: {
   const ret = await walletPost<WalletApiResponse>(`socialLogin/teleGram/user/setTradePasword`, data)
   return ret
 }
+
 export const mfaAuthVerificationApi = async (data: any) => {
   const ret = await walletPost<WalletApiResponse>(`socialLogin/mfa/auth/verification`, data)
   return ret
 }
+
 export const resetTradePwdEmail = async (data: { code: string; tradePassword: string }) => {
   const ret = await walletPost<WalletApiResponse>(
     `socialLogin/teleGram/user/resetTradePasswordRecoverEmail`,
@@ -122,12 +126,14 @@ export const bindEmailCodeSend = async (email: string) => {
     email,
   })
 }
+
 export const bindEmailCodeVerify = async (params: { email: string; code: string }) => {
   return await walletPost<WalletApiResponse>(
     `/socialLogin/projectUser/bindRecoverEmailCodeVerifyToken`,
     params
   )
 }
+
 export const sendTradePwdEmail = async () => {
   return await walletGet<WalletApiResponse>(
     `socialLogin/teleGram/user/sendTradePwdRecoverEmail`,
@@ -152,4 +158,51 @@ export const tonSignMessage = async (
       },
     }
   )
+}
+
+export const txReportListGet = async (params: { page: number; limit: number; userID: number }) => {
+  const res = await tomoTgGet('tg-report/v1/report/tx/cost', params)
+  return res.data
+}
+
+/*
+ * tx report api
+ **/
+export const txReportPost = async (data: {
+  chainID: number
+  gas: string
+  tx: string
+  type: 'swap' | 'send'
+  userID: number
+  source: string
+}) => {
+  const res = await tomoTgPost('tg-report/v1/report/tx/cost', data)
+  return res.data
+}
+
+export const postSendPoint = async (data: {
+  chainId: string
+  txId: string
+  senderUserId: number
+  senderAddress: string
+  receiverAddress: string
+  amount: string // bigint string
+  tokenContract: string
+  decimals: number
+  symbol: string
+  priceUsd: number
+}): Promise<string> => {
+  const res = await walletPost('/socialLogin/teleGram/send/record', data)
+  return res?.data?.result
+}
+
+export const solSignRawTransaction = async (params: SolSendTx) => {
+  const { data } = await walletPost(
+    `/socialLogin/projectWallet/solana/signRawTransaction`,
+    params
+  ).catch((error) => {
+    const message = error?.response?.data?.message
+    return Promise.reject(message ? message : errorContents.transactionError)
+  })
+  return data
 }

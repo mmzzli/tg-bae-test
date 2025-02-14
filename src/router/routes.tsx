@@ -29,6 +29,7 @@ import ForgetPage from '@/pages/Wallet/Account/Forget'
 import WalletTest from '@/pages/Wallet/Test'
 import RecoveryEmail from '@/pages/Wallet/Account/RecoveryEmail'
 import Freeze from '@/pages/Wallet/Account/Freeze'
+import InputAmount from '@/pages/Wallet/Send/InputAmount'
 
 const Task = lazy(() => import('@/pages/Task'))
 
@@ -99,7 +100,8 @@ export const routes = [
           { index: true, element: <Wallet /> },
           { path: 'send/select-token', element: <SelectSendToken /> },
           { path: 'send/input-address', element: <SendInputAddress /> },
-        ]
+          { path: 'send/input-amount', element: <InputAmount /> },
+        ],
       },
       {
         path: 'account',

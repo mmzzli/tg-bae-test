@@ -1,6 +1,6 @@
-import { TBottomButton, TIcon, TScrollContent } from '@/components/tmd'
-import { Button } from '@/components/tmd/button/Button'
-import { TContainer } from '@/components/tmd'
+// import { TBottomButton, TIcon, TScrollContent } from '@/components/tmd'
+// import { Button } from '@/components/tmd/button/Button'
+// import { TContainer } from '@/components/tmd'
 import { getChainByChainId } from '@/store/wallet/util/tokenHelper'
 import { TextArea } from 'antd-mobile'
 import classNames from 'classnames'
@@ -20,11 +20,7 @@ interface BaseIconButtonType {
   children: React.ReactNode
   classNames: string
 }
-const BaseIconButton = ({
-  onClick,
-  children,
-  ...props
-}: BaseIconButtonType) => {
+const BaseIconButton = ({ onClick, children, ...props }: BaseIconButtonType) => {
   return (
     <div
       onClick={onClick}
@@ -37,11 +33,7 @@ const BaseIconButton = ({
     </div>
   )
 }
-const ScanButton = ({
-  onClick
-}: {
-  onClick: BaseIconButtonType['onClick']
-}) => {
+const ScanButton = ({ onClick }: { onClick: BaseIconButtonType['onClick'] }) => {
   return (
     <BaseIconButton onClick={onClick} classNames="rounded-full mr-4">
       <TIcon name="tg_wallet_scan-the-code" />
@@ -49,11 +41,7 @@ const ScanButton = ({
   )
 }
 
-const ClearButton = ({
-  onClick
-}: {
-  onClick: BaseIconButtonType['onClick']
-}) => {
+const ClearButton = ({ onClick }: { onClick: BaseIconButtonType['onClick'] }) => {
   return (
     <BaseIconButton onClick={onClick} classNames="rounded-[42px] mr-2">
       <TIcon name="tg_wallet_delete2" />
@@ -91,24 +79,17 @@ export default function InputAddress() {
       .filter((i) => Number(i.chainID) === Number(chainId))
       .map((i) => JSON.parse(i.source).toAddress)
       .filter((i) => !!i)
-    const uni = addressList
-      .filter((item, index) => addressList.indexOf(item) === index)
-      .slice(0, 5)
+    const uni = addressList.filter((item, index) => addressList.indexOf(item) === index).slice(0, 5)
     return uni
   }, [chainId, walletReportTxs])
 
   const chain = getChainByChainId(Number(chainId))
 
   const isValid =
-    validateAddressFnMap[chain?.type as keyof typeof validateAddressFnMap](
-      receiveAddress
-    )
+    validateAddressFnMap[chain?.type as keyof typeof validateAddressFnMap](receiveAddress)
 
   useEffect(() => {
-    setSearchStr(
-      { address, chainId, toAddress: receiveAddress, btcAdrType },
-      { replace: true }
-    )
+    setSearchStr({ address, chainId, toAddress: receiveAddress, btcAdrType }, { replace: true })
   }, [receiveAddress])
 
   const confirmReceiveAddress = () => {
@@ -116,7 +97,7 @@ export default function InputAddress() {
       chainId,
       address,
       toAddress: receiveAddress,
-      btcAdrType
+      btcAdrType,
     }
     const urlSearchParamsStr = new URLSearchParams(urlSearchParams).toString()
     navigate(`/wallet/send/input-amount?${urlSearchParamsStr}`)
@@ -125,7 +106,7 @@ export default function InputAddress() {
   const showScanQrPopup = () => {
     WebApp?.showScanQrPopup(
       {
-        text: 'Scan Address'
+        text: 'Scan Address',
       },
       function (text: string) {
         const address = text.includes(':') ? text.split(':')[1] : text
@@ -136,18 +117,17 @@ export default function InputAddress() {
   }
 
   return (
-    <TContainer className="flex h-full flex-col !px-0">
-      <BackButton onClick={() => navigate(-1)} />
-      <TScrollContent>
-        <div className="mt-[15px] text-h3 font-semibold  text-t1">
-          Receiving address
-        </div>
+    <div className="flex h-full flex-col !px-0">
+      {/* <BackButton onClick={() => navigate(-1)} /> */}
+      {/* <TScrollContent> */}
+      <div>
+        <div className="mt-[15px] text-h3 font-semibold  text-t1">Receiving address</div>
         <div className="mt-[15px]">
           <TextArea
             style={{
               '--color': 'var(--text-t1)',
               '--font-size': 'var(--text-sm)',
-              '--placeholder-color': 'var(--text-t4)'
+              '--placeholder-color': 'var(--text-t4)',
             }}
             value={receiveAddress}
             placeholder={`${chain?.name} address`}
@@ -157,9 +137,7 @@ export default function InputAddress() {
             }}
           />
           {receiveAddress.length !== 0 && !isValid && (
-            <div className="absolute mt-[8px] text-xs text-red">
-              Please enter a valid address
-            </div>
+            <div className="absolute mt-[8px] text-xs text-red">Please enter a valid address</div>
           )}
         </div>
         <div
@@ -187,17 +165,13 @@ export default function InputAddress() {
         ) : (
           <></>
         )}
-      </TScrollContent>
+      </div>
 
-      <TBottomButton className="py-[10px]">
-        <Button
-          disabled={!isValid}
-          className="h-[52px] w-full"
-          onClick={confirmReceiveAddress}
-        >
+      <div className="py-[10px]">
+        {/* <Button disabled={!isValid} className="h-[52px] w-full" onClick={confirmReceiveAddress}>
           Confirm
-        </Button>
-      </TBottomButton>
-    </TContainer>
+        </Button> */}
+      </div>
+    </div>
   )
 }

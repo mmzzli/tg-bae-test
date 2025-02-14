@@ -1,6 +1,6 @@
 import React, { memo, useMemo } from 'react'
 import useLoginInfo from 'hooks/useLoginInfo'
-import { toSvg } from 'jdenticon'
+// import { toSvg } from 'jdenticon'
 
 interface Interface {
   size?: number
@@ -9,7 +9,8 @@ interface Interface {
 
 const WalletAvatar: React.FC<Interface> = ({ size = 16, address }) => {
   const svgData = useMemo(() => {
-    return toSvg(address, size)
+    // return toSvg(address, size)
+    return <div>cccc</div>
   }, [size, address])
 
   return (

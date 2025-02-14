@@ -9,14 +9,14 @@ export enum PlatformType {
   TRON = 'tron',
   BITCOIN = 'bitcoin',
   SOLANA = 'solana',
-  SUI = 'sui'
+  SUI = 'sui',
 }
 
 export enum Aggregator {
   RANGO = 'Rango',
   OKX = 'Okx',
   JUPITER = 'Jupiter',
-  STONFI = 'Ston.fi'
+  STONFI = 'Ston.fi',
 }
 
 export enum ApiSWapDexNameType {
@@ -26,13 +26,13 @@ export enum ApiSWapDexNameType {
   RANGO_MAIN = 4,
   JUPITER = 5,
   OKX_CROSS_SORT1 = 6,
-  OKX_CROSS_SORT2 = 7
+  OKX_CROSS_SORT2 = 7,
 }
 
 export enum DexTag {
   FAST = 'fast',
   MAX = 'max',
-  BEST = 'best'
+  BEST = 'best',
 }
 
 export type UserType = {
@@ -368,4 +368,19 @@ export type ReportSourceType = {
         swapperTitle: string
       }
     | undefined
+}
+
+export type ChainGasResult = {
+  gasLimit: string
+  baseFee: string
+  priorityFeeLow: string
+  priorityFeeMedium: string
+  priorityFeeHigh: string
+}
+
+export type ChainGasFeesType = {
+  baseFee: string
+  priorityFee: string
+  fee: string
+  data: ChainGasResult
 }

@@ -1,8 +1,8 @@
-// import { Web3Type } from '@/proviers/web3Provider/type'
+import { Web3Type } from '@/proviers/web3Provider/type'
+import { fromBech32 } from '@cosmjs/encoding'
 // import { isValid } from 'date-fns'
 import TonWeb from 'tonweb'
 import * as bitcoin from 'bitcoinjs-lib'
-import { Web3Type } from '../chainType'
 
 const validateEvmAddress = (address: string) => {
   const evmRegex = /^0x[a-fA-F0-9]{40}$/
@@ -60,6 +60,15 @@ const validateBtcAddress = (address: string) => {
   )
 }
 
+const validateCosmosAddress = (address: string, expectedPrefix = 'cosmos') => {
+  try {
+    const decodedAddress = fromBech32(address)
+    return decodedAddress.prefix === expectedPrefix && decodedAddress.data.length === 20
+  } catch (error) {
+    return false
+  }
+}
+
 const validDogecoinAddress = (address: string) => {
   try {
     const decoded = bitcoin.address.fromBase58Check(address)
@@ -82,5 +91,6 @@ export const validateAddressFnMap = {
   [Web3Type.TONTEST]: validateTonAddress,
   [Web3Type.TRON]: validateTronAddress,
   [Web3Type.SUI]: validateSuiAddress,
+  [Web3Type.COSMOS]: validateCosmosAddress,
   [Web3Type.DOGE]: validDogecoinAddress,
 }

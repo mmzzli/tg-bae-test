@@ -1,6 +1,3 @@
-// import { TBottomButton, TIcon, TScrollContent } from '@/components/tmd'
-// import { Button } from '@/components/tmd/button/Button'
-// import { TContainer } from '@/components/tmd'
 import { getChainByChainId } from '@/store/wallet/util/tokenHelper'
 import { TextArea } from 'antd-mobile'
 import classNames from 'classnames'
@@ -13,7 +10,9 @@ import { BackButton, useWebApp } from '@vkruglikov/react-telegram-web-app'
 import { useAtomValue } from 'jotai'
 import { tonSendTransactionDataAtom } from '@/store/wallet/util/tonconnect'
 import { useTokenStore } from '@/store/wallet/walletToken'
-// import useWalletStore from '@/stores/walletStore/hooks/useWalletStore'
+import { IconDelete2 } from '@/components/tmd/icons/delete2'
+import { IconScan } from '@/components/tmd/icons/scan'
+import BaseButton from '@/components/BaseButton/BaseButton'
 
 interface BaseIconButtonType {
   onClick: () => void
@@ -36,7 +35,7 @@ const BaseIconButton = ({ onClick, children, ...props }: BaseIconButtonType) => 
 const ScanButton = ({ onClick }: { onClick: BaseIconButtonType['onClick'] }) => {
   return (
     <BaseIconButton onClick={onClick} classNames="rounded-full mr-4">
-      <TIcon name="tg_wallet_scan-the-code" />
+      <IconScan />
     </BaseIconButton>
   )
 }
@@ -44,7 +43,7 @@ const ScanButton = ({ onClick }: { onClick: BaseIconButtonType['onClick'] }) => 
 const ClearButton = ({ onClick }: { onClick: BaseIconButtonType['onClick'] }) => {
   return (
     <BaseIconButton onClick={onClick} classNames="rounded-[42px] mr-2">
-      <TIcon name="tg_wallet_delete2" />
+      <IconDelete2 className="size-4" />
       <div className="ml-[8px] flex items-center">
         <span>Clear</span>
       </div>
@@ -120,7 +119,7 @@ export default function InputAddress() {
     <div className="flex h-full flex-col !px-0">
       {/* <BackButton onClick={() => navigate(-1)} /> */}
       {/* <TScrollContent> */}
-      <div>
+      <div className="px-[20px] flex-1 overflow-y-auto">
         <div className="mt-[15px] text-h3 font-semibold  text-t1">Receiving address</div>
         <div className="mt-[15px]">
           <TextArea
@@ -167,10 +166,13 @@ export default function InputAddress() {
         )}
       </div>
 
-      <div className="py-[10px]">
-        {/* <Button disabled={!isValid} className="h-[52px] w-full" onClick={confirmReceiveAddress}>
-          Confirm
-        </Button> */}
+      <div className="py-[16px] px-[20px] flex-none">
+        <BaseButton
+          text="Confirm"
+          handler={confirmReceiveAddress}
+          disabled={!isValid}
+          height="52px"
+        />
       </div>
     </div>
   )

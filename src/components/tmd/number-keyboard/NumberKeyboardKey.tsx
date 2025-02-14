@@ -1,6 +1,7 @@
 import classNames from 'classnames'
 import { Icon } from '../icon/Icon'
 import { useState, type FC, type MouseEvent, type TouchEvent } from 'react'
+import { IconDel } from '../icons/del'
 
 const classPrefix = 'tmd-number-keyboard'
 
@@ -11,7 +12,7 @@ export function NumberKeyboardKey({
   keys,
   startContinueClear,
   stopContinueClear,
-  onKeyPress
+  onKeyPress,
 }: {
   keyName: string
   index: number
@@ -19,26 +20,22 @@ export function NumberKeyboardKey({
   keys: Array<any[]>
   startContinueClear: () => void
   stopContinueClear: () => void
-  onKeyPress: (
-    e: TouchEvent<HTMLDivElement> | MouseEvent<HTMLDivElement>,
-    key: string
-  ) => void
+  onKeyPress: (e: TouchEvent<HTMLDivElement> | MouseEvent<HTMLDivElement>, key: string) => void
 }) {
   const [active, setActive] = useState(false)
   const isNumberKey = /^\d$/.test(keyName)
   const className = classNames(`${classPrefix}-key`, {
     [`${classPrefix}-key-number`]: isNumberKey,
     [`${classPrefix}-key-sign`]: !isNumberKey && keyName,
-    [`${classPrefix}-key-mid`]:
-      index === 9 && !!confirmText && keys.length < 12,
-    active: active
+    [`${classPrefix}-key-mid`]: index === 9 && !!confirmText && keys.length < 12,
+    active: active,
   })
 
   const ariaProps = keyName
     ? {
         role: 'button',
         title: keyName,
-        tabIndex: -1
+        tabIndex: -1,
       }
     : undefined
 
@@ -62,11 +59,7 @@ export function NumberKeyboardKey({
       }}
       {...ariaProps}
     >
-      {keyName === 'BACKSPACE' ? (
-        <Icon name="tg_wallet_keybord_del" fontSize="22" />
-      ) : (
-        keyName
-      )}
+      {keyName === 'BACKSPACE' ? <IconDel className="size-[22px]" /> : keyName}
     </div>
   )
 }

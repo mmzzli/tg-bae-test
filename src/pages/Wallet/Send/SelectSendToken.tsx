@@ -27,16 +27,11 @@ function SelectSendToken() {
   })
 
   const clickItem = (token: AssetsToken) => {
-    // btc need to select address type
-    if (token.chainId === 0 && token.symbol === 'BTC') {
-      navigate('/send/select-btc-type')
-    } else {
-      navigate(
-        `/send/input-address?chainId=${token.chainId}&address=${
-          token.address || ''
-        }`
-      )
-    }
+    navigate(
+      `/wallet/send/input-address?chainId=${token.chainId}&address=${
+        token.address || ''
+      }`
+    )
   }
 
   return (

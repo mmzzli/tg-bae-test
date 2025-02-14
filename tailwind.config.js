@@ -14,6 +14,10 @@ export default {
         'white-close': '#E0E2F6',
         /** for wallet page start */
         t1: '#000000',
+        b1: '#333333',
+        b2: '#666666',
+        b3: '#999999',
+        bg2: '#F7F9FC',
         bg3: '#f5f5fa',
         green: '#04C159',
         red: '#F21F7F',

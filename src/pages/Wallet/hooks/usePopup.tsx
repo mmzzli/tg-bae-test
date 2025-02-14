@@ -49,9 +49,7 @@ const usePopup = ({
         })}
         {...restProps}
       >
-        <div className={classNames('px-5 pb-2 flex-1', contentClassName)}>
-          {open ? content : null}
-        </div>
+        <div className={classNames('flex-1', contentClassName)}>{open ? content : null}</div>
       </TPopup>
     ),
   }

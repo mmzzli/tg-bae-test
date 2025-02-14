@@ -15,16 +15,16 @@ const chainInfo: IWeb3ChainType = {
           'https://bnb-mainnet.g.alchemy.com/v2/DR7Jtd4NSYTtAY7Heme8ml-j6oBCZgGO',
           'https://rpc.ankr.com/bsc/ac79e83cf02a544dbb9b3f4c5d5478b2510b921e7d5739ded8791a932e8de0a6',
           'https://rpc.ankr.com/bsc/5fc8ed1906d70db2174601d49aa1edc708e5ff35f1c862c95d43734a6943730e',
-          'https://bsc-dataseed1.defibit.io/'
-        ]
-      }
-    }
+          'https://bsc-dataseed1.defibit.io/',
+        ],
+      },
+    },
   },
   id: 56,
   type: 'EVM',
-  name: 'BNB Chain',
+  name: 'BNB smart chain',
   icon: icon,
-  networkType
+  networkType,
 }
 
 export default chainInfo

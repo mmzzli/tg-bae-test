@@ -9,12 +9,8 @@ export const getAllHistoryByAccount = async (params: {
   cursor?: string | undefined
   chainIndex?: string | undefined
 }): Promise<{ cursor: string; transactionList: IOKXHistoryType[] }> => {
-  const ret = await walletGet('socialLogin/projectWallet/getOkxWalletAccountTransaction', {
-    params,
-    paramsSerializer: function (params) {
-      return new URLSearchParams(params).toString()
-    },
-  })
+  const path = new URLSearchParams(params).toString()
+  const ret = await walletGet(`socialLogin/projectWallet/getOkxWalletAccountTransaction?${path}`)
   return ret.result[0]
 }
 

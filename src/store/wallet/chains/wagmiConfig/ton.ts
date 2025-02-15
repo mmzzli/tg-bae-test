@@ -1,7 +1,7 @@
 import chainsSvgs from '@/assets'
 import { IWeb3ChainType, IWeb3NetworkType } from '../../chainType'
 
-const icon = chainsSvgs.tonSvg2
+const icon = chainsSvgs.tonSvg
 const networkType: IWeb3NetworkType = 'main'
 
 const chainInfo: IWeb3ChainType = {

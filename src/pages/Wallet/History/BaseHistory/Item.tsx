@@ -18,7 +18,7 @@ const Item = ({
 
   const onClick = () => {
     if (history.hash && history.historyType !== 'Pay') {
-      navigate(`/history/detail?hash=${encodeURIComponent(history.hash)}`)
+      navigate(`/wallet/history/detail?hash=${encodeURIComponent(history.hash)}`)
     }
   }
 

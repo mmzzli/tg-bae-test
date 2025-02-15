@@ -32,6 +32,7 @@ import Freeze from '@/pages/Wallet/Account/Freeze'
 import InputAmount from '@/pages/Wallet/Send/InputAmount'
 import ConfirmSendInfo from '@/pages/Wallet/Send/ConfirmSendInfo'
 import SendResult from '@/pages/Wallet/Send/SendResult'
+import WalletHistory from '@/pages/Wallet/History'
 
 const Task = lazy(() => import('@/pages/Task'))
 
@@ -105,6 +106,7 @@ export const routes = [
           { path: 'send/input-amount', element: <InputAmount /> },
           { path: 'send/confirm-send', element: <ConfirmSendInfo /> },
           { path: 'send/result', element: <SendResult /> },
+          { path: 'history', element: <WalletHistory /> },
         ],
       },
       {

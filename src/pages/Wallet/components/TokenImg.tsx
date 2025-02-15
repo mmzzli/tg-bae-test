@@ -34,6 +34,9 @@ const TokenImg = ({
   })
 
   const chainImage = useMemo(() => {
+    if (isNative) {
+      return undefined
+    }
     if (hideChainImg) {
       return undefined
     }
@@ -42,9 +45,6 @@ const TokenImg = ({
     }
     if (filterSymbol) {
       return getChainByChainId(chainId ?? -1)?.icon
-    }
-    if (isNative) {
-      return undefined
     }
     return getChainByChainId(chainId ?? -1)?.icon
   }, [isNative, filterSymbol, chainId])

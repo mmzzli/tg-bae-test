@@ -34,7 +34,7 @@ const WalletMenus = ({ className }: { className?: string }) => {
       ),
       title: 'History',
       handle: () => {
-        navigate('/history')
+        navigate('/wallet/history')
       },
     },
   ]
@@ -43,7 +43,7 @@ const WalletMenus = ({ className }: { className?: string }) => {
     <div className={clsx('flex items-center justify-center gap-12', className)}>
       {iconList.map((item) => (
         <div className="flex cursor-pointer items-center justify-center">
-          <div className="flex flex-col items-center justify-center gap-2">
+          <div className="flex flex-col items-center justify-center gap-2" onClick={item.handle}>
             {item.icon}
             <span className="text-xs font-normal text-t1">{item.title}</span>
           </div>

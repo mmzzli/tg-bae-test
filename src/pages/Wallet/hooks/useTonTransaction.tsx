@@ -11,7 +11,6 @@ import {
 import { AssetsToken } from '@/store/wallet/tokenType/AssetsToken'
 import { Aggregator, ApiParams, IHistoryType } from '@/store/wallet/type'
 import { useMfa } from '../Account/hooks/useMfa'
-import useTransactions from './useTransactions'
 import useTonTransactions from './useTonTransactions'
 import { formatUnits } from 'viem'
 // import { tonSignMessage } from '@tomo-inc/tomo-telegram-sdk/dist/api'
@@ -21,6 +20,7 @@ import { useToast } from '@chakra-ui/react'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import { errorContents } from '@/config/wallet/const'
 import { tonSignMessage } from '@/api/wallet'
+import useTransactions from '@/store/wallet/hooks/useTransactions'
 
 type ITonSigningType = {
   token: AssetsToken | undefined

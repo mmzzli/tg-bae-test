@@ -39,7 +39,33 @@ export default function useLoginInfo() {
     return walletUserInfo.ethereumAddress
   }
 
+  const getAddressAsChainId = (token: Pick<AssetsToken, 'chainId'>) => {
+    if (token.chainId == chains.solana.id) {
+      return walletUserInfo.solanaAddress
+    }
+    if (token.chainId == chains.ton.id) {
+      return walletUserInfo.tonAddress
+    }
+    // if (token.chainId == chains.tonTestnet.id) {
+    //   return walletUserInfo.tonAddressTest
+    // }
+    // if (token.chainId == chains.tron.id) {
+    //   return walletUserInfo.tronAddress
+    // }
+    // if (token.chainId === chains.sui.id) {
+    //   return walletUserInfo.suiAddress
+    // }
+    // if (token.chainId === chains.cosmos.id) {
+    //   return walletUserInfo.cosmosAddress
+    // }
+    // if (token.chainId === chains.doge.id) {
+    //   return walletUserInfo.dogeAddress
+    // }
+    return walletUserInfo.ethereumAddress
+  }
+
   return {
     getAddressByToken,
+    getAddressAsChainId,
   }
 }

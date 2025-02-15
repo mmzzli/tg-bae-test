@@ -15,7 +15,7 @@ const WalletMenus = ({ className }: { className?: string }) => {
         </button>
       ),
       title: 'Send',
-      handle: () => {},
+      handle: () => navigate('/wallet/send/select-token'),
     },
     {
       icon: (
@@ -24,7 +24,7 @@ const WalletMenus = ({ className }: { className?: string }) => {
         </button>
       ),
       title: 'Receive',
-      handle: () => {},
+      handle: () => navigate('/wallet/receive/select-token'),
     },
     {
       icon: (
@@ -41,12 +41,14 @@ const WalletMenus = ({ className }: { className?: string }) => {
 
   return (
     <div className={clsx('flex items-center justify-center gap-12', className)}>
-      {iconList.map((item) => (
-        <div className="flex cursor-pointer items-center justify-center">
-          <div className="flex flex-col items-center justify-center gap-2" onClick={item.handle}>
-            {item.icon}
-            <span className="text-xs font-normal text-t1">{item.title}</span>
-          </div>
+      {iconList.map((item, index) => (
+        <div
+          className="flex flex-col items-center justify-center gap-2 cursor-pointer"
+          key={index}
+          onClick={item.handle}
+        >
+          {item.icon}
+          <span className="text-xs font-normal text-t1">{item.title}</span>
         </div>
       ))}
     </div>

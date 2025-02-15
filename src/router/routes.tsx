@@ -33,6 +33,8 @@ import InputAmount from '@/pages/Wallet/Send/InputAmount'
 import ConfirmSendInfo from '@/pages/Wallet/Send/ConfirmSendInfo'
 import SendResult from '@/pages/Wallet/Send/SendResult'
 import WalletHistory from '@/pages/Wallet/History'
+import SelectReceiveToken from '@/pages/Wallet/Receive/SelectReceiveToken'
+import TokenReceive from '@/pages/Wallet/Receive/TokenReceive'
 
 const Task = lazy(() => import('@/pages/Task'))
 
@@ -106,6 +108,8 @@ export const routes = [
           { path: 'send/input-amount', element: <InputAmount /> },
           { path: 'send/confirm-send', element: <ConfirmSendInfo /> },
           { path: 'send/result', element: <SendResult /> },
+          { path: 'receive/select-token', element: <SelectReceiveToken /> },
+          { path: 'receive/receive/:chain/:address', element: <TokenReceive /> },
           { path: 'history', element: <WalletHistory /> },
         ],
       },

@@ -16,7 +16,7 @@ const WalletTest = () => {
       userInfo = DEV_INIT_DATA_RAW
     }
 
-    await tgLogin(userInfo);
+    await tgLogin(userInfo)
     await getUserInfo()
   }
 

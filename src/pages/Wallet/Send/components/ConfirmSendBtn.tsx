@@ -50,6 +50,8 @@ import { useToast } from '@chakra-ui/react'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { useNewSendTransaction } from '../../hooks/useNewSendTransaction'
+import { getFastConnection } from '@/store/wallet/config/sol'
+import useSendTransaction from '../../hooks/useSendTransaction'
 
 interface ConfirmSendBtnType {
   toAddress: string
@@ -173,18 +175,15 @@ function ConfirmSendBtn({
   // const tonSendTxData = useAtomValue(tonSendTransactionDataAtom)
   const navigate = useNavigate()
 
-  // // todo ...
-  // const { sendSolTransaction } = useSendTransaction({
-  //   chainId: chain?.chain?.id,
-  // })
+  const { sendSolTransaction } = useSendTransaction({
+    chainId: chain?.chain?.id,
+  })
 
-  // todo ...
   const { sendTransaction } = useNewSendTransaction('Send')
   const toast = useToast()
   const [status, setStatus] = useState('confirm')
   useEffect(() => {
-    // todo ...
-    // getFastConnection()
+    getFastConnection()
     return () => {
       setStatus('confirm')
     }
@@ -239,19 +238,16 @@ function ConfirmSendBtn({
                 params.toAddress = params.fromToken.address
               }
               params.data = data
-              // return await sendTransaction({ params })
+              return await sendTransaction({ params })
             }
             case Web3Type.SOL:
-            // params.contract = token?.address
-            // return sendTransaction(params)
-            // return sendSolTransaction({
-            //   fromAddress,
-            //   toAddress,
-            //   value: parseUnits(amount, token?.decimals || 9),
-            //   contract: token?.address,
-            //   token,
-            //   feesQuery,
-            // })
+              return sendSolTransaction({
+                fromAddress,
+                toAddress,
+                value: parseUnits(amount, token?.decimals || 9),
+                contract: token?.address,
+                token,
+              })
             // case Web3Type.BTC:
             //   return (
             //     walletBtcType &&
@@ -321,7 +317,7 @@ function ConfirmSendBtn({
         } else {
           // if (tonSendTxData) TonEvent.emit(TON_EVENT_SEND_FAILED)
         }
-      } catch (error) {
+      } catch (error: any) {
         // if (tonSendTxData) {
         // TonEvent.emit(TON_EVENT_SEND_FAILED)
         // }
@@ -335,7 +331,6 @@ function ConfirmSendBtn({
           // if (error.includes('Pay PIN verification canceled')) {
           //   return
           // }
-
           if (error.includes('insufficient funds')) {
             errorMsg = errorContents.noEnoughGas
           } else if (error.includes('Failed to fetch')) {
@@ -346,9 +341,10 @@ function ConfirmSendBtn({
             errorMsg = getErrorContext(error)
           }
         } else {
+          if ((error?.message || '').include('cancelled')) return
           errorMsg = errorContents.rpcError
         }
-
+        debugger
         toast({
           render: () => {
             return <CustomToast title={errorMsg} type={typeOptions.error} />
@@ -398,7 +394,7 @@ function ConfirmSendBtn({
             disabled={isSlideDisable()}
           /> */}
           <BaseButton
-            text={'Slide to Confirm'}
+            text={'Confirm'}
             handler={onSign}
             disabled={isSlideDisable()}
             height="52px"

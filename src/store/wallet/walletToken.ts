@@ -9,9 +9,15 @@ import {
   shallowAssetsTokenEqual,
   shallowCustomListInfoEqual,
   shallowWhiteListInfoEqual,
-  sortByPriceBalance
+  sortByPriceBalance,
 } from './util/tokenHelper'
-import { CustomListInfo, IHistoryType, ReportHistoryType, TransactionsType, WhiteListInfo } from './type'
+import {
+  CustomListInfo,
+  IHistoryType,
+  ReportHistoryType,
+  TransactionsType,
+  WhiteListInfo,
+} from './type'
 import { mergeTxs, updateSignleTx } from './util/txHelper'
 
 export interface ITokenStore {
@@ -49,9 +55,11 @@ export const createTokenStore: StateCreator<ITokenStore> = (set, get) => ({
   refreshTime: 0,
   tokensReSetActions: () => {
     set((state) => {
-      return { tokenList: getCache(getWalletTokensKey() as string).length
-        ? getCache(getWalletTokensKey() as string)
-        : [] }
+      return {
+        tokenList: getCache(getWalletTokensKey() as string).length
+          ? getCache(getWalletTokensKey() as string)
+          : [],
+      }
     })
   },
   tokensActions: (tokens: AssetsToken[]) => {
@@ -59,10 +67,10 @@ export const createTokenStore: StateCreator<ITokenStore> = (set, get) => ({
       return
     }
     set((state) => {
-      return { 
+      return {
         tokenList: sortByPriceBalance(tokens),
-        tokenListKeys: JSON.stringify(tokens)
-       }
+        tokenListKeys: JSON.stringify(tokens),
+      }
     })
   },
   customTokensActions: (tokens: CustomListInfo[]) => {
@@ -70,9 +78,9 @@ export const createTokenStore: StateCreator<ITokenStore> = (set, get) => ({
       return
     }
     set((state) => {
-      return { 
+      return {
         customTokens: tokens,
-       }
+      }
     })
   },
   whiteTokensActions: (tokens: WhiteListInfo[]) => {
@@ -80,9 +88,9 @@ export const createTokenStore: StateCreator<ITokenStore> = (set, get) => ({
       return
     }
     set((state) => {
-      return { 
+      return {
         whiteTokens: tokens,
-       }
+      }
     })
   },
   refreshTokenStore: () => {
@@ -101,10 +109,7 @@ export const createTokenStore: StateCreator<ITokenStore> = (set, get) => ({
     })
   },
   walletTxUpdateActions: (history: IHistoryType) => {
-    const txs = updateSignleTx(
-      JSON.parse(JSON.stringify(get().walletTxs)),
-      history
-    )
+    const txs = updateSignleTx(JSON.parse(JSON.stringify(get().walletTxs)), history)
     if (txs) {
       set((state) => {
         return { walletTxs: mergeTxs(get().walletTxs, txs) }

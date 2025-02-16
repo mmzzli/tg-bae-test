@@ -50,6 +50,8 @@ import { useToast } from '@chakra-ui/react'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { useNewSendTransaction } from '../../hooks/useNewSendTransaction'
+import { getFastConnection } from '@/store/wallet/config/sol'
+import useSendTransaction from '../../hooks/useSendTransaction'
 
 interface ConfirmSendBtnType {
   toAddress: string
@@ -173,17 +175,15 @@ function ConfirmSendBtn({
   // const tonSendTxData = useAtomValue(tonSendTransactionDataAtom)
   const navigate = useNavigate()
 
-  // // todo ...
-  // const { sendSolTransaction } = useSendTransaction({
-  //   chainId: chain?.chain?.id,
-  // })
+  const { sendSolTransaction } = useSendTransaction({
+    chainId: chain?.chain?.id,
+  })
 
   const { sendTransaction } = useNewSendTransaction('Send')
   const toast = useToast()
   const [status, setStatus] = useState('confirm')
   useEffect(() => {
-    // todo ...
-    // getFastConnection()
+    getFastConnection()
     return () => {
       setStatus('confirm')
     }
@@ -241,16 +241,13 @@ function ConfirmSendBtn({
               return await sendTransaction({ params })
             }
             case Web3Type.SOL:
-            // params.contract = token?.address
-            // return sendTransaction(params)
-            // return sendSolTransaction({
-            //   fromAddress,
-            //   toAddress,
-            //   value: parseUnits(amount, token?.decimals || 9),
-            //   contract: token?.address,
-            //   token,
-            //   feesQuery,
-            // })
+              return sendSolTransaction({
+                fromAddress,
+                toAddress,
+                value: parseUnits(amount, token?.decimals || 9),
+                contract: token?.address,
+                token,
+              })
             // case Web3Type.BTC:
             //   return (
             //     walletBtcType &&

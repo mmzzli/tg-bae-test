@@ -130,7 +130,7 @@ function InputAmount() {
       }
       return 2
     })(),
-    feeModeParams: FeeMode.FAST,
+    feeModeParams: FeeMode.SLOW,
     gasMagnMode: true,
   })
 
@@ -231,14 +231,7 @@ function InputAmount() {
     } else {
       return new BigNumber(nativeToken?.formatted || '0').minus(reserveGasFee).lte(gasFeeBigNumber)
     }
-  }, [
-    tokenInfo?.isNative,
-    formattedBigNnumber,
-    gasFeeBigNumber,
-    inputAmountBigNumber,
-    nativeToken?.formatted,
-    reserveGasFee,
-  ])
+  }, [tokenInfo, nativeToken, gasFeeBigNumber, inputAmount])
 
   // const isDuckChainDS =
   //   tokenInfo?.chainId === chains.duckChain.id &&

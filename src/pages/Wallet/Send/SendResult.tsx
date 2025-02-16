@@ -55,12 +55,14 @@ export default function SendResult() {
               height="52px"
             />
             {/* )} */}
-            <BaseButton
-              text="Got it"
-              handler={() => navigate('/')}
-              height="52px"
-              className={clsx('bg-btn  !text-t1', lightTheme ? '!bg-bg3' : '!bg-t3')}
-            />
+
+            <button
+              className="rounded-[42px] bg-bg3 flex items-center justify-center w-full text-sm font-semibold"
+              style={{ height: '52px' }}
+              onClick={() => navigate('/wallet')}
+            >
+              Got it
+            </button>
           </div>
         </div>
       </TContainer>

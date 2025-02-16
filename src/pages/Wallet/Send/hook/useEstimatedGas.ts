@@ -183,14 +183,14 @@ const useEstimatedGas = ({
           })()
         }
 
-        // case Web3Type.SOL: {
-        //   const totalFee = '5000'
-        //   //sol can only estimated baseFee
-        //   return formatUnits(
-        //     BigInt(totalFee || '0') * 10n,
-        //     chains.solana.chain?.nativeCurrency.decimals
-        //   )
-        // }
+        case Web3Type.SOL: {
+          const totalFee = '5000'
+          //sol can only estimated baseFee
+          return formatUnits(
+            BigInt(totalFee || '0') * 10n,
+            chains.solana.chain?.nativeCurrency.decimals
+          )
+        }
         // case Web3Type.TRON:
         //   return await getTronGas({ ...params, fromAddress: tronAddress })
         // case Web3Type.SUI: {

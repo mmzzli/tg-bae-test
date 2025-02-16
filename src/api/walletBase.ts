@@ -69,9 +69,9 @@ class WalletHttpClient {
         const { code, message, msg, success, result } = data
 
         if (code >= 500) {
-        //   const config = response.config as RequestConfig
-        //   !config.skipErrorHandler && this.showToast(message || msg || 'Server Error', 'error')
-        //   return Promise.reject(new Error(message || msg))
+          //   const config = response.config as RequestConfig
+          //   !config.skipErrorHandler && this.showToast(message || msg || 'Server Error', 'error')
+          //   return Promise.reject(new Error(message || msg))
         }
 
         if (code === 212) {
@@ -145,3 +145,7 @@ export const walletPost = walletClient.post.bind(walletClient)
 const tomoTgClient = new WalletHttpClient(import.meta.env.VITE_AVPIM_API, getStoreToken)
 export const tomoTgGet = tomoTgClient.get.bind(tomoTgClient)
 export const tomoTgPost = tomoTgClient.post.bind(tomoTgClient)
+
+const tomoAuthClient = new WalletHttpClient(import.meta.env.VITE_AVPIM_API, getStoreToken)
+export const tomoAuthGet = tomoAuthClient.get.bind(tomoAuthClient)
+export const tomoAuthPost = tomoAuthClient.post.bind(tomoAuthClient)

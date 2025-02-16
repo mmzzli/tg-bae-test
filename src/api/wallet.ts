@@ -1,6 +1,14 @@
 import { IOKXHistoryType, TokenOkx, UserState, UserType } from '@/store/wallet/type'
-import { WalletApiResponse, walletGet, walletPost, tomoTgGet, tomoTgPost } from './walletBase'
+import {
+  WalletApiResponse,
+  walletGet,
+  walletPost,
+  tomoTgGet,
+  tomoTgPost,
+  tomoAuthPost,
+} from './walletBase'
 import { errorContents } from '@/store/wallet/config/const'
+import { IChainId } from '@/store/wallet/chainType'
 
 export const getAllHistoryByAccount = async (params: {
   accountId: string
@@ -201,4 +209,42 @@ export const solSignRawTransaction = async (params: SolSendTx) => {
     return Promise.reject(message ? message : errorContents.transactionError)
   })
   return data
+}
+
+export const signEvmTransaction = async (
+  mfa: string,
+  data: {
+    transaction: {
+      data: string | undefined
+      gas: string | undefined
+      gasPrice: string | undefined
+      maxFeePerGas: string | undefined
+      maxPriorityFeePerGas: string | undefined
+      nonce: number | undefined
+      to: string | undefined
+      value: string | undefined
+    }
+    chainId: IChainId
+  }
+) => {
+  return await walletPost<WalletApiResponse>(
+    'socialLogin/projectWallet/ethereum/signTransaction',
+    data,
+    {
+      headers: {
+        mfa: mfa,
+      },
+    }
+  )
+}
+
+export const v1AddAssetApi = async (data: {
+  chain_id: number
+  decimals: number
+  image?: string
+  name?: string
+  symbol: string
+  token: string
+}) => {
+  return await tomoAuthPost<WalletApiResponse>('v1/asset/add', data)
 }

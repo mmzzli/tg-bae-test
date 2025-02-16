@@ -1,26 +1,24 @@
+import { formatUnits } from 'viem'
 import {
   createSigningTransaction,
   getTonWebAsync,
   mockTonChainId,
-  pushTonTx,
   sendMessageFee,
   sendTransaction,
   TonSendTransactionParams,
   TonSigningTransactionType,
 } from '@/store/wallet/config/ton'
 import { AssetsToken } from '@/store/wallet/tokenType/AssetsToken'
-import { Aggregator, ApiParams, IHistoryType } from '@/store/wallet/type'
-import { useMfa } from '../Account/hooks/useMfa'
-import useTonTransactions from './useTonTransactions'
-import { formatUnits } from 'viem'
-// import { tonSignMessage } from '@tomo-inc/tomo-telegram-sdk/dist/api'
-import { setPassKey } from '@/components/tmd/utils/crypto'
-import chains from '@/store/wallet/chains'
+import { Aggregator, IHistoryType } from '@/store/wallet/type'
 import { useToast } from '@chakra-ui/react'
-import { CustomToast, typeOptions } from '@/components/comm/Toast'
-import { errorContents } from '@/config/wallet/const'
-import { tonSignMessage } from '@/api/wallet'
+import { useMfa } from '../Account/hooks/useMfa'
 import useTransactions from '@/store/wallet/hooks/useTransactions'
+import useTonTransactions from './useTonTransactions'
+import { setPassKey } from '@/components/tmd/utils/crypto'
+import { tonSignMessage, v1AddAssetApi } from '@/api/wallet'
+import { allChains } from '@/store/wallet/chains'
+import { CustomToast, typeOptions } from '@/components/comm/Toast'
+import { useTokenStore } from '@/store/wallet/walletToken'
 
 type ITonSigningType = {
   token: AssetsToken | undefined
@@ -50,6 +48,7 @@ const useTonTransaction = (transInfo: ITonSigningType) => {
   // const { tonPublicKey } = useLoginInfo()
   const { waitForTonTransactionSuccess } = useTonTransactions()
   const toast = useToast()
+  const { refreshTokenStore } = useTokenStore()
 
   const handleTransferMessage = async (data?: TonSendTransactionParams) => {
     try {
@@ -86,8 +85,9 @@ const useTonTransaction = (transInfo: ITonSigningType) => {
 
       const { mfa } = mfaRes
       // console.log('mfa', mfa)
+
       if (!mfa) {
-        return { success: false, data: '' }
+        return { success: false, data: 'cancelled' }
       }
       setPassKey(mfa)
       console.log({
@@ -126,23 +126,15 @@ const useTonTransaction = (transInfo: ITonSigningType) => {
 
   const handleTransferSend = async (
     signedTransaction: string,
-    transaction?: TonTransactionType,
-    apiParams?: ApiParams
+    transaction?: TonTransactionType
   ) => {
     try {
-      // pushTonTx
-      const hash = await pushTonTx({
-        signedTransaction,
-        apiParams,
-      })
-      // const tranRes = await sendTransaction(signedTransaction)
-
-      if (hash) {
-        // const chain = allChains.find((chain) => chain.type === 'TON')
-        const chain = chains.ton
+      const tranRes = await sendTransaction(signedTransaction)
+      if (tranRes && tranRes['@type'] == 'ok') {
+        const chain = allChains.find((chain) => chain.type === 'TON')
         const success = await waitForTonTransactionSuccess({
           address: transInfo.fromAddress,
-          msgHash: hash,
+          msgHash: tranRes.msgHash,
         })
         // console.log('chainchainchain', chain, chains)
         const historySave: IHistoryType = {
@@ -178,7 +170,7 @@ const useTonTransaction = (transInfo: ITonSigningType) => {
           },
           nonce: Number(transInfo.memo),
           time: new Date().getTime(),
-          hash: hash,
+          hash: tranRes.msgHash,
           historyType: transaction?.historyType ? transaction.historyType : 'Send',
           chain: chain,
           type: transaction?.type,
@@ -192,28 +184,28 @@ const useTonTransaction = (transInfo: ITonSigningType) => {
             chainId,
           })
         }
+        const hash = tranRes.msgHash
         if (hash) {
           const chainId = mockTonChainId
           const token = historySave.toSwapTokens?.token
           if (token && token?.address && chainId) {
-            // await v1AddAssetApi({
-            //   chain_id: chainId,
-            //   decimals: token.decimals,
-            //   image: token.image,
-            //   name: token.symbol,
-            //   symbol: token.symbol,
-            //   token: token.address,
-            // })
-            // tokenStore.refreshTokenList(new Date().getTime())
+            await v1AddAssetApi({
+              chain_id: chainId,
+              decimals: token.decimals,
+              image: token.image,
+              name: token.symbol,
+              symbol: token.symbol,
+              token: token.address,
+            })
+            refreshTokenStore()
           }
         }
-        return hash
+        return { result: tranRes }
       }
     } catch (error: any) {
       console.warn({
         error,
       })
-      // TToast.error(error.message ? error.message : error)
       toast({
         render: () => {
           return (

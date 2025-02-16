@@ -1,6 +1,3 @@
-// import { ITomoToken } from '@/constants/types'
-// import { AssetsToken } from '@/stores/tokenStore/type/AssetsToken'
-// import { APIToken } from '@/stores/tokenStore/type/APIToken'
 import { APIToken } from '@/store/wallet/tokenType/APIToken'
 import { AssetsToken } from '@/store/wallet/tokenType/AssetsToken'
 import { ITomoToken } from '@/store/wallet/type'

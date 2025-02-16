@@ -32,6 +32,8 @@ import { getChainByChainId } from '@/store/wallet/util/tokenHelper'
 import { Web3Type } from '@/store/wallet/chainType'
 import useTonTransaction from './useTonTransaction'
 import sendTon from '../utils/sendTransaction/sendTon'
+import sendEvm from '../utils/sendTransaction/sendEvm'
+import useTransactions from '@/store/wallet/hooks/useTransactions'
 
 export type GetMfaParamsType = (params: {
   content: any
@@ -47,7 +49,7 @@ export const useNewSendTransaction = (type: 'Send' | 'Swap' | 'Gift') => {
   const { walletUserInfo } = useUserStore()
   const { tonAddress, tonAddressTest, tonPublicKey, ethereumAddress: evmAddress } = walletUserInfo
   // todo...
-  // const { addTx: setTransactionHistory } = useTransactions()
+  const { addTx: setTransactionHistory } = useTransactions()
   // const [, setApproveHash] = useAtom(approveHashAtom)
   // const { setStatus } = useSwapStore()
   const { feeMode } = useCommonStore()
@@ -80,115 +82,43 @@ export const useNewSendTransaction = (type: 'Send' | 'Swap' | 'Gift') => {
     params: DexTransaction
     init?: () => void
   }) => {
-    // return testApproveErc20(params, getMfaParams, setApproveHash, setStatus)
-    // todo ....
     // if (params?.needApprove) {
     //   if (params.fromToken.chain === 'TRON') {
-    //     return approveTRC20({
-    //       params,
-    //       getMfaParams,
-    //       setTransactionHistory,
-    //       setApproveHash,
-    //       setStatus,
-    //       user: userStore.userInfo,
-    //       init,
-    //     })
+    //     return approveTRC20(params, getMfaParams, setTransactionHistory, setApproveHash, setStatus)
     //   }
-    //   return await approveErc20({
-    //     params,
-    //     getMfaParams,
-    //     setApproveHash,
-    //     setStatus,
-    //     feeMode,
-    //     user: userStore.userInfo,
-    //     init,
-    //   })
+    //   return await approveErc20(params, getMfaParams, setApproveHash, setStatus)
     // }
     const currentChain = getChainByChainId(params.fromToken.chainId)
+
     switch (currentChain?.type) {
-      // case Web3Type.EVM:
-      //   return sendEvm({
-      //     params,
-      //     getMfaParams,
-      //     type,
-      //     setTransactionHistory,
-      //     evmAddress,
-      //     feeMode,
-      //     user: userStore.userInfo,
-      //     init,
-      //   })
+      case Web3Type.EVM:
+        return sendEvm(params, getMfaParams, type, setTransactionHistory, evmAddress, feeMode)
       // case Web3Type.BTC:
-      //   return sendBtc({
-      //     params,
-      //     getMfaParams,
-      //     type,
-      //     setTransactionHistory,
-      //     user: userStore.userInfo,
-      //     init,
-      //   })
+      //   return sendBtc(params, getMfaParams, type, setTransactionHistory)
       case Web3Type.TON:
-        return sendTon({
-          params: { ...tonTransData, ...params },
+        return sendTon(
+          { ...tonTransData, ...params },
           handleTransferMessage,
           handleTransferSend,
-          type,
-          user: walletUserInfo,
-          init,
-        })
+          type
+        )
       // case Web3Type.TONTEST:
-      //   return sendTonTestnet({
-      //     params: { ...tonTestnetTransData, ...params },
-      //     handleTransferMessage: handleTransferMessageTest,
-      //     handleTransferSend: handleTransferSendTest as any,
-      //     type,
-      //     user: userStore.userInfo,
-      //     init,
-      //   })
+      //   return sendTonTestnet(
+      //     { ...tonTestnetTransData, ...params },
+      //     handleTransferMessageTest,
+      //     handleTransferSendTest,
+      //     type
+      //   )
       // case Web3Type.TRON:
-      //   return await sendTron({
-      //     params,
-      //     getMfaParams,
-      //     type,
-      //     setTransactionHistory,
-      //     user: userStore.userInfo,
-      //     init,
-      //   })
+      //   return await sendTron(params, getMfaParams, type, setTransactionHistory)
       // case Web3Type.SOL:
-      //   return await sendSol({
-      //     params,
-      //     getMfaParams,
-      //     type,
-      //     setTransactionHistory,
-      //     user: userStore.userInfo,
-      //     init,
-      //   })
+      //   return await sendSol(params, getMfaParams, type, setTransactionHistory)
       // case Web3Type.SUI:
-      //   return await sendSui({
-      //     params,
-      //     getMfaParams,
-      //     type,
-      //     setTransactionHistory,
-      //     user: userStore.userInfo,
-      //     init,
-      //   })
+      //   return await sendSui(params, getMfaParams, type, setTransactionHistory)
       // case Web3Type.COSMOS:
-      //   return await sendCosmos({
-      //     params,
-      //     getMfaParams,
-      //     type,
-      //     setTransactionHistory,
-      //     user: userStore.userInfo,
-      //     init,
-      //   })
+      //   return await sendCosmos(params, getMfaParams, type, setTransactionHistory)
       // case Web3Type.DOGE:
-      //   return await sendDoge({
-      //     params,
-      //     getMfaParams,
-      //     type,
-      //     setTransactionHistory,
-      //     user: userStore.userInfo,
-      //     init,
-      //   })
+      //   return await sendDoge(params, getMfaParams, type, setTransactionHistory)
     }
   }
 

@@ -5,34 +5,42 @@ import { useInitData } from '@vkruglikov/react-telegram-web-app'
 import { retrieveLaunchParams } from '@telegram-apps/sdk'
 import { DEV_INIT_DATA_RAW } from '@/utils/constants'
 import useInitUser from '@/store/wallet/hooks/useInitUser'
+import { getCacheTokens } from '@/store/wallet/util/tokenHelper'
 
 export const useAccount = () => {
   const [initDataUnsafe] = useInitData()
 
   const [status, setStatus] = useState<'disconnected' | 'connected'>('disconnected')
-  const [address, setAddress] = useState('')
+  const [address, setAddress] = useState<`0x${string}` | undefined>(undefined)
+  const [solAddress, setSolAddress] = useState<string | undefined>(undefined)
+  const [tonAddress, setTonAddress] = useState<string | undefined>(undefined)
 
   useEffect(() => {
     const walletUserState: UserState = initUserState()
     const walletUserInfo: UserType = initUserInfo()
+    debugger
     if (
       walletUserState.tgId &&
       walletUserState.tgId === initDataUnsafe?.user?.id &&
       walletUserInfo.ethereumAddress
     ) {
       setStatus('connected')
-      setAddress(walletUserInfo.ethereumAddress)
+      setAddress(walletUserInfo.ethereumAddress as `0x${string}`)
+      setSolAddress(walletUserInfo.solanaAddress)
+      setTonAddress(walletUserInfo.tonAddress)
     }
   }, [])
 
   return {
     status,
     address,
+    solAddress,
+    tonAddress,
   }
 }
 
 export const useConnect = () => {
-  const [connectStatus, setConnectStatus] = useState< 'connecting' | 'waiting'>('waiting')
+  const [connectStatus, setConnectStatus] = useState<'connecting' | 'waiting'>('waiting')
   const { tgLogin, getUserInfo } = useInitUser()
   const connect = async () => {
     setConnectStatus('connecting')
@@ -51,6 +59,17 @@ export const useConnect = () => {
 
   return {
     connect,
-    connectStatus
+    connectStatus,
   }
+}
+
+export const useBalance = (address: string | undefined, chainId: number, tokenAddress: string | undefined) => {
+  const list = getCacheTokens() || []
+  const find = list.find((i) => {
+    if (tokenAddress) {
+      return i.address?.toLowerCase() === tokenAddress?.toLowerCase() && i.chainId === chainId
+    }
+    return i.address === '' && i.chainId === chainId
+  })
+  return find
 }

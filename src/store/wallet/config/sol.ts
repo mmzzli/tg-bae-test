@@ -22,12 +22,13 @@ import { solSignRawTransaction } from '@/api/wallet'
 //@ts-ignore
 import { JitoJsonRpcClient } from 'jito-js-rpc'
 import bs58 from 'bs58'
-import { getSolFeeByFeeMode, getSolFeeEstimate } from '@/api/solHelius'
+// import { getSolFeeByFeeMode, getSolFeeEstimate } from '@/api/solHelius'
 import { formatUnits } from 'viem'
 import { AssetsToken } from '../tokenType/AssetsToken'
 import { sleep } from '../util'
 import chains from '../chains'
 import { FeeMode } from '@/pages/Wallet/components/FeeSelect'
+import { Buffer } from 'buffer'
 
 let connection: Connection
 export const SolMainAddress = '11111111111111111111111111111111'
@@ -40,9 +41,9 @@ export const jitoRpc = 'https://mainnet.block-engine.jito.wtf/api/v1'
 
 // sol rpcs
 export const solEndpoints = [
-  {
-    url: 'https://mainnet.helius-rpc.com/?api-key=ac6f0298-d53b-4a04-8389-7966584a67d1'
-  },
+  // {
+  //   url: 'https://mainnet.helius-rpc.com/?api-key=ac6f0298-d53b-4a04-8389-7966584a67d1'
+  // },
   {
     url: 'https://empty-smart-wildflower.solana-mainnet.quiknode.pro/ebfb8013883fffdaf5a64952fd6c8b2b2bf3cea8'
   },
@@ -145,6 +146,7 @@ export async function sendSolTx(
     // const txHex = tx
     //   .serialize({ requireAllSignatures: false, verifySignatures: false })
     //   .toString('hex')
+    debugger
     return {
       transaction: Buffer.from(transaction.transaction.serialize()).toString(
         'hex'
@@ -153,6 +155,7 @@ export async function sendSolTx(
       fees: transaction.fees
     }
   } catch (e) {
+    debugger
     return null
   }
 }
@@ -168,6 +171,7 @@ export const getPriorityFee = async (params: {
   let txStr
   const feeMode = params.feeMode || FeeMode.AVERAGE
   if (!params.contract) {
+    debugger
     txStr = await sendSolTx(
       params.fromAddress || "", // my Address
       params.toAddress, // toAddress
@@ -176,6 +180,7 @@ export const getPriorityFee = async (params: {
       feeMode
     )
   } else {
+    debugger
     txStr = await getSendSplToken(
       params.contract,
       params.fromAddress,
@@ -542,7 +547,7 @@ export const sendRawTransactionByStatus = async ({
     const signRes = await solSignRawTransaction({
       rawTransaction: tx ?? ''
     })
-
+    debugger
     const transactionBuffer = Buffer.from(signRes.result, 'hex')
 
     return {
@@ -794,12 +799,14 @@ export const addPriorityFeeToTransaction = async ({
       units: computeUnitLimit
     })
 
-    const feeEstimate = await getSolFeeEstimate(result)
+    // const feeEstimate = await getSolFeeEstimate(result)
 
-    const { fee, modeFees } = getSolFeeByFeeMode({
-      fees: feeEstimate,
-      feeMode: feeMode
-    })
+    // const { fee, modeFees } = getSolFeeByFeeMode({
+    //   fees: feeEstimate,
+    //   feeMode: feeMode
+    // })
+    const fee = 100_000
+    const modeFees = undefined
 
     if (!fee) {
       throw new Error(errorContents.gasError)
@@ -820,17 +827,21 @@ export const addPriorityFeeToTransaction = async ({
       fees: modeFees
     }
   } catch (error) {
+    debugger
     // TransactionMessage
     const tx = transaction as TransactionMessage
 
-    const feeEstimate = await getSolFeeEstimate(
-      new VersionedTransaction(tx.compileToV0Message()).serialize()
-    )
+    // const feeEstimate = await getSolFeeEstimate(
+    //   new VersionedTransaction(tx.compileToV0Message()).serialize()
+    // )
 
-    const { fee, modeFees } = getSolFeeByFeeMode({
-      fees: feeEstimate,
-      feeMode: feeMode
-    })
+    // const { fee, modeFees } = getSolFeeByFeeMode({
+    //   fees: feeEstimate,
+    //   feeMode: feeMode
+    // })
+
+    const fee = 100_000
+    const modeFees = undefined
     // const fees = await connection.getFeeForMessage(tx.compileToV0Message())
 
     // const fee = fees.value

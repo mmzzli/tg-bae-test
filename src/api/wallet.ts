@@ -1,4 +1,4 @@
-import { IOKXHistoryType, TokenOkx, UserState, UserType } from '@/store/wallet/type'
+import { IOKXHistoryType, SolSendTx, TokenOkx, UserState, UserType } from '@/store/wallet/type'
 import {
   WalletApiResponse,
   walletGet,
@@ -201,7 +201,7 @@ export const postSendPoint = async (data: {
 }
 
 export const solSignRawTransaction = async (params: SolSendTx) => {
-  const { data } = await walletPost(
+  const data = await walletPost<WalletApiResponse>(
     `/socialLogin/projectWallet/solana/signRawTransaction`,
     params
   ).catch((error) => {

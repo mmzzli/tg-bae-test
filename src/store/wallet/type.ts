@@ -391,3 +391,7 @@ export type ApiParams = {
   params: DexTransaction
   init?: () => void
 }
+
+export interface SolSendTx {
+  rawTransaction: string
+}

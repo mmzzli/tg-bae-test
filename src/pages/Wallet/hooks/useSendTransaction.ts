@@ -58,6 +58,16 @@ import useTransactions from '@/store/wallet/hooks/useTransactions'
 import { useCommonStore } from '@/store/wallet/walletCommon'
 import { useMfa } from '../Account/hooks/useMfa'
 import { AssetsToken } from '@/store/wallet/tokenType/AssetsToken'
+import {
+  getSendSplToken,
+  mockSolEvmChainId,
+  sendRawTransactionByStatus,
+  sendSolTx,
+} from '@/store/wallet/config/sol'
+import { setPassKey } from '@/components/tmd/utils/crypto'
+import { Web3Type } from '@/store/wallet/chainType'
+import { allChains } from '@/store/wallet/chains'
+import { IHistoryType } from '@/store/wallet/type'
 
 // import { TToast } from '@/components/tmd'
 // import { errorContents } from '@/config/const'
@@ -282,104 +292,105 @@ const useSendTransaction = ({ chainId }: { chainId?: number | undefined }) => {
     contract?: string
     token?: AssetsToken | undefined
   }) => {
-    // try {
-    //   if (params.value && params.fromAddress) {
-    //     let txStr
-    //     const mfaRes = await getMfaParams({
-    //       content: 'transaction',
-    //       chainid: mockSolEvmChainId,
-    //     })
-    //     if (!params.contract) {
-    //       txStr = await sendSolTx(
-    //         params.fromAddress, // my Address
-    //         params.toAddress, // toAddress
-    //         params.value || 0n, //value
-    //         // signData.txMeta.mintAddress // contract Address
-    //         feeMode
-    //       )
-    //     } else {
-    //       txStr = await getSendSplToken(
-    //         params.contract,
-    //         params.fromAddress,
-    //         params.toAddress,
-    //         params.value,
-    //         feeMode
-    //       )
-    //     }
-    //     if (mfaRes.mfa) {
-    //       setPassKey(mfaRes.mfa)
-    //       // const signRes = await solSignRawTransaction({
-    //       //   rawTransaction: txStr ?? ''
-    //       // })
-    //       if (txStr) {
-    //         const hash = await sendRawTransactionByStatus({
-    //           transaction: txStr.transaction,
-    //           fromAddress: params.fromAddress,
-    //         })
-    //         if (!hash) {
-    //           return
-    //         }
-    //         const chain = allChains.find((chain) => chain.type === Web3Type.SOL)
-    //         const chainId = mockSolEvmChainId
-    //         const historySave: IHistoryType = {
-    //           fromAddress: params?.fromAddress,
-    //           toAddress: params?.toAddress,
-    //           fromAmount: params?.value?.toString(),
-    //           toAmount: params?.value?.toString() || '0',
-    //           fromSwapTokens: {
-    //             token: {
-    //               ...params.token,
-    //               balance: params.token?.balance?.toString() || '0',
-    //               balanceItem: undefined,
-    //             },
-    //             chain: chain,
-    //             balance: undefined,
-    //           },
-    //           toSwapTokens: {
-    //             token: {
-    //               ...params.token,
-    //               balance: params.token?.balance?.toString() || '0',
-    //               balanceItem: undefined,
-    //             },
-    //             chain: chain,
-    //             balance: undefined,
-    //           },
-    //           nonce: new Date().getTime(),
-    //           time: new Date().getTime(),
-    //           hash: hash,
-    //           historyType: 'Send',
-    //           chain: chain,
-    //           status: 'pending',
-    //         }
-    //         console.log({
-    //           historySave,
-    //         })
-    //         if (typeof chainId === 'number') {
-    //           setTransactionHistory({
-    //             history: historySave,
-    //             chainId,
-    //           })
-    //         }
-    //         if (hash) {
-    //           return hash
-    //         }
-    //       }
-    //     }
-    //   }
-    // } catch (error) {
-    //   console.error(error)
-    //   if (isError(error)) {
-    //     const extra = {
-    //       type: 'Send',
-    //       params,
-    //       error: JSON.stringify(error),
-    //     }
-    //     loggerT.fatal('Send', 'send sol transaction err', error, {
-    //       extra: extra,
-    //     })
-    //   }
-    //   throw error // unnecessary throw ? TODO
-    // }
+    try {
+      if (params.value && params.fromAddress) {
+        let txStr
+        const mfaRes = await getMfaParams({
+          content: 'transaction',
+          chainid: mockSolEvmChainId,
+        })
+        if (!params.contract) {
+          txStr = await sendSolTx(
+            params.fromAddress, // my Address
+            params.toAddress, // toAddress
+            params.value || 0n, //value
+            // signData.txMeta.mintAddress // contract Address
+            feeMode
+          )
+        } else {
+          txStr = await getSendSplToken(
+            params.contract,
+            params.fromAddress,
+            params.toAddress,
+            params.value,
+            feeMode
+          )
+        }
+
+        if (mfaRes.mfa) {
+          setPassKey(mfaRes.mfa)
+          // const signRes = await solSignRawTransaction({
+          //   rawTransaction: txStr ?? ''
+          // })
+          if (txStr) {
+            const hash = await sendRawTransactionByStatus({
+              transaction: txStr.transaction,
+              fromAddress: params.fromAddress,
+            })
+            if (!hash) {
+              return
+            }
+            const chain = allChains.find((chain) => chain.type === Web3Type.SOL)
+            const chainId = mockSolEvmChainId
+            const historySave: IHistoryType = {
+              fromAddress: params?.fromAddress,
+              toAddress: params?.toAddress,
+              fromAmount: params?.value?.toString(),
+              toAmount: params?.value?.toString() || '0',
+              fromSwapTokens: {
+                token: {
+                  ...params.token,
+                  balance: params.token?.balance?.toString() || '0',
+                  balanceItem: undefined,
+                },
+                chain: chain,
+                balance: undefined,
+              },
+              toSwapTokens: {
+                token: {
+                  ...params.token,
+                  balance: params.token?.balance?.toString() || '0',
+                  balanceItem: undefined,
+                },
+                chain: chain,
+                balance: undefined,
+              },
+              nonce: new Date().getTime(),
+              time: new Date().getTime(),
+              hash: hash,
+              historyType: 'Send',
+              chain: chain,
+              status: 'pending',
+            }
+            console.log({
+              historySave,
+            })
+            if (typeof chainId === 'number') {
+              setTransactionHistory({
+                history: historySave,
+                chainId,
+              })
+            }
+            if (hash) {
+              return hash
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error(error)
+      // if (isError(error)) {
+      //   const extra = {
+      //     type: 'Send',
+      //     params,
+      //     error: JSON.stringify(error),
+      //   }
+      //   loggerT.fatal('Send', 'send sol transaction err', error, {
+      //     extra: extra,
+      //   })
+      // }
+      throw error // unnecessary throw ? TODO
+    }
   }
 
   // const sendBtcTransaction = async (params: {

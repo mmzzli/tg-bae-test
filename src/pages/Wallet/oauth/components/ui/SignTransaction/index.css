@@ -1,0 +1,13 @@
+.sign-transaction-raw-data-popover {
+  .adm-popover-inner-content {
+    background: #fff4e4;
+    white-space: pre-line;
+    color: #333;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: normal;
+  }
+  .adm-popover-arrow {
+    color: #fff4e4!important;
+  }
+}

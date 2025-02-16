@@ -15,3 +15,7 @@ export const shortenAddress = (
     address && `${address.slice(0, start || 8)}...${address.slice(-(end || 8))}`
   )
 }
+
+export const getMethodInfo = (methodString: string) => {
+  return methodString.split('_') || []
+}

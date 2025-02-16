@@ -314,7 +314,7 @@ export const SendRewardButton = ({
       return slideButtonRef.current?.reset()
     }
 
-    await switchChain()
+    // await switchChain()
 
     if (tokenAddress !== '0x0000000000000000000000000000000000000000' && needApprove) {
       console.warn('Approve:', tokenAddress as `0x${string}`, parseUnits(amount, decimals))

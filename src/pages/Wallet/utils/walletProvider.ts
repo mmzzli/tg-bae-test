@@ -6,6 +6,7 @@ import { retrieveLaunchParams } from '@telegram-apps/sdk'
 import { DEV_INIT_DATA_RAW } from '@/utils/constants'
 import useInitUser from '@/store/wallet/hooks/useInitUser'
 import { getCacheTokens } from '@/store/wallet/util/tokenHelper'
+import { useTokenStore } from '@/store/wallet/walletToken'
 
 export const useAccount = () => {
   const [initDataUnsafe] = useInitData()
@@ -18,7 +19,6 @@ export const useAccount = () => {
   useEffect(() => {
     const walletUserState: UserState = initUserState()
     const walletUserInfo: UserType = initUserInfo()
-    debugger
     if (
       walletUserState.tgId &&
       walletUserState.tgId === initDataUnsafe?.user?.id &&
@@ -72,4 +72,9 @@ export const useBalance = (address: string | undefined, chainId: number, tokenAd
     return i.address === '' && i.chainId === chainId
   })
   return find
+}
+
+export const userefetchBalance = () => {
+  const { refreshTokenStore } = useTokenStore()
+  return { refreshTokenStore }
 }

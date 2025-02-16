@@ -68,6 +68,7 @@ import { setPassKey } from '@/components/tmd/utils/crypto'
 import { Web3Type } from '@/store/wallet/chainType'
 import { allChains } from '@/store/wallet/chains'
 import { IHistoryType } from '@/store/wallet/type'
+import { Buffer } from 'buffer'
 
 // import { TToast } from '@/components/tmd'
 // import { errorContents } from '@/config/const'

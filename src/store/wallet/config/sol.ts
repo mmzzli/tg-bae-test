@@ -8,14 +8,14 @@ import {
   VersionedTransaction,
   ComputeBudgetProgram,
   ComputeBudgetInstruction,
-  Message
+  Message,
 } from '@solana/web3.js'
 import {
   getAssociatedTokenAddress,
   createAssociatedTokenAccountInstruction,
   TOKEN_PROGRAM_ID,
   ASSOCIATED_TOKEN_PROGRAM_ID,
-  createTransferCheckedInstruction
+  createTransferCheckedInstruction,
 } from '@solana/spl-token'
 import { errorContents } from './const'
 import { solSignRawTransaction } from '@/api/wallet'
@@ -45,11 +45,11 @@ export const solEndpoints = [
   //   url: 'https://mainnet.helius-rpc.com/?api-key=ac6f0298-d53b-4a04-8389-7966584a67d1'
   // },
   {
-    url: 'https://empty-smart-wildflower.solana-mainnet.quiknode.pro/ebfb8013883fffdaf5a64952fd6c8b2b2bf3cea8'
+    url: 'https://empty-smart-wildflower.solana-mainnet.quiknode.pro/ebfb8013883fffdaf5a64952fd6c8b2b2bf3cea8',
   },
   {
-    url: 'https://solana-api.projectserum.com'
-  }
+    url: 'https://solana-api.projectserum.com',
+  },
 ]
 
 export const solEndpoint = solEndpoints[0].url
@@ -62,14 +62,10 @@ export const solEndpoint = solEndpoints[0].url
 // 'https://rpc.ankr.com/solana/ac79e83cf02a544dbb9b3f4c5d5478b2510b921e7d5739ded8791a932e8de0a6'
 
 export const getFastConnection = async () => {
-  const connections = solEndpoints.map(
-    (endpoint) => new Connection(endpoint.url)
-  )
+  const connections = solEndpoints.map((endpoint) => new Connection(endpoint.url))
 
   const fastConnection = await Promise.any(
-    connections.map((connection) =>
-      connection.getEpochInfo().then(() => connection)
-    )
+    connections.map((connection) => connection.getEpochInfo().then(() => connection))
   )
   console.log('fastSolConnection', fastConnection)
 
@@ -118,24 +114,23 @@ export async function sendSolTx(
     //   tx.feePayer = fromPublicKey
     // }
 
-    const recentBlockhash = (await connection.getLatestBlockhash('finalized'))
-      .blockhash
+    const recentBlockhash = (await connection.getLatestBlockhash('finalized')).blockhash
 
     const instruction = SystemProgram.transfer({
       fromPubkey: fromPublicKey,
       toPubkey: toPublicKey,
-      lamports: amount
+      lamports: amount,
     })
 
     const messageV0 = new TransactionMessage({
       payerKey: fromPublicKey,
       recentBlockhash,
-      instructions: [instruction]
+      instructions: [instruction],
     })
 
     const transaction = await addPriorityFeeToTransaction({
       transaction: messageV0,
-      feeMode
+      feeMode,
     })
 
     if (!transaction) {
@@ -146,16 +141,13 @@ export async function sendSolTx(
     // const txHex = tx
     //   .serialize({ requireAllSignatures: false, verifySignatures: false })
     //   .toString('hex')
-    debugger
+
     return {
-      transaction: Buffer.from(transaction.transaction.serialize()).toString(
-        'hex'
-      ),
+      transaction: Buffer.from(transaction.transaction.serialize()).toString('hex'),
       fee: transaction.fee,
-      fees: transaction.fees
+      fees: transaction.fees,
     }
   } catch (e) {
-    debugger
     return null
   }
 }
@@ -171,16 +163,14 @@ export const getPriorityFee = async (params: {
   let txStr
   const feeMode = params.feeMode || FeeMode.AVERAGE
   if (!params.contract) {
-    debugger
     txStr = await sendSolTx(
-      params.fromAddress || "", // my Address
+      params.fromAddress || '', // my Address
       params.toAddress, // toAddress
       params.value || 0n, //value
       // signData.txMeta.mintAddress // contract Address
       feeMode
     )
   } else {
-    debugger
     txStr = await getSendSplToken(
       params.contract,
       params.fromAddress,
@@ -200,16 +190,14 @@ export const getSolTokenDetail = async (mintAddress: string) => {
       'https://raw.githubusercontent.com/solana-labs/token-list/main/src/tokens/solana.tokenlist.json'
     const response = await fetch(TOKEN_LIST_URL)
     const tokenList = await response.json()
-    const tokenDetail = tokenList.tokens.find(
-      (token: any) => token.address === mintAddress
-    )
+    const tokenDetail = tokenList.tokens.find((token: any) => token.address === mintAddress)
     if (tokenDetail) {
       console.log('Token Symbol:', tokenDetail.symbol)
       console.log('Token Name:', tokenDetail.name)
       console.log('Token Decimals:', tokenDetail.decimals)
       return {
         symbol: tokenDetail.symbol,
-        decimals: tokenDetail.decimals
+        decimals: tokenDetail.decimals,
       }
     } else {
       console.log('Token not found in Token List')
@@ -238,7 +226,7 @@ export async function getSolTokenAccount(client: any, mint: any, owner: any) {
 }
 export const getSolBalance = async ({
   address,
-  token
+  token,
 }: {
   address: string | undefined
   token: string | undefined
@@ -260,14 +248,14 @@ export const getSolBalance = async ({
           amount: 0n,
           token,
           format: '0',
-          decimals: undefined
+          decimals: undefined,
         }
       } else {
         return {
           amount: BigInt(tokenAccount.value.amount) || 0n,
           format: tokenAccount.value.uiAmountString,
           decimals: tokenAccount.value.decimals,
-          token
+          token,
         }
       }
     } else {
@@ -286,13 +274,13 @@ function getInstructions(data: any) {
   const instruction = new TransactionInstruction({
     programId: new PublicKey(data.programId),
     data: Buffer.from(data.data),
-    keys: []
+    keys: [],
   })
   for (let j = 0; j < data.keys.length; j++) {
     instruction.keys.push({
       pubkey: new PublicKey(data.keys[j].pubkey),
       isSigner: data.keys[j].isSigner,
-      isWritable: data.keys[j].isWritable
+      isWritable: data.keys[j].isWritable,
     })
   }
   return instruction
@@ -304,7 +292,7 @@ export const ToSerializeTransaction = async (data: any) => {
   const txMsg = new TransactionMessage({
     recentBlockhash: data.tx.recentBlockhash,
     payerKey: new PublicKey(data.tx.from),
-    instructions: []
+    instructions: [],
   })
 
   for (let i = 0; i < data.tx.instructions.length; i++) {
@@ -315,15 +303,10 @@ export const ToSerializeTransaction = async (data: any) => {
     const tx = Transaction.populate(txMsg.compileToLegacyMessage())
 
     data.tx.signatures.forEach((signature: any) => {
-      tx.addSignature(
-        new PublicKey(signature.publicKey),
-        Buffer.from(signature.signature)
-      )
+      tx.addSignature(new PublicKey(signature.publicKey), Buffer.from(signature.signature))
     })
     // tx.message.recentBlockhash = recentBlockhash
-    return Buffer.from(tx.serialize({ requireAllSignatures: false })).toString(
-      'hex'
-    )
+    return Buffer.from(tx.serialize({ requireAllSignatures: false })).toString('hex')
   } else if (data.tx && data.tx.txType == 'VERSIONED') {
     const tx = VersionedTransaction.deserialize(data.tx.serializedMessage)
     // const tx = new VersionedTransaction(data.tx.serializedMessage)
@@ -351,10 +334,7 @@ export async function getSendSplToken(
   const toPublicKey = to && new PublicKey(to)
 
   if (mintPublicKey && fromPublicKey && toPublicKey && amount) {
-    const fromATA = await getAssociatedTokenAddress(
-      mintPublicKey,
-      fromPublicKey
-    )
+    const fromATA = await getAssociatedTokenAddress(mintPublicKey, fromPublicKey)
 
     const fromInfo = await connection.getAccountInfo(fromATA)
 
@@ -370,7 +350,7 @@ export async function getSendSplToken(
     const transaction = new TransactionMessage({
       payerKey: fromPublicKey,
       recentBlockhash: (await connection.getLatestBlockhash()).blockhash,
-      instructions: []
+      instructions: [],
     })
 
     const toATA = await getAssociatedTokenAddress(mintPublicKey, toPublicKey)
@@ -404,7 +384,7 @@ export async function getSendSplToken(
 
     const result = await addPriorityFeeToTransaction({
       transaction: transaction,
-      feeMode
+      feeMode,
     })
 
     // getSolGas(Buffer.from(versionedTransaction.serialize()).toString('hex'))
@@ -413,7 +393,7 @@ export async function getSendSplToken(
     return {
       transaction: Buffer.from(result.transaction.serialize()).toString('hex'),
       fee: result.fee,
-      fees: result.fees
+      fees: result.fees,
     }
   }
 
@@ -421,23 +401,18 @@ export async function getSendSplToken(
 }
 
 export const sendRawTransaction = async ({
-  signRes
+  signRes,
 }: {
   signRes: {
     result: string
   }
 }) => {
-  const hash = await getConnection().sendRawTransaction(
-    Buffer.from(signRes.result, 'hex')
-  )
+  const hash = await getConnection().sendRawTransaction(Buffer.from(signRes.result, 'hex'))
 
   return hash
 }
 
-async function isBlockhashExpired(
-  connection: Connection,
-  lastValidBlockHeight: number
-) {
+async function isBlockhashExpired(connection: Connection, lastValidBlockHeight: number) {
   const currentBlockHeight = await connection.getBlockHeight('finalized')
   console.log('                           ')
   console.log('Current Block height:             ', currentBlockHeight)
@@ -455,7 +430,7 @@ async function isBlockhashExpired(
 export const waitTxIdSuccess = async ({
   txId,
   START_TIME,
-  lastValidHeight
+  lastValidHeight,
 }: {
   txId: string
   START_TIME: Date
@@ -480,8 +455,7 @@ export const waitTxIdSuccess = async ({
     // Break loop if transaction has succeeded
     if (
       status &&
-      (status.confirmationStatus === 'confirmed' ||
-        status.confirmationStatus === 'finalized')
+      (status.confirmationStatus === 'confirmed' || status.confirmationStatus === 'finalized')
     ) {
       txSuccess = true
       const endTime = new Date()
@@ -510,7 +484,7 @@ export const waitTxIdSuccess = async ({
 export const sendRawTransactionByStatus = async ({
   transaction,
   fromAddress,
-  type = 'Default'
+  type = 'Default',
 }: {
   transaction: string | undefined
   fromAddress: string
@@ -521,8 +495,7 @@ export const sendRawTransactionByStatus = async ({
 
   const START_TIME = new Date()
   const getTransaction = async () => {
-    const blockhashResponse =
-      await connect.getLatestBlockhashAndContext('finalized')
+    const blockhashResponse = await connect.getLatestBlockhashAndContext('finalized')
     const lastValidHeight = blockhashResponse.value.lastValidBlockHeight
 
     if (!transaction) {
@@ -533,34 +506,30 @@ export const sendRawTransactionByStatus = async ({
       if (type === 'Jito') {
         const tx = await jitoTransaction({
           transaction: transaction,
-          fromAddress: fromAddress
+          fromAddress: fromAddress,
         })
         return tx
       } else {
         return await heliusTransaction({
           transaction,
-          fromAddress
+          fromAddress,
         })
       }
     })()
 
     const signRes = await solSignRawTransaction({
-      rawTransaction: tx ?? ''
+      rawTransaction: tx ?? '',
     })
-    debugger
+
     const transactionBuffer = Buffer.from(signRes.result, 'hex')
 
     return {
       lastValidHeight,
-      transactionBuffer
+      transactionBuffer,
     }
   }
 
-  const sendTxBySignature = async ({
-    transactionBuffer
-  }: {
-    transactionBuffer: Buffer
-  }) => {
+  const sendTxBySignature = async ({ transactionBuffer }: { transactionBuffer: Buffer }) => {
     const txId = await (async () => {
       if (type === 'Jito') {
         const base58Transaction = (() => {
@@ -569,15 +538,14 @@ export const sendRawTransactionByStatus = async ({
 
             console.log({
               key: 'jito-test',
-              transaction
+              transaction,
             })
 
             const serializedTransaction = transaction.serialize()
             const base58Transaction = bs58.encode(serializedTransaction)
             return base58Transaction
           } catch (error) {
-            const versionedTx =
-              VersionedTransaction.deserialize(transactionBuffer)
+            const versionedTx = VersionedTransaction.deserialize(transactionBuffer)
             const serializedTransaction = versionedTx.serialize()
             const base58Transaction = bs58.encode(serializedTransaction)
             console.log('jito-VersionedTransaction')
@@ -585,8 +553,7 @@ export const sendRawTransactionByStatus = async ({
           }
         })()
 
-        if (!base58Transaction)
-          throw new Error('Failed to get signature status2')
+        if (!base58Transaction) throw new Error('Failed to get signature status2')
 
         const result = await jitoClient.sendTxn([base58Transaction], false)
         console.log('Transaction send result:', result)
@@ -605,7 +572,7 @@ export const sendRawTransactionByStatus = async ({
     return await waitTxIdSuccess({
       txId,
       START_TIME,
-      lastValidHeight
+      lastValidHeight,
     })
   }
 
@@ -616,7 +583,7 @@ export const sendRawTransactionByStatus = async ({
 
 export const jitoTransaction = async ({
   transaction,
-  fromAddress
+  fromAddress,
 }: {
   transaction: string
   fromAddress: string
@@ -632,12 +599,11 @@ export const jitoTransaction = async ({
       //Transaction
       const tx = Transaction.from(Buffer.from(transaction, 'hex'))
       const { blockhash } = await connection.getRecentBlockhash()
-      const feeCalculator =
-        await connection.getFeeCalculatorForBlockhash(blockhash)
+      const feeCalculator = await connection.getFeeCalculatorForBlockhash(blockhash)
 
       console.log({
         key: 'jito-tx-create-gift-fee',
-        feeSize: Buffer.from(transaction, 'hex')
+        feeSize: Buffer.from(transaction, 'hex'),
       })
 
       const transactionSize = Buffer.from(transaction, 'hex').length
@@ -661,7 +627,7 @@ export const jitoTransaction = async ({
       const jitoFeeProgram = SystemProgram.transfer({
         fromPubkey: fromPubkey,
         toPubkey: jitoTipAccount,
-        lamports: jitoFee < 1000 ? 1000 : jitoFee
+        lamports: jitoFee < 1000 ? 1000 : jitoFee,
       })
 
       // tx.add(feeProgram)
@@ -669,23 +635,19 @@ export const jitoTransaction = async ({
 
       console.log({
         key: 'jito-tx-create-giftbyTransaction',
-        tx
+        tx,
       })
 
-      return tx
-        .serialize({ requireAllSignatures: false, verifySignatures: false })
-        .toString('hex')
+      return tx.serialize({ requireAllSignatures: false, verifySignatures: false }).toString('hex')
     } catch (error) {
       // VersionedTransaction
-      const versionedTx = VersionedTransaction.deserialize(
-        Buffer.from(transaction, 'hex')
-      )
+      const versionedTx = VersionedTransaction.deserialize(Buffer.from(transaction, 'hex'))
 
       console.error(error)
 
       console.log({
         key: 'jito-tx-create-giftbyVersionedTransaction',
-        versionedTx
+        versionedTx,
       })
       return Buffer.from(versionedTx.serialize()).toString('hex')
     }
@@ -697,7 +659,7 @@ export const jitoTransaction = async ({
 export const heliusTransaction = async ({
   transaction,
   fromAddress,
-  feeMode = FeeMode.AVERAGE
+  feeMode = FeeMode.AVERAGE,
 }: {
   transaction: string
   fromAddress: string
@@ -713,7 +675,7 @@ export const heliusTransaction = async ({
 
       const transactionRes = await addPriorityFeeToTransaction({
         transaction: tx,
-        feeMode
+        feeMode,
       })
 
       // const simulationResponse = await connection.simulateTransaction(tx)
@@ -769,9 +731,7 @@ export const heliusTransaction = async ({
     } catch (error) {
       console.warn(`ignore: ${error}`)
       // VersionedTransaction
-      const versionedTx = VersionedTransaction.deserialize(
-        Buffer.from(transaction, 'hex')
-      )
+      const versionedTx = VersionedTransaction.deserialize(Buffer.from(transaction, 'hex'))
       return Buffer.from(versionedTx.serialize()).toString('hex')
     }
   })()
@@ -781,7 +741,7 @@ export const heliusTransaction = async ({
 
 export const addPriorityFeeToTransaction = async ({
   transaction,
-  feeMode = FeeMode.AVERAGE
+  feeMode = FeeMode.AVERAGE,
 }: {
   transaction: Transaction | TransactionMessage
   feeMode?: FeeMode
@@ -790,13 +750,13 @@ export const addPriorityFeeToTransaction = async ({
     // Transaction
     const result = (transaction as Transaction).serialize({
       requireAllSignatures: false,
-      verifySignatures: false
+      verifySignatures: false,
     })
 
     const tx = transaction as Transaction
     const computeUnitLimit = 200_000
     const computeUnitIx = ComputeBudgetProgram.setComputeUnitLimit({
-      units: computeUnitLimit
+      units: computeUnitLimit,
     })
 
     // const feeEstimate = await getSolFeeEstimate(result)
@@ -812,7 +772,7 @@ export const addPriorityFeeToTransaction = async ({
       throw new Error(errorContents.gasError)
     }
     const feeProgram = ComputeBudgetProgram.setComputeUnitPrice({
-      microLamports: fee
+      microLamports: fee,
     })
 
     tx.add(computeUnitIx)
@@ -820,14 +780,10 @@ export const addPriorityFeeToTransaction = async ({
 
     return {
       transaction: tx,
-      fee: formatUnits(
-        BigInt(fee),
-        chains.solana.chain?.nativeCurrency.decimals || 9
-      ),
-      fees: modeFees
+      fee: formatUnits(BigInt(fee), chains.solana.chain?.nativeCurrency.decimals || 9),
+      fees: modeFees,
     }
   } catch (error) {
-    debugger
     // TransactionMessage
     const tx = transaction as TransactionMessage
 
@@ -852,33 +808,26 @@ export const addPriorityFeeToTransaction = async ({
 
     const computeUnitLimit = 200_000
     const computeUnitIx = ComputeBudgetProgram.setComputeUnitLimit({
-      units: computeUnitLimit
+      units: computeUnitLimit,
     })
 
     const feeProgram = ComputeBudgetProgram.setComputeUnitPrice({
-      microLamports: fee
+      microLamports: fee,
     })
     tx.instructions.push(feeProgram, computeUnitIx)
 
-    const versionedTransaction = new VersionedTransaction(
-      tx.compileToV0Message()
-    )
+    const versionedTransaction = new VersionedTransaction(tx.compileToV0Message())
 
     return {
       transaction: versionedTransaction,
-      fee: formatUnits(
-        BigInt(fee),
-        chains.solana.chain?.nativeCurrency.decimals || 9
-      ),
-      fees: modeFees
+      fee: formatUnits(BigInt(fee), chains.solana.chain?.nativeCurrency.decimals || 9),
+      fees: modeFees,
     }
   }
 }
 
 const versionedTransactionByJito = (transaction: string) => {
-  const versionedTx = VersionedTransaction.deserialize(
-    Buffer.from(transaction, 'hex')
-  )
+  const versionedTx = VersionedTransaction.deserialize(Buffer.from(transaction, 'hex'))
 
   // const _message = versionedTx.message
   // const compiledInstructions = versionedTx.message.compiledInstructions

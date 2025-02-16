@@ -285,7 +285,7 @@ const sendEvm = async (
 ) => {
   const { fromToken, toToken, gasPrice } = params
   const selectChain = getChainByChainId(covertToAssetsToken(fromToken).chainId)
-  debugger
+
   try {
     const data = params.data || '0x'
     const chainId = fromToken.chainId as IChainId
@@ -387,7 +387,6 @@ const sendEvm = async (
               })
 
               useStore.getState().refreshTokenStore()
-              debugger
             } catch (error) {
               console.warn(error)
             }

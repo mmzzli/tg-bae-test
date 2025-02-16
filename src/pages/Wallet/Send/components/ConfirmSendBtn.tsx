@@ -344,7 +344,7 @@ function ConfirmSendBtn({
           if ((error?.message || '').include('cancelled')) return
           errorMsg = errorContents.rpcError
         }
-        debugger
+
         toast({
           render: () => {
             return <CustomToast title={errorMsg} type={typeOptions.error} />

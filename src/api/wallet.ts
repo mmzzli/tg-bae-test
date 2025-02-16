@@ -9,6 +9,7 @@ import {
 } from './walletBase'
 import { errorContents } from '@/store/wallet/config/const'
 import { IChainId } from '@/store/wallet/chainType'
+import { getPassKey } from '@/components/tmd/utils/crypto'
 
 export const getAllHistoryByAccount = async (params: {
   accountId: string
@@ -203,7 +204,12 @@ export const postSendPoint = async (data: {
 export const solSignRawTransaction = async (params: SolSendTx) => {
   const data = await walletPost<WalletApiResponse>(
     `/socialLogin/projectWallet/solana/signRawTransaction`,
-    params
+    params,
+    {
+      headers: {
+        mfa: getPassKey(),
+      },
+    }
   ).catch((error) => {
     const message = error?.response?.data?.message
     return Promise.reject(message ? message : errorContents.transactionError)

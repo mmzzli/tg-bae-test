@@ -54,10 +54,10 @@ export const createUserStore: StateCreator<IUserStore> = (set, get) => ({
   userState: initUserState(),
   walletUserInfo: initUserInfo(),
   updateUserStateAction: (info: UserState) => {
+    localStorage.setItem(STORAGE_KEY.userState, JSON.stringify(info))
     set((state) => {
       return { userState: { ...state.userState, ...info }}
     })
-    localStorage.setItem(STORAGE_KEY.userState, JSON.stringify(info))
   },
   updateTgAction: (data: InitDataUnsafe, query: string) => {
     set((state) => {
@@ -66,10 +66,10 @@ export const createUserStore: StateCreator<IUserStore> = (set, get) => ({
 
   },
   updateUserInfoAction: (info: UserType) => {
+    localStorage.setItem(STORAGE_KEY.user, JSON.stringify(info))
     set((state) => {
       return { walletUserInfo: info }
     })
-    localStorage.setItem(STORAGE_KEY.user, JSON.stringify(info))
   },
   fetchUserInfoAction: () => {
     set((state) => {

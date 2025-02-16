@@ -50,7 +50,6 @@ const useInitUser = () => {
     fetchUserInfoAction,
     updateTgAction,
     walletUserInfo: userInfo,
-    userState,
   } = useStore(
     (state) => ({
       updateUserStateAction: state.updateUserStateAction,
@@ -94,7 +93,7 @@ const useInitUser = () => {
       }
       updateUserInfoAction(userInfo)
       updateUserStateAction({
-        ...userState,
+        ...useStore.getState().userState,
         loginTime: new Date().getTime(),
       })
       // Toast.clear()
@@ -123,7 +122,6 @@ const useInitUser = () => {
         })
         return
       }
-
       const userState = {
         ...resp.result,
         tgId: Number(resp.result?.tgId),

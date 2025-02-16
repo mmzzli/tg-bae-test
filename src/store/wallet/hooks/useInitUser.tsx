@@ -163,7 +163,7 @@ const useInitUser = () => {
       getUserInfo()
       // without email->goto set email
       if (!userState.email) {
-        navigate('/account/recovery-email')
+        navigate('/account/recovery')
         return
       }
 

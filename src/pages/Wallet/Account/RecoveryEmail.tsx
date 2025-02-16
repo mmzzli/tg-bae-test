@@ -52,7 +52,7 @@ const RecoveryEmail = () => {
           position: 'bottom',
           duration: 2000,
         })
-        navigate('/')
+        navigate('/home')
         setLoading(false)
         return
       }

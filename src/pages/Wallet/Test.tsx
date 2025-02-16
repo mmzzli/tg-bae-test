@@ -2,9 +2,11 @@ import useInitUser from '@/store/wallet/hooks/useInitUser'
 import { DEV_INIT_DATA_RAW } from '@/utils/constants'
 import { retrieveLaunchParams } from '@telegram-apps/sdk'
 import { useMfa } from './Account/hooks/useMfa'
+import useWallet from './hooks/useWallet'
 
 const WalletTest = () => {
   const { tgLogin, getUserInfo } = useInitUser()
+  const { hanleWalletAction } = useWallet()
 
   const connect = async () => {
     let userInfo
@@ -28,9 +30,11 @@ const WalletTest = () => {
   }
 
   return (
-    <div className="grid grid-cols-2">
+    <div className="grid grid-cols-2 gap-4">
       <button onClick={connect}>connect</button>
       <button onClick={handleMfa}>useMfa</button>
+
+      <button onClick={hanleWalletAction}>oauth</button>
     </div>
   )
 }

@@ -31,8 +31,8 @@ export default function Oauth({ onSuccess }: { onSuccess?: (data?: any) => void 
         return <SignTransaction onSuccess={onSuccess} />
       case 'ton_signTx':
         return <SignTonTx onSuccess={onSuccess} />
-      // case 'sol_signTx': // new sign tx, accepting transaction as param, for sdk at and after 1.0.14
-      // return <SignSolanaTransaction />
+      case 'sol_signTx': // new sign tx, accepting transaction as param, for sdk at and after 1.0.14
+        return <SignSolanaTransaction onSuccess={onSuccess} />
       // case 'sui_signTransaction':
       //   return <SignSuiTransaction />
       default: // currently used for sol and ton

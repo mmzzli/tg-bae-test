@@ -216,6 +216,17 @@ export const solSignRawTransaction = async (params: SolSendTx) => {
   })
   return data
 }
+export const solSignMessageWithMFA = async (data: { message: string; walletId: number }) => {
+  return await walletPost<WalletApiResponse>(
+    '/socialLogin/projectWallet/solana/signMessage',
+    data,
+    {
+      headers: {
+        mfa: getPassKey(),
+      },
+    }
+  )
+}
 
 export const signEvmTransaction = async (
   mfa: string,

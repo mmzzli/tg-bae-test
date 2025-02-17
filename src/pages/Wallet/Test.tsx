@@ -5,13 +5,16 @@ import { useMfa } from './Account/hooks/useMfa'
 import useWallet from './hooks/useWallet'
 import { string } from '@tma.js/sdk'
 import { useUserStore } from '@/store/wallet/walletUser'
+import { getSendSplToken, mockSolEvmChainId, sendSolTx } from '@/store/wallet/config/sol'
+import { useCommonStore } from '@/store/wallet/walletCommon'
 
 const WalletTest = () => {
   const { tgLogin, getUserInfo } = useInitUser()
   const { hanleWalletAction } = useWallet()
   const {
-    walletUserInfo: { tonPublicKey, tonAddress },
+    walletUserInfo: { tonPublicKey, tonAddress, solanaAddress },
   } = useUserStore()
+  const { feeMode } = useCommonStore()
 
   const connect = async () => {
     let userInfo
@@ -72,6 +75,39 @@ const WalletTest = () => {
     console.log('handleSignTon', data)
   }
 
+  const handleSignSol = async () => {
+    const params = {
+      fromAddress: solanaAddress,
+      toAddress: solanaAddress,
+      value: 1000000n,
+      contract: undefined,
+    }
+    let txStr
+    if (!params.contract) {
+      txStr = await sendSolTx(
+        params.fromAddress, // my Address
+        params.toAddress, // toAddress
+        params.value || 0n, //value
+        // signData.txMeta.mintAddress // contract Address
+        feeMode
+      )
+    } else {
+      txStr = await getSendSplToken(
+        params.contract,
+        params.fromAddress,
+        params.toAddress,
+        params.value,
+        feeMode
+      )
+    }
+
+    const data = await hanleWalletAction({
+      method: 'sol_signTx',
+      params: [{ txHex: txStr?.transaction, chainId: mockSolEvmChainId }],
+    })
+    console.log('handleSignSol', data)
+  }
+
   return (
     <div className="grid grid-cols-2 gap-4">
       <button onClick={connect}>connect</button>
@@ -79,6 +115,7 @@ const WalletTest = () => {
 
       <button onClick={handleSign}>oauth evm</button>
       <button onClick={handleSignTon}>oauth ton</button>
+      <button onClick={handleSignSol}>oauth sol</button>
     </div>
   )
 }

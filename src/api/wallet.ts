@@ -269,11 +269,11 @@ export const v1AddAssetApi = async (data: {
   return await tomoAuthPost<WalletApiResponse>('v1/asset/add', data)
 }
 
-export const getConfigChainsAll = async (): Promise<{
-  chain_id_name: {
-    [key in IChainId]?: string
-  }
-}> => {
-  const { data } = await configApi.get(`/chain/all`)
-  return data.result
+export const getTokenDetailByAddress = async (chain: string, address: string) => {
+  return await walletGet<WalletApiResponse>(
+    'socialLogin/projectWallet/token/getByAddressAndChain',
+    {
+      params: { chain, address },
+    }
+  )
 }

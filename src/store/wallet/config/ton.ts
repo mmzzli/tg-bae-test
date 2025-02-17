@@ -68,7 +68,7 @@ export const getTonBalance = async ({
   tokenContractAddress,
   tokenPrecision = tonDecimals,
 }: {
-  tonAddress: string
+  tonAddress: AddressType
   tokenContractAddress?: AddressType
   tokenPrecision?: number
 }) => {

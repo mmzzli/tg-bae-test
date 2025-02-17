@@ -3,10 +3,15 @@ import { DEV_INIT_DATA_RAW } from '@/utils/constants'
 import { retrieveLaunchParams } from '@telegram-apps/sdk'
 import { useMfa } from './Account/hooks/useMfa'
 import useWallet from './hooks/useWallet'
+import { string } from '@tma.js/sdk'
+import { useUserStore } from '@/store/wallet/walletUser'
 
 const WalletTest = () => {
   const { tgLogin, getUserInfo } = useInitUser()
   const { hanleWalletAction } = useWallet()
+  const {
+    walletUserInfo: { tonPublicKey, tonAddress },
+  } = useUserStore()
 
   const connect = async () => {
     let userInfo
@@ -44,12 +49,36 @@ const WalletTest = () => {
     console.log('handleSign', data)
   }
 
+  const handleSignTon = async () => {
+    const data = await hanleWalletAction({
+      method: 'ton_signTx',
+      params: [
+        {
+          publicKey: tonPublicKey,
+          fromAddress: tonAddress,
+          body: {
+            from: tonAddress,
+            to: 'UQB92Cl6dzShQFgEk9lFSDHe0eWhvEZFY0SWDr3KSjcopLLS',
+            messages: [
+              {
+                address: 'UQB92Cl6dzShQFgEk9lFSDHe0eWhvEZFY0SWDr3KSjcopLLS',
+                amount: '1000000',
+              },
+            ],
+          },
+        },
+      ],
+    })
+    console.log('handleSignTon', data)
+  }
+
   return (
     <div className="grid grid-cols-2 gap-4">
       <button onClick={connect}>connect</button>
       <button onClick={handleMfa}>useMfa</button>
 
-      <button onClick={handleSign}>oauth</button>
+      <button onClick={handleSign}>oauth evm</button>
+      <button onClick={handleSignTon}>oauth ton</button>
     </div>
   )
 }

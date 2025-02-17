@@ -1,25 +1,42 @@
-import { Button } from '@/components/tmd/button/Button'
+// import { Button } from '@/components/tmd/button/Button'
 import { useEffect, useMemo, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
-// import useChains from 'hooks/useChains'
-import useSdk from '@/hooks/oauth/useSdk'
-import useApp from '@/hooks/oauth/useApp'
-import useLoginInfo from '@/hooks/useLoginInfo'
-import { useTonTx } from '@/hooks/oauth/useTonTx'
-import { useWebApp } from '@vkruglikov/react-telegram-web-app'
-import { getChainByChainId } from '@/stores/walletStore/utils'
-import toast from 'components/Toast'
-import { getTokenDetailByAddress } from '@/api'
+// import { useQuery } from '@tanstack/react-query'
+// // import useChains from 'hooks/useChains'
+// import useSdk from '@/hooks/oauth/useSdk'
+// import useApp from '@/hooks/oauth/useApp'
+// import useLoginInfo from '@/hooks/useLoginInfo'
+// import { useTonTx } from '@/hooks/oauth/useTonTx'
+// import { useWebApp } from '@vkruglikov/react-telegram-web-app'
+// import { getChainByChainId } from '@/stores/walletStore/utils'
+// import toast from 'components/Toast'
+// import { getTokenDetailByAddress } from '@/api'
+// import {
+//   mockTonChainId,
+//   mockTonTestnetChainId,
+//   minTonBalance
+// } from '@/config/ton'
+// import { TonTxRequest, TonTxRequestStandard } from '@tomo-inc/tomo-telegram-sdk'
+// import { TxInfo } from './TxInfo'
+import { Address, fromNano } from '@ton/core'
+// import BigNumber from 'bignumber.js'
+// import { getTonBalance } from '@/utils/oauth/getTonBalance'
+
+import { useWalletRequestStore } from '@/store/wallet/walletRequest'
+import BigNumber from 'bignumber.js'
+import { TonTxRequestStandard } from '@tomo-inc/tomo-telegram-sdk'
 import {
+  getTonBalance,
+  minTonBalance,
   mockTonChainId,
   mockTonTestnetChainId,
-  minTonBalance
-} from '@/config/ton'
-import { TonTxRequest, TonTxRequestStandard } from '@tomo-inc/tomo-telegram-sdk'
+} from '@/store/wallet/config/ton'
+import { getChainByChainId } from '@/store/wallet/util/tokenHelper'
+import { useTonTx } from '../../hooks/useTonTx'
+import { useToast } from '@chakra-ui/react'
+import { CustomToast, typeOptions } from '@/components/comm/Toast'
+import { getTokenDetailByAddress } from '@/api/wallet'
 import { TxInfo } from './TxInfo'
-import { Address, fromNano } from '@ton/core'
-import BigNumber from 'bignumber.js'
-import { getTonBalance } from '@/utils/oauth/getTonBalance'
+import BaseButton from '@/components/BaseButton/BaseButton'
 
 interface TransferModel {
   from: string
@@ -35,31 +52,19 @@ interface TransferModel {
 }
 
 export default function SignTonTx(props: { [other: string]: any }) {
-  const { getPayload } = useSdk()
-  const webApp = useWebApp()
-  const { webAppReject } = useApp()
+  const {
+    requestParam: { params },
+  } = useWalletRequestStore()
+
   const [tokenName, setTokenName] = useState('')
+  const toast = useToast()
 
-  const { tonAddress, tonAddressTest } = useLoginInfo()
-
-  const { fee, unit } = props
+  const { fee, unit, onSuccess } = props
   const chainType = 'ton'
 
-  const { data: transData, isLoading } = useQuery({
-    queryKey: ['sign-transaction'],
-    queryFn: async () => {
-      return await getPayload()
-    }
-  })
-
-  useEffect(() => {
-    console.log('SignTonTx')
-  }, [])
-
   const transfer: Partial<TransferModel> = useMemo(() => {
-    if ((transData?.data?.params || []).length) {
-      const data = transData?.data?.params[0]
-      console.log('standard payload')
+    if (params.length > 0) {
+      const data = params[0]
       const body = data as TonTxRequestStandard
       if (!body?.body?.messages?.[0]) return {}
       const valueRaw = body.body.messages[0].amount.toString()
@@ -67,7 +72,7 @@ export default function SignTonTx(props: { [other: string]: any }) {
         from: body.body.from || '',
         to: body.body.messages[0].address,
         value: '',
-        chainId: body.chainId || -1
+        chainId: body?.chainId || 1100,
       }
 
       if (body.jettonInfo) {
@@ -76,9 +81,7 @@ export default function SignTonTx(props: { [other: string]: any }) {
         rs.contractAddress = jettonMinterAddress
         rs.to = body.jettonInfo.recipientAddress
         const precision = isJUSDT(jettonMinterAddress) ? 6 : 9
-        rs.value = new BigNumber(body.jettonInfo.amount)
-          .dividedBy(10 ** precision)
-          .toString()
+        rs.value = new BigNumber(body.jettonInfo.amount).dividedBy(10 ** precision).toString()
       } else {
         // regular tx
         rs.value = fromNano(valueRaw)
@@ -88,7 +91,7 @@ export default function SignTonTx(props: { [other: string]: any }) {
       return rs
     }
     return {}
-  }, [transData?.data?.params])
+  }, [params])
 
   const chainId = useMemo(() => {
     return Number(transfer?.chainId || mockTonChainId)
@@ -98,58 +101,64 @@ export default function SignTonTx(props: { [other: string]: any }) {
     return getChainByChainId(chainId)
   }, [chainId])
 
-  const [status, setStatus] = useState<'normal' | 'loading' | 'success'>(
-    'normal'
-  )
-  const [reStatus, setReStatus] = useState<'normal' | 'loading'>('normal')
+  const [loading, setLoading] = useState<boolean>(false)
 
   const { signTonTransaction } = useTonTx({
-    chainId: chainId
+    chainId: chainId,
   })
 
-  const getUserAddress = () => {
-    return chainId === mockTonTestnetChainId ? tonAddressTest : tonAddress
-  }
-
   const doSignTx = async () => {
-    if (status !== 'normal') return
-    const userAddress = getUserAddress()
-
-    if (
-      !userAddress ||
-      !transfer?.from ||
-      userAddress?.toLowerCase() != `${transfer.from}`.toLowerCase()
-    ) {
-      return toast.error('From address error.')
-    }
+    if (loading || !transfer?.from) return
 
     try {
-      setStatus('loading')
+      setLoading(true)
 
       // judge balance
-      const { formatted = '0' } = (await getTonBalance(transfer.from)) || {}
+      const { formatted = '0' } = (await getTonBalance({ tonAddress: transfer.from })) || {}
       if (transfer.contractAddress && +formatted < minTonBalance) {
-        toast.error(`Insufficient balance. Min balance is ${minTonBalance} TON`)
+        toast({
+          render: () => {
+            return (
+              <CustomToast
+                title={`Insufficient balance. Min balance is ${minTonBalance} TON`}
+                type={typeOptions.error}
+              />
+            )
+          },
+          position: 'bottom',
+          duration: 2000,
+        })
       }
-      const txRequestRaw: TonTxRequestStandard = transData?.data?.params[0]
+      const txRequestRaw: TonTxRequestStandard = params[0] as TonTxRequestStandard
       //  txRequestRaw.type === TonTxBodyType.STANDARD should be STANDARD BY DEFAULT
       const signData = txRequestRaw
       const result = await signTonTransaction({
-        paramsForPure: signData as any
+        paramsForPure: signData as any,
       })
 
+      if (!result) {
+        return
+      }
       if (result && result?.code == 10000) {
-        setStatus('success')
-        setTimeout(() => {
-          webApp?.close()
-        }, 500)
+        onSuccess?.(result?.signedTransaction || '')
       } else {
-        setStatus('normal')
         throw result?.message || 'Network error.'
       }
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || err?.message || err)
-      setStatus('normal')
+      toast({
+        render: () => {
+          return (
+            <CustomToast
+              title={err?.response?.data?.message || err?.message || err}
+              type={typeOptions.error}
+            />
+          )
+        },
+        position: 'bottom',
+        duration: 2000,
+      })
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -172,9 +181,7 @@ export default function SignTonTx(props: { [other: string]: any }) {
       <div
         className={`flex h-full flex-1 flex-col justify-between overflow-scroll px-[16px] pb-[16px] pt-[20px]`}
       >
-        <h2 className="text-[20px] font-bold leading-[1.3] text-title dark:text-white">
-          Sign Tx
-        </h2>
+        <h2 className="text-[20px] font-bold leading-[1.3] text-title dark:text-white">Sign Tx</h2>
 
         <TxInfo
           txInfo={{
@@ -186,30 +193,18 @@ export default function SignTonTx(props: { [other: string]: any }) {
             // value: fromNano(transfer.value || '0'),
             tokenName,
             feeInfo,
-            rawData: transfer.rawData
+            rawData: transfer.rawData,
           }}
         />
 
-        <div
-          className={`mt-[34px] grid w-full flex-1 grid-cols-2 items-end gap-5`}
-        >
-          <Button
-            size="large"
-            block
-            onClick={() => webAppReject(false)}
-            theme="ghost"
-          >
-            Reject
-          </Button>
-          <Button
-            size="large"
-            className="w-full"
-            onClick={doSignTx}
-            status={status}
-            disabled={isLoading || !transData?.data || fee === '--'}
-          >
-            Confirm
-          </Button>
+        <div className={`mt-[34px] w-full`}>
+          <BaseButton
+            handler={doSignTx}
+            loading={loading}
+            disabled={params.length == 0 || fee === '--'}
+            text="Confirm"
+            height="52px"
+          />
         </div>
       </div>
     </>
@@ -227,8 +222,7 @@ export function isJUSDT(address: string) {
   const usdtAddress = 'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs'
   if (
     usdtAddress === address ||
-    Address.parse(address).toString() ===
-      Address.parse(usdtAddress).toString() ||
+    Address.parse(address).toString() === Address.parse(usdtAddress).toString() ||
     Address.parse(usdtAddress).toString() === address ||
     Address.parse(address).toString() === usdtAddress
   ) {

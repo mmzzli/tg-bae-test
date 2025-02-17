@@ -1,12 +1,12 @@
 import BaseButton from '../BaseButton/BaseButton'
-import { useTomo } from '@tomo-inc/tomo-telegram-sdk'
+// import { useTomo } from '@tomo-inc/tomo-telegram-sdk'
 
 const ConnectButton = () => {
-  const { openConnectModal } = useTomo()
+  // const { openConnectModal } = useTomo()
 
-  const handleClick = () => {
-    openConnectModal()
-  }
+  // const handleClick = () => {
+  //   openConnectModal()
+  // }
 
   return (
     <>

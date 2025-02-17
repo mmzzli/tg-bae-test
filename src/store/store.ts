@@ -18,6 +18,7 @@ import { createWebSocketSlice, WebSocketSlice } from './slices/websocket'
 import { createUserStore, IUserStore } from './wallet/walletUser'
 import { createTokenStore, ITokenStore } from './wallet/walletToken'
 import { createCommonStore, ICommonStore } from './wallet/walletCommon'
+import { createWalletRequestStore, IWalletRequestStore } from './wallet/walletRequest'
 
 export interface StoreState
   extends UserSlice,
@@ -31,7 +32,8 @@ export interface StoreState
     WebSocketSlice,
     IUserStore,
     ITokenStore,
-    ICommonStore {
+    ICommonStore,
+    IWalletRequestStore {
   recommendList: BaseListState
   viewList: BaseListState
 }
@@ -86,4 +88,5 @@ export const useStore = createStore(((...a) => ({
   ...createUserStore(...a),
   ...createTokenStore(...a),
   ...createCommonStore(...a),
+  ...createWalletRequestStore(...a),
 })) as StateCreator<StoreState, [], MyMiddlewares>)

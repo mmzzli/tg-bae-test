@@ -395,3 +395,8 @@ export type ApiParams = {
 export interface SolSendTx {
   rawTransaction: string
 }
+
+export type WalletRequestType = {
+  method: string
+  params: Array<any>
+}

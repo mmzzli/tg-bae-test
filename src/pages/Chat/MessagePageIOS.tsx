@@ -16,6 +16,8 @@ import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { debounce } from '@/utils/chat/schedulers'
 import RewardButton from '@/components/Wallet/RewardButton'
 import { ImagePreviewIcon, VideoPreviewIcon } from '@/components/Chat/MessageRender'
+import { useSwipeBack } from '@/hooks/useSwipeBack'
+import { animated } from 'react-spring'
 // const PAGE_SIZE = 20
 const isIOS = () => {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
@@ -45,6 +47,10 @@ const MessagePageIOS = () => {
   const [initVisualViewportHeight, setInitVisualViewportHeight] = useState(0)
 
   const { runDailyChat } = useDailyTaskActions()
+
+  const { bind, x } = useSwipeBack({
+    scrollRef: containerRef,
+  })
 
   useEffect(() => {
     if (messageWindow) {
@@ -233,13 +239,15 @@ const MessagePageIOS = () => {
   }, [replyMessage])
 
   return (
-    <div
+    <animated.div
       ref={containerRef}
+      {...bind()}
       className="absolute top-0 left-0 right-0 flex flex-col dark:bg-[#000000] bg-[#F5F7FC] z-[10] overflow-hidden slide-in-from-right"
       style={{
         WebkitOverflowScrolling: 'touch',
         transition: isIOS() ? 'height 0.3s ease-in-out' : '',
         paddingTop: `calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 66px)`,
+        x,
       }}
     >
       <div
@@ -458,7 +466,7 @@ const MessagePageIOS = () => {
       >
         <RewardButton userInfo={chatPeople || ({} as OthersUserInfo)} />
       </div>
-    </div>
+    </animated.div>
   )
 }
 

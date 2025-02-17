@@ -33,6 +33,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice, featureRefBoll }) => {
   const [boll, setBoll] = useState<boolean>(false)
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const [customValue, setCustomValue] = useState<string>('');
+  const [heights, setHeights] = useState<number>(0)
 
   const handleStarSelect = (item: StarValue) => {
     setPrice(item)
@@ -82,6 +83,21 @@ const Stars: FC<StarsProps> = ({ price, setPrice, featureRefBoll }) => {
 
     return () => {
       window.removeEventListener('focusout', handleKeyboardHide);
+    };
+  }, []);
+
+  useEffect(() => {
+    setHeights(window.innerHeight)
+    const handleResize = () => {
+      if(heights > window.innerHeight){
+        setIsFocused(true)
+      }else{
+        setIsFocused(false)
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 

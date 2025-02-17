@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '@chakra-ui/react'
 import { useAccount } from 'wagmi'
+import { animated } from 'react-spring'
 
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { StarsIcon, RightIcon } from '@/assets/icons'
@@ -12,10 +13,13 @@ import { formatUSD } from '@/utils/utils'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import ConnectModal from '@/components/Wallet/ConnectModal'
 import RewardListModal from '@/components/Wallet/RewardListModal'
+import { useSwipeBack } from '@/hooks/useSwipeBack'
 
 const Earnings = () => {
   const navigate = useNavigate()
   const toast = useToast()
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const { bind, x } = useSwipeBack({ scrollRef })
   const { token } = useStore((state) => ({
     token: state.token,
   }))
@@ -89,13 +93,17 @@ const Earnings = () => {
   }, [needUpdateEarnings])
 
   return (
-    <div
-      className="px-4 fixed w-screen bg-[#fff] z-10 scrollbar-hide pt-6"
-      id="scrollable"
+    <animated.div
+      {...bind()}
+      ref={scrollRef}
       style={{
+        x,
+        touchAction: 'pan-y',
         height:
           'calc(100vh - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top))',
       }}
+      className="px-4 fixed w-screen bg-[#fff] z-10 scrollbar-hide pt-6"
+      id="scrollable"
     >
       <h3 className="text-[#333] text-[20px]">Earnings</h3>
       <div className="text-center mt-12 mb-2">
@@ -229,7 +237,7 @@ const Earnings = () => {
           load()
         }}
       />
-    </div>
+    </animated.div>
   )
 }
 export default Earnings

@@ -33,6 +33,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice, featureRefBoll }) => {
   const [boll, setBoll] = useState<boolean>(false)
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const [customValue, setCustomValue] = useState<string>('');
+  const [heights, setHeights] = useState<number>(0)
 
   const handleStarSelect = (item: StarValue) => {
     setPrice(item)
@@ -86,15 +87,15 @@ const Stars: FC<StarsProps> = ({ price, setPrice, featureRefBoll }) => {
   }, []);
 
   useEffect(() => {
-    // 定义更新窗口高度的函数
+    setHeights(window.innerHeight)
     const handleResize = () => {
-      // alert(window.innerHeight)
+      if(heights > window.innerHeight){
+        setIsFocused(true)
+      }else{
+        setIsFocused(false)
+      }
     };
-
-    // 监听窗口大小变化
     window.addEventListener('resize', handleResize);
-
-    // 清理事件监听器
     return () => {
       window.removeEventListener('resize', handleResize);
     };

@@ -73,7 +73,6 @@ const UserProfile: FC = () => {
           <ShareUser userInfo={userInfo} />
         </Box>
       </HStack>
-
       <HStack marginTop="10px" gap="4px">
         <Heading as="h3" color="#0F1233" fontWeight="500" fontSize="20px">
           {userInfo.username}
@@ -82,9 +81,8 @@ const UserProfile: FC = () => {
           <i className="iconfont icon-a-edit-line1 text-[#7a7a7a]" style={{ fontSize: '18px' }}></i>
         </Link>
       </HStack>
-
+      <Link href="/account/test">test page.</Link>
       <MoreText text={userInfo.bio} className={'leading-4'}></MoreText>
-
       <HStack p="24px 0" gap="56px" className="justify-between">
         <Box textAlign="center">
           <Heading
@@ -129,7 +127,6 @@ const UserProfile: FC = () => {
           </Text>
         </Box>
       </HStack>
-
       <ProfileConnectButton />
     </Box>
   )

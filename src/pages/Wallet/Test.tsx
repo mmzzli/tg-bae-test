@@ -7,6 +7,10 @@ import { string } from '@tma.js/sdk'
 import { useUserStore } from '@/store/wallet/walletUser'
 import { getSendSplToken, mockSolEvmChainId, sendSolTx } from '@/store/wallet/config/sol'
 import { useCommonStore } from '@/store/wallet/walletCommon'
+import { BaseModal } from '@/components/Modal/BaseModal'
+import { useState } from 'react'
+import BaseButton from '@/components/BaseButton/BaseButton'
+import { Input } from 'antd-mobile'
 
 const WalletTest = () => {
   const { tgLogin, getUserInfo } = useInitUser()
@@ -108,15 +112,53 @@ const WalletTest = () => {
     console.log('handleSignSol', data)
   }
 
-  return (
-    <div className="grid grid-cols-2 gap-4">
-      <button onClick={connect}>connect</button>
-      <button onClick={handleMfa}>useMfa</button>
+  const [visible, setVisible] = useState(false)
+  const handleBaseModal = () => {
+    setVisible(true)
+  }
 
-      <button onClick={handleSign}>oauth evm</button>
-      <button onClick={handleSignTon}>oauth ton</button>
-      <button onClick={handleSignSol}>oauth sol</button>
-    </div>
+  return (
+    <>
+      <BaseModal
+        isOpen={visible}
+        onClose={() => setVisible(false)}
+        // height={isLandscape ? '70vh' : '85vh'}
+        style={{
+          maxHeight: '70vh',
+          height: 'auto',
+          overflow: 'auto',
+        }}
+        animation={{
+          duration: 400,
+          timingFunction: 'ease-in-out',
+        }}
+        theme={{
+          darkBackgroundColor: '#1a1a1a',
+          lightBackgroundColor: '#ffffff',
+          handleColor: '#d1d5db',
+        }}
+        closeOnBackdropClick={true}
+        showHandle={false}
+      >
+        <div className="w-full">
+          <div className="py-4">
+            <Input placeholder="input 输入框" />
+          </div>
+          <BaseButton height="52px" text="测试下按钮" handler={() => {}} />
+        </div>
+      </BaseModal>
+
+      <div className="grid grid-cols-2 gap-4">
+        <button onClick={connect}>connect</button>
+        <button onClick={handleMfa}>useMfa</button>
+
+        <button onClick={handleSign}>oauth evm</button>
+        <button onClick={handleSignTon}>oauth ton</button>
+        <button onClick={handleSignSol}>oauth sol</button>
+
+        <button onClick={handleBaseModal}>BaseModal测试下</button>
+      </div>
+    </>
   )
 }
 

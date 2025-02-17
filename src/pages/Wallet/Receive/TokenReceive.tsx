@@ -82,8 +82,6 @@ export function ReceivePageComponent(props: {
 
   return (
     <TContainer className="px-5 flex flex-col size-full" scrollable>
-      <BackButton onClick={() => navigate(-1)} />
-
       <>
         <div className={`flex w-full flex-1 flex-col items-center gap-[24px]`}>
           <div className="mt-[14px] flex w-full flex-1 flex-col items-center">

@@ -35,9 +35,11 @@ export const PromiseModal = NiceModal.create(() => {
       visible={modal.visible}
       onMaskClick={handleCancel}
       onClose={handleCancel}
-      bodyStyle={{ height: '40vh' }}
+      bodyStyle={{ height: '80vh' }}
       destroyOnClose
       showCloseButton
+      bodyClassName="flex flex-col px-4 py-3"
+      safeArea
     >
       <PaypinVerify onSuccess={handleResolve} onFailed={() => {}} />
     </TPopup>

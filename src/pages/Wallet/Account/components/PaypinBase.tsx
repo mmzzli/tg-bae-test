@@ -163,7 +163,6 @@ const PaypinBase = forwardRef<PayPinBaseRefType, PayPinBaseType>(
             )}
           </Space>
         </div>
-
         {!autoFill && (
           <div className="w-full flex-none pt-2">
             <BaseButton

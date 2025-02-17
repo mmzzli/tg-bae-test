@@ -39,14 +39,14 @@ const VerifyPage = () => {
             icon: 'loading',
             content: '',
             duration: 0,
-            maskClickable: false
+            maskClickable: false,
           })
           try {
             const did = generate()
             await multiCreate(did, `${pass}`)
             userStore.updateBiometryAction({
               ...biometry,
-              token_saved: true
+              token_saved: true,
             })
           } catch (err) {
             toast.error(err as string)
@@ -60,7 +60,7 @@ const VerifyPage = () => {
         console.log('failcallback...')
         userStore.fetchUserInfoAction()
         return
-      }
+      },
     })
   }
   // const { setOpen, component } = useBackup({
@@ -74,10 +74,7 @@ const VerifyPage = () => {
 
   useEffect(() => {
     if (userState.loginTime) {
-      if (
-        userState.newUser ||
-        (!user?.email && !checkDevice(userState.userId))
-      ) {
+      if (userState.newUser || (!user?.email && !checkDevice(userState.userId))) {
         // setOpen(true)
         navigate('/account/recovery-email', { replace: true })
       } else {
@@ -90,7 +87,7 @@ const VerifyPage = () => {
   return (
     <>
       {/* {component} */}
-      <BackButton onClick={() => navigate(-1)}></BackButton>
+
       <Container className="flex flex-col pb-2">
         <PaypinVerify onSuccess={onVerifySuccess} onFailed={onFailed} />
       </Container>

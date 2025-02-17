@@ -6,7 +6,6 @@ const SettingPage = () => {
   const navigate = useNavigate()
   return (
     <>
-      <BackButton onClick={() => navigate(-1)}></BackButton>
       <SecuritySettings />
     </>
   )

@@ -6,7 +6,6 @@ const EmailPage = () => {
   const navigate = useNavigate()
   return (
     <>
-      <BackButton onClick={() => navigate(-1)}></BackButton>
       <EmailCurrent />
     </>
   )

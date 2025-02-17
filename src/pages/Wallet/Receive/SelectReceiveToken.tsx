@@ -34,7 +34,6 @@ function SelectReceiveToken() {
 
   return (
     <>
-      <BackButton onClick={() => navigate(-1)} />
       <SelectToken
         tokens={renderTokens}
         onSearch={onSearch}

@@ -61,8 +61,7 @@ export const useConnect = () => {
     } catch (error) {
       userInfo = DEV_INIT_DATA_RAW
     }
-await tgLogin('query_id=AAGJJLUBAwAAAIkktQGG7XCv&user=%7B%22id%22%3A6471099529%2C%22first_name%22%3A%22sheep%22%2C%22last_name%22%3A%22web3%22%2C%22username%22%3A%22wagagahello%22%2C%22language_code%22%3A%22zh-hans%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2F0G8T-sXAWDMgfJQkeyen57L_KX96icCj9HQjp32SPZs1ZEs_qXCI4UjvpZhCquMQ.svg%22%7D&auth_date=1739706626&signature=FR1mdik56bQRNAD4eywkoJjPv1d7pkyqdHuv1GuFAl1F2OMyaXOpaALSv9dKUonFPo4Q9YmMvGcY_LGXrOrBDA&hash=00ae57c29106337902d73dd32ae1703fa5ba672967f1326aac321468af7d0c77')
-    // await tgLogin(userInfo)
+    await tgLogin(userInfo)
     await getUserInfo()
     setConnectStatus('waiting')
   }

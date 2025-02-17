@@ -27,16 +27,11 @@ function SelectSendToken() {
   })
 
   const clickItem = (token: AssetsToken) => {
-    navigate(
-      `/wallet/send/input-address?chainId=${token.chainId}&address=${
-        token.address || ''
-      }`
-    )
+    navigate(`/wallet/send/input-address?chainId=${token.chainId}&address=${token.address || ''}`)
   }
 
   return (
     <>
-      <BackButton onClick={() => navigate(-1)} />
       <SelectToken
         tokens={renderTokens}
         onSearch={onSearch}

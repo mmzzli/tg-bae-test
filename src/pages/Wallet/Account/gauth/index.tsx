@@ -7,7 +7,6 @@ export default function AccountAddress() {
 
   return (
     <>
-      <BackButton onClick={() => navigate(-1)} />
       <div className={`h-screen font-['Switzer'] overflow-y-auto`}>
         <Outlet />
       </div>

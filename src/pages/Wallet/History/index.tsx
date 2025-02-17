@@ -9,9 +9,7 @@ const History = () => {
   const typeParam = search.get('type')
   const chainIdParam = search.get('chainId')
   const addressParam = search.get('address')
-  const type = (typeParam ? typeParam : undefined) as
-    | BaseHistoryType
-    | undefined
+  const type = (typeParam ? typeParam : undefined) as BaseHistoryType | undefined
   const chainId = (chainIdParam ? Number(chainIdParam) : undefined) as
     | UseTransactionsProps['chain_id']
     | undefined
@@ -21,7 +19,6 @@ const History = () => {
 
   return (
     <div className="size-full flex bg-bg1 px-[20px] pb-[16px] pt-[4px]">
-      <BackButton onClick={() => navigate(-1)} />
       <BaseHistory chainId={chainId} address={address} type={type} />
     </div>
   )

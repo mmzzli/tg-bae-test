@@ -11,7 +11,6 @@ const Detail = () => {
   if (!hash || hash === 'null' || hash === 'undefined' || hash === '0') {
     return (
       <div className="size-full flex bg-bg1 px-[20px] pb-[16px] pt-[4px]">
-        <BackButton onClick={() => navigate(-1)} />
         <div className="flex size-full items-center justify-center">
           <span>...</span>
         </div>
@@ -21,7 +20,6 @@ const Detail = () => {
 
   return (
     <div className="size-full flex bg-bg1 px-[20px] pb-[16px] pt-[4px]">
-      <BackButton onClick={() => navigate(-1)} />
       <HistoryDetail hash={decodeURIComponent(hash)} />
     </div>
   )

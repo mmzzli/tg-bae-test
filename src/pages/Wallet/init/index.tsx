@@ -4,6 +4,7 @@ import StartTokens from './StartTokens'
 import { InitData, useInitData, useWebApp } from '@vkruglikov/react-telegram-web-app'
 import { initUserInfo, initUserState } from '@/store/wallet/walletUser'
 import { UserState, UserType } from '@/store/wallet/type'
+import { useTokenStore } from '@/store/wallet/walletToken'
 
 enum WalletState {
   WAIT = 0,
@@ -15,8 +16,15 @@ enum WalletState {
  */
 export default () => {
   const [initDataUnsafe] = useInitData()
-
+  const { refreshTime } = useTokenStore()
   const [walletState, setWalletState] = useState(WalletState.WAIT)
+
+  useEffect(() => {
+    if (refreshTime !== 0) {
+      setWalletState(WalletState.LOGIN)
+    }
+  }, [refreshTime])
+
   useEffect(() => {
     const walletUserState: UserState = initUserState()
     const walletUserInfo: UserType = initUserInfo()
@@ -28,6 +36,7 @@ export default () => {
       setWalletState(WalletState.LOGIN)
     }
   }, [])
+
 
   if (walletState === WalletState.LOGIN) {
     return (

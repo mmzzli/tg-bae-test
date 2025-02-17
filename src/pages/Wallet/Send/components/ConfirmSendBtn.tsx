@@ -385,14 +385,14 @@ function ConfirmSendBtn({
 
   return (
     <>
-      {status !== 'success' && (
-        <div className={`mt-auto w-full`}>
-          {/* <StatusButton
+      <div className={`mt-auto w-full`}>
+        {/* <StatusButton
             type={status}
             text={'Slide to Confirm'}
             onConfirm={onSign}
             disabled={isSlideDisable()}
           /> */}
+        {status !== 'success' ? (
           <BaseButton
             text={'Confirm'}
             handler={onSign}
@@ -400,17 +400,15 @@ function ConfirmSendBtn({
             height="52px"
             loading={status == 'loading'}
           />
-        </div>
-      )}
-      {status === 'success' && (
-        <div className={`flex w-full flex-1 items-end`}>
+        ) : (
           <IconTxSuccess
+            className="h-[52px]"
             style={{
               width: '100%',
             }}
           />
-        </div>
-      )}
+        )}
+      </div>
     </>
   )
 }

@@ -1,6 +1,6 @@
 import HistoryDetail from './BaseHistory/HistoryDetail'
 // import { Loading } from '@/components/Loading'
-import { BackButton } from '@vkruglikov/react-telegram-web-app'
+// import { BackButton } from '@vkruglikov/react-telegram-web-app'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
 const Detail = () => {

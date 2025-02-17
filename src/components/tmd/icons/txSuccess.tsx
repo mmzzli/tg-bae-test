@@ -3,7 +3,7 @@ import clsx from 'clsx'
 
 export const IconTxSuccess = ({ className, viewBox, ...restProps }: IconProps) => {
   return (
-    <Icon viewBox="0 0 358 52" className={clsx('size-4', className)} {...restProps}>
+    <Icon viewBox="0 0 358 52" className={clsx(className)} {...restProps}>
       <rect width="358" height="52" rx="8" fill="#17CF82" />
       <path
         fill-rule="evenodd"

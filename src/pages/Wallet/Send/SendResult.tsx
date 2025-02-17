@@ -24,7 +24,7 @@ export default function SendResult() {
   const hash = search.get('hash')
   // const { theme } = useTheme()
   const toTransactionDetail = () => {
-    if (hash) navigate(`/history/detail?hash=${encodeURIComponent(hash)}`)
+    if (hash) navigate(`/wallet/history/detail?hash=${encodeURIComponent(hash)}`)
   }
   const lightTheme = true //theme === 'light'
   return (

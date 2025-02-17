@@ -1,4 +1,4 @@
-import chains from '../chains'
+import chains, { allChains, allChainsUSDT } from '../chains'
 import { mergeTokensData } from '../util/tokenHelper'
 import useUserTokens from './useUserTokens'
 
@@ -20,7 +20,15 @@ const useGetTokenList = () => {
   const tokens = mergeTokensData({
     whiteTokens,
     customTokens,
-  })
+  }).filter(
+    (i) =>
+      (!i.isNative &&
+        allChainsUSDT.find(
+          (it) =>
+            it.chainId === i.chainId && it.address.toUpperCase() === `${i.address}`.toUpperCase()
+        )) ||
+      (i.isNative && allChains.find((it) => it.id === i.chainId))
+  )
 
   const reqEvmTokens = tokens.filter((token) => {
     return token.chainId !== chains.solana.id && token.chainId !== chains.ton.id

@@ -1,13 +1,12 @@
-import { evmChainsConfig } from '@/proviers/web3Provider/chains'
-import { IWeb3Type } from '@/proviers/web3Provider/type'
-import { IHistoryType } from '@/state'
 import {
   getBlock,
   getTransaction,
   getTransactionConfirmations,
-  getTransactionReceipt
+  getTransactionReceipt,
 } from '@wagmi/core'
 import { Hex } from 'viem'
+import { IWeb3Type } from '../../chainType'
+import { evmChainsConfig } from '../../chains'
 
 // TODO update in hashParams chainIdParams chainTypeParams
 export const getTransactionDetail = async (
@@ -15,7 +14,7 @@ export const getTransactionDetail = async (
   {
     hash,
     chainId,
-    chainType: caseKey
+    chainType: caseKey,
   }: {
     hash: string | undefined
     chainId: number | undefined
@@ -37,22 +36,22 @@ export const getTransactionDetail = async (
           const config = evmChainsConfig()
           const confirmations = await getTransactionConfirmations(config, {
             hash: hash as Hex,
-            chainId: chainId
+            chainId: chainId,
           })
           console.log({
-            confirmations
+            confirmations,
           })
           if (confirmations <= 0n) return
 
           const detail = await getTransactionReceipt(config, {
             hash: hash as Hex,
-            chainId: chainId
+            chainId: chainId,
           })
           if (!detail) return
 
           const blockInfo = await getBlock(config, {
             blockNumber: detail.blockNumber,
-            chainId: chainId
+            chainId: chainId,
           })
 
           const endTime = Number(blockInfo.timestamp.toString())
@@ -64,7 +63,7 @@ export const getTransactionDetail = async (
           return {
             blocknumber: detail.blockNumber.toString(),
             timestamp: endTime * 1000,
-            gasAmount: gasUsed * effectiveGasPrice
+            gasAmount: gasUsed * effectiveGasPrice,
           }
         })()
       default:

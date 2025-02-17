@@ -13,6 +13,7 @@ const WalletBtn = () => {
   const { setOpen, component, open } = usePopup({
     showCloseButton: true,
     content: <WalletAddress />,
+    bodyClassName: 'px-4 py-3',
   })
 
   return (

@@ -1,61 +1,42 @@
-import { useWebApp } from '@vkruglikov/react-telegram-web-app'
-import { Button } from '@/components/tmd/button/Button'
-import Copy from 'components/Copy'
-import toast from 'components/Toast'
-import useSdk from '@/hooks/oauth/useSdk'
-import useEvmMethods from '@/hooks/oauth/useEvmMethods'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import useLoginInfo from 'hooks/useLoginInfo'
-import { formatUnits } from 'viem'
-import { useNavigate } from 'react-router-dom'
-import useApp from '@/hooks/oauth/useApp'
-import { getMulticallTokenInfo } from '@/stores/tokenStore/hooks/read/useReadErc20'
 import { prepareTransactionRequest } from '@wagmi/core'
-import { evmChainsConfig } from '@/proviers/web3Provider/chains'
-
 import { GasFeeStatus } from './const'
 import Container from './Container'
+import './index.css'
+import { useWalletRequestStore } from '@/store/wallet/walletRequest'
+import { evmChainsConfig } from '@/store/wallet/chains'
+import { useNavigate } from 'react-router-dom'
+import { getChainByChainId } from '@/store/wallet/util/tokenHelper'
+import { getMulticallTokenInfo } from '@/store/wallet/hooks/read/useReadErc20'
+import { numberFormat, parseApproveOrTransferParams } from '../../../utils/helper'
+import useEvmMethods from '../../../hooks/useEvmMethods'
+import { TokenInfo } from './types'
+import { formatUnits } from 'viem'
+import useBalance from './useBalance'
+import useGas from './useGas'
+import { constructEstGasParams } from '../../../utils/helper'
+import { useToast } from '@chakra-ui/react'
+import { CustomToast, typeOptions } from '@/components/comm/Toast'
+import BaseButton from '@/components/BaseButton/BaseButton'
 import ListItem from './ListItem'
+import { shortenAddress } from '@/store/wallet/util'
+import { TCopy } from '@/components/tmd'
+import NetworkFee, { Deposit, NetworkFeeTag } from './NetworkFee'
 import Skeleton from './Skeleton'
 import DescriptionOrRawData from './DescriptionOrRawData'
-import NetworkFee, { NetworkFeeTag, Deposit } from './NetworkFee'
-import useGas from './useGas'
-import useBalance from './useBalance'
-import useDeposit from './useDeposit'
-import { TokenInfo } from './types'
-import { shortenAddress } from 'utils/helper'
-import {
-  constructEstGasParams,
-  numberFormat,
-  parseApproveOrTransferParams
-} from '../../../../../utils/oauth/helper'
-import { getChainByChainId } from '@/stores/walletStore/utils'
+import { useRequest } from 'ahooks'
 
-import './index.css'
+export default function SignTransaction({ onSuccess }: { onSuccess?: (data: string) => void }) {
+  const {
+    requestParam: { params },
+  } = useWalletRequestStore()
 
-export default function SignTransaction() {
-  const { getPayload } = useSdk()
-  const { evmAddress } = useLoginInfo()
-  const webApp = useWebApp()
-  const { webAppReject } = useApp()
+  const toast = useToast()
   const navigate = useNavigate()
 
-  const { data: transData, isLoading } = useQuery({
-    queryKey: ['sign-transaction'],
-    queryFn: async () => {
-      return await getPayload()
-    }
-  })
-
   const transfer = useMemo(() => {
-    if ((transData?.data?.params || []).length) {
-      const data = transData?.data?.params[0]
-
-      return data
-    }
-    return {}
-  }, [transData?.data?.params])
+    return params.length > 0 ? params[0] : {}
+  }, [params])
 
   const chainId = useMemo(() => {
     return Number(transfer?.chainId)
@@ -65,8 +46,6 @@ export default function SignTransaction() {
     return getChainByChainId(chainId)
   }, [chainId])
 
-  // console.log('chain', chain, transfer?.chainId)
-
   const tokenData = useMemo(() => {
     return parseApproveOrTransferParams(transfer?.data || '')
   }, [transfer?.data])
@@ -75,26 +54,28 @@ export default function SignTransaction() {
     name: '',
     symbol: '',
     decimals: 0,
-    image: ''
+    image: '',
   })
 
-  useEffect(() => {
-    if (transfer?.to && chainId && tokenData.value) {
-      getMulticallTokenInfo({
+  useRequest(
+    async () => {
+      return await getMulticallTokenInfo({
         chainId: chainId,
-        tokenAddress: transfer.to
-      }).then((data) => {
-        setTokenInfo(data)
+        tokenAddress: transfer.to,
       })
+    },
+    {
+      ready: transfer?.to && chainId && tokenData.value,
+      onSuccess: (data) => {
+        setTokenInfo(data)
+      },
     }
-  }, [transfer?.to, chainId, tokenData.value])
-
-  const [status, setStatus] = useState<'normal' | 'loading' | 'success'>(
-    'normal'
   )
 
+  const [status, setStatus] = useState<'normal' | 'loading' | 'success'>('normal')
+
   const { signEVMTransaction } = useEvmMethods({
-    chainId: chainId
+    chainId: chainId,
   })
 
   // this is the token that is being transacted
@@ -133,7 +114,7 @@ export default function SignTransaction() {
       symbol,
       decimals,
       value,
-      formatted
+      formatted,
     }
   }, [
     chain?.chain?.nativeCurrency.decimals,
@@ -143,7 +124,7 @@ export default function SignTransaction() {
     tokenInfo?.decimals,
     tokenInfo?.symbol,
     transfer?.data,
-    transfer?.value
+    transfer?.value,
   ])
 
   const balance = useBalance({
@@ -151,39 +132,25 @@ export default function SignTransaction() {
     address: transfer.from,
     // if token is not native, then use the token: transfer.to
     token: transfer?.data && tokenInfo?.symbol ? transfer.to : undefined,
-    amount: computedToken.value
+    amount: computedToken.value,
   })
 
-  const { canDeposit } = useDeposit({
-    chainId,
-    // if token is not native, then use the token: transfer.to
-    address: computedToken?.isNative ? '' : transfer?.to
-  })
+  // const { canDeposit } = useDeposit({
+  //   chainId,
+  //   // if token is not native, then use the token: transfer.to
+  //   address: computedToken?.isNative ? '' : transfer?.to,
+  // })
 
-  const {
-    gas,
-    setGas,
-    gasWei,
-    setGasWei,
-    gasFee,
-    gasFeeStatus,
-    setGasFeeStatus
-  } = useGas({
+  const { gas, setGas, gasWei, setGasWei, gasFee, gasFeeStatus, setGasFeeStatus } = useGas({
     chainId,
     transfer,
     amount: computedToken.value,
-    isNativeToken: computedToken.isNative
+    isNativeToken: computedToken.isNative,
   })
 
   const estimateGasFee = useCallback(() => {
     try {
-      if (
-        chainId &&
-        transfer?.from &&
-        transfer?.to &&
-        evmChainsConfig &&
-        !isNaN(gasWei as any)
-      ) {
+      if (chainId && transfer?.from && transfer?.to && evmChainsConfig && !isNaN(gasWei as any)) {
         setGasFeeStatus(GasFeeStatus.UNKNOWN)
 
         prepareTransactionRequest(
@@ -193,7 +160,7 @@ export default function SignTransaction() {
             account: transfer?.from,
             to: transfer?.to,
             value: BigInt(parseInt(transfer?.value) || 0),
-            data: transfer?.data
+            data: transfer?.data,
           })
         )
           .then((res) => {
@@ -220,18 +187,14 @@ export default function SignTransaction() {
     transfer?.data,
     evmChainsConfig,
     gasWei,
-    chain?.chain?.nativeCurrency.decimals
+    chain?.chain?.nativeCurrency.decimals,
   ])
 
   const customGasLimit = transfer.gasLimit
   const customGasPrice = transfer.gasPrice
 
   useEffect(() => {
-    if (
-      customGasLimit &&
-      !isNaN(customGasPrice as any) &&
-      chain?.chain?.nativeCurrency.decimals
-    ) {
+    if (customGasLimit && !isNaN(customGasPrice as any) && chain?.chain?.nativeCurrency.decimals) {
       console.log('estimating with custom gas limit')
       setGas(BigInt(customGasLimit))
       setGasWei(customGasPrice)
@@ -245,21 +208,12 @@ export default function SignTransaction() {
     gasWei,
     customGasLimit,
     customGasPrice,
-    chain?.chain?.nativeCurrency.decimals
+    chain?.chain?.nativeCurrency.decimals,
   ])
 
-  const getUserAddress = () => evmAddress
   const handleConfirm = async () => {
     if (status !== 'normal') return
-    const userAddress = getUserAddress()
-    if (
-      !userAddress ||
-      !transfer?.from ||
-      userAddress.toLowerCase() != `${transfer.from}`.toLowerCase()
-    ) {
-      toast.error('From address error.')
-      return
-    }
+
     try {
       setStatus('loading')
 
@@ -270,7 +224,7 @@ export default function SignTransaction() {
         fromAddress: transfer?.from,
         toAddress: transfer?.to,
         value: BigInt(parseInt(transfer?.value) || 0),
-        data: transfer?.data
+        data: transfer?.data,
       }
 
       if (transfer.gasLimit) signData.gasLimit = transfer.gasLimit
@@ -278,63 +232,52 @@ export default function SignTransaction() {
       const result = await signEVMTransaction(signData)
       if (result && result?.code == 10000) {
         setStatus('success')
-
-        setTimeout(() => {
-          // webApp.enableClosingConfirmation()
-          // webApp.disableClosingConfirmation()
-          webApp?.close()
-        }, 500)
+        onSuccess?.(result.result)
       } else {
         setStatus('normal')
         throw result?.message || 'Network error.'
       }
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || err?.message || err)
+      toast({
+        render: () => {
+          return (
+            <CustomToast
+              title={err?.response?.data?.message || err?.message || err}
+              type={typeOptions.error}
+            />
+          )
+        },
+        position: 'bottom',
+        duration: 2000,
+      })
       setStatus('normal')
     }
   }
 
-  const goNetworkFee = useCallback(() => {
-    navigate('/oauth/network-fee', {
-      state: {
-        fee: gasFee.formatted,
-        price: gasWei,
-        limit: gas.toString(),
-        symbol: chain?.chain?.nativeCurrency.symbol
-      }
-    })
-  }, [
-    navigate,
-    gasFee.formatted,
-    gasWei,
-    gas,
-    chain?.chain?.nativeCurrency.symbol
-  ])
+  // const goNetworkFee = useCallback(() => {
+  //   navigate('/oauth/network-fee', {
+  //     state: {
+  //       fee: gasFee.formatted,
+  //       price: gasWei,
+  //       limit: gas.toString(),
+  //       symbol: chain?.chain?.nativeCurrency.symbol,
+  //     },
+  //   })
+  // }, [navigate, gasFee.formatted, gasWei, gas, chain?.chain?.nativeCurrency.symbol])
+  const goNetworkFee = () => {}
 
   const Footer = (
-    <div className={`mt-[25px] grid w-full grid-cols-2 items-end gap-5`}>
-      <Button
-        size="large"
-        block
-        onClick={() => webAppReject(false)}
-        theme="ghost"
-      >
+    <div className={`mt-[25px] w-full`}>
+      {/* <Button size="large" block onClick={() => webAppReject(false)} theme="ghost">
         Reject
-      </Button>
-      <Button
-        size="large"
-        className="w-full"
-        onClick={handleConfirm}
-        status={status}
-        disabled={
-          isLoading ||
-          !transData?.data ||
-          (gasFeeStatus !== GasFeeStatus.SUCCESS &&
-            gasFeeStatus !== GasFeeStatus.CUSTOM)
-        }
-      >
-        Approve
-      </Button>
+      </Button> */}
+      <BaseButton
+        handler={handleConfirm}
+        loading={status == 'loading'}
+        disabled={gasFeeStatus !== GasFeeStatus.SUCCESS && gasFeeStatus !== GasFeeStatus.CUSTOM}
+        text="Approve"
+        height="52px"
+      />
     </div>
   )
 
@@ -342,17 +285,9 @@ export default function SignTransaction() {
     <Container title={'Sign Tx'} footer={Footer}>
       {/* Network */}
       <ListItem title={'Network'}>
-        <div
-          className={`flex items-center gap-[4px] text-sm font-medium leading-[18px]`}
-        >
+        <div className={`flex items-center gap-[4px] text-sm font-medium leading-[18px]`}>
           <span>{chain?.name}</span>
-          {chain?.icon && (
-            <img
-              src={chain?.icon}
-              className={`size-[20px] rounded-full`}
-              alt=""
-            />
-          )}
+          {chain?.icon && <img src={chain?.icon} className={`size-[20px] rounded-full`} alt="" />}
         </div>
       </ListItem>
 
@@ -375,17 +310,14 @@ export default function SignTransaction() {
           <span className={`max-w-[170px] break-words text-right`}>
             {shortenAddress(transfer?.to || '', 8, 8)}
           </span>
-          <Copy text={transfer?.to ?? ''} />
+          <TCopy text={transfer?.to ?? ''} />
         </div>
       </ListItem>
 
       <div className={`my-[8px] h-px bg-gray-100`}></div>
 
       {/* Amount */}
-      <ListItem
-        title={'Amount'}
-        className={balance.isInsufficient ? '!items-start' : ''}
-      >
+      <ListItem title={'Amount'} className={balance.isInsufficient ? '!items-start' : ''}>
         <div className={`flex max-w-[170px] items-center`}>
           {computedToken.symbol && computedToken.formatted ? (
             <div className="flex flex-col items-end gap-[6.5px]">
@@ -399,7 +331,7 @@ export default function SignTransaction() {
                 <Deposit
                   chainId={chainId}
                   address={computedToken?.isNative ? '' : transfer?.to}
-                  canDeposit={computedToken?.isNative ? true : canDeposit}
+                  canDeposit={true} // {computedToken?.isNative ? true : canDeposit}
                   symbol={computedToken.symbol}
                 />
               )}

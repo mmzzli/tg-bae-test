@@ -1,8 +1,9 @@
-import { useEstimateGas } from '@/hooks/oauth/useGas'
+// import { useEstimateGas } from '@/hooks/oauth/useGas'
 import BigNumber from 'bignumber.js'
 import { useMemo, useState } from 'react'
 import { useBalance } from 'wagmi'
 import { GasFeeStatus } from './const'
+import { useEstimateGas } from '../../../hooks/useGas'
 
 interface IProps {
   chainId?: number
@@ -32,15 +33,15 @@ export function useEstimateGasFee({
   transfer,
   amount,
   isNativeToken,
-  decimals = 18
+  decimals = 18,
 }: IProps) {
   const nativeBalanceRes = useBalance({
     address: transfer.from,
-    chainId
+    chainId,
   })
   const { gas, evmGasWei: gasWei } = useEstimateGas({
     chainId: chainId,
-    transfer
+    transfer,
   })
 
   const computedGas = useMemo(() => {
@@ -53,7 +54,7 @@ export function useEstimateGasFee({
     if (!computedGas || !gasWei) {
       return {
         value: BigInt(0),
-        formatted: '0'
+        formatted: '0',
       }
     }
 
@@ -75,14 +76,14 @@ export function useEstimateGasFee({
     nativeBalanceRes?.isSuccess,
     nativeBalanceRes?.data?.value,
     isNativeToken,
-    amount
+    amount,
   ])
 
   return {
     gas: computedGas,
     gasWei,
     gasFee,
-    isInsufficient
+    isInsufficient,
   }
 }
 
@@ -101,7 +102,7 @@ export default function useGas({
   transfer,
   amount,
   isNativeToken,
-  decimals = 18
+  decimals = 18,
 }: IProps) {
   const [gasFeeStatus, setGasFeeStatus] = useState(GasFeeStatus.UNKNOWN)
   const [gas, setGas] = useState(BigInt(0))
@@ -112,7 +113,7 @@ export default function useGas({
     transfer,
     amount,
     isNativeToken,
-    decimals
+    decimals,
   })
   const computedGasWei = gasWei || estimateGasFee.gasWei
   const computedGas = gas || estimateGasFee.gas
@@ -132,7 +133,7 @@ export default function useGas({
     gasWei: computedGasWei,
     setGasWei,
     gasFee: computedGasFee,
-    estimateGasFee
+    estimateGasFee,
   }
 }
 
@@ -147,6 +148,6 @@ export const calcGasFee = (
   const fee = new BigNumber(Number(gas)).multipliedBy(gasWei)
   return {
     value: BigInt(Number(fee)),
-    formatted: fee.dividedBy(10 ** decimals).toFixed()
+    formatted: fee.dividedBy(10 ** decimals).toFixed(),
   }
 }

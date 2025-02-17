@@ -4,10 +4,10 @@ import ListItem from './ListItem'
 import Container from './Container'
 import { GasFeeStatus } from './const'
 import { Skeleton } from 'antd-mobile'
-import { NumberFormatter } from '@/components/NumberFormatter'
-import { arrowSvgs } from '@/assets'
-import reload from '@/assets/imgs/oauth/reload.svg'
-import { deposit } from '@/utils/oauth/helper'
+import { NumberFormatter } from '@/pages/Wallet/components/NumberFormatter'
+import { IconReload } from '@/components/tmd/icons/reload'
+import { IconArrowRight2 } from '@/components/tmd/icons/arrowRight2'
+import { useNavigate } from 'react-router-dom'
 
 function NetworkFee({
   gasFeeStatus,
@@ -15,7 +15,7 @@ function NetworkFee({
   gasFee,
   estimateGasFee,
   symbol,
-  chainId
+  chainId,
 }: {
   gasFeeStatus: GasFeeStatus
   goNetworkFee: () => void
@@ -25,28 +25,15 @@ function NetworkFee({
   chainId: number
 }) {
   const GasFeeDom = useMemo(() => {
-    return (
-      <GasFee
-        gasFee={gasFee}
-        symbol={symbol}
-        showArrow
-        onClick={goNetworkFee}
-      />
-    )
+    return <GasFee gasFee={gasFee} symbol={symbol} showArrow onClick={goNetworkFee} />
   }, [gasFee, symbol, goNetworkFee])
 
   const GasFeeMap: Record<GasFeeStatus, ReactNode> = {
-    [GasFeeStatus.UNKNOWN]: (
-      <Skeleton animated className="h-[21px] w-[60px] rounded-full" />
-    ),
+    [GasFeeStatus.UNKNOWN]: <Skeleton animated className="h-[21px] w-[60px] rounded-full" />,
     [GasFeeStatus.SUCCESS]: GasFeeDom,
     [GasFeeStatus.FAIL]: (
       <div className="flex text-[#ff2a8b]">
-        <img
-          src={reload}
-          className="size-5 cursor-pointer pr-1"
-          onClick={estimateGasFee}
-        />
+        <IconReload className="size-5 cursor-pointer pr-1 text-t1" onClick={estimateGasFee} />
         unable to estimate
       </div>
     ),
@@ -58,7 +45,7 @@ function NetworkFee({
       </div>
     ),
 
-    [GasFeeStatus.CUSTOM]: GasFeeDom
+    [GasFeeStatus.CUSTOM]: GasFeeDom,
   }
 
   return GasFeeMap[gasFeeStatus]
@@ -70,7 +57,7 @@ export function GasFee({
   gasFee,
   symbol,
   showArrow,
-  onClick
+  onClick,
 }: {
   gasFee: string
   symbol: string
@@ -79,37 +66,32 @@ export function GasFee({
 }) {
   if (!Number(gasFee)) return null
   return (
-    <div
-      className={`${showArrow ? 'cursor-pointer' : ''} flex items-center`}
-      onClick={onClick}
-    >
+    <div className={`${showArrow ? 'cursor-pointer' : ''} flex items-center`} onClick={onClick}>
       <NumberFormatter value={gasFee} />
       &nbsp;
       {symbol}
-      {showArrow && (
-        <img
-          src={arrowSvgs.rightNewSvg}
-          className={`ml-[10px] size-[12px] cursor-pointer`}
-        />
-      )}
+      {showArrow ? <IconArrowRight2 className="ml-2.5 size-3 cursor-pointer" /> : null}
     </div>
   )
 }
 
+// 前往receive页面
 export function Deposit({
   chainId,
   address = '',
   canDeposit = true,
-  symbol
+  symbol,
 }: {
   chainId: number
   address?: string
   symbol: string
   canDeposit?: boolean
 }) {
+  const navigate = useNavigate()
   const goDeposit = useCallback(async () => {
-    deposit({ chainId, tokenAddress: address })
+    navigate(`/wallet/receive/${chainId}/${address}`)
   }, [address, chainId])
+
   return (
     <div className="flex text-[#FF288A]">
       {canDeposit && (
@@ -134,20 +116,12 @@ export interface NetworkFeeProps {
 type IProps = NetworkFeeProps & {
   footer?: ReactNode
 }
-export function NetworkFeeDetail({
-  fee,
-  price,
-  limit,
-  symbol = 'ETH',
-  footer
-}: IProps) {
+export function NetworkFeeDetail({ fee, price, limit, symbol = 'ETH', footer }: IProps) {
   return (
     <Container title="Network Fee" footer={footer}>
       <ListItem title={'Gas Price'}>
         <ItemWrap>
-          <NumberFormatter
-            value={String(convertGasWeiToGasGwei(String(price)))}
-          />
+          <NumberFormatter value={String(convertGasWeiToGasGwei(String(price)))} />
           &nbsp;GWei
         </ItemWrap>
       </ListItem>
@@ -169,17 +143,13 @@ const ItemWrap = ({ children }: { children: ReactNode }) => (
   <div className="max-w-[170px] text-title">{children}</div>
 )
 
-export function NetworkFeeTag({
-  gasFeeStatus
-}: {
-  gasFeeStatus: GasFeeStatus
-}) {
+export function NetworkFeeTag({ gasFeeStatus }: { gasFeeStatus: GasFeeStatus }) {
   const tag = {
     [GasFeeStatus.SUCCESS]: 'fast',
     [GasFeeStatus.INSUFFICIENT_FUNDS]: '',
     [GasFeeStatus.CUSTOM]: 'custom',
     [GasFeeStatus.FAIL]: '',
-    [GasFeeStatus.UNKNOWN]: ''
+    [GasFeeStatus.UNKNOWN]: '',
   }[gasFeeStatus]
   if (!tag) return null
   return (

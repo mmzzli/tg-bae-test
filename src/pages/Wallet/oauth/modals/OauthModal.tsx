@@ -5,14 +5,13 @@ import { TPopup } from '@/components/tmd'
 export const OauthModal = NiceModal.create(() => {
   const modal = useModal()
 
-  // const handleResolve = (mfa: string, pass: string) => {
-  //   modal.resolve(mfa)
-  //   modal.hide()
-  //   return
-  // }
+  const handleResolve = (data?: any) => {
+    modal.resolve(data)
+    modal.hide()
+  }
 
   const handleCancel = () => {
-    // modal.reject(new Error('Cancelled'))
+    modal.reject('')
     modal.hide()
   }
 
@@ -21,11 +20,11 @@ export const OauthModal = NiceModal.create(() => {
       visible={modal.visible}
       onMaskClick={handleCancel}
       onClose={handleCancel}
-      bodyStyle={{ height: '40vh' }}
+      bodyStyle={{ height: '80vh' }}
       destroyOnClose
       showCloseButton
     >
-      <Oauth />
+      <Oauth onSuccess={handleResolve} />
     </TPopup>
   )
 })

@@ -26,6 +26,7 @@ export default {
         yellow: '#FFB904',
         blue: '#2B6BFF',
         blue3: '#3478F6',
+        title: '#121212',
         /** for wallet page end */
       },
       backgroundImage: {

@@ -2,17 +2,17 @@ import { ReactNode } from 'react'
 import ListItem from './ListItem'
 import { formatUnits } from 'viem'
 import { Popover } from 'antd-mobile'
-import { toastSvgs } from '@/assets'
 import Container from './Container'
 import Skeleton from './Skeleton'
 import { useNavigate } from 'react-router-dom'
 import { TokenData } from './types'
-import { numberFormat } from '@/utils/oauth/helper'
+import { numberFormat } from '../../../utils/helper'
+import { IconWarning } from '@/components/tmd/icons/warning'
 
 function DescriptionOrRawData({
   transferData,
   tokenData,
-  tokenInfo
+  tokenInfo,
 }: {
   transferData: string
   tokenData: TokenData
@@ -40,18 +40,13 @@ function DescriptionOrRawData({
               <div>
                 <span className="text-[#FF288A]">Approve</span>{' '}
                 {numberFormat(
-                  formatUnits(
-                    BigInt(tokenData?.value || 0),
-                    tokenInfo.decimals
-                  ),
+                  formatUnits(BigInt(tokenData?.value || 0), tokenInfo.decimals),
                   6
                 )?.toLowerCase()}
                 &nbsp;
                 {tokenInfo.symbol} to
               </div>
-              <div className="w-[161px] truncate text-right">
-                {tokenData.to}
-              </div>
+              <div className="w-[161px] truncate text-right">{tokenData.to}</div>
             </div>
           ) : (
             <div className={`flex max-w-[170px] flex-col gap-[3px]`}>
@@ -77,11 +72,7 @@ function DescriptionOrRawData({
                 trigger="click"
                 placement="right"
               >
-                <img
-                  src={toastSvgs.toastWarningSvg}
-                  className="size-[20px] cursor-pointer text-[#FFBA0A]"
-                  alt=""
-                />
+                <IconWarning className="size-5 cursor-pointer text-[#FFBA0A]" />
               </Popover>
             </div>
           }
@@ -101,13 +92,7 @@ function DescriptionOrRawData({
 }
 export default DescriptionOrRawData
 
-export function RawData({
-  rawData,
-  footer
-}: {
-  rawData: string
-  footer?: ReactNode
-}) {
+export function RawData({ rawData, footer }: { rawData: string; footer?: ReactNode }) {
   return (
     <Container
       className="break-words"

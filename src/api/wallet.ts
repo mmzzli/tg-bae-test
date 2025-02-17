@@ -244,6 +244,20 @@ export const signEvmTransaction = async (
   )
 }
 
+export const signEvmMessage = async (
+  mfa: string,
+  data: {
+    message: string
+    walletId?: number
+  }
+) => {
+  return await walletPost('socialLogin/projectWallet/ethereum/signMessage', data, {
+    headers: {
+      mfa: mfa,
+    },
+  })
+}
+
 export const v1AddAssetApi = async (data: {
   chain_id: number
   decimals: number
@@ -253,4 +267,13 @@ export const v1AddAssetApi = async (data: {
   token: string
 }) => {
   return await tomoAuthPost<WalletApiResponse>('v1/asset/add', data)
+}
+
+export const getConfigChainsAll = async (): Promise<{
+  chain_id_name: {
+    [key in IChainId]?: string
+  }
+}> => {
+  const { data } = await configApi.get(`/chain/all`)
+  return data.result
 }

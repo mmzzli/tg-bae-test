@@ -29,12 +29,27 @@ const WalletTest = () => {
     console.log('mfa, signature', mfa, signature)
   }
 
+  const handleSign = async () => {
+    const data = await hanleWalletAction({
+      method: 'eth_signTransaction',
+      params: [
+        {
+          from: '0xdcf971dcc07fb220bf8b3001b903afc6ef58e635',
+          to: '0xdcf971dcc07fb220bf8b3001b903afc6ef58e635',
+          chainId: 56,
+          value: '0.001',
+        },
+      ],
+    })
+    console.log('handleSign', data)
+  }
+
   return (
     <div className="grid grid-cols-2 gap-4">
       <button onClick={connect}>connect</button>
       <button onClick={handleMfa}>useMfa</button>
 
-      <button onClick={hanleWalletAction}>oauth</button>
+      <button onClick={handleSign}>oauth</button>
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '@chakra-ui/react'
-import { useAccount } from 'wagmi'
+// import { useAccount } from 'wagmi'
 import { animated } from 'react-spring'
 
 import BaseButton from '@/components/BaseButton/BaseButton'
@@ -14,6 +14,7 @@ import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import ConnectModal from '@/components/Wallet/ConnectModal'
 import RewardListModal from '@/components/Wallet/RewardListModal'
 import { useSwipeBack } from '@/hooks/useSwipeBack'
+import { useAccount } from '../Wallet/utils/walletProvider'
 
 const Earnings = () => {
   const navigate = useNavigate()
@@ -30,7 +31,7 @@ const Earnings = () => {
   })
   const connectModalRef = useRef<{ someMethod: () => void }>(null)
   const rewardRef = useRef<{ someMethod: () => void }>(null)
-  const { address, chain, status } = useAccount()
+  const { address, status } = useAccount()
   const setNeedUpdateEarnings = useStore((state) => state.setNeedUpdateEarnings)
   const [totalGifts, setTotalGifts] = useState<GiftsRes>({
     gifts: 0,
@@ -48,7 +49,6 @@ const Earnings = () => {
   const handleReward = async () => {
     console.log('status', status)
     console.log('address', address)
-    console.log('chain', chain)
     if (status === 'disconnected') {
       connectModalRef.current?.someMethod()
     } else if (status !== 'connected') {

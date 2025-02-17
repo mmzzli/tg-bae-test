@@ -50,6 +50,7 @@ const useInitUser = () => {
     fetchUserInfoAction,
     updateTgAction,
     walletUserInfo: userInfo,
+    refreshTokenStore
   } = useStore(
     (state) => ({
       updateUserStateAction: state.updateUserStateAction,
@@ -59,6 +60,7 @@ const useInitUser = () => {
       tokensReSetActions: state.tokensReSetActions,
       walletUserInfo: state.walletUserInfo,
       userState: state.userState,
+      refreshTokenStore: state.refreshTokenStore
     }),
     shallow
   )
@@ -96,6 +98,15 @@ const useInitUser = () => {
         ...useStore.getState().userState,
         loginTime: new Date().getTime(),
       })
+      refreshTokenStore()
+
+      // without email->goto set email
+      setTimeout(() => {
+        if (!useStore.getState().walletUserInfo.email) {
+          navigate('/account/recovery')
+          return
+        }
+      }, 100);
       // Toast.clear()
     } catch (e) {
       // Toast.clear()
@@ -158,13 +169,6 @@ const useInitUser = () => {
       //go to root /
       fetchUserInfoAction()
 
-      getUserInfo()
-      // without email->goto set email
-      if (!userState.email) {
-        navigate('/account/recovery')
-        return
-      }
-
       // userStore.updateAutoLoginAction()
     } catch (e) {
       toast({
@@ -179,34 +183,6 @@ const useInitUser = () => {
     }
   }
 
-  /* check tg init data */
-  // useEffect(() => {
-  //   if (initDataUnsafe && initData) {
-  //     updateTgAction(initDataUnsafe, initData)
-
-  //     loginAction()
-  //     window.Telegram?.WebApp?.ready()
-  //     const id = initDataUnsafe?.user?.id
-  //     id && Sentry.setUser({ id })
-  //   }
-  // }, [initDataUnsafe, initData])
-
-  /* tg data with login*/
-  // const infoFetchRefresh = () => {
-  //   if (userStore.userInfoRefresh !== 0) getUserInfo()
-  // }
-
-  // const loginFetchRefresh = () => {
-  //   const flagUnion = window.location.href.includes('/ramp')
-  //   if (flagUnion) {
-  //     return
-  //   }
-  //   if (!userStore.tgData.query) {
-  //     toast.error('Telegram tomo app init error')
-  //     return
-  //   }
-  //   tgLogin(userStore.tgData.query)
-  // }
   return { tgLogin, getUserInfo }
 }
 

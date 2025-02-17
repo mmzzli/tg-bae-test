@@ -24,6 +24,7 @@ const ProfileConnectButton = ({ className }: { className?: string }) => {
   const connectModalRef = useRef<{ someMethod: () => void }>(null)
 
   const totalBal = useMemo(() => {
+    debugger
     return tokenList
       .map((token) => {
         return (token?.price || 0) * Number(token?.formatted ?? 0)
@@ -31,7 +32,7 @@ const ProfileConnectButton = ({ className }: { className?: string }) => {
       .reduce((accToken, curToken) => {
         return (accToken || 0) + curToken
       }, 0)
-  }, [tokenList])
+  }, [tokenList, status])
 
   const handleConnect = async () => {
     if (status === 'disconnected') {

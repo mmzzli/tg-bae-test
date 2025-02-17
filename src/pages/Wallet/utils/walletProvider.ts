@@ -11,12 +11,22 @@ import { useTokenStore } from '@/store/wallet/walletToken'
 export const useAccount = () => {
   const [initDataUnsafe] = useInitData()
 
+  const { walletUserInfo } = useTokenStore()
+
   const [status, setStatus] = useState<'disconnected' | 'connected'>('disconnected')
   const [address, setAddress] = useState<`0x${string}` | undefined>(undefined)
   const [solAddress, setSolAddress] = useState<string | undefined>(undefined)
   const [tonAddress, setTonAddress] = useState<string | undefined>(undefined)
 
   useEffect(() => {
+    checkUserInfo()
+  }, [])
+  
+  useEffect(() => {
+    checkUserInfo()
+  }, [JSON.stringify(walletUserInfo)])
+  
+  const checkUserInfo = () => {
     const walletUserState: UserState = initUserState()
     const walletUserInfo: UserType = initUserInfo()
     if (
@@ -29,7 +39,7 @@ export const useAccount = () => {
       setSolAddress(walletUserInfo.solanaAddress)
       setTonAddress(walletUserInfo.tonAddress)
     }
-  }, [])
+  }
 
   return {
     status,

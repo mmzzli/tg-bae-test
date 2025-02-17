@@ -362,9 +362,22 @@ const ResourceList = ({ resources: initialResources, type, hasMore }: Props) => 
             position: 'bottom',
           })
           setSaveds(data)
+        }else {
+          toast({
+            render: () => {
+              return <CustomToast title="Saved!" type={typeOptions.success} />
+            },
+            position: 'bottom',
+          })
         }
       } else {
         await favDel(data.id)
+        toast({
+          render: () => {
+            return <CustomToast title="Unsaved!" type={typeOptions.success} />
+          },
+          position: 'bottom',
+        })
       }
 
       if (type === 'fav') {
@@ -375,16 +388,8 @@ const ResourceList = ({ resources: initialResources, type, hasMore }: Props) => 
   )
 
   const savedEve = async (data: FormatterListItem) => {
-    const isSaved = !saveds.find((item) => item.id === data.id)?.saveds
     setSaveds(data)
     await favRun(data)
-    toast({
-      render: () => {
-        return <CustomToast title={isSaved ? "Saved!" : "Unsaved"} type={typeOptions.success} />
-      },
-      duration: 1000,
-      position: 'bottom',
-    })
   }
   const getShareLink = useMemoizedFn(async (title: string, pid: number, uid: number) => {
     toggle()
@@ -444,15 +449,15 @@ const ResourceList = ({ resources: initialResources, type, hasMore }: Props) => 
     }
   }, [videoInfo])
 
-  if (type === 'fav' && !hasMore && !resources.length) {
+  if (type === 'fav' && !hasMore && resources.length <= 0) {
     return (
       <Empty
         title="No post yet."
-        className="w-full fixed top-[63%] left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+        className="w-full min-h-[240px]"
         icon={
           <Icon name="icon-Empty_white_post" style={{ width: '164px', height: '164px' }}></Icon>
         }
-      ></Empty>
+      />
     )
   }
 

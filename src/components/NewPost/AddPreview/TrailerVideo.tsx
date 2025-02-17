@@ -4,7 +4,7 @@ import Hls from 'hls.js';
 
 interface TrailerVideoProps {
   trailer: string | null
-  setTrailer:(url:string)=>void
+  setTrailer: (url: string) => void
   previewVideoUrl: string
   videoUrl: string
 }
@@ -42,7 +42,7 @@ const TrailerVideo: React.FC<TrailerVideoProps> = ({
   return (
     <div className='relative'>
       <div className='w-[20px] h-[20px] right-[-6px] top-[-6px] z-10 rounded-[50px] bg-[#666] absolute flex items-center justify-center'
-        onClick={()=>setTrailer("")}
+        onClick={() => setTrailer("")}
       >
         <i className="iconfont icon-icon_close text-[#fff] dark:text-[#E0E2F6] text-[16px]"></i>
       </div>

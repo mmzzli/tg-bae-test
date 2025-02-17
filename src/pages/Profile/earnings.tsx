@@ -122,7 +122,7 @@ const Earnings = () => {
           <ul className="flex justify-between items-center">
             <li>
               <p className="text-[#999] text-[12px]">Total stars earned</p>
-              <h5 className="text-[#000] text-[22px] my-1">
+              <h5 className="text-[#333] text-[22px] my-1">
                 {formatUSD(data.total * data.exchange_rate, true)}
               </h5>
               <p className="flex gap-1">
@@ -132,7 +132,7 @@ const Earnings = () => {
             </li>
             <li>
               <p className="text-[#999] text-[12px]">Available to convert</p>
-              <h5 className="text-[#000] text-[22px] my-1">
+              <h5 className="text-[#333] text-[22px] my-1">
                 {formatUSD(data.available * data.exchange_rate, true)}
               </h5>
               <p className="flex gap-1">
@@ -178,13 +178,13 @@ const Earnings = () => {
             <ul className="flex justify-between items-center">
               <li>
                 <p className="text-[#999] text-[12px]">Cryptos received</p>
-                <h3 className="text-[#000] text-[22px] my-1">
+                <h3 className="text-[#333] text-[22px] my-1">
                   {formatUSD(totalGifts.gifts, true)}
                 </h3>
               </li>
               <li>
                 <p className="text-[#999] text-[12px]">Available to withdraw</p>
-                <h3 className="text-[#000] text-[22px] my-1">
+                <h3 className="text-[#333] text-[22px] my-1">
                   {formatUSD(totalGifts.withdraw_gifts, true)}
                 </h3>
               </li>

@@ -62,6 +62,7 @@ export const MainLayout: React.FC = () => {
   const resetUserInfo = useStore((state) => state.resetUserInfo)
   const resetToken = useStore((state) => state.resetToken)
   const setBackToHome = useStore((state) => state.setBackToHome)
+  const setProfileActiveTab = useStore((state) => state.setProfileActiveTab)
   const [shouldLoadChat, setShouldLoadChat] = useState(false)
   const [hiddenChatPage, setHiddenChatPage] = useState(false)
   const [hiddenHomePage, setHiddenHomePage] = useState(false)
@@ -212,10 +213,14 @@ export const MainLayout: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    console.log('pathname------------------------------->', location.pathname)
     // handle page refresh or open app from share link
     if (BASE_PATHS.includes(location.pathname)) {
       setBackToHome(false)
+    }
+
+    // Reset profile tab index when navigating to profile with query params
+    if (location.pathname !== '/profile') {
+      setProfileActiveTab(0)
     }
 
     // handle chat page start

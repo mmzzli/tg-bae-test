@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, memo } from 'react'
 import { Tabs, Swiper } from 'antd-mobile'
 import { Box, useBoolean } from '@chakra-ui/react'
 import InfiniteScroll from 'react-infinite-scroll-component'
@@ -6,6 +6,7 @@ import type { SwiperRef } from 'antd-mobile/es/components/swiper'
 
 import { useSetState, useMemoizedFn, useRequest } from 'ahooks'
 import { genShareLinkFn } from '@/utils/utils'
+import { useStore } from '@/store/store'
 
 import { getLink, getShareInlineMessageId } from '@/api/list'
 
@@ -15,8 +16,6 @@ import Icon from '../comm/Icon'
 import PostSkeleton from '../Skeketon/PostSkeleton'
 
 import { useFavList, useOrdersList, useViewList } from '@/store/hook/useResourceList'
-import { FormatterListItem } from '@/store/slices/resourceListSlice'
-import { ShareModal } from '../ResourceList/ResourceList'
 
 interface PostListProps {
   className?: string
@@ -37,7 +36,11 @@ const ViewList = ({ className }: PostListProps) => {
   const { refresh: refreshFav } = useFavList()
   const { refresh: refreshOrders } = useOrdersList()
   const { refresh: refreshView } = useViewList()
-  const [activeIndex, setActiveIndex] = useState<number>(0)
+  const { profileActiveTab, setProfileActiveTab } = useStore((state) => ({
+    profileActiveTab: state.profileActiveTab,
+    setProfileActiveTab: state.setProfileActiveTab,
+  }))
+  const [activeIndex, setActiveIndex] = useState<number>(profileActiveTab || 0)
   const swiperRef = useRef<SwiperRef>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [containerHeight, setContainerHeight] = useState<Record<string, string>>({}) // 动态高度
@@ -68,61 +71,53 @@ const ViewList = ({ className }: PostListProps) => {
   })
 
   const handleTabChange = (key: string) => {
-    const scrollableDiv = document.getElementById('profileScrollableDiv')
-    if (scrollableDiv && targetBoll && stickyScrollPosition !== null) {
-      scrollableDiv.scrollTo({
-        top: stickyScrollPosition,
-        behavior: 'smooth',
-      })
-    }
     const index = tabItems.findIndex((item) => item.key === key)
     setActiveIndex(index)
+    setProfileActiveTab(index)
     swiperRef.current?.swipeTo(index)
-  }
 
-  // 初始高度设置
-  useEffect(() => {
-    setTimeout(() => {
-      updateHeight(0) // 初始化显示第一个 Item
-    }, 300)
-  }, [])
-
-  // 更新当前内容高度
-  const updateHeight = (index: number) => {
-    if (containerRef.current) {
-      const currentSlide = containerRef.current.querySelectorAll('.swiper-item-cutomer')[index]
-      if (currentSlide) {
-        requestAnimationFrame(() => {
-          const height = currentSlide.scrollHeight
-          setContainerHeight((prev) => ({ ...prev, [index]: `${height}px` }))
+    // Defer scroll position restoration
+    requestAnimationFrame(() => {
+      const scrollableDiv = document.getElementById('profileScrollableDiv')
+      if (scrollableDiv && targetBoll && stickyScrollPosition !== null) {
+        scrollableDiv.scrollTo({
+          top: stickyScrollPosition,
+          behavior: 'smooth',
         })
       }
-    }
+    })
   }
 
-  const handleSwipeChange = (index: number) => {
-    const scrollableDiv = document.getElementById('profileScrollableDiv')
-    if (scrollableDiv && targetBoll && stickyScrollPosition !== null) {
-      scrollableDiv.scrollTo({
-        top: stickyScrollPosition,
-        behavior: 'smooth',
-      })
-    }
-    setActiveIndex(index)
-    setTimeout(() => {
-      updateHeight(index)
-    }, 100)
+  // Debounced height update
+  const debouncedUpdateHeight = useMemoizedFn((index: number) => {
+    if (!containerRef.current) return
 
-    // Refresh data based on swiper index
+    const currentSlide = containerRef.current.querySelectorAll('.swiper-item-cutomer')[index]
+    if (!currentSlide) return
+
+    requestAnimationFrame(() => {
+      const height = currentSlide.scrollHeight
+      if (height > 0) {
+        setContainerHeight((prev) => ({ ...prev, [index]: `${height}px` }))
+      }
+    })
+  })
+
+  const handleSwipeChange = (index: number) => {
+    setActiveIndex(index)
+    setProfileActiveTab(index)
+    debouncedUpdateHeight(index)
+
+    // Batch refresh operations
     switch (tabItems[index].key) {
       case 'posts':
-        refreshView()
+        requestAnimationFrame(refreshView)
         break
       case 'purchased':
-        refreshOrders()
+        requestAnimationFrame(refreshOrders)
         break
       case 'saved':
-        refreshFav()
+        requestAnimationFrame(refreshFav)
         break
     }
   }
@@ -130,39 +125,49 @@ const ViewList = ({ className }: PostListProps) => {
   useEffect(() => {
     const element = document.getElementById('profileScrollableDiv')
     const target = document.getElementById('targetElement')
-    const handleScroll = () => {
-      if (element && target) {
-        const rect = target.getBoundingClientRect()
-        const safeTop = window
-          .getComputedStyle(document.documentElement)
-          .getPropertyValue('--tg-safe-area-inset-top')
-        const contentTop = window
-          .getComputedStyle(document.documentElement)
-          .getPropertyValue('--tg-content-safe-area-inset-top')
-        const safeTopNum = Number(safeTop.replace('px', ''))
-        const contentTopNum = Number(contentTop.replace('px', ''))
 
-        if (rect.top <= safeTopNum + contentTopNum) {
-          setTargetBoll(true)
-          // 记录刚开始吸顶时的滚动位置
-          if (!targetBoll) {
-            setStickyScrollPosition(element.scrollTop)
-          }
-        } else {
-          setTargetBoll(false)
-          setStickyScrollPosition(null)
+    const handleScroll = () => {
+      if (!element || !target) return
+
+      const rect = target.getBoundingClientRect()
+      const safeTop = parseInt(
+        getComputedStyle(document.documentElement).getPropertyValue('--tg-safe-area-inset-top')
+      )
+      const contentTop = parseInt(
+        getComputedStyle(document.documentElement).getPropertyValue(
+          '--tg-content-safe-area-inset-top'
+        )
+      )
+
+      const shouldBeSticky = rect.top <= safeTop + contentTop
+
+      if (shouldBeSticky !== targetBoll) {
+        setTargetBoll(shouldBeSticky)
+        if (shouldBeSticky && !targetBoll) {
+          setStickyScrollPosition(element.scrollTop)
         }
       }
     }
+
     if (element) {
-      element.addEventListener('scroll', handleScroll)
+      element.addEventListener('scroll', handleScroll, { passive: true })
     }
+
     return () => {
       if (element) {
         element.removeEventListener('scroll', handleScroll)
       }
     }
   }, [targetBoll])
+
+  // Keep the existing effect for tab changes
+  useEffect(() => {
+    setActiveIndex(profileActiveTab)
+    swiperRef.current?.swipeTo(profileActiveTab)
+    requestAnimationFrame(() => {
+      debouncedUpdateHeight(profileActiveTab)
+    })
+  }, [profileActiveTab])
 
   return (
     <>
@@ -214,7 +219,7 @@ const ViewList = ({ className }: PostListProps) => {
                 key={'posts'}
                 setCurrentShareData={setCurrentShareData}
                 getShareLink={getShareLink}
-                updateHeight={updateHeight}
+                updateHeight={debouncedUpdateHeight}
               />
             </Swiper.Item>
             <Swiper.Item className="swiper-item-cutomer">
@@ -222,7 +227,7 @@ const ViewList = ({ className }: PostListProps) => {
                 key={'purchased'}
                 setCurrentShareData={setCurrentShareData}
                 getShareLink={getShareLink}
-                updateHeight={updateHeight}
+                updateHeight={debouncedUpdateHeight}
               />
             </Swiper.Item>
             <Swiper.Item className="swiper-item-cutomer">
@@ -230,7 +235,7 @@ const ViewList = ({ className }: PostListProps) => {
                 key={'saved'}
                 setCurrentShareData={setCurrentShareData}
                 getShareLink={getShareLink}
-                updateHeight={updateHeight}
+                updateHeight={debouncedUpdateHeight}
               />
             </Swiper.Item>
           </Swiper>
@@ -239,154 +244,173 @@ const ViewList = ({ className }: PostListProps) => {
     </>
   )
 }
-const MyPosts = ({
-  setCurrentShareData,
-  getShareLink,
-  updateHeight,
-}: {
-  setCurrentShareData: (data: ShareDataProps) => void
-  getShareLink: (title: string, pid: number, uid: number) => Promise<void>
-  updateHeight: (index: number) => void
-}) => {
-  const { list, hasMore, fetchMoreData, page } = useViewList()
 
-  useEffect(() => {
-    if (list.length) {
-      setTimeout(() => {
-        requestAnimationFrame(() => {
-          updateHeight(0) // index 对应各自的索引值
-        })
-      }, 100)
+const MyPosts = memo(
+  ({
+    setCurrentShareData,
+    getShareLink,
+    updateHeight,
+  }: {
+    setCurrentShareData: (data: ShareDataProps) => void
+    getShareLink: (title: string, pid: number, uid: number) => Promise<void>
+    updateHeight: (index: number) => void
+  }) => {
+    const { list, hasMore, fetchMoreData, page } = useViewList()
+
+    useEffect(() => {
+      if (list.length) {
+        setTimeout(() => {
+          requestAnimationFrame(() => {
+            updateHeight(0) // index 对应各自的索引值
+          })
+        }, 100)
+      }
+    }, [list])
+
+    if (!hasMore && list.length <= 0) {
+      return (
+        <Empty
+          title="No post yet."
+          className="w-full mt-10"
+          icon={
+            <Icon name="icon-Empty_white_post" style={{ width: '164px', height: '164px' }}></Icon>
+          }
+        ></Empty>
+      )
     }
-  }, [list])
 
-  if (!hasMore && !list.length) {
     return (
-      <Empty
-        title="No post yet."
-        className="w-full mt-10"
-        icon={
-          <Icon name="icon-Empty_white_post" style={{ width: '164px', height: '164px' }}></Icon>
+      <InfiniteScroll
+        dataLength={list.length}
+        next={fetchMoreData}
+        hasMore={hasMore}
+        loader={
+          <Box textAlign="center" className="pt-[24px]">
+            <PostSkeleton />
+          </Box>
         }
-      ></Empty>
+        scrollableTarget="profileScrollableDiv"
+        scrollThreshold={0.8}
+        style={{ overflow: 'visible' }}
+      >
+        <ResourceList resources={list} type="view" />
+      </InfiniteScroll>
     )
   }
+)
 
-  return (
-    <InfiniteScroll
-      dataLength={list.length}
-      next={fetchMoreData}
-      hasMore={hasMore}
-      loader={
-        <Box textAlign="center" className='pt-[24px]'>
-          <PostSkeleton />
-        </Box>
-      }
-      scrollableTarget="profileScrollableDiv"
-      scrollThreshold={0.8}
-      style={{ overflow: 'visible' }}
-    >
-      <ResourceList resources={list} type="view" />
-    </InfiniteScroll>
-  )
-}
-const FavList = ({
-  setCurrentShareData,
-  getShareLink,
-  updateHeight,
-}: {
-  setCurrentShareData: (data: ShareDataProps) => void
-  getShareLink: (title: string, pid: number, uid: number) => Promise<void>
-  updateHeight: (index: number) => void
-}) => {
-  const { list, hasMore, fetchMoreData, page } = useFavList()
-
-  useEffect(() => {
-    if (list.length) {
-      setTimeout(() => {
-        requestAnimationFrame(() => {
-          updateHeight(2) // index 对应各自的索引值
-        })
-      }, 100)
+const FavList = memo(
+  ({
+    setCurrentShareData,
+    getShareLink,
+    updateHeight,
+  }: {
+    setCurrentShareData: (data: ShareDataProps) => void
+    getShareLink: (title: string, pid: number, uid: number) => Promise<void>
+    updateHeight: (index: number) => void
+  }) => {
+    const { list, hasMore, fetchMoreData, page } = useFavList()
+    const scrollRef = useRef<HTMLDivElement>(null)
+    const updateContainerHeight = () => {
+      requestAnimationFrame(() => {
+        updateHeight(2)
+      })
     }
-  }, [list])
-  if (!hasMore && list.length <= 0) {
-    return (
-      <Empty
-        title="No post yet."
-        className="w-full mt-10"
-        icon={
-          <Icon name="icon-Empty_white_post" style={{ width: '164px', height: '164px' }}></Icon>
+
+    useEffect(() => {
+      // 无论是否有数据，都需要更新高度
+      setTimeout(() => {
+        if (scrollRef.current) {
+          updateContainerHeight()
+
+          const resizeObserver = new ResizeObserver(() => {
+            updateContainerHeight()
+          })
+
+          resizeObserver.observe(scrollRef.current)
+
+          return () => {
+            resizeObserver.disconnect()
+          }
         }
-      ></Empty>
+      }, 100)
+    }, [list.length, updateHeight])
+
+    return (
+      <div ref={scrollRef} style={{ minHeight: '200px' }}>
+        <InfiniteScroll
+          dataLength={list.length}
+          next={fetchMoreData}
+          hasMore={hasMore}
+          loader={
+            <Box textAlign="center" className="pt-[24px]">
+              <PostSkeleton />
+            </Box>
+          }
+          scrollableTarget="profileScrollableDiv"
+          scrollThreshold={0.8}
+          style={{ overflow: 'visible' }}
+        >
+          <ResourceList resources={list} type="fav" hasMore={hasMore} />
+        </InfiniteScroll>
+      </div>
     )
   }
-  return (
-    <InfiniteScroll
-      dataLength={list.length}
-      next={fetchMoreData}
-      hasMore={hasMore}
-      loader={
-        <Box textAlign="center" className="pt-[24px]">
-          <PostSkeleton />
-        </Box>
-      }
-      scrollableTarget="profileScrollableDiv"
-      scrollThreshold={0.8}
-      style={{ overflow: 'visible' }}
-    >
-      <ResourceList resources={list} type="fav" hasMore={hasMore} />
-    </InfiniteScroll>
-  )
-}
-const OrderList = ({
-  setCurrentShareData,
-  getShareLink,
-  updateHeight,
-}: {
-  setCurrentShareData: (data: ShareDataProps) => void
-  getShareLink: (title: string, pid: number, uid: number) => Promise<void>
-  updateHeight: (index: number) => void
-}) => {
-  const { list, hasMore, fetchMoreData, page } = useOrdersList()
+)
 
-  useEffect(() => {
-    if (list.length) {
-      setTimeout(() => {
-        requestAnimationFrame(() => {
-          updateHeight(1) // index 对应各自的索引值
-        })
-      }, 100)
+const OrderList = memo(
+  ({
+    setCurrentShareData,
+    getShareLink,
+    updateHeight,
+  }: {
+    setCurrentShareData: (data: ShareDataProps) => void
+    getShareLink: (title: string, pid: number, uid: number) => Promise<void>
+    updateHeight: (index: number) => void
+  }) => {
+    const { list, hasMore, fetchMoreData, page } = useOrdersList()
+
+    useEffect(() => {
+      if (list.length) {
+        setTimeout(() => {
+          requestAnimationFrame(() => {
+            updateHeight(1) // index 对应各自的索引值
+          })
+        }, 100)
+      }
+    }, [list])
+    if (!hasMore && list.length <= 0) {
+      return (
+        <Empty
+          title="You haven't purchased any post yet."
+          className="w-full mt-10"
+          icon={
+            <Icon
+              name="icon-Empty_white_purchase"
+              style={{ width: '164px', height: '164px' }}
+            />
+          }
+        ></Empty>
+      )
     }
-  }, [list])
-  if (!hasMore && !list.length) {
     return (
-      <Empty
-        title="You haven't purchased any post yet."
-        className="w-full mt-10"
-        icon={
-          <Icon name="icon-Empty_white_purchase" style={{ width: '164px', height: '164px' }}></Icon>
+      <InfiniteScroll
+        dataLength={list.length}
+        next={fetchMoreData}
+        hasMore={hasMore}
+        loader={
+          <Box textAlign="center" className="pt-[24px]">
+            <PostSkeleton />
+          </Box>
         }
-      ></Empty>
+        scrollableTarget="profileScrollableDiv"
+        scrollThreshold={0.8}
+        style={{ overflow: 'visible' }}
+      >
+        <ResourceList resources={list} type="payment" />
+      </InfiniteScroll>
     )
   }
-  return (
-    <InfiniteScroll
-      dataLength={list.length}
-      next={fetchMoreData}
-      hasMore={hasMore}
-      loader={
-        <Box textAlign="center" className="pt-[24px]">
-          <PostSkeleton />
-        </Box>
-      }
-      scrollableTarget="profileScrollableDiv"
-      scrollThreshold={0.8}
-      style={{ overflow: 'visible' }}
-    >
-      <ResourceList resources={list} type="payment" />
-    </InfiniteScroll>
-  )
-}
+)
 
 export default ViewList

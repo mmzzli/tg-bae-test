@@ -12,10 +12,18 @@ import FollowButton from '@/components/PersonalDetails/FollowButton'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import GeneralSkeleton from '@/components/Skeketon/GeneralSkeleton'
 import { SearchCloseIcon } from '@/assets/icons'
+
+interface RecentProps {
+  searchHistory: Array<Search>,
+  setSearchHistory: (res: Array<Search>) => void
+}
+
+
 const Searching = () => {
   const navigate = useNavigate()
   const inputRef = useRef<HTMLInputElement>(null)
 
+  const [searchHistory, setSearchHistory] = useState<Array<Search>>([])
   const [data, setData] = useState<SearchItem | null>(null)
   const [field, setField] = useState<string>('')
   const [debouncedField, setDebouncedField] = useState<string>('')
@@ -35,6 +43,26 @@ const Searching = () => {
       }),
     { manual: true }
   )
+
+  const profileEve = async (item: Search) => {
+
+    const searchHistory = localStorage.getItem("searchHistory") || `[]`
+    const res = JSON.parse(searchHistory)
+    res.unshift(item)
+
+    const uniqueArr = [...new Map(res.map((item: any) => [item.tg_id, item])).values()];
+
+    localStorage.setItem("searchHistory", JSON.stringify(uniqueArr))
+
+    navigate(`/profile/${item.tg_id}`)
+  }
+
+  useEffect(() => {
+
+    const searchHistory = localStorage.getItem("searchHistory") || `[]`
+    setSearchHistory(JSON.parse(searchHistory))
+
+  }, [])
 
   useEffect(() => {
     if (res) {
@@ -112,6 +140,8 @@ const Searching = () => {
             </div>
           )}
         </div>
+
+        {(searchHistory?.length > 0 && field == "") && <Recent searchHistory={searchHistory} setSearchHistory={setSearchHistory} />}
       </div>
 
       <div className="pt-[28px]">
@@ -121,8 +151,8 @@ const Searching = () => {
           data?.users.map((item, key) => (
             <div className="flex items-center justify-between py-[12px] mb-[12px]" key={key}>
               <div
-                className="flex gap-[12px] items-center"
-                onClick={() => item.tg_id !== currentUid ? navigate(`/profile/${item.tg_id}`) : navigate(`/profile`)}
+                className="flex gap-[12px] items-center w-[100%]"
+                onClick={() => item.tg_id !== currentUid ? profileEve(item) : navigate(`/profile`)}
               >
                 <div className="flex-shrink-0">
                   <Image
@@ -136,8 +166,8 @@ const Searching = () => {
                     loaderClassName="rounded-full"
                   />
                 </div>
-                <div>
-                  <h3 className="text-[#333] text-[16px] w-[16ch] whitespace-nowrap overflow-hidden text-ellipsis">
+                <div className='w-[100%]'>
+                  <h3 className="text-[#333] text-[16px] w-[calc(100%-20px)] truncate font-medium">
                     {item.tgname}
                   </h3>
                   <p className='text-[#999] text-[12px] font-normal'>
@@ -146,7 +176,7 @@ const Searching = () => {
                 </div>
               </div>
               {item.tg_id !== currentUid && (
-                <FollowButton tgid={item.tg_id} avatar={item.avatar} username={item.tgname} className='w-[80px]' />
+                <FollowButton tgid={item.tg_id} avatar={item.avatar} username={item.tgname} className='w-[90px]' />
               )}
             </div>
           ))
@@ -160,6 +190,72 @@ const Searching = () => {
           ></Empty>
         </div>
       )}
+    </div>
+  )
+}
+
+const Recent: React.FC<RecentProps> = ({ searchHistory, setSearchHistory }) => {
+
+  const { getCurrentUid } = useTMAUtils()
+  const navigate = useNavigate()
+  const currentUid = getCurrentUid()
+
+  const remove = (key: number) => {
+    searchHistory.splice(key, 1)
+    localStorage.setItem("searchHistory", JSON.stringify(searchHistory))
+    setSearchHistory([...searchHistory])
+  }
+  return (
+    <div
+      className='overflow-auto scrollbar-hide'
+      style={{
+        height: 'calc(var(--tg-viewport-stable-height) + var(--tg-safe-area-inset-bottom) - 180px)',
+        // paddingBottom:
+        // 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 64px)',
+      }}
+    >
+      <div className='flex items-center justify-between pt-[24px] mb-[12px]'>
+        <h3 className='text-[18px]'>Recent</h3>
+        <i className="iconfont icon-delete-bin-line text-[#333333] text-[20px]"
+          onClick={() => { localStorage.setItem("searchHistory", ``); setSearchHistory([]) }}
+        ></i>
+      </div>
+
+      {searchHistory.slice(0, 10)?.map((item, key) => (
+        <div className="flex items-center justify-between py-[12px]">
+          <div
+            className="flex gap-[12px] items-center w-[100%]"
+            onClick={() => item.tg_id !== currentUid ? navigate(`/profile/${item.tg_id}`) : navigate(`/profile`)}
+          >
+            <div className="flex-shrink-0">
+              <Image
+                rect
+                width={44}
+                height={44}
+                type="avatar"
+                src={item.avatar}
+                alt="Avatar"
+                className="w-[100%] h-[100%] rounded-full"
+                loaderClassName="rounded-full"
+              />
+            </div>
+            <div className='w-[100%]'>
+              <h3 className="text-[#333] text-[16px] w-[calc(100%-20px)] truncate font-medium">
+                {item.tgname}
+              </h3>
+              {/* <p className='text-[#999] text-[12px] font-normal'>
+                {item.fans_num} followers
+              </p> */}
+            </div>
+          </div>
+
+          <i className="iconfont icon-icon_close text-[#CDCDD4] dark:text-[#CDCDD4] text-[24px]"
+            onClick={() => remove(key)}
+          ></i>
+
+        </div>
+
+      ))}
     </div>
   )
 }

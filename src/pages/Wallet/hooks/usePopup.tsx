@@ -49,7 +49,9 @@ const usePopup = ({
         })}
         {...restProps}
       >
-        <div className={classNames('flex-1', contentClassName)}>{open ? content : null}</div>
+        <div className={classNames('flex-1 overflow-y-auto', contentClassName)}>
+          {open ? content : null}
+        </div>
       </TPopup>
     ),
   }

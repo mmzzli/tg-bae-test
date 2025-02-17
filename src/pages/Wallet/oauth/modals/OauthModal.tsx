@@ -23,6 +23,7 @@ export const OauthModal = NiceModal.create(() => {
       bodyStyle={{ height: '80vh' }}
       destroyOnClose
       showCloseButton
+      bodyClassName="flex flex-col"
     >
       <Oauth onSuccess={handleResolve} />
     </TPopup>

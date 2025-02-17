@@ -71,7 +71,9 @@ export default function SignSolanaTransaction(props: { [other: string]: any }) {
 
   return (
     <>
-      <div className={`flex h-full flex-1 flex-col justify-between px-[16px] pb-[16px] pt-[20px]`}>
+      <div
+        className={`flex h-full flex-1 flex-col justify-between px-[16px] pb-[16px] pt-[20px] overflow-y-auto`}
+      >
         <h2 className="text-[20px] font-bold leading-[1.3] text-title dark:text-white">
           Sign Tx (beta)
         </h2>

@@ -4,6 +4,8 @@ import { PopupProps } from './PropsType'
 import { mergeProps } from '../utils/get-default-props'
 import { Popup as APopup, SafeArea } from 'antd-mobile'
 import { IconButton } from '../icon-button/IconButton'
+import clsx from 'clsx'
+import { isIOS } from '../utils/validate'
 
 const defaultProps = {
   safeArea: true,
@@ -32,7 +34,7 @@ export const Popup: FC<PopupProps> = (p) => {
       {...restProps}
       className={classNames(defaultClassName, className)}
       bodyClassName={classNames(
-        'px-4 py-3 overflow-y-auto bg-[#fff] dark:bg-[#1C1C1C] text-[#E0E2F6] rounded-t-2xl rounded-b-none border-[#1c1c1c]',
+        'bg-[#fff] dark:bg-[#1C1C1C] text-[#E0E2F6] rounded-t-2xl rounded-b-none border-[#1c1c1c]',
         bodyClassName
       )}
     >
@@ -48,7 +50,9 @@ export const Popup: FC<PopupProps> = (p) => {
       ) : null}
       {children}
 
-      {safeArea && <SafeArea position="bottom" />}
+      {safeArea && (
+        <SafeArea position="bottom" className={clsx('flex-none', { 'h-[34px]': isIOS() })} />
+      )}
     </APopup>
   )
 }

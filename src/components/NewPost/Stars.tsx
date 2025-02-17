@@ -22,7 +22,7 @@ import { isMobileDevice } from '@/utils/utils'
 type StarsProps = {
   price: StarValue
   setPrice: (index: StarValue) => void // Function type to update index
-  featureRefBoll: any
+  featureRefBoll:any
 }
 type StarValue = number
 
@@ -33,6 +33,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice, featureRefBoll }) => {
   const [boll, setBoll] = useState<boolean>(false)
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const [customValue, setCustomValue] = useState<string>('');
+  const [heights, setHeights] = useState<number>(0)
 
   const handleStarSelect = (item: StarValue) => {
     setPrice(item)
@@ -49,10 +50,10 @@ const Stars: FC<StarsProps> = ({ price, setPrice, featureRefBoll }) => {
       }
     }
   };
-  const focusEve = (boll: boolean) => {
-    setTimeout(() => {
+  const focusEve = (boll: boolean)=>{
+    setTimeout(()=>{
       isMobileDevice() && setIsFocused(boll)
-    }, 10)
+    },10)
   }
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -63,9 +64,9 @@ const Stars: FC<StarsProps> = ({ price, setPrice, featureRefBoll }) => {
 
   useEffect(() => {
     // alert(isOpen)
-    if (isOpen) {
+    if(isOpen){
       featureRefBoll.current = true
-    } else {
+    }else{
       featureRefBoll.current = false
     }
     if (!isOpen) {
@@ -86,15 +87,15 @@ const Stars: FC<StarsProps> = ({ price, setPrice, featureRefBoll }) => {
   }, []);
 
   useEffect(() => {
-    // 定义更新窗口高度的函数
+    setHeights(window.innerHeight)
     const handleResize = () => {
-      alert(window.innerHeight)
+      if(heights > window.innerHeight){
+        setIsFocused(true)
+      }else{
+        setIsFocused(false)
+      }
     };
-
-    // 监听窗口大小变化
     window.addEventListener('resize', handleResize);
-
-    // 清理事件监听器
     return () => {
       window.removeEventListener('resize', handleResize);
     };
@@ -146,7 +147,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice, featureRefBoll }) => {
             </div>
 
             <Heading as="h3" fontSize="24px" color="#333" mt="12px">
-              Choose the stars to unlock <br />this post
+              Choose the stars to unlock <br/>this post
             </Heading>
             <Grid pt="28px" templateColumns="repeat(3, 1fr)" gap={3}>
               {starList.map((item) => (
@@ -157,7 +158,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice, featureRefBoll }) => {
                       h="40px"
                       lineHeight="40px"
                       borderRadius="8px"
-                      border={`0.5px solid ${price === item ? "#6254FF" : "#CDCDD4"}`}
+                      border={`0.5px solid ${price === item? "#6254FF" : "#CDCDD4"}`}
                       justifyContent="center"
                       gap="4px"
                       bg={price === item ? '#6254FF' : ''}
@@ -193,7 +194,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice, featureRefBoll }) => {
               <Image src={StarsIcon} alt="Stars Icon" />
             </HStack>
 
-            <Box p="0px 18px" h={`${isFocused ? "" : ""}`}>
+            <Box p="0px 18px" h={`${isFocused ? "400px" : ""}`}>
               {boll && <Button
                 size="xl"
                 fontSize="14px"

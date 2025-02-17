@@ -25,8 +25,10 @@ import NetworkFee, { Deposit, NetworkFeeTag } from './NetworkFee'
 import Skeleton from './Skeleton'
 import DescriptionOrRawData from './DescriptionOrRawData'
 import { useRequest } from 'ahooks'
+import { sendTransaction } from '@/store/wallet/config/evm'
+import { IWeb3ChainType } from '@/store/wallet/chainType'
 
-export default function SignTransaction({ onSuccess }: { onSuccess?: (data: string) => void }) {
+export default function SignTransaction({ onSuccess, sendFlag }: { onSuccess?: (data: string) => void, sendFlag?: boolean }) {
   const {
     requestParam: { params },
   } = useWalletRequestStore()
@@ -226,17 +228,33 @@ export default function SignTransaction({ onSuccess }: { onSuccess?: (data: stri
         value: BigInt(parseInt(transfer?.value) || 0),
         data: transfer?.data,
       }
-
       if (transfer.gasLimit) signData.gasLimit = transfer.gasLimit
       if (transfer.gasPrice) signData.gasPrice = transfer.gasPrice
       const result = await signEVMTransaction(signData)
-      if (result && result?.code == 10000) {
-        setStatus('success')
-        onSuccess?.(result.result)
-      } else {
-        setStatus('normal')
-        throw result?.message || 'Network error.'
+      if (!sendFlag) {
+        if (result && result?.code == 10000) {
+          setStatus('success')
+          onSuccess?.(result.result)
+        } else {
+          setStatus('normal')
+          throw result?.message || 'Network error.'
+        }
+        return
       }
+      if (result && result?.code == 10000) {
+        const rawHash = await sendTransaction({
+          chain: chain as IWeb3ChainType,
+          serializedTransaction: result.result,
+        })
+        if (rawHash) {
+          setStatus('success')
+          onSuccess?.(rawHash)
+        } else {
+          setStatus('normal')
+          throw 'Network error.'
+        }
+      }
+
     } catch (err: any) {
       toast({
         render: () => {

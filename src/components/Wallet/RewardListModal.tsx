@@ -48,7 +48,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
     const [hash, setHash] = useState<`0x${string}` | undefined>(undefined)
 
     // Wagmi Hooks START
-    const { switchChain } = useSwitchChain()
+    // const { switchChain } = useSwitchChain()
     const { address } = useAccount()
     const { isSuccess: isConfirmed, error: receiptError } = useWaitForTransactionReceipt({
       hash,
@@ -187,16 +187,16 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
     const walletWithdraw = async () => {
       if (!currentChain) return
       setLoading(true)
-      try {
-        await switchChain({ chainId: currentChain.id })
-      } catch (error) {
-        toast({
-          render: () => <CustomToast title="Switch chain failed" type={typeOptions.error} />,
-          position: 'bottom',
-        })
-        resetState()
-        return
-      }
+      // try {
+      //   await switchChain({ chainId: currentChain.id })
+      // } catch (error) {
+      //   toast({
+      //     render: () => <CustomToast title="Switch chain failed" type={typeOptions.error} />,
+      //     position: 'bottom',
+      //   })
+      //   resetState()
+      //   return
+      // }
       if (rewards.length === 0) {
         toast({
           render: () => {
@@ -352,7 +352,6 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
 
       const currentReward = chainRewardMap[currentChain.id as keyof typeof chainRewardMap] || []
       const currentWithdraw = withdraw.filter((item) => item.chain_id === currentChain.id)
-
       setRewards([...(currentReward || [])])
       setCurrentWithdraw(currentWithdraw[0] || null)
 

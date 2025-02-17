@@ -29,6 +29,8 @@ export default function Oauth({ onSuccess }: { onSuccess?: (data?: any) => void 
       case 'eth_signETHTransaction':
       case 'eth_signErc20Transaction':
         return <SignTransaction onSuccess={onSuccess} />
+      case 'eth_sendTransaction':
+        return <SignTransaction onSuccess={onSuccess} sendFlag={true} />
       case 'ton_signTx':
         return <SignTonTx onSuccess={onSuccess} />
       case 'sol_signTx': // new sign tx, accepting transaction as param, for sdk at and after 1.0.14

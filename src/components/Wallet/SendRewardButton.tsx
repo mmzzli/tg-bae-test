@@ -24,6 +24,7 @@ import BigNumber from 'bignumber.js'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { getBalance } from '@wagmi/core'
 import { config } from '@/config/wagmi-config'
+import useWallet from '@/pages/Wallet/hooks/useWallet'
 
 export const SendRewardButton = ({
   amount,
@@ -99,6 +100,7 @@ export const SendRewardButton = ({
 
   const currentChainId = useChainId()
   const { switchChainAsync } = useSwitchChain()
+  const { hanleWalletAction } = useWallet()
 
   const {
     data: allowance,
@@ -280,7 +282,24 @@ export const SendRewardButton = ({
       })
 
       try {
-        const hash = await window.ethereum.request({
+        // const hash = await window.ethereum.request({
+        //   method: 'eth_sendTransaction', // or eth_sendTransaction
+        //   params: [
+        //     {
+        //       from: address,
+        //       to: contractAddress,
+        //       value:
+        //         tokenAddress === '0x0000000000000000000000000000000000000000'
+        //           ? '0x' + BigInt(parseUnits(amount, decimals).toString()).toString(16)
+        //           : '0x0',
+        //       chainId: chainId,
+        //       data: abiData,
+        //       gasLimit: (gasLimit ? BigInt(Number(gasLimit) * 3) : 100000n).toString(),
+        //       gasPrice: getCurrentGasPrice(feesPerGas).toString(),
+        //     },
+        //   ],
+        // })
+        const hash = await hanleWalletAction({
           method: 'eth_sendTransaction', // or eth_sendTransaction
           params: [
             {
@@ -336,8 +355,21 @@ export const SendRewardButton = ({
         })
 
         try {
-          const hash = await window.ethereum.request({
-            method: 'eth_sendTransaction', // or eth_sendTransaction
+          // const hash = await window.ethereum.request({
+          //   method: 'eth_sendTransaction', // or eth_sendTransaction
+          //   params: [
+          //     {
+          //       from: address,
+          //       to: tokenAddress,
+          //       chainId: chainId,
+          //       data: abiData,
+          //       gasLimit: (gasLimit ? BigInt(Number(gasLimit) * 3) : 60000n).toString(),
+          //       gasPrice: getCurrentGasPrice(feesPerGas).toString(),
+          //     },
+          //   ],
+          // })
+          const hash: any = await hanleWalletAction({
+            method: 'eth_sendTransaction',
             params: [
               {
                 from: address,

@@ -158,28 +158,18 @@ const useEvmMethods = ({ chainId }: { chainId?: number | undefined }) => {
       console.warn({
         error,
       })
+      let message = error?.message || error.details || error
       if (error.name === 'EstimateGasExecutionError') {
-        toast({
-          render: () => {
-            return <CustomToast title={error.details} type={typeOptions.error} />
-          },
-          position: 'bottom',
-          duration: 2000,
-        })
-      } else {
-        toast({
-          render: () => {
-            return (
-              <CustomToast
-                title={error?.message || error.details || error}
-                type={typeOptions.error}
-              />
-            )
-          },
-          position: 'bottom',
-          duration: 2000,
-        })
+        message = error.details
       }
+
+      toast({
+        render: () => {
+          return <CustomToast title={message} type={typeOptions.error} />
+        },
+        position: 'bottom',
+        duration: 2000,
+      })
     }
   }
   const signEVMMessage = async (params: { message: string; walletId?: number }) => {

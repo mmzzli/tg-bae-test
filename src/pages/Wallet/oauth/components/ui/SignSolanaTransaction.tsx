@@ -1,18 +1,14 @@
 import { useMemo, useState } from 'react'
-import useSdk from '@/hooks/oauth/useSdk'
-import useApp from '@/hooks/oauth/useApp'
-import useLoginInfo from '@/hooks/useLoginInfo'
-import useSendTransaction from '@/hooks/useSendTransaction'
-import toast from 'components/Toast'
 import { TxInfo } from './TxInfo'
-import { Button } from '@/components/tmd/button/Button'
-import { mockSolEvmChainId } from '@/config/sol'
-import { useQuery } from '@tanstack/react-query'
-import { checkApproveHex } from '@/utils/oauth/helper'
-import { getChainByChainId } from '@/stores/walletStore/utils'
-import { useWebApp } from '@vkruglikov/react-telegram-web-app'
-import solana from '@/proviers/web3Provider/chains/wagmiConfig/solana'
-import { useSolanaTx } from '@/hooks/oauth/useSolanaTx'
+import { useWalletRequestStore } from '@/store/wallet/walletRequest'
+import { mockSolEvmChainId } from '@/store/wallet/config/sol'
+import { getChainByChainId } from '@/store/wallet/util/tokenHelper'
+import solana from '@/store/wallet/chains/wagmiConfig/solana'
+import { useUserStore } from '@/store/wallet/walletUser'
+import { useSolanaTx } from '../../hooks/useSolanaTx'
+import { useToast } from '@chakra-ui/react'
+import { CustomToast, typeOptions } from '@/components/comm/Toast'
+import BaseButton from '@/components/BaseButton/BaseButton'
 
 interface TransferModel {
   txHex: string
@@ -20,58 +16,53 @@ interface TransferModel {
 }
 
 export default function SignSolanaTransaction(props: { [other: string]: any }) {
-  const { getPayload } = useSdk()
-  const webApp = useWebApp()
-  const { webAppReject } = useApp()
+  const {
+    requestParam: { params },
+  } = useWalletRequestStore()
+  const {
+    walletUserInfo: { solanaAddress },
+  } = useUserStore()
+  const toast = useToast()
 
-  const { solAddress } = useLoginInfo()
-
-  const { /* chainType, */ fee, unit } = props
-
-  const { data: transData, isLoading } = useQuery({
-    queryKey: ['sign-transaction'],
-    queryFn: async () => {
-      return await getPayload()
-    }
-  })
+  const { /* chainType, */ fee, unit, onSuccess } = props
 
   const transfer: TransferModel = useMemo(() => {
-    if ((transData?.data?.params || []).length) {
-      const data = transData?.data?.params[0]
-      return data
-    }
-    return {}
-  }, [transData?.data?.params])
+    return params.length > 0 ? params[0] : {}
+  }, [params])
 
   const chainId = mockSolEvmChainId
   const chain = useMemo(() => {
     return getChainByChainId(chainId) as typeof solana
   }, [chainId])
 
-  const [status, setStatus] = useState<'normal' | 'loading' | 'success'>(
-    'normal'
-  )
+  const [loading, setLoading] = useState<boolean>(false)
   const { signSolRawTx } = useSolanaTx()
-
-  const userAddress = solAddress
 
   const doSignTx = async () => {
     try {
-      setStatus('loading')
+      setLoading(true)
       const result = await signSolRawTx(transfer.txHex)
-
+      if (!result) return
       if (result && result?.code == 10000) {
-        setStatus('success')
-        setTimeout(() => {
-          webApp?.close()
-        }, 500)
+        onSuccess?.(result?.result || '')
       } else {
-        setStatus('normal')
         throw result?.message || 'Network error.'
       }
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || err?.message || err)
-      setStatus('normal')
+      toast({
+        render: () => {
+          return (
+            <CustomToast
+              title={err?.response?.data?.message || err?.message || err}
+              type={typeOptions.error}
+            />
+          )
+        },
+        position: 'bottom',
+        duration: 2000,
+      })
+    } finally {
+      setLoading(false)
     }
   }
   const getFee = () => {
@@ -80,9 +71,7 @@ export default function SignSolanaTransaction(props: { [other: string]: any }) {
 
   return (
     <>
-      <div
-        className={`flex h-full flex-1 flex-col justify-between px-[16px] pb-[16px] pt-[20px]`}
-      >
+      <div className={`flex h-full flex-1 flex-col justify-between px-[16px] pb-[16px] pt-[20px]`}>
         <h2 className="text-[20px] font-bold leading-[1.3] text-title dark:text-white">
           Sign Tx (beta)
         </h2>
@@ -91,33 +80,21 @@ export default function SignSolanaTransaction(props: { [other: string]: any }) {
           txInfo={{
             chainName: chain.name,
             chainIcon: chain.icon,
-            from: userAddress || '',
+            from: solanaAddress,
             tokenName: 'SOL',
             feeInfo: getFee(),
-            rawData: transfer.txHex
+            rawData: transfer.txHex,
           }}
         />
 
-        <div
-          className={`mt-[34px] grid w-full flex-1 grid-cols-2 items-end gap-5`}
-        >
-          <Button
-            size="large"
-            block
-            onClick={() => webAppReject(false)}
-            theme="ghost"
-          >
-            Reject
-          </Button>
-          <Button
-            size="large"
-            className="w-full"
-            onClick={doSignTx}
-            status={status}
-            disabled={isLoading || !transData?.data || fee === '--'}
-          >
-            Confirm
-          </Button>
+        <div className={`mt-[34px] w-full`}>
+          <BaseButton
+            text="Confirm"
+            height="52px"
+            handler={doSignTx}
+            loading={loading}
+            disabled={params.length == 0 || fee === '--'}
+          />
         </div>
       </div>
     </>
@@ -135,7 +112,7 @@ function ListItem({
   title,
   children,
   className,
-  np
+  np,
 }: {
   title: string
   children: React.ReactNode

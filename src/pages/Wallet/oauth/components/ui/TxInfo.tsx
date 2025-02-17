@@ -1,11 +1,11 @@
-import { numberFormat } from 'utils'
-import Copy from 'components/Copy'
+import { TCopy } from '@/components/tmd'
+import { shortenAddress } from '@/store/wallet/util'
+import { numberFormat } from '../../utils/helper'
 import { Skeleton } from 'antd-mobile'
-import { shortenAddress } from '@/utils/helper'
 
 function ListItem({
   title,
-  children
+  children,
 }: {
   title: string
   children: React.ReactNode
@@ -35,32 +35,15 @@ interface IProps {
 
 export function TxInfo(props: IProps) {
   const {
-    txInfo: {
-      chainName,
-      chainIcon,
-      from,
-      to,
-      value,
-      feeInfo,
-      tokenName,
-      rawData
-    }
+    txInfo: { chainName, chainIcon, from, to, value, feeInfo, tokenName, rawData },
   } = props
   return (
     <div className="mt-[20px] rounded-[12px] bg-[#F9F9F9]">
-      <div
-        className={
-          'my-[20px] w-full rounded-[8px] bg-[#f9f9f9] px-[16px] py-[8px]'
-        }
-      >
+      <div className={'my-[20px] w-full rounded-[8px] bg-[#f9f9f9] px-[16px] py-[8px]'}>
         <ListItem title={'Network'}>
-          <div
-            className={`flex items-center gap-[4px] text-sm font-medium leading-[18px]`}
-          >
+          <div className={`flex items-center gap-[4px] text-sm font-medium leading-[18px]`}>
             <span>{chainName}</span>
-            {chainIcon && (
-              <img src={chainIcon} className={`size-[20px]`} alt="" />
-            )}
+            {chainIcon && <img src={chainIcon} className={`size-[20px]`} alt="" />}
           </div>
         </ListItem>
         <div className={`my-[8px] h-px bg-gray-100`}></div>
@@ -79,7 +62,7 @@ export function TxInfo(props: IProps) {
                 <span className={`max-w-[170px] break-words text-right`}>
                   {shortenAddress(to || '', 8, 8)}
                 </span>
-                <Copy text={to ?? ''} />
+                <TCopy text={to ?? ''} />
               </div>
             </ListItem>
           </>
@@ -104,11 +87,7 @@ export function TxInfo(props: IProps) {
         <div className={`my-[8px] h-px bg-gray-100`}></div>
         <ListItem title={'Network Fee'}>
           <div className={`flex flex-col items-end gap-[6px]`}>
-            {!feeInfo ? (
-              <Skeleton animated className="h-[21px] w-[60px] rounded-full" />
-            ) : (
-              feeInfo
-            )}
+            {!feeInfo ? <Skeleton animated className="h-[21px] w-[60px] rounded-full" /> : feeInfo}
           </div>
         </ListItem>
         {rawData ? (
@@ -119,7 +98,7 @@ export function TxInfo(props: IProps) {
                 style={{
                   textOverflow: 'ellipsis',
                   width: 200,
-                  overflow: 'hidden'
+                  overflow: 'hidden',
                 }}
               >
                 {rawData}

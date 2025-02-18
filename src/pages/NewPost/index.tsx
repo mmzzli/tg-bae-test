@@ -33,6 +33,7 @@ export const NewPost: FC = () => {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [videoSrc, setVideoSrc] = useState<string | null>(null)
   const [title, setTitle] = useState<string>('')
+  let r2Url = ""
   const [isLoading, setIsLoading] = useState(false)
   const [firstFileType, setFirstFileType] = useState<string>('image')
   const [firstSelectFileType, setFirstSelectFileType] = useState<string>('')
@@ -250,6 +251,7 @@ export const NewPost: FC = () => {
             duration: Math.floor(videoRef?.current?.duration || 0),
             media: medias.join(','),
             ...(title ? { title } : {}),
+            r2: r2Url,
             type: 0,
             currency: 0,
             price: price || 0,
@@ -334,6 +336,22 @@ export const NewPost: FC = () => {
                 type: 'bae',
               })
             )
+            // r2 update
+            const url = `${import.meta.env.VITE_APP_UPLOAD_URL}uploadall`
+            const r2Response = await axios.put(url, formData, {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${token}`,
+              },
+              onUploadProgress: (progressEvent: any) => {
+                const total = progressEvent.total
+                const current = progressEvent.loaded
+                const percentCompleted = Math.round((current * 100) / total)
+                console.log(`上传进度: ${percentCompleted}%`)
+              },
+            })
+            r2Url = r2Response.data.urls[0]
+            // m3u8 update
             const response = await axios.post(upload_url, formData, {
               headers: {
                 'Content-Type': 'multipart/form-data',

@@ -63,6 +63,16 @@ export const MessageList = ({
     })
 
     if (currentGroup.length > 0 && currentTimestamp !== null) {
+      currentGroup.forEach((msg, index) => {
+        if (index < currentGroup.length - 1) {
+          const nextMsg = currentGroup[index + 1]
+          if (msg.sender !== nextMsg.sender) {
+            msg.showAvatar = true // 如果下一条消息的发送者不同，则设置 showAvatar
+          }
+        } else {
+          msg.showAvatar = true // 最后一条消息默认设置 showAvatar
+        }
+      })
       groups.push({
         timestamp: currentTimestamp,
         messages: currentGroup,
@@ -143,14 +153,18 @@ const MessageItem = memo(
     >
       {!isCurrentUser && (
         <div className="flex-shrink-0">
-          <Image
-            type="avatar"
-            width={26}
-            height={26}
-            src={channelInfo?.avatar}
-            alt="Avatar"
-            className="w-[26px] h-[26px] rounded-full"
-          />
+          {message.showAvatar ? (
+            <Image
+              type="avatar"
+              width={26}
+              height={26}
+              src={channelInfo?.avatar}
+              alt="Avatar"
+              className="w-[26px] h-[26px] rounded-full"
+            />
+          ) : (
+            <div className="w-[26px]"></div>
+          )}
         </div>
       )}
       <Tooltip

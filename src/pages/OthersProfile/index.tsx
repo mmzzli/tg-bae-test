@@ -1,14 +1,20 @@
 import { FC, useState, useRef, useEffect } from 'react'
 import { Box } from '@chakra-ui/react'
+import { useNavigate } from 'react-router-dom'
+import { animated } from 'react-spring'
 import OtherUserProfile from '@/components/PersonalDetails/OtherUserProfile'
 import useCacheVideo, { useOthersViewList } from '@/store/hook/useResourceList'
 import PostList from '@/components/PostList/PostList'
 import { useStore } from '@/store'
-import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { throttle } from '@/utils/chat/schedulers'
+import { useSwipeBack } from '@/hooks/useSwipeBack'
+// import { useTMAUtils } from '@/hooks/useTMAUtils'
+
 const SCROLL_THRESHOLD = 110
+const SWIPE_THRESHOLD = 100
 
 const OthersProfile: FC = () => {
+  const navigate = useNavigate()
   const { list, hasMore, fetchMoreData, page } = useOthersViewList()
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
@@ -20,6 +26,10 @@ const OthersProfile: FC = () => {
   const titleRef = useRef<HTMLHeadingElement>(null)
   const [showTopTitle, setShowTopTitle] = useState(false)
   const [scale, setScale] = useState(1) // 控制背景图片的缩放
+
+  const { bind, x } = useSwipeBack({
+    scrollRef: scrollDivRef,
+  })
 
   const imgUrl =
     userInfo?.background_img && userInfo?.background_img.url
@@ -66,13 +76,16 @@ const OthersProfile: FC = () => {
   }, [])
 
   return (
-    <div
+    <animated.div
+      {...bind()}
       className="relative w-full overflow-auto bg-white dark:bg-black scrollbar-hide"
       id="profileScrollableDiv"
       ref={scrollDivRef}
       style={{
         height:
           'calc(100vh - 84px - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top))',
+        x,
+        touchAction: 'pan-y'
       }}
     >
       <div
@@ -113,7 +126,7 @@ const OthersProfile: FC = () => {
           <PostList list={list} hasMore={hasMore} fetchMoreData={fetchMoreData} />
         </Box>
       </div>
-    </div>
+    </animated.div>
   )
 }
 

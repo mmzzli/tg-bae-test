@@ -1,7 +1,7 @@
 export * from './container'
 export * from './icon'
 export * from './input'
-export * from './number-input'
+// export * from './number-input'
 export * from './icon-button'
 export * from './passcode-input'
 export * from './number-keyboard'

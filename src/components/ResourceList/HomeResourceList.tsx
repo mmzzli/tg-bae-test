@@ -551,7 +551,10 @@ const ResourceHeader = memo<ResourceHeaderProps>(
                 <div className="text-[#333333] text-[12px]">Featured</div>
               ) : (
                 cardValue?.recommend &&
-                !data.is_follow && <div className="text-[#333333] text-[12px]">Bae selected</div>
+                !data.is_follow &&
+                data.uid !== currentUid && (
+                  <div className="text-[#333333] text-[12px]">Bae selected</div>
+                )
               )}
             </div>
           </div>

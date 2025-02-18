@@ -19,7 +19,9 @@ export const getAllHistoryByAccount = async (params: {
   chainIndex?: string | undefined
 }): Promise<{ cursor: string; transactionList: IOKXHistoryType[] }> => {
   const path = new URLSearchParams(params).toString()
-  const ret = await walletGet(`socialLogin/projectWallet/getOkxWalletAccountTransaction?${path}`)
+  const ret = await walletGet<WalletApiResponse>(
+    `socialLogin/projectWallet/getOkxWalletAccountTransaction?${path}`
+  )
   return ret.result[0]
 }
 
@@ -30,7 +32,9 @@ export const getAllTokenBalancesByAccount = async (params: {
 }): Promise<TokenOkx[]> => {
   console.log(params, 'params')
   const path = new URLSearchParams(params).toString()
-  const ret = await walletGet(`socialLogin/projectWallet/getOkxWalletAccountTokenBalances?${path}`)
+  const ret = await walletGet<WalletApiResponse>(
+    `socialLogin/projectWallet/getOkxWalletAccountTokenBalances?${path}`
+  )
   return ret.result[0].tokenAssets
 }
 
@@ -84,7 +88,7 @@ export const getAllBalance = async (params: {
     display_name: string
   }[]
 > => {
-  const ret = await tomoTgGet(`tg-auth/v1/token/balance`, params)
+  const ret = await tomoTgGet<WalletApiResponse>(`tg-auth/v1/token/balance`, params)
   return ret.data
 }
 
@@ -93,7 +97,7 @@ export const v1AllAssetApi = async (params: {
   pageSize: number
   chain_ids?: number[]
 }) => {
-  const res = await tomoTgGet('tg-auth/v1/asset/all', params)
+  const res = await tomoTgGet<WalletApiResponse>('tg-auth/v1/asset/all', params)
   return res.data
 }
 
@@ -166,7 +170,7 @@ export const tonSignMessage = async (
 }
 
 export const txReportListGet = async (params: { page: number; limit: number; userID: number }) => {
-  const res = await tomoTgGet('tg-report/v1/report/tx/cost', params)
+  const res = await tomoTgGet<WalletApiResponse>('tg-report/v1/report/tx/cost', params)
   return res.data
 }
 
@@ -181,7 +185,7 @@ export const txReportPost = async (data: {
   userID: number
   source: string
 }) => {
-  const res = await tomoTgPost('tg-report/v1/report/tx/cost', data)
+  const res = await tomoTgPost<WalletApiResponse>('tg-report/v1/report/tx/cost', data)
   return res.data
 }
 
@@ -197,8 +201,8 @@ export const postSendPoint = async (data: {
   symbol: string
   priceUsd: number
 }): Promise<string> => {
-  const res = await walletPost('/socialLogin/teleGram/send/record', data)
-  return res?.data?.result
+  const res = await walletPost<WalletApiResponse>('/socialLogin/teleGram/send/record', data)
+  return res?.result
 }
 
 export const solSignRawTransaction = async (params: SolSendTx) => {

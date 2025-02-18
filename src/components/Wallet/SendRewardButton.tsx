@@ -113,13 +113,17 @@ export const SendRewardButton = ({
   })
 
   useEffect(() => {
-    if (address && tokenAddress !== '0x0000000000000000000000000000000000000000' && !allowanceLoading && !allowance) {
+    if (
+      address &&
+      tokenAddress !== '0x0000000000000000000000000000000000000000' &&
+      !allowanceLoading &&
+      !allowance
+    ) {
       refetchAllowance()
     }
   }, [address, tokenAddress, allowanceLoading])
 
   console.log('0000000000000000000=>', allowance, allowanceLoading, address, tokenAddress)
-
 
   const needApprove = useMemo(() => {
     if (tokenAddress === '0x0000000000000000000000000000000000000000') {
@@ -306,7 +310,7 @@ export const SendRewardButton = ({
           ],
         })
         console.log('window.ethereum.request', hash)
-        setHash(hash)
+        setHash(hash as `0x${string}}`)
       } catch (error) {
         setWriteContractError(true)
       }

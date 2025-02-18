@@ -11,6 +11,7 @@ const chainInfo: IWeb3ChainType = {
     rpcUrls: {
       default: {
         http: [
+          // @ts-ignore
           'https://bnb-mainnet.g.alchemy.com/v2/G4hUqxgmvzDORrO27SZTgPTZdz9vaMT6',
           'https://bnb-mainnet.g.alchemy.com/v2/DR7Jtd4NSYTtAY7Heme8ml-j6oBCZgGO',
           'https://rpc.ankr.com/bsc/ac79e83cf02a544dbb9b3f4c5d5478b2510b921e7d5739ded8791a932e8de0a6',

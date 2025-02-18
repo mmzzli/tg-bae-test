@@ -19,7 +19,7 @@ const sendTon = async (
       }
     | undefined
   >,
-  type: 'Send' | 'Swap' | 'Approve'
+  type: 'Send' | 'Swap' | 'Approve' | 'Gift'
 ) => {
   const { fromToken, toToken } = params
   // @ts-ignore
@@ -42,12 +42,14 @@ const sendTon = async (
       fromAddress: params.fromAddress,
       toAddress: params.toAddress as string,
       fromValue: BigInt(
+        // @ts-ignore
         params?.params?.routeInfo?.originRoute?.[0]?.fromTokenAmount ||
           params?.params?.routeInfo?.swapData?.offerUnits ||
           parseUnits(params.params?.amount || '0', fromToken.decimals).toString() ||
           '0'
       ),
       toValue: BigInt(
+        // @ts-ignore
         params.params?.routeInfo?.originRoute?.[0]?.toTokenAmount ||
           params?.params?.routeInfo?.swapData?.askUnits ||
           parseUnits(

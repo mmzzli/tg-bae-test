@@ -192,6 +192,7 @@ export async function createSigningTransaction(transactionInfo: TonSigningTransa
         // @ts-ignore
         jettonAmount: convertedAmount,
         toAddress: new (await getTonWebAsync()).utils.Address(transactionInfo.toAddress),
+        // @ts-ignore
         forwardPayload: comment,
         forwardAmount: (await getTonWebAsync()).utils.toNano('0.0001'),
         responseAddress: walletAddress,
@@ -240,6 +241,7 @@ export async function createSigningTransaction(transactionInfo: TonSigningTransa
         toAddress,
         (await getTonWebAsync()).utils.toNano(transactionInfo.amount),
         seqno,
+        // @ts-ignore
         transactionInfo.memo, //
         sendmode, // 3,
         true,

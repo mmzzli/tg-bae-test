@@ -137,29 +137,21 @@ function ConfirmSendInfo() {
     amount,
     data: chain?.type === 'EVM' ? getSendEvmData(token, toAddress, '0') : undefined,
   }
-  const {
-    gasFee,
-    gasFeeUsd,
-    feesQuery,
-    fees,
-    solPriorityFee,
-    nativeTokenPrice,
-    solPriorityFees,
-    isLoading,
-  } = useEstimatedGas({
-    params: estimatedGasParams,
-    chainId: chainId,
-    evmParams:
-      token &&
-      getChainByChainId(token.chainId)?.type === Web3Type.EVM &&
-      sendEvmParams({
-        amount: amount,
-        token: token,
-        toAddress: toAddress,
-        fromAddress: fromAddress,
-      }),
-    feeModeParams: feeMode,
-  })
+  const { gasFee, gasFeeUsd, solPriorityFee, nativeTokenPrice, solPriorityFees, isLoading } =
+    useEstimatedGas({
+      params: estimatedGasParams,
+      chainId: chainId,
+      evmParams:
+        token &&
+        getChainByChainId(token.chainId)?.type === Web3Type.EVM &&
+        sendEvmParams({
+          amount: amount,
+          token: token,
+          toAddress: toAddress,
+          fromAddress: fromAddress,
+        }),
+      feeModeParams: feeMode,
+    })
 
   useEffect(() => {
     if (wagmiChainId !== curChainId && chain?.type === 'EVM' && curChainId) {
@@ -216,7 +208,7 @@ function ConfirmSendInfo() {
               fromAddress={fromAddress}
               toAddress={toAddress}
               gasPriceToken={Number(gasFee)}
-              fees={fees}
+              // fees={fees}
               priorityFee={solPriorityFee}
               solPriorityFees={solPriorityFees}
               nativeTokenPrice={nativeTokenPrice}
@@ -237,13 +229,13 @@ function ConfirmSendInfo() {
             token={token!}
             walletBtcType={''} //walletBtcType
             fromAddress={fromAddress}
-            curChainId={curChainId}
+            // curChainId={curChainId}
             chain={chain}
             tonTransData={tonTransData}
             tonTestTransData={''} //tonTestTransData
             btcPsbtData={btcPsbtData}
             gasFee={gasFee}
-            feesQuery={feesQuery}
+            // feesQuery={feesQuery}
             // refetch={refetch}
           />
         </TBottomButton>

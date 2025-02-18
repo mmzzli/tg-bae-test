@@ -32,8 +32,8 @@ export interface TonTransactionType {
   toValue?: bigint | undefined //1e9   decimal: 9
   fromToken?: AssetsToken | undefined
   toToken?: AssetsToken | undefined
-  historyType?: 'Send' | 'Swap' | 'Approve'
-  type?: 'OKX' | 'Rango' | 'Ston.fi' | undefined
+  historyType?: 'Send' | 'Swap' | 'Approve' | 'Gift'
+  type?: 'OKX' | 'Rango' | 'Ston.fi' | undefined | 'Jupiter'
   routeInfo?: {
     swapperTitle: string
     swapperLogo: string

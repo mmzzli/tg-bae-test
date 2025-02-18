@@ -66,6 +66,7 @@ const sendTon = async (
       },
       requestId: params?.params?.routeInfo?.rangoRequestId || '',
       historyType: type,
+      // @ts-ignore
       type: params.params?.routeInfo?.aggregatorType || 'OKX',
       routeInfo: params?.params?.routeInfo,
     })

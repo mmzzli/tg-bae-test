@@ -58,12 +58,12 @@ interface ConfirmSendBtnType {
   amount: string
   walletBtcType: string
   fromAddress: string
-  curChainId: string
-  chain: IWeb3ChainType
+  // curChainId: string
+  chain?: IWeb3ChainType
   tonTransData: any
   tonTestTransData: any
   token: AssetsToken
-  gasGWei: string
+  // gasGWei: string
   btcPsbtData: any
   feesQuery?: UseQueryResult<
     | {
@@ -96,18 +96,21 @@ export const getEVMDexTransaction = ({
     approveTo: undefined,
     data: '',
     fromAddress,
+    // @ts-ignore
     fromToken: {
       ...token,
       logoURI: token.image,
     },
     toAddress,
     targetAddress: toAddress,
+    // @ts-ignore
     toToken: {
       ...token,
       logoURI: token.image,
     },
     params: {
       routeInfo: {
+        // @ts-ignore
         originRoute: [
           {
             fromTokenAmount: parseUnits(amount, token.decimals).toString(),
@@ -139,6 +142,7 @@ export const sendEvmParams = ({
     token,
   })
   let data = ''
+  // @ts-ignore
   if (params.fromToken.isNative) {
     params.value = parseUnits(amount || '0', token.decimals).toString()
   } else {
@@ -161,7 +165,7 @@ function ConfirmSendBtn({
   token,
   walletBtcType,
   fromAddress,
-  curChainId,
+  // curChainId,
   chain,
   tonTransData,
   tonTestTransData,
@@ -198,18 +202,21 @@ function ConfirmSendBtn({
           approveTo: undefined,
           data: '',
           fromAddress,
+          // @ts-ignore
           fromToken: {
             ...token,
             logoURI: token.image,
           },
           toAddress,
           targetAddress: toAddress,
+          // @ts-ignore
           toToken: {
             ...token,
             logoURI: token.image,
           },
           params: {
             routeInfo: {
+              // @ts-ignore
               originRoute: [
                 {
                   fromTokenAmount: parseUnits(amount, token.decimals).toString(),
@@ -226,6 +233,7 @@ function ConfirmSendBtn({
           switch (chain?.type) {
             case Web3Type.EVM: {
               let data = ''
+              // @ts-ignore
               if (params.fromToken.isNative) {
                 params.value = parseUnits(amount || '0', token.decimals).toString()
               } else {
@@ -305,7 +313,7 @@ function ConfirmSendBtn({
               to: toAddress,
               amount,
               symbol: token.symbol,
-              chain_type: chain.type || '',
+              chain_type: chain?.type || '',
               hash,
             }
             const urlString = new URLSearchParams(urlParams).toString()

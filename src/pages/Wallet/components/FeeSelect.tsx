@@ -50,8 +50,8 @@ export const getEvmFeeConfig = ({
   chain: IWeb3ChainType | undefined
   type?: 'Swap' | 'Send'
 }) => {
-  if (!chain) return
-  if (chain.id === chains.ethereum.id) {
+  // if (!chain) return
+  if (chain?.id === chains.ethereum.id) {
     if (type === 'Send') {
       return {
         [FeeMode.SLOW]: 1,

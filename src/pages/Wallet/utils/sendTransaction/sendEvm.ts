@@ -248,6 +248,8 @@ export const getSendEvmGas = async ({
 
             feeModeResults[feeMode] = {
               ...res,
+              // todo... unknow
+              // @ts-ignore
               gasPrice: feeModeGasPrice,
             }
           })
@@ -293,6 +295,7 @@ const sendEvm = async (
 
     const sendRes = await getSendEvmGas({
       params,
+      // @ts-ignore
       type,
       evmAddress,
       feeMode: feeMode,
@@ -355,6 +358,7 @@ const sendEvm = async (
 
         const hash = await sendRawTransactionApi({
           mfa,
+          // @ts-ignore
           mfaParams,
           chain: selectChain!,
         })
@@ -366,6 +370,7 @@ const sendEvm = async (
             saveHistory(
               {
                 params,
+                // @ts-ignore
                 type,
                 hash,
                 nonce: res.nonce,

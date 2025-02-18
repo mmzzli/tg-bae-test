@@ -301,9 +301,9 @@ export type IHistoryType = {
   hash: string
   chain?: IWeb3ChainType | undefined
   chainId?: IWeb3ChainType | undefined
-  type?: 'OKX' | 'Rango' | '' | 'Ston.fi'
+  type?: 'OKX' | 'Rango' | '' | 'Ston.fi' | 'Jupiter'
   requestId?: string | undefined
-  historyType: 'Swap' | 'Send' | 'Approve' | 'Receive' | 'Pay'
+  historyType: 'Swap' | 'Send' | 'Approve' | 'Receive' | 'Pay' | 'Gift'
   status?: 'success' | 'pending' | 'failed' | 'loading' | 'unknow'
 
   blocknumber?: string | undefined
@@ -311,13 +311,12 @@ export type IHistoryType = {
   gasAmount?: string | undefined
 
   toHash?: string | undefined
-  toHashInfo:
-    | {
-        blocknumber: string | undefined
-        endTime: number
-        gasAmount: string | undefined
-      }
-    | undefined
+  toHashInfo?: {
+    blocknumber: string | undefined
+    endTime: number
+    gasAmount: string | undefined
+  }
+
   routeInfo?: {
     swapperTitle: string
     swapperLogo: string
@@ -338,7 +337,7 @@ export type ReportHistoryType = {
 }
 
 export type ReportSourceType = {
-  plat: 'OKX' | 'Rango' | ''
+  plat: 'OKX' | 'Rango' | '' | 'Ston.fi' | 'Jupiter'
   sourceType: 'cross' | 'normal'
   requestId: string
   time: number

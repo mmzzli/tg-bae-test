@@ -29,9 +29,11 @@ const saveHistory = (
     fromAddress: params?.fromAddress,
     toAddress: params?.targetAddress,
     fromAmount:
+      // @ts-ignore
       params.params?.routeInfo?.originRoute?.[0]?.fromTokenAmount ||
       parseUnits(params.params?.amount || '0', fromToken.decimals).toString(),
     toAmount:
+      // @ts-ignore
       params.params?.routeInfo?.originRoute?.[0]?.toTokenAmount ||
       parseUnits(params.params?.routeInfo?.minimumReceived || '0', toToken.decimals).toString(),
     fromSwapTokens: {

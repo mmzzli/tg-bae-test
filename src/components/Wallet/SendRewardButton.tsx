@@ -118,8 +118,11 @@ export const SendRewardButton = ({
   })
 
   useEffect(() => {
-    refetchAllowance()
-  }, [address])
+    if (address && tokenAddress !== '0x0000000000000000000000000000000000000000' && !allowanceLoading) {
+      debugger
+      refetchAllowance()
+    }
+  }, [address, tokenAddress, allowanceLoading])
 
   console.log('0000000000000000000=>', allowance, allowanceLoading, address, tokenAddress)
 

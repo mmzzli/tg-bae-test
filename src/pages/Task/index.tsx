@@ -30,7 +30,7 @@ const POST_CHANNEL = 16
 const goToAction = (task: DailyTaskItem) => {
   switch (task.task_type) {
     case TaskType.ClaimAll:
-      return null
+      return '/home'
     case TaskType.Chat:
       return '/chat'
     case TaskType.NewPost:
@@ -298,7 +298,7 @@ const Tasks: FC = () => {
   }
 
   const handleTaskAction = (task: DailyTaskItem) => {
-    if (task.status === DailyTaskStatusEnum.GO) {
+    if (task.status === DailyTaskStatusEnum.GO || task.status === DailyTaskStatusEnum.IN_PROGRESS) {
       const action = goToAction(task)
       if (action) {
         navigate(action)

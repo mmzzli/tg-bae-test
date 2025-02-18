@@ -1,13 +1,15 @@
 import dayjs from 'dayjs'
 import { Tabs } from 'antd-mobile'
 import { Box } from '@chakra-ui/react'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { animated } from 'react-spring'
 
 import { useStore } from '@/store/store'
 import { accountdetailList, getGiftHistory } from '@/api'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import loadingGif from '@/assets/loading.gif'
+import { useSwipeBack } from '@/hooks/useSwipeBack'
 
 import Icon from '@/components/comm/Icon'
 import Skeleton from '@/components/Skeketon/Skeleton'
@@ -184,6 +186,8 @@ const Cryptos = ({
 const EarningsHistory = () => {
   const [searchParams] = useSearchParams()
   const { openLink } = useTMAUtils()
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const { bind, x } = useSwipeBack({ scrollRef })
 
   const rate = searchParams.get('exchange_rate')
   const type = searchParams.get('type')
@@ -300,11 +304,14 @@ const EarningsHistory = () => {
   }
 
   return (
-    <div
+    <animated.div
+      {...bind()}
+      ref={scrollRef}
       id="earningsScrollableDiv"
       className="fixed top-0 left-0 bottom-0 right-0 bg-[#FFF] z-10 scrollbar-hide"
       style={{
         paddingTop: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
+        transform: x.to((x) => `translateX(${x}px)`),
       }}
     >
       <div className="flex justify-between px-[16px]">
@@ -316,7 +323,7 @@ const EarningsHistory = () => {
           activeKey={activeKey}
           onChange={(key) => handleChange(key)}
           activeLineMode="fixed"
-          stretch={false}
+          stretch={true}
         >
           <Tabs.Tab title="Telegram stars" key="1" className="px-[18px]">
             <TelegramStars
@@ -338,7 +345,7 @@ const EarningsHistory = () => {
           </Tabs.Tab>
         </Tabs>
       </div>
-    </div>
+    </animated.div>
   )
 }
 

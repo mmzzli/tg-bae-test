@@ -422,6 +422,7 @@ export const formatDecimal = (num: number, decimalPlaces = 2) => {
  *
  * @param {number | string | null | undefined} input - 需要格式化的数字
  * @param {boolean} [useUnit=false] - 是否对大数使用 K/M/B 单位格式化
+ * @param {boolean} [showDollarSign=true] - 是否显示美元符号
  * @returns {string} 格式化后的美元字符串
  *
  * @example
@@ -449,20 +450,22 @@ export const formatDecimal = (num: number, decimalPlaces = 2) => {
  */
 export const formatUSD = (
   input: number | string | null | undefined,
-  useUnit: boolean = false
+  useUnit: boolean = false,
+  showDollarSign: boolean = true
 ): string => {
   if (input === null || input === undefined || input === '' || isNaN(Number(input))) {
     return '-'
   }
 
   const num = new BigNumber(input)
+  const dollarSign = showDollarSign ? '$' : ''
 
   if (num.isEqualTo(0)) {
-    return '$0'
+    return `${dollarSign}0`
   }
 
   if (num.isLessThan(0.01) && num.isGreaterThan(0)) {
-    return '<$0.01'
+    return `<${dollarSign}0.01`
   }
 
   const units = [
@@ -476,22 +479,21 @@ export const formatUSD = (
       if (num.isGreaterThanOrEqualTo(unit.value)) {
         const formatted = num.dividedBy(unit.value).toFixed(1, BigNumber.ROUND_DOWN)
         return formatted.endsWith('.0')
-          ? `$${formatted.slice(0, -2)}${unit.symbol}`
-          : `$${formatted}${unit.symbol}`
+          ? `${dollarSign}${formatted.slice(0, -2)}${unit.symbol}`
+          : `${dollarSign}${formatted}${unit.symbol}`
       }
     }
   }
 
   if (num.isGreaterThanOrEqualTo(1) && num.isInteger()) {
-    return `$${num.toFixed(0)}`
+    return `${dollarSign}${num.toFixed(0)}`
   }
 
   if (num.isGreaterThanOrEqualTo(1)) {
-    return `$${num.toFixed(2, BigNumber.ROUND_DOWN)}`
+    return `${dollarSign}${num.toFixed(2, BigNumber.ROUND_DOWN)}`
   }
 
-  // 修改：去掉多余的 0（如 0.30 => 0.3）
-  return `$${num
+  return `${dollarSign}${num
     .toFixed(2, BigNumber.ROUND_DOWN)
     .replace(/\.0+$/, '')
     .replace(/(\.[1-9]*)0+$/, '$1')}`

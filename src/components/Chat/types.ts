@@ -71,6 +71,7 @@ export type WrappedMessage = Message & {
   status?: MessageStatus
   metadata?: MessageMetadata
   reply?: ReplyMessage
+  showAvatar?: boolean
 }
 export interface ChatListProps {
   chats: Conversation[]

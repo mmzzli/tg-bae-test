@@ -323,7 +323,7 @@ const EarningsHistory = () => {
           activeKey={activeKey}
           onChange={(key) => handleChange(key)}
           activeLineMode="fixed"
-          stretch={false}
+          stretch={true}
         >
           <Tabs.Tab title="Telegram stars" key="1" className="px-[18px]">
             <TelegramStars

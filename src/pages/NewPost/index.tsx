@@ -681,7 +681,7 @@ export const NewPost: FC = () => {
       >
         {/* Page Header */}
         <div className="fixed flex justify-between items-center left-0 right-0 h-[60px] px-4 py-3 bg-white z-[11]">
-          <h3 className="text-[20px] font-bold text-black">New Post</h3>
+          <h3 className="text-[20px] font-bold text-[#333]">New Post</h3>
           <Button
             size="xl"
             fontSize="14px"

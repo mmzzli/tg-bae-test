@@ -167,9 +167,9 @@ const Searching = () => {
                   />
                 </div>
                 <div className='w-[100%]'>
-                  <h3 className="text-[#333] text-[16px] w-[calc(100%-20px)] truncate font-medium">
+                  <p className="text-[#333] text-[16px] w-[calc(100%-20px)] truncate font-[500]">
                     {item.tgname}
-                  </h3>
+                  </p>
                   <p className='text-[#999] text-[12px] font-normal'>
                     {item.fans_num} followers
                   </p>
@@ -240,9 +240,9 @@ const Recent: React.FC<RecentProps> = ({ searchHistory, setSearchHistory }) => {
               />
             </div>
             <div className='w-[100%]'>
-              <h3 className="text-[#333] text-[16px] w-[calc(100%-20px)] truncate font-medium">
+              <p className="text-[#333] text-[16px] w-[calc(100%-20px)] truncate font-[500]">
                 {item.tgname}
-              </h3>
+              </p>
               {/* <p className='text-[#999] text-[12px] font-normal'>
                 {item.fans_num} followers
               </p> */}

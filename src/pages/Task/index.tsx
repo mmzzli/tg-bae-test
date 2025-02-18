@@ -400,7 +400,10 @@ const Tasks: FC = () => {
         </Box>
       </BottomCloseModal>
       <div className="mb-4 flex flex-col items-center justify-center">
-        <h1 className="text-[40px] leading-[42px] font-bold text-[#333333]">
+        <h1
+          className="text-[40px] leading-[42px] font-[800] text-[#333333]"
+          style={{ fontFamily: 'Roboto' }}
+        >
           <AnimatedNumber value={totalTaskPoints + totalFollowTaskPoints + taskPoints} />
         </h1>
         <p className="pt-[10px] text-[12px] leading-[16px] text-[#999999]">My Bae points</p>
@@ -446,7 +449,7 @@ const Tasks: FC = () => {
 
       {/* date */}
       <div className="flex justify-between items-center mb-4 text-[16px] leading-[21px] h-[21px]">
-        <h2 className="font-bold text-[#333333]">Daily Tasks</h2>
+        <h3 className="text-[#333333]">Daily Tasks</h3>
         <div className="flex items-center text-[#333333]">
           <i className="iconfont icon-icon_daily text-[20px] mr-1 mb-[2px]"></i>
           <span>
@@ -547,7 +550,7 @@ const FollowTask: React.FC<{ successToast: () => void }> = ({ successToast }) =>
   return (
     <>
       <div className="flex justify-between items-center mb-4 text-[16px] leading-[21px] h-[21px]">
-        <h2 className="font-bold text-[#333333]">Follow community</h2>
+        <h3 className="text-[#333333]">Follow community</h3>
       </div>
       <div className="space-y-3 transition-transform duration-500 mb-8">
         {followTaskList.map((task) => (

@@ -117,7 +117,7 @@ const Notification = () => {
               paddingBottom: 'var(--tg-content-safe-area-inset-bottom)',
             }}
           >
-            <h1 className="text-black text-[20px] font-bold h-[41px] leading-[41px] mb-2 pl-6">
+            <h1 className="text-[#333] text-[20px] font-bold h-[41px] leading-[41px] mb-2 pl-6">
               Notification
             </h1>
             <div className="flex-1 overflow-auto scrollbar-hide" ref={containerRef}>

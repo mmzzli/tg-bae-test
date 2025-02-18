@@ -89,15 +89,18 @@ const Stars: FC<StarsProps> = ({ price, setPrice, featureRefBoll }) => {
   useEffect(() => {
     setHeights(window.innerHeight)
     const handleResize = () => {
+      console.log(window.innerHeight,'talk')
       if(heights > window.innerHeight){
         setIsFocused(true)
       }else{
         setIsFocused(false)
       }
     };
+    window.Telegram?.WebApp?.onEvent("viewportChanged", handleResize);
     window.addEventListener('resize', handleResize);
     return () => {
       window.removeEventListener('resize', handleResize);
+      window.Telegram?.WebApp?.offEvent("viewportChanged", handleResize);
     };
   }, []);
 
@@ -194,7 +197,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice, featureRefBoll }) => {
               <Image src={StarsIcon} alt="Stars Icon" />
             </HStack>
 
-            <Box p="0px 18px" h={`${isFocused ? "400px" : ""}`}>
+            <Box p="0px 18px" h={`${isFocused ? "500px" : ""}`}>
               {boll && <Button
                 size="xl"
                 fontSize="14px"

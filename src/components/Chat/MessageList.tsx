@@ -71,11 +71,13 @@ export const MessageList = ({
 
     groups.forEach((group) => {
       const messages = group.messages
-      console.log(messages)
+      // console.log(messages)
       messages.forEach((msg, index) => {
         const nextMsg = messages[index + 1]
         if (nextMsg && msg.sender !== nextMsg.sender) {
           msg.showAvatar = true
+        } else {
+          msg.showAvatar = false
         }
       })
       messages[messages.length - 1].showAvatar = true
@@ -153,6 +155,9 @@ const MessageItem = memo(
         className
       )}
     >
+      {/* <span className="text-xs text-black">
+        {new Date(message.timestamp * 1000).toLocaleTimeString()}
+      </span> */}
       {!isCurrentUser && (
         <div className="flex-shrink-0">
           {message.showAvatar ? (

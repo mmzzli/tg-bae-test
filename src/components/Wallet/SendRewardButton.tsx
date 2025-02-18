@@ -1,15 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { SlideButton, SlideButtonHandle } from '../BaseButton/SlideButton'
 import {
-  // useAccount,
-  // useChainId,
   useEstimateFeesPerGas,
   useEstimateGas,
   useEstimateMaxPriorityFeePerGas,
   useReadContract,
-  // useSwitchChain,
   useWaitForTransactionReceipt,
-  useWriteContract,
 } from 'wagmi'
 import { abi, approveAbi } from '@/config/abi'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
@@ -99,8 +95,6 @@ export const SendRewardButton = ({
     hash,
   })
 
-  // const currentChainId = useChainId()
-  // const { switchChainAsync } = useSwitchChain()
   const { hanleWalletAction } = useWallet()
 
   const {
@@ -112,14 +106,14 @@ export const SendRewardButton = ({
     abi: approveAbi,
     functionName: 'allowance',
     args: [address as `0x${string}`, contractAddress as `0x${string}`],
+    chainId,
     query: {
       enabled: tokenAddress !== '0x0000000000000000000000000000000000000000',
     },
   })
 
   useEffect(() => {
-    if (address && tokenAddress !== '0x0000000000000000000000000000000000000000' && !allowanceLoading) {
-      debugger
+    if (address && tokenAddress !== '0x0000000000000000000000000000000000000000' && !allowanceLoading && !allowance) {
       refetchAllowance()
     }
   }, [address, tokenAddress, allowanceLoading])
@@ -294,23 +288,6 @@ export const SendRewardButton = ({
       })
 
       try {
-        // const hash = await window.ethereum.request({
-        //   method: 'eth_sendTransaction', // or eth_sendTransaction
-        //   params: [
-        //     {
-        //       from: address,
-        //       to: contractAddress,
-        //       value:
-        //         tokenAddress === '0x0000000000000000000000000000000000000000'
-        //           ? '0x' + BigInt(parseUnits(amount, decimals).toString()).toString(16)
-        //           : '0x0',
-        //       chainId: chainId,
-        //       data: abiData,
-        //       gasLimit: (gasLimit ? BigInt(Number(gasLimit) * 3) : 100000n).toString(),
-        //       gasPrice: getCurrentGasPrice(feesPerGas).toString(),
-        //     },
-        //   ],
-        // })
         const hash = await hanleWalletAction({
           method: 'eth_sendTransaction', // or eth_sendTransaction
           params: [
@@ -367,19 +344,6 @@ export const SendRewardButton = ({
         })
 
         try {
-          // const hash = await window.ethereum.request({
-          //   method: 'eth_sendTransaction', // or eth_sendTransaction
-          //   params: [
-          //     {
-          //       from: address,
-          //       to: tokenAddress,
-          //       chainId: chainId,
-          //       data: abiData,
-          //       gasLimit: (gasLimit ? BigInt(Number(gasLimit) * 3) : 60000n).toString(),
-          //       gasPrice: getCurrentGasPrice(feesPerGas).toString(),
-          //     },
-          //   ],
-          // })
           const hash: any = await hanleWalletAction({
             method: 'eth_sendTransaction',
             params: [

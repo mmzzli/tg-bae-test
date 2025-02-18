@@ -30,7 +30,28 @@ const getEvmGas = async (params: EvmGasParamsType): Promise<GasFee> => {
     )
     return gasFee
   } catch (e) {
+    console.warn(e)
     return '0'
+  }
+}
+
+export const getEvmGasBigint = async (params: EvmGasParamsType): Promise<BigInt> => {
+  const { fromAddress, toAddress, token, data, chainId } = params
+  const config = evmChainsConfig()
+  try {
+    const to = token.isNative ? toAddress : token.address
+    const { maxFeePerGas, gas, gasPrice } = await prepareTransactionRequest(config, {
+      chainId: chainId,
+      account: fromAddress as `0x${string}`,
+      to: to as `0x${string}`,
+      value: BigInt('0'),
+      data: data as `0x${string}` | undefined,
+    })
+
+    return gas
+  } catch (e) {
+    console.warn(e)
+    return 200000n
   }
 }
 

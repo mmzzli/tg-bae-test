@@ -18,7 +18,7 @@ interface Props {
 import { config, evmChainList } from '@/config/wagmi-config'
 import { Chain, encodeFunctionData } from 'viem'
 import { tokenIconMap } from '@/config/token-icon'
-import { useReadContract, useSwitchChain, useWaitForTransactionReceipt } from 'wagmi'
+import { useEstimateGas, useReadContract, useSwitchChain, useWaitForTransactionReceipt } from 'wagmi'
 import { getBalance, getGasPrice, estimateGas } from '@wagmi/core'
 import { abi } from '@/config/abi'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
@@ -26,6 +26,10 @@ import { CustomToast, typeOptions } from '../comm/Toast'
 import { approveEvent, giftSign, verifyWithdraw } from '@/api'
 import { formatUSD } from '@/utils/utils'
 import { useAccount } from '@/pages/Wallet/utils/walletProvider'
+import useWallet from '@/pages/Wallet/hooks/useWallet'
+import getEvmGas, { getEvmGasBigint } from '@/pages/Wallet/utils/estimateGas/getEvmGas'
+import { AssetsToken } from '@/store/wallet/tokenType/AssetsToken'
+import { parseUnits } from 'viem'
 
 const contractAddress = '0x359E9Ef12132ea2a49701F838B5CdFbc13771AaF'
 const contractAddressTestnet = '0xF165cFb92441544cF9DEF72427028Db85b0aDEe2'
@@ -51,6 +55,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
     // Wagmi Hooks START
     // const { switchChain } = useSwitchChain()
     const { address } = useAccount()
+    const { hanleWalletAction } = useWallet()
     const { isSuccess: isConfirmed, error: receiptError } = useWaitForTransactionReceipt({
       hash,
       chainId: currentChain?.id,
@@ -220,39 +225,6 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
         resetState()
         return
       }
-      const gasPrice = await getGasPrice(config, {
-        chainId: currentChain.id as 1 | 56 | undefined,
-      })
-
-      const gasLimit = await estimateGas(config, {
-        chainId: currentChain.id as 1 | 56 | undefined,
-      })
-
-      console.log(gasPrice, gasLimit)
-      const balance =
-        address && currentChain
-          ? getBalance(config, {
-              address: address,
-              chainId: currentChain.id as 1 | 56 | undefined,
-            })
-          : null
-
-      if (balance) {
-        const res = await balance
-        console.log('balance', res)
-        const estimatedGas = gasLimit ? BigInt(Number(gasLimit) * 4) : 100000n
-        let totalCost = calculateTotalCost(estimatedGas, gasPrice ? gasPrice : 1000000000n)
-        if (res.value < totalCost) {
-          toast({
-            render: () => (
-              <CustomToast title="Insufficient gas for withdrawal" type={typeOptions.error} />
-            ),
-            position: 'bottom',
-          })
-          resetState()
-          return
-        }
-      }
 
       setCurrentWithdrawChain(currentChain.id)
       setCurrentWithdrawInProgress(currentWithdraw)
@@ -292,7 +264,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
         BigInt(_deadline),
         signatures,
       ])
-
+      
       const abiData = encodeFunctionData({
         abi,
         functionName: 'withdrawMultiToken',
@@ -305,8 +277,63 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
         ],
       })
 
+      const gasPrice = await getGasPrice(config, {
+        chainId: currentChain.id as 1 | 56 | undefined,
+      })
+
+      let gasLimit = await getEvmGasBigint({
+        fromAddress: address as string,
+        toAddress: contractAddress,
+        token: {isNative : true} as AssetsToken,
+        chainId,
+        data: abiData
+      })
+
+      // const gasLimit = await estimateGas(config, {
+      //   chainId: currentChain.id as 1 | 56 | undefined,
+      // })
+      debugger
+      console.log(gasPrice, gasLimit)
+      const balance =
+        address && currentChain
+          ? getBalance(config, {
+              address: address,
+              chainId: currentChain.id as 1 | 56 | undefined,
+            })
+          : null
+
+      if (balance) {
+        const res = await balance
+        console.log('balance', res)
+        const estimatedGas = gasLimit ? BigInt(Number(gasLimit) * 4) : 100000n
+        let totalCost = calculateTotalCost(estimatedGas, gasPrice ? gasPrice : 1000000000n)
+        if (res.value < totalCost) {
+          toast({
+            render: () => (
+              <CustomToast title="Insufficient gas for withdrawal" type={typeOptions.error} />
+            ),
+            position: 'bottom',
+          })
+          resetState()
+          return
+        }
+      }
+
       try {
-        const hash = await window.ethereum.request({
+        // const hash = await window.ethereum.request({
+        //   method: 'eth_sendTransaction', // or eth_sendTransaction
+        //   params: [
+        //     {
+        //       from: address,
+        //       to: contractAddress,
+        //       chainId: chainId,
+        //       data: abiData,
+        //       gasLimit: (gasLimit ? BigInt(Number(gasLimit) * 4) : 100000n).toString(),
+        //       gasPrice: gasPrice.toString(),
+        //     },
+        //   ],
+        // })
+        const hash = await hanleWalletAction({
           method: 'eth_sendTransaction', // or eth_sendTransaction
           params: [
             {
@@ -320,7 +347,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
           ],
         })
         console.log('window.ethereum.request', hash)
-        setHash(hash)
+        setHash(hash as `0x${string}}`)
       } catch (error) {
         setWriteContractApiError(true)
       }

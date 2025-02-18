@@ -64,7 +64,7 @@ const WalletHeader = () => {
 
       <div className="rounded-lg bg-[#F7F9FC] px-3.5 py-3 w-full mt-6">
         <p className="text-[13px] text-b2 leading-normal font-normal">
-          Only select EVM/BSC/Solana tokens are shown. Other tokens can’t be used here. We will soon
+          Only select EVM/BSC/Solana/Ton tokens are shown. Other tokens can’t be used here. We will soon
           support other tokens.
         </p>
       </div>

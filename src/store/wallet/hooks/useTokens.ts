@@ -199,7 +199,6 @@ const useTokens = () => {
   }
 
   useEffect(() => {
-    console.log('xxxxxxx1')
     updateTokenListSotre()
   }, [JSON.stringify(listBalance)])
 

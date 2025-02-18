@@ -1,7 +1,7 @@
 import { useSpring } from 'react-spring'
 import { useDrag } from 'react-use-gesture'
 import { useNavigate } from 'react-router-dom'
-import { RefObject } from 'react'
+import { RefObject, useEffect, useCallback } from 'react'
 
 interface UseSwipeBackOptions {
   scrollRef: RefObject<HTMLElement>
@@ -27,25 +27,36 @@ export const useSwipeBack = ({
     }
   }))
 
-  const preventScroll = (e: TouchEvent) => {
-    e.preventDefault()
-  }
+  const preventScroll = useCallback((e: TouchEvent) => {
+    // 只在右滑时阻止滚动
+    if (x.get() > 0) {
+      e.preventDefault()
+    }
+  }, [x])
+
+  useEffect(() => {
+    return () => {
+      document.removeEventListener('touchmove', preventScroll)
+    }
+  }, [preventScroll])
 
   const bind = useDrag(
     ({ down, movement: [mx], direction: [xDir], velocity, cancel }) => {
       const scrollElement = scrollRef.current
       if (!scrollElement || scrollElement.scrollLeft > 0) {
+        document.removeEventListener('touchmove', preventScroll)
         cancel()
         return
       }
 
       if (down) {
-        // 开始滑动时禁止页面滚动
-        document.body.style.overflow = 'hidden'
-        document.addEventListener('touchmove', preventScroll, { passive: false })
+        // 只在开始右滑时添加阻止滚动
+        if (mx > 0) {
+          document.addEventListener('touchmove', preventScroll, { passive: false })
+        }
 
         api.start({
-          x: mx,
+          x: Math.max(0, mx), // 确保不会出现负值
           immediate: true,
           config: {
             tension: 250,
@@ -53,8 +64,6 @@ export const useSwipeBack = ({
           }
         })
       } else {
-        // 结束滑动时恢复页面滚动
-        document.body.style.overflow = ''
         document.removeEventListener('touchmove', preventScroll)
 
         const shouldGoBack =
@@ -70,7 +79,9 @@ export const useSwipeBack = ({
               friction: 25,
               duration: 180
             },
-            onRest: () => navigate(-1)
+            onRest: () => {
+              navigate(-1)
+            }
           })
         } else {
           api.start({

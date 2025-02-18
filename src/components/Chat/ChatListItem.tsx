@@ -31,9 +31,9 @@ const ChatAvatar: FC<{ user: OthersUserInfo | null }> = ({ user }) => (
 const ChatContent: FC<{ user: OthersUserInfo | null; chat: Conversation }> = ({ user, chat }) => (
   <div className="flex-1 min-w-0">
     <div className="flex justify-between items-center">
-      <h3 className="flex-1 dark:text-white text-[#0F1233] font-medium truncate">
+      <p className="flex-1 dark:text-white text-[#333] font-[500] truncate text-[16px]">
         {user?.username}
-      </h3>
+      </p>
       <span className="dark:text-gray-500 text-[#888888] text-xs">
         {chat.lastMessage?.timestamp
           ? getTimeStringAutoShort(chat.lastMessage?.timestamp * 1000, true)

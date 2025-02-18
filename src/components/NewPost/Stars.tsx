@@ -74,41 +74,32 @@ const Stars: FC<StarsProps> = ({ price, setPrice, featureRefBoll }) => {
     }
   }, [isOpen])
 
-  // useEffect(() => {
-  //   const handleKeyboardHide = () => {
-  //     setIsFocused(false)
-  //     window.scrollTo(0, 0);
-  //   };
-  //   window.addEventListener('focusout', handleKeyboardHide);
-
-  //   return () => {
-  //     window.removeEventListener('focusout', handleKeyboardHide);
-  //   };
-  // }, []);
-
   useEffect(() => {
-    let initialHeight = window.visualViewport?.height || window.innerHeight;
-
-    const handleResize = () => {
-      const viewportHeight = window.visualViewport?.height || window.innerHeight;
-      setIsFocused(viewportHeight < initialHeight * 0.9); // 认为键盘弹出
+    const handleKeyboardHide = () => {
+      setIsFocused(false)
+      window.scrollTo(0, 0);
     };
-
-    const handleFocus = () => setIsFocused(true); // 备用方案，部分 iOS 版本
-    const handleBlur = () => setIsFocused(false);
-
-    window.visualViewport?.addEventListener("resize", handleResize);
-    document.addEventListener("focusin", handleFocus);
-    document.addEventListener("focusout", handleBlur);
+    window.addEventListener('focusout', handleKeyboardHide);
 
     return () => {
-      window.visualViewport?.removeEventListener("resize", handleResize);
-      document.removeEventListener("focusin", handleFocus);
-      document.removeEventListener("focusout", handleBlur);
+      window.removeEventListener('focusout', handleKeyboardHide);
     };
   }, []);
 
-
+  useEffect(() => {
+    setHeights(window.innerHeight)
+    const handleResize = () => {
+      if(heights > window.innerHeight){
+        setIsFocused(true)
+      }else{
+        setIsFocused(false)
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
 
   return (

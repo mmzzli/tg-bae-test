@@ -90,17 +90,14 @@ const Stars: FC<StarsProps> = ({ price, setPrice, featureRefBoll }) => {
 
   useEffect(() => {
     setHeights(window.innerHeight)
+    console.log(window.innerHeight,'123')
     const updateKeyboardHeight = () => {
-      const fullHeight = window.innerHeight;
-      const availableHeight =
-        window.Telegram?.WebApp?.viewportStableHeight
-      console.log(fullHeight, 'ccc', availableHeight)
+      console.log(window.innerHeight,'321')
       if(heights > window.innerHeight){
-        setKeyboardHeight(availableHeight)
+        setIsFocused(true)
       }else{
-        setKeyboardHeight(0)
+        setIsFocused(false)
       }
-
     };
 
     // 监听 Telegram 视口变化
@@ -208,7 +205,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice, featureRefBoll }) => {
               />}
               <Image src={StarsIcon} alt="Stars Icon" />
             </HStack>
-            <Box p="0px 18px" minH={`${keyboardHeight}px`}>
+            <Box p="0px 18px" h={`${isFocused ? "500px" : ""}`}>
               {boll && <Button
                 size="xl"
                 fontSize="14px"

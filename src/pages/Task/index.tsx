@@ -400,12 +400,11 @@ const Tasks: FC = () => {
         </Box>
       </BottomCloseModal>
       <div className="mb-4 flex flex-col items-center justify-center">
-        <h1
+        <p
           className="text-[40px] leading-[42px] font-[800] text-[#333333]"
-          style={{ fontFamily: 'Roboto' }}
         >
           <AnimatedNumber value={totalTaskPoints + totalFollowTaskPoints + taskPoints} />
-        </h1>
+        </p>
         <p className="pt-[10px] text-[12px] leading-[16px] text-[#999999]">My Bae points</p>
       </div>
 

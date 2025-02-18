@@ -42,7 +42,7 @@ const MoreText: React.FC<MoreTextProps> = ({
   maxLines = 2,
   moreColor = '#5D6BFF',
   bgColor = '#fff',
-  textColor = '#666',
+  textColor = '#333',
   className = '',
   type,
   onTextClick,

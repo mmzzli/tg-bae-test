@@ -175,7 +175,7 @@ const HomePage: FC = () => {
           <div className="pl-[16px] pt-[18px]">
             <h3
               ref={titleRef}
-              className="absolute text-black dark:text-[#E0E2F6] text-[20px] flex items-center duration-100 ease-out"
+              className="absolute text-[#333] dark:text-[#E0E2F6] text-[20px] flex items-center duration-100 ease-out"
               style={{
                 top: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top)) + 18px',
                 opacity: showTopTitle ? 0 : 1,

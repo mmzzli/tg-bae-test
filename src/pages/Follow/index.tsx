@@ -142,7 +142,7 @@ const FollowPage: FC = () => {
           paddingTop: `calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 24px)`,
         }}
       >
-        <h1 className="text-[20px] font-bold text-black dark:text-white">{title}</h1>
+        <h1 className="text-[20px] font-bold text-[#333] dark:text-white">{title}</h1>
         <div className="flex-1 overflow-hidden">
           <div className="flex flex-col h-full overflow-auto scrollbar-hide">
             {loading ? (

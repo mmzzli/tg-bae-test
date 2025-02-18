@@ -536,7 +536,7 @@ const ResourceHeader = memo<ResourceHeaderProps>(
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
-              <div className="text-[#0F1233] dark:text-[#E0E2F6]  font-bold text-base">
+              <div className="text-[#0F1233] dark:text-[#E0E2F6]  font-bold text-base max-w-[120px] truncate">
                 {data.username}
               </div>
               <p className="text-[#868686] dark:text-[#424048] text-xs">

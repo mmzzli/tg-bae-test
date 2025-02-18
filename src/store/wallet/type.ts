@@ -301,7 +301,7 @@ export type IHistoryType = {
   hash: string
   chain?: IWeb3ChainType | undefined
   chainId?: IWeb3ChainType | undefined
-  type?: 'OKX' | 'Rango' | ''
+  type?: 'OKX' | 'Rango' | '' | 'Ston.fi'
   requestId?: string | undefined
   historyType: 'Swap' | 'Send' | 'Approve' | 'Receive' | 'Pay'
   status?: 'success' | 'pending' | 'failed' | 'loading' | 'unknow'

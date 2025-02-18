@@ -6,6 +6,7 @@ import BaseButton from '@/components/BaseButton/BaseButton'
 import clsx from 'clsx'
 import sentSubmitted from '@/components/tmd/svgs/send-submitted.png'
 
+// @ts-ignore
 const AveragingProcessTime: Record<IWeb3Type, string> = {
   EVM: `1 minutes`,
   BTC: `60 minutes`,

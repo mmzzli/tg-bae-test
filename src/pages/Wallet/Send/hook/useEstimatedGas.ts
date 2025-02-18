@@ -30,7 +30,7 @@ import { useUserStore } from '@/store/wallet/walletUser'
 import { useTokenStore } from '@/store/wallet/walletToken'
 import { getChainByChainId } from '@/store/wallet/util/tokenHelper'
 import { Web3Type } from '@/store/wallet/chainType'
-import { getPriorityFee } from '@/store/wallet/config/sol'
+import { getPriorityFee, solDecimals } from '@/store/wallet/config/sol'
 import chains from '@/store/wallet/chains'
 import { getSendEvmGas } from '../../utils/sendTransaction/sendEvm'
 import getEvmGas from '../../utils/estimateGas/getEvmGas'
@@ -56,7 +56,7 @@ const useEstimatedGas = ({
   params: UseEstimatedGasParamsType
   chainId: number
   gasMagnification?: number // remain gas rate
-  evmParams?: DexTransaction
+  evmParams?: DexTransaction | false
   feeModeParams?: FeeMode
   gasMagnMode?: boolean
 }) => {
@@ -188,7 +188,7 @@ const useEstimatedGas = ({
           //sol can only estimated baseFee
           return formatUnits(
             BigInt(totalFee || '0') * 10n,
-            chains.solana.chain?.nativeCurrency.decimals
+            chains.solana.chain?.nativeCurrency.decimals || solDecimals
           )
         }
         // case Web3Type.TRON:

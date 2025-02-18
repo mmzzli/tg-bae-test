@@ -59,6 +59,7 @@ const useTonTransaction = (transInfo: ITonSigningType) => {
         const memo = (await getTonWebAsync()).boc.Cell.oneFromBoc(buffer)
         singingMessage = await createSigningTransaction({
           ...transInfo,
+          // @ts-ignore
           memo: memo,
           toAddress: data.to,
           amount: formatUnits(BigInt(data.value), data.decimals),
@@ -67,7 +68,7 @@ const useTonTransaction = (transInfo: ITonSigningType) => {
         // @ts-ignore
         singingMessage = await createSigningTransaction({
           ...data,
-          amount: formatUnits(BigInt(data.value), data.decimals),
+          amount: formatUnits(BigInt(data?.value || 0), data?.decimals || 9),
         })
       }
 
@@ -147,6 +148,7 @@ const useTonTransaction = (transInfo: ITonSigningType) => {
             ? (transaction.toValue?.toString() ?? (transaction.fromValue?.toString() || '0'))
             : `${Number(transInfo?.amount) * 1e9}`,
           fromSwapTokens: {
+            // @ts-ignore
             token: transaction
               ? transaction.fromToken
               : {
@@ -158,6 +160,7 @@ const useTonTransaction = (transInfo: ITonSigningType) => {
             balance: undefined,
           },
           toSwapTokens: {
+            // @ts-ignore
             token: transaction
               ? transaction.toToken
               : {

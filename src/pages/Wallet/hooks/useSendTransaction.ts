@@ -342,6 +342,7 @@ const useSendTransaction = ({ chainId }: { chainId?: number | undefined }) => {
                 token: {
                   ...params.token,
                   balance: params.token?.balance?.toString() || '0',
+                  // @ts-ignore
                   balanceItem: undefined,
                 },
                 chain: chain,
@@ -351,6 +352,7 @@ const useSendTransaction = ({ chainId }: { chainId?: number | undefined }) => {
                 token: {
                   ...params.token,
                   balance: params.token?.balance?.toString() || '0',
+                  // @ts-ignore
                   balanceItem: undefined,
                 },
                 chain: chain,

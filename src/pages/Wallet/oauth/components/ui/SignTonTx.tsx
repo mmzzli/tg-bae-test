@@ -167,6 +167,8 @@ export default function SignTonTx(props: { [other: string]: any }) {
     const contractAddr = transfer.contractAddress
     if (contractAddr) {
       getTokenDetailByAddress(chain?.name || '', contractAddr).then((res) => {
+        // todo... 需要看下接口返回数据
+        // @ts-ignore
         setTokenName(res?.symbol)
       })
     } else {

@@ -93,8 +93,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice, featureRefBoll }) => {
       const fullHeight = window.innerHeight;
       const availableHeight =
         window.Telegram?.WebApp?.viewportStableHeight ||
-        window.visualViewport?.height ||
-        fullHeight;
+        window.visualViewport?.height
       console.log(keyboardHeight,'ccc')
       setKeyboardHeight(availableHeight)
     };

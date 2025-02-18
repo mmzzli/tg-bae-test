@@ -8,6 +8,8 @@ import { useAccount } from '@/pages/Wallet/utils/walletProvider'
 import { useTokenStore } from '@/store/wallet/walletToken'
 import { useUserStore } from '@/store/wallet/walletUser'
 import AdaptiveNumber, { NumberType } from '@/pages/Wallet/components/AdaptiveNumber'
+import { IconWallet } from '../tmd/icons/wallet'
+import { IconArrowRight } from '../tmd/icons/arrowRight'
 
 interface BalanceInfo {
   totalBalanceUsd: string
@@ -71,18 +73,16 @@ const ProfileConnectButton = ({ className }: { className?: string }) => {
             }}
           >
             <div className="flex items-center gap-2 overflow-hidden">
-              <i
-                className="iconfont icon-logout-box-r-line text-[#333333]"
-                style={{ fontSize: '20px' }}
-              />
+              <IconWallet className="size-5 text-b1"/>
               <span className="font-[500] truncate">
                 {walletUserInfo?.nickname || walletUserInfo.username || walletUserInfo.email}
               </span>
             </div>
             <div className="flex items-center justify-end flex-none">
-              <span className="font-[500] truncate">
+              <span className="truncate text-b2">
                 <AdaptiveNumber value={totalBal} type={NumberType.USD} />
               </span>
+              <IconArrowRight className="size-4 text-b1"/>
             </div>
           </div>
         </div>

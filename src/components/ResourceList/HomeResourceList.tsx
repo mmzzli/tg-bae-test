@@ -536,10 +536,10 @@ const ResourceHeader = memo<ResourceHeaderProps>(
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
-              <div className="text-[#0F1233] dark:text-[#E0E2F6]  font-bold text-base">
+              <h3 className="text-[#333] dark:text-[#E0E2F6]  font-bold text-base  max-w-[120px] truncate">
                 {data.username}
-              </div>
-              <p className="text-[#868686] dark:text-[#424048] text-xs">
+              </h3>
+              <p className="text-[#868686] dark:text-[#424048] text-xs mt-[2px]">
                 {getTimeStringAutoShort(
                   new Date(data.created_at).getTime() - new Date().getTimezoneOffset() * 60000,
                   true
@@ -551,7 +551,10 @@ const ResourceHeader = memo<ResourceHeaderProps>(
                 <div className="text-[#333333] text-[12px]">Featured</div>
               ) : (
                 cardValue?.recommend &&
-                !data.is_follow && <div className="text-[#333333] text-[12px]">Bae selected</div>
+                !data.is_follow &&
+                data.uid !== currentUid && (
+                  <div className="text-[#333333] text-[12px]">Bae selected</div>
+                )
               )}
             </div>
           </div>
@@ -593,7 +596,7 @@ const ResourceFooter = memo<ResourceFooterProps>(({ data, onShare, type, setReso
       {(data.title || data.is_pay) && (
         <div className="px-4 pt-[10px]">
           <div className="text-[#0F1419] dark:text-[#ccc] font-normal text-sm leading-4">
-            <MoreText text={data.title} bgColor={'#fff'} textColor={'#0F1419'} type="post" />
+            <MoreText text={data.title} bgColor={'#fff'} textColor={'#333'} type="post" />
           </div>
           <div className="flex items-center justify-between">
             {(type === 'view' || type === 'recommend') && data.price > 0 && data.is_pay && (

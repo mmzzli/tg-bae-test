@@ -74,7 +74,7 @@ const UserProfile: FC = () => {
         </Box>
       </HStack>
       <HStack marginTop="10px" gap="4px">
-        <Heading as="h3" color="#0F1233" fontWeight="500" fontSize="20px">
+        <Heading as="h3" color="#333" fontWeight="500" fontSize="20px">
           {userInfo.username}
         </Heading>
         <Link onClick={() => navigate('/profile/edit')}>
@@ -85,43 +85,36 @@ const UserProfile: FC = () => {
       <MoreText text={userInfo.bio} className={'leading-4'}></MoreText>
       <HStack p="24px 0" gap="56px" className="justify-between">
         <Box textAlign="center">
-          <Heading
-            fontSize="20px"
-            color="#0F1233"
-            lineHeight="24px"
-            cursor="pointer"
+          <p
+            className="text-[#333] text-[20px] leading-[24px] font-[800]"
+            style={{ fontFamily: 'Roboto' }}
             onClick={() => navigate(`/follow/${userId}?type=follower`)}
           >
             {userInfo.follower}
-          </Heading>
-          <Text color="#8A8C91" fontSize="12px" lineHeight="14px">
-            followers
-          </Text>
+          </p>
+          <p className="text-[#8A8C91] text-[12px] leading-[14px]">followers</p>
         </Box>
         <Box textAlign="center">
-          <Heading
-            fontSize="20px"
-            color="#0F1233"
-            lineHeight="24px"
-            cursor="pointer"
+          <p
+            className="text-[#333] text-[20px] leading-[24px] font-[800]"
+            style={{ fontFamily: 'Roboto' }}
             onClick={() => navigate(`/follow/${userId}?type=following`)}
           >
             {userInfo.fans}
-          </Heading>
+          </p>
+
           <Text color="#8A8C91" fontSize="12px" lineHeight="14px">
             following
           </Text>
         </Box>
         <Box textAlign="center">
-          <Heading
-            fontSize="20px"
-            color="#0F1233"
-            lineHeight="24px"
-            cursor="pointer"
+          <p
+            className="text-[#333] text-[20px] leading-[24px] font-[800]"
+            style={{ fontFamily: 'Roboto' }}
             onClick={() => navigate(`/profile/earnings`)}
           >
             {formatUSD(gifts, true)}
-          </Heading>
+          </p>
           <Text color="#8A8C91" fontSize="12px" lineHeight="14px">
             earnings
           </Text>

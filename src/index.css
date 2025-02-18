@@ -24,18 +24,10 @@
 
 @font-face {
   font-family: 'Roboto';
-  @supports (-webkit-touch-callout: none) {
-    /* iOS 设备 */
-    src: url('./assets/fonts/Roboto-Medium.ttf') format('opentype');
-  }
-
-  @supports not (-webkit-touch-callout: none) {
-    /* Android 设备 */
-    src: url('./assets/fonts/Roboto-Regular.ttf') format('opentype');
-  }
   font-style: normal;
   font-weight: normal;
   unicode-range: U+30-39;
+  src: url('./assets/fonts/Roboto-Medium.ttf') format('opentype');
 }
 
 html,
@@ -62,15 +54,18 @@ body {
 
 h1,
 h2,
-h3,
+h3 {
+  font-family: 'Switzer-Bold', sans-serif;
+}
+
 h4,
 h5 {
-  font-weight: 700;
-  font-family: 'Switzer', sans-serif !important;
+  font-weight: 500;
+  font-family: 'Switzer', sans-serif;
 }
 
 p {
-  font-weight: 500;
+  font-weight: 400;
   font-family: 'Switzer', sans-serif !important;
 }
 

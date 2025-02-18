@@ -377,9 +377,9 @@ const ProfileEdit: FC = () => {
           top: 'calc(174px - var(--tg-safe-area-inset-top))',
         }}
       >
-        <div className={`text-[20px] text-[#0F1233] font-[600] ${showTopTitle ? 'opacity-0' : ''}`}>
+        <h3 className={`text-[20px] text-[#333] ${showTopTitle ? 'opacity-0' : ''}`}>
           Profile
-        </div>
+        </h3>
 
         {profileData.avatar ? (
           <>
@@ -408,7 +408,7 @@ const ProfileEdit: FC = () => {
             />
             <div className="px-[8px] mt-[48px]">
               <div className="flex justify-between items-center mb-[16px]">
-                <h3 className="text-[16px] text-[#0F1233] font-[500]">* Name</h3>
+                <p className="text-[16px] text-[#333] font-[500]">* Name</p>
                 <p className="text-[#888] text-[12px]">{profileData?.username.length}/20</p>
               </div>
               <input
@@ -422,7 +422,7 @@ const ProfileEdit: FC = () => {
               {errBoll && <p className="text-[#FF684A] text-3 mt-1">This name is already taken.</p>}
               <div className="mt-[24px]">
                 <div className="flex justify-between items-center mb-[16px]">
-                  <h3 className="text-[16px] text-[#0F1233] font-[500]">Bio</h3>
+                  <p className="text-[16px] text-[#333] font-[500]">Bio</p>
                   <p className="text-[#888] text-[12px]">{profileData?.bio.length}/500</p>
                 </div>
                 <textarea

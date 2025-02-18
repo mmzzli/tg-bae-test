@@ -107,9 +107,9 @@ const Earnings = () => {
     >
       <h3 className="text-[#333] text-[20px]">Earnings</h3>
       <div className="text-center mt-12 mb-2">
-        <h2 className="text-[#12122A] text-[40px]">
+        <div className="text-[#333] text-[40px]">
           {formatUSD(data.total * data.exchange_rate + totalGifts.gifts, true)}
-        </h2>
+        </div>
         <p className="text-[#999] text-[14px] mt-2">Total earnings</p>
       </div>
       <div
@@ -117,7 +117,7 @@ const Earnings = () => {
         style={{ height: 'calc(100vh - 18rem)' }}
       >
         <div className="flex justify-between items-center mt-12">
-          <h4 className="text-[#333] text-[16px]">Telegram stars</h4>
+          <h3 className="text-[#333] text-[16px]">Telegram stars</h3>
           <div
             className="flex gap-2"
             onClick={() => navigate(`/profile/earningsHistory?exchange_rate=${data.exchange_rate}`)}
@@ -169,7 +169,7 @@ const Earnings = () => {
         </div>
         <div className="mt-7">
           <div className="flex justify-between items-center">
-            <h4 className="text-[#333] text-[16px]">Cryptos</h4>
+            <h3 className="text-[#333] text-[16px]">Cryptos</h3>
             <div
               className="flex gap-2"
               onClick={() =>
@@ -186,15 +186,15 @@ const Earnings = () => {
             <ul className="flex justify-between items-center">
               <li>
                 <p className="text-[#999] text-[12px]">Cryptos received</p>
-                <h3 className="text-[#333] text-[22px] my-1">
+                <h5 className="text-[#333] text-[22px] my-1">
                   {formatUSD(totalGifts.gifts, true)}
-                </h3>
+                </h5>
               </li>
               <li>
                 <p className="text-[#999] text-[12px]">Available to withdraw</p>
-                <h3 className="text-[#333] text-[22px] my-1">
+                <h5 className="text-[#333] text-[22px] my-1">
                   {formatUSD(totalGifts.withdraw_gifts, true)}
-                </h3>
+                </h5>
               </li>
             </ul>
             <div className="text-[#666]">

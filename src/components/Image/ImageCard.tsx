@@ -119,7 +119,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
                   </>
                 ) : (
                   <>
-                    {currentIndex + 1}&nbsp;/&nbsp;{data.pic_num}
+                    {currentIndex + 1}/{data.pic_num}
                   </>
                 )}
               </Text>

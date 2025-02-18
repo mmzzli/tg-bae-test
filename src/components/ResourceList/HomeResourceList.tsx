@@ -536,10 +536,10 @@ const ResourceHeader = memo<ResourceHeaderProps>(
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
-              <div className="text-[#0F1233] dark:text-[#E0E2F6]  font-bold text-base">
+              <h3 className="text-[#0F1233] dark:text-[#E0E2F6]  font-bold text-base">
                 {data.username}
-              </div>
-              <p className="text-[#868686] dark:text-[#424048] text-xs">
+              </h3>
+              <p className="text-[#868686] dark:text-[#424048] text-xs mt-[2px]">
                 {getTimeStringAutoShort(
                   new Date(data.created_at).getTime() - new Date().getTimezoneOffset() * 60000,
                   true

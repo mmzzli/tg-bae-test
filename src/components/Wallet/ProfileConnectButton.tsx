@@ -65,12 +65,12 @@ const ProfileConnectButton = ({ className }: { className?: string }) => {
       address && (
         <div className="w-full flex justify-between gap-4 mb-[15px]">
           <div
-            className="flex-1 h-[48px] relative no-tap flex items-center justify-between gap-2 bg-[#F7F9FC] rounded-[42px] text-[#333333] dark:text-[#E0E2F6] text-sm font-medium cursor-pointer px-[16px]"
+            className="flex-1 h-[48px] overflow-hidden relative no-tap flex items-center justify-between gap-2 bg-[#F7F9FC] rounded-[42px] text-[#333333] dark:text-[#E0E2F6] text-sm font-medium cursor-pointer px-[16px]"
             onClick={() => {
               navigate('/wallet')
             }}
           >
-            <div>
+            <div className="flex items-center gap-2 overflow-hidden">
               <i
                 className="iconfont icon-logout-box-r-line text-[#333333]"
                 style={{ fontSize: '20px' }}
@@ -79,7 +79,7 @@ const ProfileConnectButton = ({ className }: { className?: string }) => {
                 {walletUserInfo?.nickname || walletUserInfo.username || walletUserInfo.email}
               </span>
             </div>
-            <div className="w-full flex items-center justify-end">
+            <div className="flex items-center justify-end flex-none">
               <span className="font-[500] truncate">
                 <AdaptiveNumber value={totalBal} type={NumberType.USD} />
               </span>

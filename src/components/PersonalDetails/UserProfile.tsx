@@ -81,7 +81,7 @@ const UserProfile: FC = () => {
           <i className="iconfont icon-a-edit-line1 text-[#7a7a7a]" style={{ fontSize: '18px' }}></i>
         </Link>
       </HStack>
-      <Link href="/account/test">test page.</Link>
+
       <MoreText text={userInfo.bio} className={'leading-4'}></MoreText>
       <HStack p="24px 0" gap="56px" className="justify-between">
         <Box textAlign="center">

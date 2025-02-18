@@ -28,7 +28,13 @@ import { useRequest } from 'ahooks'
 import { sendTransaction } from '@/store/wallet/config/evm'
 import { IWeb3ChainType } from '@/store/wallet/chainType'
 
-export default function SignTransaction({ onSuccess, sendFlag }: { onSuccess?: (data: string) => void, sendFlag?: boolean }) {
+export default function SignTransaction({
+  onSuccess,
+  sendFlag,
+}: {
+  onSuccess?: (data: string) => void
+  sendFlag?: boolean
+}) {
   const {
     requestParam: { params },
   } = useWalletRequestStore()
@@ -231,6 +237,7 @@ export default function SignTransaction({ onSuccess, sendFlag }: { onSuccess?: (
       if (transfer.gasLimit) signData.gasLimit = transfer.gasLimit
       if (transfer.gasPrice) signData.gasPrice = transfer.gasPrice
       const result = await signEVMTransaction(signData)
+
       if (!sendFlag) {
         if (result && result?.code == 10000) {
           setStatus('success')
@@ -254,7 +261,6 @@ export default function SignTransaction({ onSuccess, sendFlag }: { onSuccess?: (
           throw 'Network error.'
         }
       }
-
     } catch (err: any) {
       toast({
         render: () => {

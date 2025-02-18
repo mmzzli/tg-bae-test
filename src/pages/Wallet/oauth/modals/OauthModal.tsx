@@ -18,7 +18,7 @@ export const OauthModal = NiceModal.create(() => {
   return (
     <TPopup
       visible={modal.visible}
-      onMaskClick={handleCancel}
+      // onMaskClick={handleCancel1}
       onClose={handleCancel}
       bodyStyle={{ height: '80vh' }}
       destroyOnClose

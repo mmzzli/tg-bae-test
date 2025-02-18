@@ -8,6 +8,7 @@ const useWallet = () => {
 
   const hanleWalletAction = async (params: WalletRequestType) => {
     requestParamActions(params)
+
     return new Promise((resolve) => {
       NiceModal.show(OauthModal)
         .then((data) => resolve(data))

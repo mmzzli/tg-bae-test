@@ -33,9 +33,9 @@ export const PromiseModal = NiceModal.create(() => {
   return (
     <TPopup
       visible={modal.visible}
-      onMaskClick={handleCancel}
+      // onMaskClick={handleCancel}
       onClose={handleCancel}
-      bodyStyle={{ height: '80vh' }}
+      bodyStyle={{ height: '60vh' }}
       destroyOnClose
       showCloseButton
       bodyClassName="flex flex-col px-4 py-3"

@@ -400,3 +400,10 @@ export type WalletRequestType = {
   method: string
   params: Array<any>
 }
+
+export type ChainNativeCurrency = {
+  name: string
+  /** 2-6 characters long */
+  symbol: string
+  decimals: number
+}

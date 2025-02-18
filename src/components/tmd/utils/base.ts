@@ -52,9 +52,10 @@ export function pick<T, U extends keyof T>(
 }
 
 export function once(fn: (...args: any) => void): (...args: any) => void {
+  let hasBeenCalled = false
   return (...args: any) => {
-    if (!fn) return
+    if (hasBeenCalled) return
     fn(...args)
-    fn = null
+    hasBeenCalled = true
   }
 }

@@ -86,32 +86,20 @@ const Stars: FC<StarsProps> = ({ price, setPrice, featureRefBoll }) => {
     };
   }, []);
 
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
-
   useEffect(() => {
     setHeights(window.innerHeight)
-    console.log(window.innerHeight,'123')
-    const updateKeyboardHeight = () => {
-      console.log(window.innerHeight,'321')
+    const handleResize = () => {
       if(heights > window.innerHeight){
         setIsFocused(true)
       }else{
         setIsFocused(false)
       }
     };
-
-    // 监听 Telegram 视口变化
-    window.Telegram?.WebApp?.onEvent("viewportChanged", updateKeyboardHeight);
-
-    // 监听普通网页的 `visualViewport` 变化
-    window.visualViewport?.addEventListener("resize", updateKeyboardHeight);
-
+    window.addEventListener('resize', handleResize);
     return () => {
-      window.Telegram?.WebApp?.offEvent("viewportChanged", updateKeyboardHeight);
-      window.visualViewport?.removeEventListener("resize", updateKeyboardHeight);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
-
 
 
   return (
@@ -205,7 +193,8 @@ const Stars: FC<StarsProps> = ({ price, setPrice, featureRefBoll }) => {
               />}
               <Image src={StarsIcon} alt="Stars Icon" />
             </HStack>
-            <Box p="0px 18px" h={`${isFocused ? "500px" : ""}`}>
+
+            <Box p="0px 18px" h={`${isFocused ? "400px" : ""}`}>
               {boll && <Button
                 size="xl"
                 fontSize="14px"

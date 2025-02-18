@@ -87,17 +87,16 @@ const Stars: FC<StarsProps> = ({ price, setPrice, featureRefBoll }) => {
   }, []);
 
   useEffect(() => {
-    setHeights(window.innerHeight)
+    setHeights(window.innerHeight);
     const handleResize = () => {
-      if(heights > window.innerHeight){
-        setIsFocused(true)
-      }else{
-        setIsFocused(false)
+      if (window.visualViewport) {
+        const viewportHeight = window.visualViewport.height;
+        setIsFocused(viewportHeight < heights);
       }
     };
-    window.addEventListener('resize', handleResize);
+    window.visualViewport?.addEventListener("resize", handleResize);
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.visualViewport?.removeEventListener("resize", handleResize);
     };
   }, []);
 

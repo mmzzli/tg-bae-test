@@ -94,7 +94,7 @@ const Stars: FC<StarsProps> = ({ price, setPrice, featureRefBoll }) => {
       const availableHeight =
         window.Telegram?.WebApp?.viewportStableHeight
       console.log(keyboardHeight, 'ccc', fullHeight)
-      setKeyboardHeight(fullHeight < availableHeight? availableHeight: 0)
+      setKeyboardHeight(fullHeight < availableHeight? availableHeight+100: 0)
     };
 
     // 监听 Telegram 视口变化

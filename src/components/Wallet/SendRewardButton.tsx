@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { SlideButton, SlideButtonHandle } from '../BaseButton/SlideButton'
 import {
-  useAccount,
-  useChainId,
+  // useAccount,
+  // useChainId,
   useEstimateFeesPerGas,
   useEstimateGas,
   useEstimateMaxPriorityFeePerGas,
   useReadContract,
-  useSwitchChain,
+  // useSwitchChain,
   useWaitForTransactionReceipt,
   useWriteContract,
 } from 'wagmi'
@@ -25,6 +25,7 @@ import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { getBalance } from '@wagmi/core'
 import { config } from '@/config/wagmi-config'
 import useWallet from '@/pages/Wallet/hooks/useWallet'
+import { useAccount } from '@/pages/Wallet/utils/walletProvider'
 
 export const SendRewardButton = ({
   amount,
@@ -98,8 +99,8 @@ export const SendRewardButton = ({
     hash,
   })
 
-  const currentChainId = useChainId()
-  const { switchChainAsync } = useSwitchChain()
+  // const currentChainId = useChainId()
+  // const { switchChainAsync } = useSwitchChain()
   const { hanleWalletAction } = useWallet()
 
   const {
@@ -116,10 +117,18 @@ export const SendRewardButton = ({
     },
   })
 
+  useEffect(() => {
+    refetchAllowance()
+  }, [address])
+
+  console.log('0000000000000000000=>', allowance, allowanceLoading, address, tokenAddress)
+
+
   const needApprove = useMemo(() => {
     if (tokenAddress === '0x0000000000000000000000000000000000000000') {
       return false
     }
+    debugger
     if (!allowance) {
       return true
     }
@@ -178,16 +187,16 @@ export const SendRewardButton = ({
     }
   }
 
-  const switchChain = async () => {
-    try {
-      await switchChainAsync({ chainId })
-    } catch (error) {
-      toast({
-        render: () => <CustomToast title="Switch chain failed" type={typeOptions.error} />,
-        position: 'bottom',
-      })
-    }
-  }
+  // const switchChain = async () => {
+  //   try {
+  //     await switchChainAsync({ chainId })
+  //   } catch (error) {
+  //     toast({
+  //       render: () => <CustomToast title="Switch chain failed" type={typeOptions.error} />,
+  //       position: 'bottom',
+  //     })
+  //   }
+  // }
 
   const calculateTotalCost = (
     estimatedGas: bigint,
@@ -334,7 +343,7 @@ export const SendRewardButton = ({
     }
 
     // await switchChain()
-
+    debugger
     if (tokenAddress !== '0x0000000000000000000000000000000000000000' && needApprove) {
       console.warn('Approve:', tokenAddress as `0x${string}`, parseUnits(amount, decimals))
 
@@ -474,12 +483,12 @@ export const SendRewardButton = ({
     }
   }, [hash])
 
-  useEffect(() => {
-    if (currentChainId !== chainId) {
-      console.log('need chainId changed')
-      switchChain()
-    }
-  }, [currentChainId])
+  // useEffect(() => {
+  //   if (currentChainId !== chainId) {
+  //     console.log('need chainId changed')
+  //     switchChain()
+  //   }
+  // }, [currentChainId])
 
   useEffect(() => {
     let lastTap = 0

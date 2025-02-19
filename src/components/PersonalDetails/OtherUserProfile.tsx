@@ -113,7 +113,7 @@ const OtherUserProfile: FC = () => {
         {userInfo.username}
       </Heading>
       <MoreText text={userInfo.bio} className={'leading-4'}></MoreText>
-      <HStack p="24px 0" gap="56px">
+      <HStack p="24px 0" gap="104px">
         <Box textAlign="center">
           <Heading
             fontSize="20px"
@@ -143,7 +143,7 @@ const OtherUserProfile: FC = () => {
       </HStack>
       <Report isOpen={reportVisible} onClose={setReportVisible} />
       <ShareModal ref={childRef} />
-      <div className="absolute bottom-0 left-4 right-4 border-b border-bottom-[#ccc]"></div>
+      {/* <div className="border-b border-bottom-[#ccc]"></div> */}
     </Box>
   )
 }

@@ -50,6 +50,7 @@ const MessagePageIOS = () => {
 
   const { bind, x } = useSwipeBack({
     scrollRef: containerRef,
+    className: 'prevent-touch-back',
   })
 
   useEffect(() => {

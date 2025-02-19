@@ -129,7 +129,6 @@ export const SendRewardButton = ({
     if (tokenAddress === '0x0000000000000000000000000000000000000000') {
       return false
     }
-    debugger
     if (!allowance) {
       return true
     }
@@ -239,8 +238,6 @@ export const SendRewardButton = ({
           })
         : null
 
-      console.log(balance)
-
       if (balance) {
         const res = await balance
         console.log('balance', res)
@@ -260,25 +257,6 @@ export const SendRewardButton = ({
 
   const reward = () => {
     checkGasBalance(async () => {
-      // writeContract({
-      //   address: contractAddress as `0x${string}`,
-      //   chainId,
-      //   abi,
-      //   functionName: 'reward',
-      //   args: [
-      //     parseUnits('0', decimals),
-      //     tokenAddress as `0x${string}`,
-      //     parseUnits(amount, decimals),
-      //     BigInt(current_uid),
-      //     BigInt(toUid),
-      //   ],
-      //   value:
-      //     tokenAddress === '0x0000000000000000000000000000000000000000'
-      //       ? parseUnits(amount, decimals)
-      //       : 0n,
-      //   gasPrice: 2000000000n,
-      //   gas: gasConfig.gasLimit,
-      // })
       const abiData = encodeFunctionData({
         abi,
         functionName: 'reward',
@@ -327,20 +305,11 @@ export const SendRewardButton = ({
     }
 
     // await switchChain()
-    debugger
     if (tokenAddress !== '0x0000000000000000000000000000000000000000' && needApprove) {
       console.warn('Approve:', tokenAddress as `0x${string}`, parseUnits(amount, decimals))
 
       setIsApproving(true)
       checkGasBalance(async () => {
-        // writeContract({
-        //   address: tokenAddress as `0x${string}`,
-        //   chainId,
-        //   abi: approveAbi,
-        //   functionName: 'approve',
-        //   args: [contractAddress as `0x${string}`, maxUint256],
-        //   ...gasConfig,
-        // })
         const abiData = encodeFunctionData({
           abi: approveAbi,
           functionName: 'approve',

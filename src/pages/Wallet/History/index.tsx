@@ -17,11 +17,7 @@ const History = () => {
     | UseTransactionsProps['address']
     | undefined
 
-  return (
-    <div className="size-full flex bg-bg1 px-[20px] pb-[16px] pt-[4px]">
-      <BaseHistory chainId={chainId} address={address} type={type} />
-    </div>
-  )
+  return <BaseHistory chainId={chainId} address={address} type={type} />
 }
 
 export default History

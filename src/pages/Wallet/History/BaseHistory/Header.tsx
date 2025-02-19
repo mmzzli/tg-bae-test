@@ -1,12 +1,15 @@
+import clsx from 'clsx'
 import { BaseHistoryType } from '.'
 
 const Header = ({
-  type = BaseHistoryType.ALL
+  type = BaseHistoryType.ALL,
+  className,
 }: {
   type: BaseHistoryType | undefined
+  className?: string
 }) => {
   return (
-    <div className="my-[7px] text-h3 font-semibold text-t1">
+    <div className={clsx('flex items-center text-[20px] font-bold text-b1', className)}>
       <span>History</span>
     </div>
   )

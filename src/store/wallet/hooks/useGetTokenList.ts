@@ -1,4 +1,4 @@
-import chains, { allChains, allChainsUSDT } from '../chains'
+import chains, { allChains, allChainsUSDC, allChainsUSDT } from '../chains'
 import { mergeTokensData } from '../util/tokenHelper'
 import useUserTokens from './useUserTokens'
 
@@ -23,7 +23,7 @@ const useGetTokenList = () => {
   }).filter(
     (i) =>
       (!i.isNative &&
-        allChainsUSDT.find(
+        [...allChainsUSDT, ...allChainsUSDC].find(
           (it) =>
             it.chainId === i.chainId && it.address.toUpperCase() === `${i.address}`.toUpperCase()
         )) ||

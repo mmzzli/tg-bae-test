@@ -66,10 +66,10 @@ const ItemTokenSymbol = ({ history }: { history: IHistoryType }) => {
                 symbol={fromToken.symbol}
                 image={fromToken.image}
                 chainId={fromToken.chainId}
-                isNative={true}
+                isNative={!fromToken.address}
                 symbolSize={36}
               />
-              <div
+              {/* <div
                 className={classNames(
                   'absolute size-4 rounded-full flex items-center justify-center border border-bg1 -right-1 -bottom-1 ',
                   {
@@ -87,7 +87,7 @@ const ItemTokenSymbol = ({ history }: { history: IHistoryType }) => {
                       : 'tg_wallet_sent'
                   }
                 />
-              </div>
+              </div> */}
             </div>
 
             {/*  */}
@@ -114,7 +114,7 @@ const ItemTokenSymbol = ({ history }: { history: IHistoryType }) => {
 
   return (
     <div className="flex items-center">
-      <div className="relative mr-3 flex min-w-[46px]">{tokenSymbol}</div>
+      <div className="relative mr-2 flex min-w-[46px]">{tokenSymbol}</div>
       <div className="flex flex-col">
         <span className="text-base font-medium text-t1">
           {history.historyType === 'Swap'
@@ -123,8 +123,12 @@ const ItemTokenSymbol = ({ history }: { history: IHistoryType }) => {
               : 'Cross-chain Swap'
             : history.historyType}
         </span>
-        <div className="flex items-center text-xs font-normal text-t3">
-          { shortenAddress(history.hash, 6, 4)}
+        <div className="flex items-center text-xs font-normal text-b2">
+          {history.historyType === 'Receive' ? 'from' : history.historyType === 'Send' ? 'to' : ""} &nbsp;
+          { shortenAddress(
+            history.historyType === 'Receive' ? history.fromAddress : history.historyType === 'Send' ? history.toAddress : history.hash,
+             6, 4
+             )}
         </div>
       </div>
     </div>

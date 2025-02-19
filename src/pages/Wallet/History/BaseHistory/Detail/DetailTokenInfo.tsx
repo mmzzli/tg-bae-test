@@ -146,7 +146,7 @@ const DetailTokenInfo = ({ tx }: { tx: IHistoryType }) => {
                   />
                 </div>
                 <div className="flex flex-col items-center justify-center gap-[2px]">
-                  <div className="text-center text-3xl font-semibold text-t1">
+                  <div className="text-center text-3xl font-semibold text-b1">
                     {tx.historyType === 'Send' ? '-' : '+'}{' '}
                     <AdaptiveNumber
                       type={NumberType.BALANCE}

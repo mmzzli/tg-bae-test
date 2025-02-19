@@ -21,7 +21,6 @@ import { Address, fromNano } from '@ton/core'
 // import BigNumber from 'bignumber.js'
 // import { getTonBalance } from '@/utils/oauth/getTonBalance'
 
-import { useWalletRequestStore } from '@/store/wallet/walletRequest'
 import BigNumber from 'bignumber.js'
 import { TonTxRequestStandard } from '@tomo-inc/tomo-telegram-sdk'
 import {
@@ -37,6 +36,7 @@ import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import { getTokenDetailByAddress } from '@/api/wallet'
 import { TxInfo } from './TxInfo'
 import BaseButton from '@/components/BaseButton/BaseButton'
+import { WalletRequestParams } from '@/store/wallet/type'
 
 interface TransferModel {
   from: string
@@ -51,15 +51,11 @@ interface TransferModel {
   forwardAmount?: string
 }
 
-export default function SignTonTx(props: { [other: string]: any }) {
-  const {
-    requestParam: { params },
-  } = useWalletRequestStore()
-
+export default function SignTonTx(props: { params: WalletRequestParams[]; [other: string]: any }) {
   const [tokenName, setTokenName] = useState('')
   const toast = useToast()
 
-  const { fee, unit, onSuccess } = props
+  const { fee, unit, onSuccess, params } = props
   const chainType = 'ton'
 
   const transfer: Partial<TransferModel> = useMemo(() => {

@@ -13,28 +13,32 @@
 // import { inBrowser } from '@/components/tmd/utils/base'
 // import { getMethodInfo } from '@/store/wallet/util'
 
-import { useWalletRequestStore } from '@/store/wallet/walletRequest'
 import SignTransaction from './components/ui/SignTransaction'
 import SignTonTx from './components/ui/SignTonTx'
 import SignSolanaTransaction from './components/ui/SignSolanaTransaction'
+import { WalletRequestType } from '@/store/wallet/type'
 
-export default function Oauth({ onSuccess }: { onSuccess?: (data?: any) => void }) {
-  const {
-    requestParam: { method },
-  } = useWalletRequestStore()
+export default function Oauth({
+  onSuccess,
+  requestParams,
+}: {
+  onSuccess?: (data?: any) => void
+  requestParams: WalletRequestType
+}) {
+  const { method, params } = requestParams
 
   const renderPageContent = () => {
     switch (method) {
       case 'eth_signTransaction':
       case 'eth_signETHTransaction':
       case 'eth_signErc20Transaction':
-        return <SignTransaction onSuccess={onSuccess} />
+        return <SignTransaction onSuccess={onSuccess} params={params} />
       case 'eth_sendTransaction':
-        return <SignTransaction onSuccess={onSuccess} sendFlag={true} />
+        return <SignTransaction onSuccess={onSuccess} params={params} sendFlag={true} />
       case 'ton_signTx':
-        return <SignTonTx onSuccess={onSuccess} />
+        return <SignTonTx onSuccess={onSuccess} params={params} />
       case 'sol_signTx': // new sign tx, accepting transaction as param, for sdk at and after 1.0.14
-        return <SignSolanaTransaction onSuccess={onSuccess} />
+        return <SignSolanaTransaction onSuccess={onSuccess} params={params} />
       // case 'sui_signTransaction':
       //   return <SignSuiTransaction />
       default: // currently used for sol and ton

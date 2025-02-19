@@ -26,7 +26,7 @@ export const OauthModal = NiceModal.create((requestParams: WalletRequestType) =>
       showCloseButton
       bodyClassName="flex flex-col"
     >
-      <Oauth onSuccess={handleResolve} requestParams={requestParams} />
+      {modal.visible ? <Oauth onSuccess={handleResolve} requestParams={requestParams} /> : null}
     </TPopup>
   )
 })

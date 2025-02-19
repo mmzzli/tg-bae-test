@@ -9,10 +9,10 @@ const useWallet = () => {
   const hanleWalletAction = async (params: WalletRequestType) => {
     requestParamActions(params)
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       NiceModal.show(OauthModal)
         .then((data) => resolve(data))
-        .catch((err) => resolve(err))
+        .catch((err) => reject(err))
     })
   }
 

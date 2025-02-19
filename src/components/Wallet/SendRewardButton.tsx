@@ -129,7 +129,7 @@ export const SendRewardButton = ({
     if (tokenAddress === '0x0000000000000000000000000000000000000000') {
       return false
     }
-    debugger
+    // debugger
     if (!allowance) {
       return true
     }
@@ -327,7 +327,7 @@ export const SendRewardButton = ({
     }
 
     // await switchChain()
-    debugger
+    // debugger
     if (tokenAddress !== '0x0000000000000000000000000000000000000000' && needApprove) {
       console.warn('Approve:', tokenAddress as `0x${string}`, parseUnits(amount, decimals))
 

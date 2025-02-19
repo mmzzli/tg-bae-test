@@ -11,7 +11,7 @@ import {
 } from '../type'
 import { initUserInfo } from '../walletUser'
 import { getChainByChainId, userChainAddressList } from './tokenHelper'
-import { formatUnits } from 'viem'
+import { formatUnits, GetTransactionReceiptReturnType } from 'viem'
 import dayjs from 'dayjs'
 import chains, { UNSUPPROT_HISTORY_CHAIN } from '../chains'
 import { BigNumber } from 'bignumber.js'
@@ -1013,3 +1013,34 @@ const methodsToHistory = (
   }
   return null
 }
+
+export const formatterSolTransactionReceipt = (receipt: any) => {
+  return {
+    endTime: ((receipt.blockTime as number) * 1000).toString(),
+    gasAmount: formatUnits(
+      BigInt(receipt.meta.fee),
+      chains.solana.chain?.nativeCurrency.decimals || 9
+    ),
+    blockNumber: '',
+    toAddress: '',
+    toHash: ''
+  }
+}
+
+export const formatterEvmTransactionReceipt = (
+  receipt: GetTransactionReceiptReturnType,
+  decimals: number
+) => {
+  const toHash = receipt.transactionHash
+  const blockNumber = receipt.blockNumber.toString()
+  const gasAmount = formatUnits(receipt.gasUsed, decimals)
+  const toAddress = receipt.to
+  return {
+    blockNumber,
+    gasAmount,
+    toAddress,
+    endTime: '',
+    toHash
+  }
+}
+

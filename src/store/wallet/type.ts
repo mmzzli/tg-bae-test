@@ -397,8 +397,9 @@ export interface SolSendTx {
 
 export type WalletRequestType = {
   method: string
-  params: Array<any>
+  params: Array<WalletRequestParams>
 }
+export type WalletRequestParams = any
 
 export type ChainNativeCurrency = {
   name: string

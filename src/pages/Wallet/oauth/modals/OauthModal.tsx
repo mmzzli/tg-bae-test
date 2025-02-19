@@ -1,8 +1,9 @@
 import NiceModal, { useModal } from '@ebay/nice-modal-react'
 import Oauth from '../index'
 import { TPopup } from '@/components/tmd'
+import { WalletRequestType } from '@/store/wallet/type'
 
-export const OauthModal = NiceModal.create(() => {
+export const OauthModal = NiceModal.create((requestParams: WalletRequestType) => {
   const modal = useModal()
 
   const handleResolve = (data?: any) => {
@@ -25,7 +26,7 @@ export const OauthModal = NiceModal.create(() => {
       showCloseButton
       bodyClassName="flex flex-col"
     >
-      <Oauth onSuccess={handleResolve} />
+      {modal.visible ? <Oauth onSuccess={handleResolve} requestParams={requestParams} /> : null}
     </TPopup>
   )
 })

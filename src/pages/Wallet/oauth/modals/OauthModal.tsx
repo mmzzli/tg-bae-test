@@ -12,7 +12,7 @@ export const OauthModal = NiceModal.create(() => {
 
   const handleCancel = () => {
     modal.reject('')
-    modal.hide()
+    modal.remove()
   }
 
   return (

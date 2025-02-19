@@ -12,6 +12,22 @@ export default {
       colors: {
         'white-opacity-15': 'rgba(255, 255, 255, 0.15)', // 自定义颜色
         'white-close': '#E0E2F6',
+        /** for wallet page start */
+        t1: '#000000',
+        b1: '#333333',
+        b2: '#666666',
+        b3: '#999999',
+        bg2: '#F7F9FC',
+        bg3: '#f5f5fa',
+        green: '#04C159',
+        red: '#F21F7F',
+        red2: '#EB4B6D',
+        orange: '#FF9142',
+        yellow: '#FFB904',
+        blue: '#2B6BFF',
+        blue3: '#3478F6',
+        title: '#121212',
+        /** for wallet page end */
       },
       backgroundImage: {
         'video-gradient':
@@ -47,6 +63,40 @@ export default {
         'zoom-in': 'zoom-in 0.5s ease-out forwards',
         'fade-in': 'fade-in 0.2s ease-out',
         shimmer: `shimmer 1s infinite`,
+      },
+      fontSize: {
+        /** for wallet page start */
+        n2: [
+          '42px',
+          {
+            lineHeight: '1.2',
+          },
+        ],
+        n3: [
+          '36px',
+          {
+            lineHeight: '1.2',
+          },
+        ],
+        h1: [
+          '32px',
+          {
+            lineHeight: '1.2',
+          },
+        ],
+        h2: [
+          '28px',
+          {
+            lineHeight: '1.2',
+          },
+        ],
+        h3: [
+          '24px',
+          {
+            lineHeight: '1.4',
+          },
+        ],
+        /** for wallet page end */
       },
     },
   },

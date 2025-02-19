@@ -73,7 +73,6 @@ const UserProfile: FC = () => {
           <ShareUser userInfo={userInfo} />
         </Box>
       </HStack>
-
       <HStack marginTop="10px" gap="4px">
         <Heading as="h3" color="#333" fontWeight="500" fontSize="20px">
           {userInfo.username}
@@ -84,7 +83,6 @@ const UserProfile: FC = () => {
       </HStack>
 
       <MoreText text={userInfo.bio} className={'leading-4'}></MoreText>
-
       <HStack p="24px 0" gap="56px" className="justify-between">
         <Box textAlign="center">
           <p
@@ -122,7 +120,6 @@ const UserProfile: FC = () => {
           </Text>
         </Box>
       </HStack>
-
       <ProfileConnectButton />
     </Box>
   )

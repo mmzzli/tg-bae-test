@@ -14,6 +14,8 @@ import ImageDialog from '@/components/ResourceList/ImageDialog'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { useInitDailyTask } from '@/hooks/useDailyTask'
 import WsHandler from './WsHandler'
+import WalletInit from '@/pages/Wallet/init'
+
 const HomePage = lazy(() => import('@/pages/Home'))
 
 const ChatListPageLoader = {
@@ -323,6 +325,7 @@ export const MainLayout: React.FC = () => {
       <VideoDialog></VideoDialog>
       <ImageDialog></ImageDialog>
       <WsHandler />
+      <WalletInit />
     </div>
   )
 }

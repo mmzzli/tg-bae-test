@@ -1,16 +1,15 @@
-import { useRef, useEffect, useState, useMemo } from 'react'
-import { useAccount, useDisconnect } from 'wagmi'
-// import { config } from '@/config/wagmi-config'
-// import { useNavigate } from 'react-router-dom'
+import { useRef, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useToast } from '@chakra-ui/react'
-
-import { useAnkrWeb3 } from '@/hooks/useAnkrWeb3'
 import ConnectModal from './ConnectModal'
 import { CustomToast, typeOptions } from '../comm/Toast'
 import BaseButton from '../BaseButton/BaseButton'
-import TomoSvg from '@/assets/icons/tomo.svg'
-import { useTMAUtils } from '@/hooks/useTMAUtils'
-import { BaseModal } from '../Modal/BaseModal'
+import { useAccount } from '@/pages/Wallet/utils/walletProvider'
+import { useTokenStore } from '@/store/wallet/walletToken'
+import { useUserStore } from '@/store/wallet/walletUser'
+import AdaptiveNumber, { NumberType } from '@/pages/Wallet/components/AdaptiveNumber'
+import { IconWallet } from '../tmd/icons/wallet'
+import { IconArrowRight } from '../tmd/icons/arrowRight'
 
 interface BalanceInfo {
   totalBalanceUsd: string
@@ -19,23 +18,22 @@ interface BalanceInfo {
 }
 
 const ProfileConnectButton = ({ className }: { className?: string }) => {
-  const { launchParams, openLink } = useTMAUtils()
-  const { initData } = launchParams
+  const navigate = useNavigate()
   const toast = useToast()
-  const myTokensModalRef = useRef<{ someMethod: () => void }>(null)
-  const { status, address, isConnected } = useAccount()
-  const { getAccountBalance } = useAnkrWeb3()
-  // const [isBaseModalOpen, { toggle, on, off }] = useBoolean(false)
-
-  const [balanceInfo, setBalanceInfo] = useState<BalanceInfo>({
-    totalBalanceUsd: '0',
-    totalCount: 0,
-    assets: [],
-  })
+  const { status, address } = useAccount()
+  const { tokenList } = useTokenStore()
+  const { walletUserInfo } = useUserStore()
   const connectModalRef = useRef<{ someMethod: () => void }>(null)
-  // const { connect, connectors } = useConnect({ config })
-  const { disconnect } = useDisconnect()
-  // const navigate = useNavigate()
+
+  const totalBal = useMemo(() => {
+    return tokenList
+      .map((token) => {
+        return (token?.price || 0) * Number(token?.formatted ?? 0)
+      })
+      .reduce((accToken, curToken) => {
+        return (accToken || 0) + curToken
+      }, 0)
+  }, [tokenList])
 
   const handleConnect = async () => {
     if (status === 'disconnected') {
@@ -49,17 +47,9 @@ const ProfileConnectButton = ({ className }: { className?: string }) => {
       })
     }
   }
-  useEffect(() => {
-    const getBalance = async () => {
-      if (!address) return
-      const balance = await getAccountBalance({ walletAddress: address })
-      setBalanceInfo(balance)
-    }
-    getBalance()
-  }, [address])
 
   const LoginButton = () => {
-    return !isConnected ? (
+    return status === 'disconnected' ? (
       <BaseButton
         text="Connect wallet"
         className="h-[48px] mb-[24px] mx-auto "
@@ -77,31 +67,28 @@ const ProfileConnectButton = ({ className }: { className?: string }) => {
       address && (
         <div className="w-full flex justify-between gap-4 mb-[15px]">
           <div
-            className="w-[48px] h-[48px] bg-[#F7F9FC] rounded-[50%] flex items-center justify-center"
+            className="flex-1 h-[48px] overflow-hidden relative no-tap flex items-center justify-between gap-2 bg-[#F7F9FC] rounded-[42px] text-[#333333] dark:text-[#E0E2F6] text-sm font-medium cursor-pointer px-[16px]"
             onClick={() => {
-              disconnect()
+              navigate('/wallet')
             }}
           >
-            <i
-              className="iconfont icon-logout-box-r-line text-[#333333]"
-              style={{ fontSize: '20px' }}
-            />
-          </div>
-          <div
-            className="flex-1 h-[48px] relative no-tap flex items-center justify-between gap-2 bg-[#F7F9FC] rounded-[42px] text-[#333333] dark:text-[#E0E2F6] text-sm font-medium cursor-pointer px-[16px]"
-            onClick={() => {
-              window.open('https://t.me/tomowalletbot/tomo_wallet')
-            }}
-          >
-            <div className="w-full flex items-center justify-center gap-2">
-              <img src={TomoSvg} alt="tomo" loading="lazy" className="will-change-transform" />
-              <span className="font-[500] truncate">{initData?.user?.username}</span>
+            <div className="flex items-center gap-2 overflow-hidden">
+              <IconWallet className="size-5 text-b1"/>
+              <span className="font-[500] truncate">
+                {walletUserInfo?.nickname || walletUserInfo.username || walletUserInfo.email}
+              </span>
+            </div>
+            <div className="flex items-center justify-end flex-none">
+              <span className="truncate text-b2">
+                <AdaptiveNumber value={totalBal} type={NumberType.USD} />
+              </span>
+              <IconArrowRight className="size-4 text-b1"/>
             </div>
           </div>
         </div>
       )
     )
-  }, [status, address])
+  }, [status, address, totalBal])
 
   return (
     <div>

@@ -139,7 +139,6 @@ const getStoreToken = () => {
 }
 
 const httpClient = new HttpClient(import.meta.env.VITE_API_URL, getStoreToken)
-
 export const get = httpClient.get.bind(httpClient)
 export const post = httpClient.post.bind(httpClient)
 export const put = httpClient.put.bind(httpClient)

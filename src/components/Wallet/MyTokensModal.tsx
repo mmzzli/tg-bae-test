@@ -8,6 +8,7 @@ import SendRewardPage from './SendRewardPage'
 import { useStore } from '@/store/store'
 import { OthersUserInfo } from '@/types'
 import { TokenCard } from './TokenCard'
+import { AssetsToken } from '@/store/wallet/tokenType/AssetsToken'
 // import { CustomToast, typeOptions } from '../comm/Toast'
 
 interface ChildMethods {
@@ -31,7 +32,7 @@ const MyTokensModal = forwardRef<ChildMethods, { userInfo: OthersUserInfo }>(
 
     const onTokenSelect = (
       token: (typeof supportEVMTokenList)[0],
-      balance: ReturnType<typeof useBalance>['data']
+      balance: AssetsToken | undefined
     ) => {
       if (import.meta.env.VITE_APP_ENV === 'production') {
         // toast({

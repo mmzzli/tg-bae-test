@@ -1,18 +1,18 @@
 'use client'
-
 import { useCallback, useEffect, useRef, useState } from 'react'
 import dynamic from 'next/dynamic'
-import { ChakraProvider } from '@chakra-ui/react'
-
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { Virtual } from 'swiper/modules'
+import { Virtual, Pagination } from 'swiper/modules'
 import Player from 'xgplayer'
 import { useLocation } from 'react-router-dom'
-import 'swiper/css'
+import type { Swiper as SwiperType } from 'swiper'
+
 import ImagePreview from '@/components/TT/ImageReview'
 import useCacheVideo, { useRecommendList } from '@/store/hook/useResourceList'
 const VideoPlayer = dynamic(() => import('@/components/TT/VideoPlayer'), { ssr: false })
 
+import 'swiper/css'
+import 'swiper/css/pagination'
 export interface TVideo {
   url: string
   poster?: string
@@ -20,6 +20,7 @@ export interface TVideo {
 
 const TTPlayer: React.FC = () => {
   const videoRefs = useRef<Array<Player | null>>([])
+  const swiperRef = useRef<SwiperType>()
   const { list, hasMore, fetchMoreData, page, refresh, isLoading } = useRecommendList()
   const [globalMuted, setGlobalMuted] = useState(() => false)
   const [isTouched, setIsTouched] = useState(() => false)
@@ -36,28 +37,34 @@ const TTPlayer: React.FC = () => {
     if (videoRefs.current) videoRefs.current[index] = ref
   }
 
-  console.log('list...', list)
+  useEffect(() => {
+    window.Telegram?.WebApp?.setHeaderColor('#000')
+  }, [])
 
   useEffect(() => {
-    if (list?.length && ((activeIndex + 2) > list?.length)) {
+    if (list?.length && activeIndex + 2 > list?.length) {
       fetchMoreData()
     }
   }, [activeIndex])
 
   useEffect(() => {
-    if (state.id != undefined) {
-      console.log('setActiveIndex...', state.id)
+    if (state?.id && list?.length > 0) {
       const index = list.findIndex((item) => item.id === state.id)
-      console.log('setActiveIndex...', index)
-      setActiveIndex(index)
+      if (index !== -1) {
+        setActiveIndex(index)
+        // 使用 swiperRef 来访问 Swiper 实例
+        if (swiperRef.current) {
+          swiperRef.current.slideTo(index, 0)
+        }
+      }
     }
-  }, [state])
+  }, [state?.id, list])
 
   return (
     <Swiper
-      className="h-full w-full z-[10] fixed top-0 left-0"
+      className="h-full w-full z-[10] fixed top-0 left-0 bg-[#000]"
       grabCursor
-      shortSwipes={false}
+      shortSwipes={true}
       longSwipesRatio={0.1} // 调整滑动切换的幅度
       threshold={20} // 调整滑动切换的幅度
       touchReleaseOnEdges
@@ -69,16 +76,19 @@ const TTPlayer: React.FC = () => {
         addSlidesBefore: 1,
         addSlidesAfter: 1,
       }}
-      modules={[Virtual]}
+      modules={[Virtual, Pagination]}
       slidesPerView={1}
       spaceBetween={10}
       navigation={false}
-      pagination={false}
-      onSlideChange={(swiper) => {
-        // setActiveIndex(swiper.activeIndex)
+      pagination={{
+        type: 'progressbar',
       }}
-      onReachEnd={(swiper) => {
-        // console.log('swiper1111:', swiper.slideTo)
+      initialSlide={activeIndex}
+      onSwiper={(swiper) => {
+        swiperRef.current = swiper
+      }}
+      onSlideChange={(swiper) => {
+        setActiveIndex(swiper.activeIndex)
       }}
     >
       {list.map((item, index) => (
@@ -95,11 +105,7 @@ const TTPlayer: React.FC = () => {
               activeIndex={activeIndex}
             />
           ) : (
-            <ImagePreview
-              isOpen={true}
-              images={item?.media || []}
-              currentIndex={0}
-            />
+            <ImagePreview isOpen={true} images={item?.media || []} currentIndex={0} />
           )}
         </SwiperSlide>
       ))}

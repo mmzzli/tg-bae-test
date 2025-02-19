@@ -88,9 +88,8 @@ const OtherUserProfile: FC = () => {
               boxShadow="rgba(0, 0, 0, 0.1) 0px 2px 16px 0px"
             >
               {navList.map((item, key) => (
-                <Box>
+                <Box key={item.id}>
                   <MenuItem
-                    key={key}
                     bg="#fff"
                     color="#333"
                     fontSize="12px"

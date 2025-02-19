@@ -61,6 +61,7 @@
     "framer-motion": "^11.2.10",
     "helius-sdk": "1.4.0",
     "hls.js": "^1.5.17",
+    "jdenticon": "3.3.0",
     "jito-js-rpc": "0.1.0",
     "lottie-react": "^2.4.0",
     "lottie-web": "^5.12.2",

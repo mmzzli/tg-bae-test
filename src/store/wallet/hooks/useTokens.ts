@@ -256,6 +256,7 @@ const useTokens = () => {
       ReportSourcePendingToIHistoryType(i, useStore.getState().tokenList)
     )
     if (!pends.length) {
+      await getTxReportsList()
       return
     }
     const fetchAllStatus = async () => {
@@ -333,7 +334,7 @@ const useTokens = () => {
     //Get balance immediately from rpc, not correctly, give a timeout 1s
     setTimeout(() => {
       refetch()
-    okxBalancesQuery.refetch()
+      okxBalancesQuery.refetch()
     }, 2000)
   }
 

@@ -125,7 +125,8 @@ const ItemTokenSymbol = ({ history }: { history: IHistoryType }) => {
 
             {
                 (history.status === "fail" || history.status === "failed") ? <div className='px-[4px] py-[2px] ml-[4px] inline-block border-[1px] border-red2 text-red2 font-normal text-xs rounded-[4px] scale-[0.8]'>
-                  <span>Fail</span>
+                  <i className="iconfont icon-kong text-red2 text-[12px]"></i>
+                  <span className='ml-[4px]'>Fail</span>
                 </div> : null
             }
         </span>

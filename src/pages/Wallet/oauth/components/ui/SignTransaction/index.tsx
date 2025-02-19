@@ -36,9 +36,6 @@ export default function SignTransaction({
   sendFlag?: boolean
   params: WalletRequestParams[]
 }) {
-  const {
-    requestParam: { params, buttonText },
-  } = useWalletRequestStore()
 
   const toast = useToast()
 
@@ -299,7 +296,7 @@ export default function SignTransaction({
         handler={handleConfirm}
         loading={status == 'loading'}
         disabled={gasFeeStatus !== GasFeeStatus.SUCCESS && gasFeeStatus !== GasFeeStatus.CUSTOM}
-        text={buttonText || 'Approve'}
+        text={params[1] || 'Approve'}
         height="52px"
       />
     </div>

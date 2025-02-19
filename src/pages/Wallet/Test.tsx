@@ -16,10 +16,10 @@ import { Input } from 'antd-mobile'
 const WalletTest = () => {
   // const { tgLogin, getUserInfo } = useInitUser()
   const { hanleWalletAction } = useWallet()
-  const {
-    walletUserInfo: { tonPublicKey, tonAddress, solanaAddress },
-  } = useUserStore()
-  const { feeMode } = useCommonStore()
+  // const {
+  //   walletUserInfo: { tonPublicKey, tonAddress, solanaAddress },
+  // } = useUserStore()
+  // const { feeMode } = useCommonStore()
 
   // const connect = async () => {
   //   let userInfo
@@ -60,61 +60,61 @@ const WalletTest = () => {
     console.log('handleSign', data)
   }
 
-  const handleSignTon = async () => {
-    const data = await hanleWalletAction({
-      method: 'ton_signTx',
-      params: [
-        {
-          publicKey: tonPublicKey,
-          fromAddress: tonAddress,
-          body: {
-            from: tonAddress,
-            to: 'UQB92Cl6dzShQFgEk9lFSDHe0eWhvEZFY0SWDr3KSjcopLLS',
-            messages: [
-              {
-                address: 'UQB92Cl6dzShQFgEk9lFSDHe0eWhvEZFY0SWDr3KSjcopLLS',
-                amount: '1000000',
-              },
-            ],
-          },
-        },
-      ],
-    })
-    console.log('handleSignTon', data)
-  }
+  // const handleSignTon = async () => {
+  //   const data = await hanleWalletAction({
+  //     method: 'ton_signTx',
+  //     params: [
+  //       {
+  //         publicKey: tonPublicKey,
+  //         fromAddress: tonAddress,
+  //         body: {
+  //           from: tonAddress,
+  //           to: 'UQB92Cl6dzShQFgEk9lFSDHe0eWhvEZFY0SWDr3KSjcopLLS',
+  //           messages: [
+  //             {
+  //               address: 'UQB92Cl6dzShQFgEk9lFSDHe0eWhvEZFY0SWDr3KSjcopLLS',
+  //               amount: '1000000',
+  //             },
+  //           ],
+  //         },
+  //       },
+  //     ],
+  //   })
+  //   console.log('handleSignTon', data)
+  // }
 
-  const handleSignSol = async () => {
-    const params = {
-      fromAddress: solanaAddress,
-      toAddress: solanaAddress,
-      value: 1000000n,
-      contract: undefined,
-    }
-    let txStr
-    if (!params.contract) {
-      txStr = await sendSolTx(
-        params.fromAddress, // my Address
-        params.toAddress, // toAddress
-        params.value || 0n, //value
-        // signData.txMeta.mintAddress // contract Address
-        feeMode
-      )
-    } else {
-      txStr = await getSendSplToken(
-        params.contract,
-        params.fromAddress,
-        params.toAddress,
-        params.value,
-        feeMode
-      )
-    }
+  // const handleSignSol = async () => {
+  //   const params = {
+  //     fromAddress: solanaAddress,
+  //     toAddress: solanaAddress,
+  //     value: 1000000n,
+  //     contract: undefined,
+  //   }
+  //   let txStr
+  //   if (!params.contract) {
+  //     txStr = await sendSolTx(
+  //       params.fromAddress, // my Address
+  //       params.toAddress, // toAddress
+  //       params.value || 0n, //value
+  //       // signData.txMeta.mintAddress // contract Address
+  //       feeMode
+  //     )
+  //   } else {
+  //     txStr = await getSendSplToken(
+  //       params.contract,
+  //       params.fromAddress,
+  //       params.toAddress,
+  //       params.value,
+  //       feeMode
+  //     )
+  //   }
 
-    const data = await hanleWalletAction({
-      method: 'sol_signTx',
-      params: [{ txHex: txStr?.transaction, chainId: mockSolEvmChainId }],
-    })
-    console.log('handleSignSol', data)
-  }
+  //   const data = await hanleWalletAction({
+  //     method: 'sol_signTx',
+  //     params: [{ txHex: txStr?.transaction, chainId: mockSolEvmChainId }],
+  //   })
+  //   console.log('handleSignSol', data)
+  // }
 
   // const [visible, setVisible] = useState(false)
   // const handleBaseModal = () => {
@@ -128,8 +128,8 @@ const WalletTest = () => {
         <button onClick={handleMfa}>useMfa</button>
 */}
         <button onClick={handleSign}>oauth evm</button>
-        <button onClick={handleSignTon}>oauth ton</button>
-        <button onClick={handleSignSol}>oauth sol</button>
+        {/* <button onClick={handleSignTon}>oauth ton</button> */}
+        {/* <button onClick={handleSignSol}>oauth sol</button> */}
 
         {/* <button onClick={handleBaseModal}>BaseModal测试下</button> */}
       </div>

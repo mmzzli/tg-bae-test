@@ -292,3 +292,13 @@ export const getTokenDetailByAddress = async (chain: string, address: string) =>
     }
   )
 }
+
+export const getOKXTransactionStatusV2 = async (params: {
+  hash: string
+  chainId?: string
+}): Promise<any> => {
+  return await walletGet<WalletApiResponse>(`socialLogin/projectWallet/okxDexCrossChainStatus`, 
+    {
+    params
+  })
+}

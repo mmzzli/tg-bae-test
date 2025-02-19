@@ -111,7 +111,7 @@ const ItemTokenSymbol = ({ history }: { history: IHistoryType }) => {
         break
     }
   }, [fromToken, history, toToken])
-
+  debugger
   return (
     <div className="flex items-center">
       <div className="relative mr-2 flex min-w-[46px]">{tokenSymbol}</div>
@@ -122,6 +122,12 @@ const ItemTokenSymbol = ({ history }: { history: IHistoryType }) => {
               ? history.historyType
               : 'Cross-chain Swap'
             : history.historyType}
+
+            {
+                (history.status === "fail" || history.status === "failed") ? <div className='px-[4px] py-[2px] ml-[4px] inline-block border-[1px] border-red2 text-red2 font-normal text-xs rounded-[4px] scale-[0.8]'>
+                  <span>Fail</span>
+                </div> : null
+            }
         </span>
         <div className="flex items-center text-xs font-normal text-b2">
           {history.historyType === 'Receive' ? 'from' : history.historyType === 'Send' ? 'to' : ""} &nbsp;

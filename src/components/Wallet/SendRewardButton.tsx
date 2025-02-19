@@ -1,15 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { SlideButton, SlideButtonHandle } from '../BaseButton/SlideButton'
 import {
-  useAccount,
-  useChainId,
   useEstimateFeesPerGas,
   useEstimateGas,
   useEstimateMaxPriorityFeePerGas,
   useReadContract,
-  useSwitchChain,
   useWaitForTransactionReceipt,
-  useWriteContract,
 } from 'wagmi'
 import { abi, approveAbi } from '@/config/abi'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
@@ -24,6 +20,8 @@ import BigNumber from 'bignumber.js'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { getBalance } from '@wagmi/core'
 import { config } from '@/config/wagmi-config'
+import useWallet from '@/pages/Wallet/hooks/useWallet'
+import { useAccount } from '@/pages/Wallet/utils/walletProvider'
 
 export const SendRewardButton = ({
   amount,
@@ -97,8 +95,7 @@ export const SendRewardButton = ({
     hash,
   })
 
-  const currentChainId = useChainId()
-  const { switchChainAsync } = useSwitchChain()
+  const { hanleWalletAction } = useWallet()
 
   const {
     data: allowance,
@@ -109,15 +106,30 @@ export const SendRewardButton = ({
     abi: approveAbi,
     functionName: 'allowance',
     args: [address as `0x${string}`, contractAddress as `0x${string}`],
+    chainId,
     query: {
       enabled: tokenAddress !== '0x0000000000000000000000000000000000000000',
     },
   })
 
+  useEffect(() => {
+    if (
+      address &&
+      tokenAddress !== '0x0000000000000000000000000000000000000000' &&
+      !allowanceLoading &&
+      !allowance
+    ) {
+      refetchAllowance()
+    }
+  }, [address, tokenAddress, allowanceLoading])
+
+  console.log('0000000000000000000=>', allowance, allowanceLoading, address, tokenAddress)
+
   const needApprove = useMemo(() => {
     if (tokenAddress === '0x0000000000000000000000000000000000000000') {
       return false
     }
+    debugger
     if (!allowance) {
       return true
     }
@@ -176,16 +188,16 @@ export const SendRewardButton = ({
     }
   }
 
-  const switchChain = async () => {
-    try {
-      await switchChainAsync({ chainId })
-    } catch (error) {
-      toast({
-        render: () => <CustomToast title="Switch chain failed" type={typeOptions.error} />,
-        position: 'bottom',
-      })
-    }
-  }
+  // const switchChain = async () => {
+  //   try {
+  //     await switchChainAsync({ chainId })
+  //   } catch (error) {
+  //     toast({
+  //       render: () => <CustomToast title="Switch chain failed" type={typeOptions.error} />,
+  //       position: 'bottom',
+  //     })
+  //   }
+  // }
 
   const calculateTotalCost = (
     estimatedGas: bigint,
@@ -280,7 +292,7 @@ export const SendRewardButton = ({
       })
 
       try {
-        const hash = await window.ethereum.request({
+        const hash = await hanleWalletAction({
           method: 'eth_sendTransaction', // or eth_sendTransaction
           params: [
             {
@@ -298,7 +310,7 @@ export const SendRewardButton = ({
           ],
         })
         console.log('window.ethereum.request', hash)
-        setHash(hash)
+        setHash(hash as `0x${string}}`)
       } catch (error) {
         setWriteContractError(true)
       }
@@ -314,8 +326,8 @@ export const SendRewardButton = ({
       return slideButtonRef.current?.reset()
     }
 
-    await switchChain()
-
+    // await switchChain()
+    debugger
     if (tokenAddress !== '0x0000000000000000000000000000000000000000' && needApprove) {
       console.warn('Approve:', tokenAddress as `0x${string}`, parseUnits(amount, decimals))
 
@@ -336,8 +348,8 @@ export const SendRewardButton = ({
         })
 
         try {
-          const hash = await window.ethereum.request({
-            method: 'eth_sendTransaction', // or eth_sendTransaction
+          const hash: any = await hanleWalletAction({
+            method: 'eth_sendTransaction',
             params: [
               {
                 from: address,
@@ -442,12 +454,12 @@ export const SendRewardButton = ({
     }
   }, [hash])
 
-  useEffect(() => {
-    if (currentChainId !== chainId) {
-      console.log('need chainId changed')
-      switchChain()
-    }
-  }, [currentChainId])
+  // useEffect(() => {
+  //   if (currentChainId !== chainId) {
+  //     console.log('need chainId changed')
+  //     switchChain()
+  //   }
+  // }, [currentChainId])
 
   useEffect(() => {
     let lastTap = 0

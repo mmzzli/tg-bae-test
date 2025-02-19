@@ -6,7 +6,7 @@ import { AliveScope } from 'react-activation'
 import { WagmiProvider } from 'wagmi'
 import { config } from '@/config/wagmi-config'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { TomoWalletTgSdkV2, TomoProvider } from '@tomo-inc/tomo-telegram-sdk'
+// import { TomoWalletTgSdkV2, TomoProvider } from '@tomo-inc/tomo-telegram-sdk'
 import PriceService from '@/utils/wallet/PriceService'
 
 import theme from '@/theme'
@@ -18,13 +18,13 @@ import './types/window.d.ts'
 import { mockTelegramEnv, parseInitData } from '@tma.js/sdk'
 import { DEV_INIT_DATA_RAW } from './utils/constants'
 import { useEffect } from 'react'
-import '@tomo-inc/tomo-telegram-sdk/dist/styles.css'
+// import '@tomo-inc/tomo-telegram-sdk/dist/styles.css'
 
 import { TOMO_META_DATA } from './config/tomo-config'
 
 PriceService.init()
 
-new TomoWalletTgSdkV2({ injected: true, metaData: TOMO_META_DATA.metaData })
+// new TomoWalletTgSdkV2({ injected: true, metaData: TOMO_META_DATA.metaData })
 const queryClient = new QueryClient()
 
 if (import.meta.env.MODE === 'dev') {
@@ -78,21 +78,21 @@ function App() {
   }, [])
 
   return (
-    <TomoProvider theme="light" supportedProviders={['EVM']} tomoOptions={TOMO_META_DATA}>
+    // <TomoProvider theme="light" supportedProviders={['EVM']} tomoOptions={TOMO_META_DATA}>
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
-          <NiceModal.Provider>
-            <ChakraProvider resetCSS theme={theme}>
-              <AliveScope>
-                <BrowserRouter>
+          <BrowserRouter>
+            <NiceModal.Provider>
+              <ChakraProvider resetCSS theme={theme}>
+                <AliveScope>
                   <AppRoutes />
-                </BrowserRouter>
-              </AliveScope>
-            </ChakraProvider>
-          </NiceModal.Provider>
+                </AliveScope>
+              </ChakraProvider>
+            </NiceModal.Provider>
+          </BrowserRouter>
         </QueryClientProvider>
       </WagmiProvider>
-    </TomoProvider>
+    // </TomoProvider>
   )
 }
 

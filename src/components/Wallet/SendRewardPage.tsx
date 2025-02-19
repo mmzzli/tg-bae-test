@@ -5,7 +5,9 @@ import { isMobileDevice } from '@/utils/utils'
 import TokenIcon from './TokenIcon'
 import PriceService from '@/utils/wallet/PriceService'
 import { useEffect, useMemo } from 'react'
-import { useAccount, useBalance, useChainId } from 'wagmi'
+import { userefetchBalance } from '@/pages/Wallet/utils/walletProvider'
+import { AssetsToken } from '@/store/wallet/tokenType/AssetsToken'
+// import { useAccount, useBalance, useChainId } from 'wagmi'
 const SendRewardPage = () => {
   const { virtualRoutePage, resetVirtualRoutePage } = useStore((state) => ({
     virtualRoutePage: state.virtualRoutePage,
@@ -22,45 +24,49 @@ const SendRewardPage = () => {
     chainName,
     uid,
   } = virtualRoutePage?.params || {}
+  const incomeToken: AssetsToken | undefined = useStore().tokenList.find(
+    (i) =>
+      i.address === (balance as AssetsToken).address &&
+      i.chainId === (balance as AssetsToken).chainId &&
+      i.symbol === (balance as AssetsToken).symbol
+  )
+  const { refreshTokenStore } = userefetchBalance()
 
-  const { address: account } = useAccount()
-  const currentChainId = useChainId()
+  // const { data: accountBalance, refetch: refetchBalance } = useBalance({
+  //   query: {
+  //     enabled: false,
+  //     retry: 3,
+  //     retryDelay: 1000,
+  //     refetchOnWindowFocus: false,
+  //     refetchOnMount: true,
+  //     refetchOnReconnect: false,
+  //     refetchInterval: 20000,
+  //   },
+  //   address: account,
+  //   ...(token.isNative
+  //     ? { chainId: token.chainId }
+  //     : { token: address as `0x${string}`, chainId: token.chainId }),
+  // })
 
-  const { data: accountBalance, refetch: refetchBalance } = useBalance({
-    query: {
-      enabled: false,
-      retry: 3,
-      retryDelay: 1000,
-      refetchOnWindowFocus: false,
-      refetchOnMount: true,
-      refetchOnReconnect: false,
-      refetchInterval: 20000,
-    },
-    address: account,
-    ...(token.isNative
-      ? { chainId: token.chainId }
-      : { token: address as `0x${string}`, chainId: token.chainId }),
-  })
-
-  const formattedBalance = useMemo(() => {
-    return formatNumber(accountBalance?.formatted || balance.formatted, {
-      thousandsSeparator: ',',
-    })
-  }, [accountBalance, balance])
+  // const formattedBalance = useMemo(() => {
+  //   return formatNumber(accountBalance?.formatted || balance.formatted, {
+  //     thousandsSeparator: ',',
+  //   })
+  // }, [accountBalance, balance])
 
   const handleAmountChange = (amount: string) => {
     if (amount === '') {
-      refetchBalance()
+      refreshTokenStore()
     }
   }
 
-  useEffect(() => {
-    refetchBalance()
-  }, [])
+  // useEffect(() => {
+  //   refetchBalance()
+  // }, [])
 
-  useEffect(() => {
-    refetchBalance()
-  }, [currentChainId])
+  // useEffect(() => {
+  //   refetchBalance()
+  // }, [currentChainId])
   const price = PriceService.getInstance().getPrice(token)
   return (
     <div
@@ -104,14 +110,14 @@ const SendRewardPage = () => {
           </div>
           <span className="text-[#616184] text-nowrap">Balance :&nbsp;</span>
           <div className="dark:text-white text-[#12122A] text-nowrap">
-            <span className="whitespace-nowrap">{formattedBalance}</span>
+            <span className="whitespace-nowrap">{incomeToken?.formatted}</span>
           </div>
         </div>
 
         <TransferPanel
-          balance={accountBalance?.value || 0n}
+          balance={BigInt(incomeToken?.balance || 0)}
           symbol={token}
-          decimals={accountBalance?.decimals || 18}
+          decimals={incomeToken?.decimals || 18}
           price={price || 0}
           tokenAddress={address ? address : '0x0000000000000000000000000000000000000000'}
           contractAddress={rewardContractAddress}

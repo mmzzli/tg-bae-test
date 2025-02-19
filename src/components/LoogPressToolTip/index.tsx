@@ -62,7 +62,7 @@ const Tooltip: React.FC<TooltipProps> = ({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      console.log('handleClickOutside', visible, tooltipRef.current, targetRef.current)
+      // console.log('handleClickOutside', visible, tooltipRef.current, targetRef.current)
       if (
         visible &&
         tooltipRef.current &&
@@ -153,136 +153,154 @@ const Tooltip: React.FC<TooltipProps> = ({
   }, [content.url, content.text, isIOSDevice, id, config.enableDownload])
 
   const forceFocus = () => {
-    const activeElement = document.activeElement as HTMLInputElement;
-    if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+    const activeElement = document.activeElement as HTMLInputElement
+    if (
+      activeElement &&
+      (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')
+    ) {
       // 保存当前光标位置
-      const cursorPosition = activeElement.selectionStart;
+      const cursorPosition = activeElement.selectionStart
       // 使用 requestAnimationFrame 确保在下一帧重新聚焦
       requestAnimationFrame(() => {
-        activeElement.focus();
+        activeElement.focus()
         // 恢复光标位置
-        activeElement.setSelectionRange(cursorPosition, cursorPosition);
-      });
+        activeElement.setSelectionRange(cursorPosition, cursorPosition)
+      })
     }
-  };
+  }
 
   const longPressEvent = useLongPress({
     delay: delay,
     onLongPress: () => {
-      forceFocus();
+      forceFocus()
       if (visible) {
-        hideTooltip();
+        hideTooltip()
       } else {
-        showTooltip();
+        showTooltip()
       }
     },
     onClick: hideTooltip,
-  });
+  })
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const activeElement = document.activeElement as HTMLInputElement;
-    if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
-      activeElement.focus();
+    e.preventDefault()
+    e.stopPropagation()
+    const activeElement = document.activeElement as HTMLInputElement
+    if (
+      activeElement &&
+      (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')
+    ) {
+      activeElement.focus()
     }
-  }, []);
+  }, [])
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const activeElement = document.activeElement as HTMLInputElement;
-    if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
-      activeElement.focus();
+    e.preventDefault()
+    e.stopPropagation()
+    const activeElement = document.activeElement as HTMLInputElement
+    if (
+      activeElement &&
+      (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')
+    ) {
+      activeElement.focus()
     }
-  }, []);
+  }, [])
 
-  const handleReply = useCallback((e: React.MouseEvent | React.TouchEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    console.log('handleReply', content, content.text || content.url || '')
-    let message = content.text || content.url || ''
-    // 处理页面数组不更新问题
-    if (!message) {
-      const messageWindow = useStore
-        .getState()
-        .messageWindowList.filter((item) => item.channel.channelID === content.channelID)
-      if (messageWindow.length > 0) {
-        const _message = messageWindow[0].messages.filter((msg) => msg.id === content.id)
-        if (_message.length > 0) {
-          const res = _message[0]
-          message = res.text || res.url || ''
+  const handleReply = useCallback(
+    (e: React.MouseEvent | React.TouchEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      console.log('handleReply', content, content.text || content.url || '')
+      let message = content.text || content.url || ''
+      // 处理页面数组不更新问题
+      if (!message) {
+        const messageWindow = useStore
+          .getState()
+          .messageWindowList.filter((item) => item.channel.channelID === content.channelID)
+        if (messageWindow.length > 0) {
+          const _message = messageWindow[0].messages.filter((msg) => msg.id === content.id)
+          if (_message.length > 0) {
+            const res = _message[0]
+            message = res.text || res.url || ''
+          }
         }
       }
-    }
-    setReplyMessage({
-      channel: channelId,
-      messageId: content.id,
-      messageSeq: content.messageSeq,
-      messageType: content.type,
-      message: message,
-      toUid: content.sender,
-      toUsername: user?.username || '',
-      revoke: false,
-    })
-    hideTooltip()
-  }, [hideTooltip])
-
-  const handleCopy = useCallback((e: React.MouseEvent | React.TouchEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    try {
-      if (content.text) {
-        copy(content.text)
-        toast({
-          render: () => {
-            return <CustomToast title="Copied to clipboard!" type={typeOptions.success} />
-          },
-          position: 'top',
-        })
-      }
-    } catch (error) {
-      console.error('Failed to copy:', error)
-    } finally {
+      setReplyMessage({
+        channel: channelId,
+        messageId: content.id,
+        messageSeq: content.messageSeq,
+        messageType: content.type,
+        message: message,
+        toUid: content.sender,
+        toUsername: user?.username || '',
+        revoke: false,
+      })
       hideTooltip()
-    }
-  }, [content.text, copy, hideTooltip])
+    },
+    [hideTooltip]
+  )
 
-  const handleDownload = useCallback(async (e: React.MouseEvent | React.TouchEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    try {
-      if (content.url) {
-        window.Telegram?.WebApp?.downloadFile({ url: content.url, file_name: `pic-${id}` })
+  const handleCopy = useCallback(
+    (e: React.MouseEvent | React.TouchEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      try {
+        if (content.text) {
+          copy(content.text)
+          toast({
+            render: () => {
+              return <CustomToast title="Copied to clipboard!" type={typeOptions.success} />
+            },
+            position: 'top',
+          })
+        }
+      } catch (error) {
+        console.error('Failed to copy:', error)
+      } finally {
+        hideTooltip()
       }
-    } catch (error) {
-      console.error('Failed to download:', error)
-    } finally {
-      hideTooltip()
-    }
-  }, [content.url, hideTooltip])
+    },
+    [content.text, copy, hideTooltip]
+  )
+
+  const handleDownload = useCallback(
+    async (e: React.MouseEvent | React.TouchEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      try {
+        if (content.url) {
+          window.Telegram?.WebApp?.downloadFile({ url: content.url, file_name: `pic-${id}` })
+        }
+      } catch (error) {
+        console.error('Failed to download:', error)
+      } finally {
+        hideTooltip()
+      }
+    },
+    [content.url, hideTooltip]
+  )
 
   useEffect(() => {
     const handleFocus = () => {
       if (tooltipRef.current) {
-        tooltipRef.current.style.pointerEvents = 'none';
+        tooltipRef.current.style.pointerEvents = 'none'
       }
-    };
+    }
 
     const handleBlur = () => {
       if (tooltipRef.current) {
-        tooltipRef.current.style.pointerEvents = 'auto';
+        tooltipRef.current.style.pointerEvents = 'auto'
       }
-    };
+    }
 
-    window.addEventListener('focus', handleFocus, true);
-    window.addEventListener('blur', handleBlur, true);
+    window.addEventListener('focus', handleFocus, true)
+    window.addEventListener('blur', handleBlur, true)
 
     return () => {
-      window.removeEventListener('focus', handleFocus, true);
-      window.removeEventListener('blur', handleBlur, true);
-    };
-  }, []);
+      window.removeEventListener('focus', handleFocus, true)
+      window.removeEventListener('blur', handleBlur, true)
+    }
+  }, [])
 
   return (
     <>
@@ -335,7 +353,7 @@ const Tooltip: React.FC<TooltipProps> = ({
                 style={{
                   touchAction: 'manipulation',
                   WebkitTapHighlightColor: 'transparent',
-                  WebkitTouchCallout: 'none'
+                  WebkitTouchCallout: 'none',
                 }}
               >
                 <i
@@ -356,7 +374,7 @@ const Tooltip: React.FC<TooltipProps> = ({
                 style={{
                   touchAction: 'manipulation',
                   WebkitTapHighlightColor: 'transparent',
-                  WebkitTouchCallout: 'none'
+                  WebkitTouchCallout: 'none',
                 }}
               >
                 <i
@@ -377,7 +395,7 @@ const Tooltip: React.FC<TooltipProps> = ({
                 style={{
                   touchAction: 'manipulation',
                   WebkitTapHighlightColor: 'transparent',
-                  WebkitTouchCallout: 'none'
+                  WebkitTouchCallout: 'none',
                 }}
               >
                 <i

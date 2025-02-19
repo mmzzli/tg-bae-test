@@ -397,7 +397,8 @@ export interface SolSendTx {
 
 export type WalletRequestType = {
   method: string
-  params: Array<WalletRequestParams>
+  params: Array<any>
+  buttonText?: string
 }
 export type WalletRequestParams = any
 

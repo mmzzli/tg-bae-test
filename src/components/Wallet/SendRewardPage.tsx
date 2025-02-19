@@ -4,10 +4,8 @@ import { TransferPanel } from './TransferPanel'
 import { isMobileDevice } from '@/utils/utils'
 import TokenIcon from './TokenIcon'
 import PriceService from '@/utils/wallet/PriceService'
-import { useEffect, useMemo } from 'react'
 import { userefetchBalance } from '@/pages/Wallet/utils/walletProvider'
 import { AssetsToken } from '@/store/wallet/tokenType/AssetsToken'
-// import { useAccount, useBalance, useChainId } from 'wagmi'
 const SendRewardPage = () => {
   const { virtualRoutePage, resetVirtualRoutePage } = useStore((state) => ({
     virtualRoutePage: state.virtualRoutePage,
@@ -30,6 +28,7 @@ const SendRewardPage = () => {
       i.chainId === (balance as AssetsToken).chainId &&
       i.symbol === (balance as AssetsToken).symbol
   )
+
   const { refreshTokenStore } = userefetchBalance()
 
   // const { data: accountBalance, refetch: refetchBalance } = useBalance({
@@ -70,7 +69,7 @@ const SendRewardPage = () => {
   const price = PriceService.getInstance().getPrice(token)
   return (
     <div
-      className="fixed top-0 left-0 bottom-0 right-0 bg-white z-[10000] px-[20px]"
+      className="fixed top-0 left-0 bottom-0 right-0 bg-white z-[10000] px-[20px] prevent-touch-back"
       style={{
         paddingTop: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
         paddingBottom:
@@ -131,12 +130,4 @@ const SendRewardPage = () => {
   )
 }
 
-function formatNumber(value: string | number, { thousandsSeparator = ',' } = {}) {
-  const num = Number(value)
-  if (isNaN(num)) return '0'
-
-  const [int, decimal] = value.toString().split('.')
-  const formattedInt = Number(int).toLocaleString('en-US').replace(/,/g, thousandsSeparator)
-  return decimal ? `${formattedInt}.${decimal}` : formattedInt
-}
 export default SendRewardPage

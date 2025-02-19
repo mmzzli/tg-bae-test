@@ -8,7 +8,7 @@ import { useUserStore } from '@/store/wallet/walletUser'
 
 const WalletAddressItem = ({ address, chain }: { address: string; chain: IWeb3ChainType }) => {
   return (
-    <div className="p-2 rounded-lg bg-bg2 flex items-center overflow-hidden">
+    <div className="p-4 rounded-lg bg-bg2 flex items-center overflow-hidden">
       <TTokenImage
         image={chain.icon}
         symbol={chain.chain?.nativeCurrency?.symbol}

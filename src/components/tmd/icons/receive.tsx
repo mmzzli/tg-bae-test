@@ -7,9 +7,9 @@ export const IconReceive = ({ className, viewBox, ...restProps }: IconProps) => 
       <path
         d="M5 12L12 19M12 19L19 12M12 19V5"
         stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </Icon>
   )

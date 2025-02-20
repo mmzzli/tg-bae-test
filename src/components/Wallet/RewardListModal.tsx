@@ -18,7 +18,12 @@ interface Props {
 import { config, evmChainList } from '@/config/wagmi-config'
 import { Chain, encodeFunctionData } from 'viem'
 import { tokenIconMap } from '@/config/token-icon'
-import { useEstimateGas, useReadContract, useSwitchChain, useWaitForTransactionReceipt } from 'wagmi'
+import {
+  useEstimateGas,
+  useReadContract,
+  useSwitchChain,
+  useWaitForTransactionReceipt,
+} from 'wagmi'
 import { getBalance, getGasPrice, estimateGas } from '@wagmi/core'
 import { abi } from '@/config/abi'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
@@ -264,7 +269,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
         BigInt(_deadline),
         signatures,
       ])
-      
+
       const abiData = encodeFunctionData({
         abi,
         functionName: 'withdrawMultiToken',
@@ -284,9 +289,9 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
       let gasLimit = await getEvmGasBigint({
         fromAddress: address as string,
         toAddress: contractAddress,
-        token: {isNative : true} as AssetsToken,
+        token: { isNative: true } as AssetsToken,
         chainId,
-        data: abiData
+        data: abiData,
       })
 
       // const gasLimit = await estimateGas(config, {
@@ -485,6 +490,8 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
               Your assets are on multiple networks. Please select one network you want to withdraw
               from.
             </div>
+            {/* <div className="h-[226px] relative">
+              <div className="absolute top-0 bottom-0 -left-[24px] -right-[24px] overflow-auto pb-5 px-6"> */}
             <div className="flex items-center text-[16px] text-[#999] font-normal mt-9 mb-4">
               Available :&nbsp;<span className="text-[#333333]">{totalReward}</span>
             </div>
@@ -520,6 +527,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
                 </span>
               </div>
             ))}
+            {/* </div> */}
 
             <div className="mt-7 mx-[18px] mb-[30px]">
               <BaseButton

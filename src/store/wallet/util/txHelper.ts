@@ -1002,7 +1002,9 @@ const methodsToHistory = (
     }
     result.source = 'OKX'
     if (first.methodId === '0xae2915f7') {
-      result.historyType = 'Witdraw'
+      result.historyType = 'Withdraw'
+      result.fromAddress = [first.from[0].address, first.to[0].address, last.from[0].address, last.to[0].address].find(i => i.toLowerCase() !== user.ethereumAddress.toLowerCase())
+      result.toAddress = user.ethereumAddress
     }
     // if (first.methodId === '0x185f755c') {
     //   result.historyType =  'Reward'

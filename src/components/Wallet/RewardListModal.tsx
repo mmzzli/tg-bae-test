@@ -344,7 +344,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
               data: abiData,
               gasLimit: gasLimit
                 ? (BigInt(gasLimit.toString()) * BigInt(900)) / BigInt(200)
-                : BigInt(100000),
+                : BigInt(100000).toString(),
               gasPrice: gasPrice.toString(),
             },
           ],

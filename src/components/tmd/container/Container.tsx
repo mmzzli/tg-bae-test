@@ -26,7 +26,7 @@ export function Container(p: ContainerProps) {
     >
       {children}
 
-      {safeArea && <SafeArea position="bottom" className="flex-none" />}
+      {/* {safeArea && <SafeArea position="bottom" className="flex-none" />} */}
     </div>
   )
 }

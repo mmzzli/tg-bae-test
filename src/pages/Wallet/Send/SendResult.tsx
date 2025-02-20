@@ -48,7 +48,7 @@ export default function SendResult() {
             </div>
           </div>
 
-          <div className="mb-[20px] space-y-2">
+          <div className="mb-2 space-y-2">
             {/* {params.from === 'send' && ( */}
             <BaseButton
               text="View transaction details"

@@ -27,6 +27,8 @@ import { sendTransaction } from '@/store/wallet/config/evm'
 import { IWeb3ChainType } from '@/store/wallet/chainType'
 import { WalletRequestParams } from '@/store/wallet/type'
 
+const BUTTON_TEXT = 1
+
 export default function SignTransaction({
   onSuccess,
   sendFlag,
@@ -36,7 +38,6 @@ export default function SignTransaction({
   sendFlag?: boolean
   params: WalletRequestParams[]
 }) {
-
   const toast = useToast()
 
   const transfer = useMemo(() => {
@@ -296,7 +297,7 @@ export default function SignTransaction({
         handler={handleConfirm}
         loading={status == 'loading'}
         disabled={gasFeeStatus !== GasFeeStatus.SUCCESS && gasFeeStatus !== GasFeeStatus.CUSTOM}
-        text={params[1] || 'Approve'}
+        text={params[BUTTON_TEXT] || 'Approve'}
         height="52px"
       />
     </div>

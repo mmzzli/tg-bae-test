@@ -120,23 +120,18 @@ export default function InputAddress() {
       {/* <BackButton onClick={() => navigate(-1)} /> */}
       {/* <TScrollContent> */}
       <div className="px-[20px] flex-1 overflow-y-auto">
-        <div className="mt-[15px] text-h3 font-semibold  text-t1">Receiving address</div>
+        <div className="mt-[15px] text-h3 font-semibold text-t1">Receiving address</div>
         <div className="mt-[15px]">
           <TextArea
-            style={{
-              '--color': 'var(--text-t1)',
-              '--font-size': 'var(--text-sm)',
-              '--placeholder-color': 'var(--text-t4)',
-            }}
             value={receiveAddress}
             placeholder={`${chain?.name} address`}
-            className="h-[46px] text-sm text-t1"
+            className="h-[46px] text-sm text-b1 placeholder:text-b3"
             onChange={(val) => {
               setReceiveAddress(val)
             }}
           />
           {receiveAddress.length !== 0 && !isValid && (
-            <div className="absolute mt-[8px] text-xs text-red">Please enter a valid address</div>
+            <p className="absolute mt-[8px] text-xs text-error">Please enter a valid address</p>
           )}
         </div>
         <div

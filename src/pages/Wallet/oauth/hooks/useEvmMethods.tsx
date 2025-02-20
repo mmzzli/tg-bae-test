@@ -59,7 +59,6 @@ export type CustomRpcSchema = [
   },
 ]
 const useEvmMethods = ({ chainId }: { chainId?: number | undefined }) => {
-  const config = evmChainsConfig()
   const { getMfaParams } = useMfa()
 
   const gasPrice = useGasPrice({ chainId: chainId })
@@ -78,6 +77,7 @@ const useEvmMethods = ({ chainId }: { chainId?: number | undefined }) => {
     gasLimit?: string
     gasPrice?: string
   }) => {
+    const config = evmChainsConfig()
     try {
       const data = params.data || '0x'
       const chainId = params.chainId as IChainId

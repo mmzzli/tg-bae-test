@@ -7,13 +7,14 @@ const Header = ({ tx }: { tx: IHistoryType }) => {
   const icon = useMemo(() => {
     switch (tx.status) {
       case 'success':
-        return 'tg_wallet_finalize-linearly'
+        return 'icon-kong'
       case 'failed':
-        return 'tg_wallet_fail-linearly'
+      case 'fail':
+        return 'icon-kong1'
       case 'pending':
-        return 'tg_wallet_load'
+        return 'icon-jiazai'
       default:
-        return 'tg_wallet_finalize-linearly'
+        return 'icon-kong'
     }
   }, [tx.status])
 
@@ -53,16 +54,14 @@ const Header = ({ tx }: { tx: IHistoryType }) => {
         }
       )}
     >
-      <TIcon
-        className={classNames('mr-3 ', {
-          'text-green': tx.status === 'success',
-          'text-red': tx.status === 'failed',
-          'text-orange animate-spin': tx.status === 'pending'
-        })}
-        fontSize="24"
-        name={icon}
-      ></TIcon>
-      <span className="text-xl font-semibold text-t1">{text}</span>
+      <i 
+      className={classNames('mr-3 iconfont text-[24px]', icon, {
+        'text-green': tx.status === 'success',
+        'text-red2': tx.status === 'failed' || tx.status === 'fail',
+        'text-orange animate-spin': tx.status === 'pending'
+      })}></i>
+
+      <span className="text-xl font-semibold text-b1">{text}</span>
     </div>
   )
 }

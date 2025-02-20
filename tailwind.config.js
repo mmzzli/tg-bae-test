@@ -13,7 +13,10 @@ export default {
         'white-opacity-15': 'rgba(255, 255, 255, 0.15)', // 自定义颜色
         'white-close': '#E0E2F6',
         /** for wallet page start */
-        t1: '#000000',
+        t1: '#12122a',
+        t2: '#616184',
+        t3: '#8989ab',
+        t4: '#c1c0d8',
         b1: '#333333',
         b2: '#666666',
         b3: '#999999',
@@ -22,11 +25,13 @@ export default {
         green: '#04C159',
         red: '#F21F7F',
         red2: '#EB4B6D',
+        error: '#E94242',
         orange: '#FF9142',
         yellow: '#FFB904',
         blue: '#2B6BFF',
         blue3: '#3478F6',
         title: '#121212',
+        bg1: '#ffffff',
         /** for wallet page end */
       },
       backgroundImage: {

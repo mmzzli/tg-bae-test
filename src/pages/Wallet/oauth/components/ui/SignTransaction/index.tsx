@@ -3,9 +3,7 @@ import { prepareTransactionRequest } from '@wagmi/core'
 import { GasFeeStatus } from './const'
 import Container from './Container'
 import './index.css'
-import { useWalletRequestStore } from '@/store/wallet/walletRequest'
 import { evmChainsConfig } from '@/store/wallet/chains'
-import { useNavigate } from 'react-router-dom'
 import { getChainByChainId } from '@/store/wallet/util/tokenHelper'
 import { getMulticallTokenInfo } from '@/store/wallet/hooks/read/useReadErc20'
 import { numberFormat, parseApproveOrTransferParams } from '../../../utils/helper'
@@ -27,20 +25,19 @@ import DescriptionOrRawData from './DescriptionOrRawData'
 import { useRequest } from 'ahooks'
 import { sendTransaction } from '@/store/wallet/config/evm'
 import { IWeb3ChainType } from '@/store/wallet/chainType'
+import { WalletRequestParams } from '@/store/wallet/type'
 
 export default function SignTransaction({
   onSuccess,
   sendFlag,
+  params,
 }: {
   onSuccess?: (data: string) => void
   sendFlag?: boolean
+  params: WalletRequestParams[]
 }) {
-  const {
-    requestParam: { params, buttonText },
-  } = useWalletRequestStore()
 
   const toast = useToast()
-  const navigate = useNavigate()
 
   const transfer = useMemo(() => {
     return params.length > 0 ? params[0] : {}
@@ -299,7 +296,7 @@ export default function SignTransaction({
         handler={handleConfirm}
         loading={status == 'loading'}
         disabled={gasFeeStatus !== GasFeeStatus.SUCCESS && gasFeeStatus !== GasFeeStatus.CUSTOM}
-        text={buttonText || 'Approve'}
+        text={params[1] || 'Approve'}
         height="52px"
       />
     </div>

@@ -53,6 +53,7 @@ const waitForTelegramWebApp = () => {
 }
 const BASE_PATHS = ['/home', '/chat', '/profile', '/ageGate', '/task']
 const HIDE_BACK_BUTTON_PATHS = ['/home', '/chat', '/profile', '/ageGate', '/task', '/']
+const HIDE_TAB_BOTTOM = ['/wallet', '/account']
 
 export const MainLayout: React.FC = () => {
   const location = useLocation()
@@ -66,6 +67,7 @@ export const MainLayout: React.FC = () => {
   const [shouldLoadChat, setShouldLoadChat] = useState(false)
   const [hiddenChatPage, setHiddenChatPage] = useState(false)
   const [hiddenHomePage, setHiddenHomePage] = useState(false)
+  const [hiddenTabBottom, setHiddenTabBottom] = useState(false)
   const setExpanded = useStore((state) => state.setExpand)
   const isExpanded = useStore((state) => state.expand)
   const navigate = useNavigate()
@@ -251,6 +253,11 @@ export const MainLayout: React.FC = () => {
         tgApp.BackButton.show()
       }
     }
+    if (HIDE_TAB_BOTTOM.find(i => location.pathname.indexOf(i) !== -1)) {
+      setHiddenTabBottom(true)
+    } else {
+      setHiddenTabBottom(false)
+    }
   }, [location.pathname])
 
   useEffect(() => {
@@ -319,9 +326,17 @@ export const MainLayout: React.FC = () => {
           paddingTop: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
         }}
       >
-        <Outlet />
+        {
+          hiddenTabBottom ?
+          <div className='size-full' style={{position: 'fixed', zIndex: 999}}>
+            <Outlet />
+          </div>
+          : <Outlet />
+        }
       </div>
-      <Menu />
+      {
+        hiddenTabBottom ? null : <Menu />
+      }
       <VideoDialog></VideoDialog>
       <ImageDialog></ImageDialog>
       <WsHandler />

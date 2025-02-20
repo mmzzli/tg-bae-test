@@ -303,8 +303,8 @@ export type IHistoryType = {
   chainId?: IWeb3ChainType | undefined
   type?: 'OKX' | 'Rango' | '' | 'Ston.fi' | 'Jupiter'
   requestId?: string | undefined
-  historyType: 'Swap' | 'Send' | 'Approve' | 'Receive' | 'Pay' | 'Gift'
-  status?: 'success' | 'pending' | 'failed' | 'loading' | 'unknow'
+  historyType: 'Swap' | 'Send' | 'Approve' | 'Receive' | 'Pay' | 'Gift' | 'Witdraw'
+  status?: 'success' | 'pending' | 'failed' | 'fail' | 'loading' | 'unknow'
 
   blocknumber?: string | undefined
   endTime?: number
@@ -400,6 +400,7 @@ export type WalletRequestType = {
   params: Array<any>
   buttonText?: string
 }
+export type WalletRequestParams = any
 
 export type ChainNativeCurrency = {
   name: string

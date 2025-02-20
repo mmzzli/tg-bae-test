@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react'
 import { TxInfo } from './TxInfo'
-import { useWalletRequestStore } from '@/store/wallet/walletRequest'
 import { mockSolEvmChainId } from '@/store/wallet/config/sol'
 import { getChainByChainId } from '@/store/wallet/util/tokenHelper'
 import solana from '@/store/wallet/chains/wagmiConfig/solana'
@@ -9,22 +8,23 @@ import { useSolanaTx } from '../../hooks/useSolanaTx'
 import { useToast } from '@chakra-ui/react'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import BaseButton from '@/components/BaseButton/BaseButton'
+import { WalletRequestParams } from '@/store/wallet/type'
 
 interface TransferModel {
   txHex: string
   chainId: number
 }
 
-export default function SignSolanaTransaction(props: { [other: string]: any }) {
-  const {
-    requestParam: { params },
-  } = useWalletRequestStore()
+export default function SignSolanaTransaction(props: {
+  params: WalletRequestParams[]
+  [other: string]: any
+}) {
   const {
     walletUserInfo: { solanaAddress },
   } = useUserStore()
   const toast = useToast()
 
-  const { /* chainType, */ fee, unit, onSuccess } = props
+  const { /* chainType, */ fee, unit, onSuccess, params } = props
 
   const transfer: TransferModel = useMemo(() => {
     return params.length > 0 ? params[0] : {}

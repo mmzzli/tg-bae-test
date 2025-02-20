@@ -80,7 +80,7 @@ function DescriptionOrRawData({
           <div
             className="line-clamp-2 max-w-[198px] cursor-pointer break-all "
             onClick={() => {
-              navigator('/oauth/raw-data', { state: transferData })
+              // navigator('/oauth/raw-data', { state: transferData })
             }}
           >
             {transferData}

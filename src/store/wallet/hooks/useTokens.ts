@@ -9,7 +9,14 @@ import { BalanceToken } from "../tokenType/BalanceToken";
 import { useTokenStore } from "../walletToken";
 import { AssetsToken } from "../tokenType/AssetsToken";
 import { formatUnits, parseUnits } from "viem";
-import { getWalletTokensKey, setCache } from "../util/tokenHelper";
+import { getChainByChainId, getWalletTokensKey, jsonFilter, setCache } from "../util/tokenHelper";
+import { ReportSourcePendingToIHistoryType, reportTx, txListToTransactionsType, txsFilter } from "../util/txHelper";
+import { useStore } from '@/store'
+import { IHistoryType, ReportHistoryType, ReportSourceType } from "../type";
+import useGetTransactionsStatus from "./useGetTransactionsStatus";
+import { getTransactionDetail } from "../util/transaction/getTransactionDetail";
+import { txReportListGet } from "@/api/wallet";
+import useAsyncEffect from 'ahooks/lib/useAsyncEffect'
 
 const useTokens = () => {
   const okxBalancesQuery = useOkxBalanceAccount(
@@ -24,6 +31,8 @@ const useTokens = () => {
   const tonBalanceQuery = useTonBalance()
   const tonJettonBalanceQuery = useTonJettonsBalance()
   const { tokenList, refreshTime, tokensActions, updateLoadingState } = useTokenStore()
+  const { getTransactionStatus } = useGetTransactionsStatus()
+  const { walletTxUpdateActions, walletTxReportActions, walletTxsActions } = useTokenStore()
 
   const balances = useMemo(
     () => [
@@ -197,6 +206,147 @@ const useTokens = () => {
     const key = getWalletTokensKey()
     if (key && tokenList.length) setCache(key, tokenList)
   }
+
+  const getTxReportsList = async () => {
+    const txsResult = await txReportListGet({
+      page: 0,
+      limit: 250,
+      userID: useStore.getState().walletUserInfo.id
+    })
+    debugger
+    if (txsResult && txsResult.records) {
+      walletTxReportActions(txsResult.records)
+      const txs = txsResult.records
+        .filter((i: ReportHistoryType) => jsonFilter(i.source))
+        .map((i: ReportHistoryType) =>
+          ReportSourcePendingToIHistoryType(i, useStore.getState().tokenList)
+        )
+      walletTxsActions(txListToTransactionsType(txs))
+    }
+  }
+
+  const txsReportShouldRefresh = async () => {
+    debugger
+    const txsSuccess = txsFilter(
+      useStore.getState().walletTxs,
+      (iHistory) => iHistory.status === 'success'
+    )
+    const pends = useStore.getState().walletReportTxs
+      .filter((i: ReportHistoryType) => jsonFilter(i.source))
+      .map((i) => {
+        const find = txsSuccess.find(
+          (j) => j.hash.toLowerCase() === i.tx.toLowerCase()
+        )
+        if (find?.status === 'success' && i.source.includes('normal')) {
+          return {
+            ...i,
+            source: i.source.replace('pending', 'success')
+          }
+        }
+        return i
+      })
+      .filter((i) => {
+        const sourceObj: ReportSourceType = JSON.parse(i.source)
+        return sourceObj.status === 'pending'
+      })
+    const cachedPends = pends.map((i) =>
+      ReportSourcePendingToIHistoryType(i, useStore.getState().tokenList)
+    )
+    const usePends = pends.map((i) =>
+      ReportSourcePendingToIHistoryType(i, useStore.getState().tokenList)
+    )
+    if (!pends.length) {
+      await getTxReportsList()
+      return
+    }
+    const fetchAllStatus = async () => {
+      const results = await Promise.all(
+        cachedPends.map((iHistory: IHistoryType, index) =>
+          getTransactionStatus({ find: iHistory }).then((statusRes) => ({
+            index,
+            statusRes
+          }))
+        )
+      )
+      results.sort((a, b) => a.index - b.index)
+      return results
+    }
+    const statusList = await fetchAllStatus()
+
+    if (
+      cachedPends.map((iHistory) => iHistory.status).join('') ===
+      statusList
+        .map((result) => result.statusRes)
+        .map((res) => res.status)
+        .join('')
+    ) {
+      return
+    }
+    for (let i = 0; i < statusList.length; i++) {
+      const index = statusList[i].index
+      const tx: IHistoryType = usePends[index]
+      tx.endTime = statusList[i].statusRes.extra?.endTime
+        ? Number(statusList[i].statusRes.extra?.endTime)
+        : undefined
+      tx.status = statusList[i].statusRes.status
+      tx.blocknumber = statusList[i].statusRes.extra?.blockNumber
+      tx.toHash = statusList[i].statusRes.extra?.toHash
+      tx.gasAmount = statusList[i].statusRes.extra?.gasAmount
+      try {
+        const res = await getTransactionDetail({
+          hash: tx.hash,
+          chainId: tx.fromSwapTokens.chain?.id,
+          chainType: tx.fromSwapTokens.chain?.type
+        })
+        const toRes = await getTransactionDetail({
+          hash: tx.toHash,
+          chainId: tx.toSwapTokens.chain?.id,
+          chainType: tx.toSwapTokens.chain?.type
+        })
+        if (res) {
+          tx.blocknumber = res?.blocknumber
+          tx.endTime = res?.timestamp
+          tx.gasAmount = formatUnits(
+            res?.gasAmount || 0n,
+            getChainByChainId(tx.fromSwapTokens.chain?.id as number)?.chain
+              ?.nativeCurrency.decimals as number
+          )
+        }
+
+        if (toRes)
+          tx.toHashInfo = {
+            blocknumber: toRes.blocknumber,
+            endTime: toRes.timestamp,
+            gasAmount: formatUnits(
+              toRes?.gasAmount || 0n,
+              getChainByChainId(tx.toSwapTokens.chain?.id as number)?.chain
+                ?.nativeCurrency.decimals as number
+            )
+          }
+      } catch (e) {
+        console.warn('get gas failed')
+      }
+      walletTxUpdateActions(tx)
+      await reportTx(tx)
+    }
+
+    await getTxReportsList()
+    //Get balance immediately from rpc, not correctly, give a timeout 1s
+    setTimeout(() => {
+      refetch()
+      okxBalancesQuery.refetch()
+    }, 2000)
+  }
+
+  useAsyncEffect(async () => {
+    await getTxReportsList()
+  }, [])
+
+  useEffect(() => {
+    setInterval(() => {
+      txsReportShouldRefresh()
+    }, 1000 * 5)
+  }, [])
 
   useEffect(() => {
     updateTokenListSotre()

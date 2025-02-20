@@ -232,7 +232,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
       let signatures: any
       const chainId = currentChain.id
       const token = rewards.map((item) => item.token)
-      const amount = rewards.map((item) => Number(item.amount))
+      const amount = rewards.map((item) => BigInt(item.amount))
 
       try {
         const { signatures: sigRes } = await giftSign({

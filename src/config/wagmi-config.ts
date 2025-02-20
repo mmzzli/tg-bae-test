@@ -99,6 +99,7 @@ export const supportEVMTokenList = evmChainList
       isNative: true,
       address: '',
       rewardContractAddress: contractAddress[chain.id as keyof typeof contractAddress],
+      usdValue: 0,
     },
     {
       chainId: chain.id,
@@ -107,6 +108,7 @@ export const supportEVMTokenList = evmChainList
       icon: tokenIconMap['USDT'],
       address: usdtAddressOnEvm[chain.id],
       rewardContractAddress: contractAddress[chain.id as keyof typeof contractAddress],
+      usdValue: 0,
     },
     {
       chainId: chain.id,
@@ -115,6 +117,7 @@ export const supportEVMTokenList = evmChainList
       icon: tokenIconMap['USDC'],
       address: usdcAddressOnEvm[chain.id],
       rewardContractAddress: contractAddress[chain.id as keyof typeof contractAddress],
+      usdValue: 0,
     },
   ])
   .flat()

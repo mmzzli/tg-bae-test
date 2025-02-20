@@ -1,7 +1,7 @@
 import { FC, useState, useRef, useEffect } from 'react'
 import { Box } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
-import { animated } from 'react-spring'
+import { animated } from 'react-spring/web'
 import OtherUserProfile from '@/components/PersonalDetails/OtherUserProfile'
 import useCacheVideo, { useOthersViewList } from '@/store/hook/useResourceList'
 import PostList from '@/components/PostList/PostList'
@@ -13,7 +13,6 @@ import { useSwipeBack } from '@/hooks/useSwipeBack'
 const SCROLL_THRESHOLD = 214
 const SWIPE_THRESHOLD = 100
 const SCROLL_HEADER_THRESHOLD = 120
-
 
 const OthersProfile: FC = () => {
   const navigate = useNavigate()
@@ -40,16 +39,15 @@ const OthersProfile: FC = () => {
       ? userInfo?.background_img.url
       : '/src/assets/image/profile/bg-header.png'
 
-    useCacheVideo(
-      list,
-      page,
-      setCacheVideoIndex,
-      getCacheVideoindex,
-      updateCacheVideo,
-      'profileScrollableDiv',
-      'video-card'
-    )
-
+  useCacheVideo(
+    list,
+    page,
+    setCacheVideoIndex,
+    getCacheVideoindex,
+    updateCacheVideo,
+    'profileScrollableDiv',
+    'video-card'
+  )
 
   useEffect(() => {
     const scrollDiv = scrollDivRef.current
@@ -92,10 +90,9 @@ const OthersProfile: FC = () => {
         height:
           'calc(100vh - 84px - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top))',
         x,
-
       }}
     >
-       <div
+      <div
         className="fixed top-0 left-0 right-0 bg-white dark:bg-black z-10"
         style={{
           display: showHeader ? 'block' : 'none',

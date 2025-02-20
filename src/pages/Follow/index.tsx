@@ -12,7 +12,7 @@ import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import Empty from '../../components/comm/Empty'
 import Icon from '../../components/comm/Icon'
 import { useSwipeBack } from '@/hooks/useSwipeBack'
-import { animated } from 'react-spring'
+import { animated } from 'react-spring/web'
 
 const FollowPage: FC = () => {
   const { uid } = useParams()
@@ -106,9 +106,7 @@ const FollowPage: FC = () => {
           className="flex-1 ml-3 truncate overflow-hidden whitespace-nowrap text-[#333] dark:text-black text-base"
         >
           {item.tgname}
-          <p className='text-[#999] text-[12px] font-normal'>
-            {item.fans_num} followers
-          </p>
+          <p className="text-[#999] text-[12px] font-normal">{item.fans_num} followers</p>
         </div>
         {item.tg_id !== currentUid && (
           <FollowButton
@@ -158,7 +156,7 @@ const FollowPage: FC = () => {
                   (follower.list.length ? (
                     <InfiniteScroll
                       dataLength={follower.list.length}
-                      next={() => { }}
+                      next={() => {}}
                       hasMore={false}
                       loader={
                         <div className="flex items-center justify-center">
@@ -189,7 +187,7 @@ const FollowPage: FC = () => {
                   (following.list.length ? (
                     <InfiniteScroll
                       dataLength={following.list.length}
-                      next={() => { }}
+                      next={() => {}}
                       hasMore={false}
                       loader={
                         <div className="flex items-center justify-center">

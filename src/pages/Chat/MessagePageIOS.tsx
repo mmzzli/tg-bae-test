@@ -17,7 +17,7 @@ import { debounce } from '@/utils/chat/schedulers'
 import RewardButton from '@/components/Wallet/RewardButton'
 import { ImagePreviewIcon, VideoPreviewIcon } from '@/components/Chat/MessageRender'
 import { useSwipeBack } from '@/hooks/useSwipeBack'
-import { animated } from 'react-spring'
+import { animated } from 'react-spring/web'
 // const PAGE_SIZE = 20
 const isIOS = () => {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream

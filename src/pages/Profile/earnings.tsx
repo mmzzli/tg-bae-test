@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '@chakra-ui/react'
 // import { useAccount } from 'wagmi'
-import { animated } from 'react-spring'
+import { animated } from 'react-spring/web'
 
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { StarsIcon, RightIcon } from '@/assets/icons'

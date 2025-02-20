@@ -142,7 +142,7 @@ export function ReceivePageComponent(props: {
                 </div>
               </div>
 
-              <div className={`mt-[8px] w-full`}>
+              <div className={`my-2 w-full`}>
                 <BaseButton
                   text="Copy Address"
                   handler={async () => {

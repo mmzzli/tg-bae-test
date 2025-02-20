@@ -149,9 +149,9 @@ const ItemTokenSymbol = ({ history }: { history: IHistoryType }) => {
             }
         </span>
         <div className="flex items-center text-xs font-normal text-b2">
-          {history.historyType === 'Receive' ? 'from' : history.historyType === 'Send' ? 'to' : ""} &nbsp;
+          {history.historyType === 'Receive' ? 'from' : (history.historyType === 'Send' || history.historyType === 'Withdraw') ? 'to' : ""} &nbsp;
           { shortenAddress(
-            history.historyType === 'Receive' ? history.fromAddress : history.historyType === 'Send' ? history.toAddress : history.hash,
+            history.historyType === 'Receive' ? history.fromAddress : (history.historyType === 'Send' || history.historyType === 'Withdraw') ? history.toAddress : history.hash,
              6, 4
              )}
         </div>

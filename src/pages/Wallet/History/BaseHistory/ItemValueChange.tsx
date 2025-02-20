@@ -78,11 +78,13 @@ const ItemValueChange = ({
             ' text-green':
               (history.historyType === 'Swap' ||
                 history.historyType === 'Receive' ||
+                history.historyType === 'Withdraw' ||
                 history.historyType === 'Pay') &&
               history.status === 'success',
             ' text-red':
               (history.historyType === 'Swap' ||
                 history.historyType === 'Receive' ||
+                history.historyType === 'Withdraw' ||
                 history.historyType === 'Pay') &&
               history.status === 'failed',
             ' text-t1': history.historyType === 'Send'
@@ -96,6 +98,7 @@ const ItemValueChange = ({
       >
         {history.historyType === 'Swap' ||
         history.historyType === 'Receive' ||
+        history.historyType === 'Withdraw' ||
         history.historyType === 'Pay'
           ? '+'
           : '-'}{' '}

@@ -22,6 +22,8 @@ import { getBalance } from '@wagmi/core'
 import { config } from '@/config/wagmi-config'
 import useWallet from '@/pages/Wallet/hooks/useWallet'
 import { useAccount } from '@/pages/Wallet/utils/walletProvider'
+import { getEvmGasBigint } from '@/pages/Wallet/utils/estimateGas/getEvmGas'
+import { AssetsToken } from '@/store/wallet/tokenType/AssetsToken'
 
 export const SendRewardButton = ({
   amount,
@@ -270,6 +272,17 @@ export const SendRewardButton = ({
       })
 
       try {
+        let gas = await getEvmGasBigint({
+          fromAddress: address as string,
+          toAddress: contractAddress,
+          // token: {isNative : true} as AssetsToken,
+          token: (tokenAddress === '0x0000000000000000000000000000000000000000'
+            ? { isNative: false, address: tokenAddress }
+            : { isNative: true }) as AssetsToken,
+          chainId,
+          data: abiData,
+        })
+        console.log(gasLimit)
         const hash = await hanleWalletAction({
           method: 'eth_sendTransaction', // or eth_sendTransaction
           params: [
@@ -282,7 +295,11 @@ export const SendRewardButton = ({
                   : '0x0',
               chainId: chainId,
               data: abiData,
-              gasLimit: (gasLimit ? BigInt(Number(gasLimit) * 3) : 100000n).toString(),
+              // gasLimit: (gasLimit ? BigInt(Number(gasLimit) * 3) : 100000n).toString(),
+              gasLimit: (gas
+                ? (BigInt(gas.toString()) * BigInt(900)) / BigInt(200)
+                : BigInt(200000)
+              ).toString(),
               gasPrice: getCurrentGasPrice(feesPerGas).toString(),
             },
           ],
@@ -291,6 +308,8 @@ export const SendRewardButton = ({
         console.log('window.ethereum.request', hash)
         setHash(hash as `0x${string}}`)
       } catch (error) {
+        console.log('eth_sendTransaction error')
+        console.log(error)
         setWriteContractError(true)
       }
     })
@@ -305,6 +324,8 @@ export const SendRewardButton = ({
       return slideButtonRef.current?.reset()
     }
 
+    setWriteContractError(null)
+
     // await switchChain()
     if (tokenAddress !== '0x0000000000000000000000000000000000000000' && needApprove) {
       console.warn('Approve:', tokenAddress as `0x${string}`, parseUnits(amount, decimals))
@@ -317,6 +338,15 @@ export const SendRewardButton = ({
           args: [contractAddress as `0x${string}`, maxUint256],
         })
 
+        let gas = await getEvmGasBigint({
+          fromAddress: address as string,
+          toAddress: contractAddress,
+          // token: {isNative : true} as AssetsToken,
+          token: { isNative: false, address: tokenAddress } as AssetsToken,
+          chainId,
+          data: abiData,
+        })
+
         try {
           const hash: any = await hanleWalletAction({
             method: 'eth_sendTransaction',
@@ -326,7 +356,10 @@ export const SendRewardButton = ({
                 to: tokenAddress,
                 chainId: chainId,
                 data: abiData,
-                gasLimit: (gasLimit ? BigInt(Number(gasLimit) * 3) : 60000n).toString(),
+                gasLimit: (gas
+                  ? (BigInt(gas.toString()) * BigInt(900)) / BigInt(200)
+                  : BigInt(60000)
+                ).toString(),
                 gasPrice: getCurrentGasPrice(feesPerGas).toString(),
               },
             ],

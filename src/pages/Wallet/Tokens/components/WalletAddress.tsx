@@ -52,7 +52,7 @@ const WalletAddress = () => {
 
   return (
     <div className="size-full pt-[48px] flex flex-col">
-      <h3 className="text-[#333333] text-[24px] leading-normal px-2 w-full">Wallet</h3>
+      <h3 className="text-[#333333] text-[24px] leading-normal px-2 w-full">Account address</h3>
 
       <div className="space-y-3 mt-[28px]">
         {wallets.map((wallet) => (

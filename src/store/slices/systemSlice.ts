@@ -1,5 +1,6 @@
 import { StateCreator } from 'zustand'
 import { Notification } from '@/types'
+import { supportEVMTokenList } from '@/config/wagmi-config'
 export type RoutePage = {
   name: string
   params?: Record<string, any>
@@ -72,6 +73,12 @@ export interface SystemSlice {
 
   needUpdateEarnings: number
   setNeedUpdateEarnings: () => void
+
+  // Wallet START
+  rewardEVMTokenList: typeof supportEVMTokenList
+  setRewardEVMTokenList: (list: typeof supportEVMTokenList) => void
+  updateRewardEVMTokenList: (token: (typeof supportEVMTokenList)[0]) => void
+  // Wallet END
 }
 
 export const createSystemSlice: StateCreator<SystemSlice> = (set) => ({
@@ -165,5 +172,20 @@ export const createSystemSlice: StateCreator<SystemSlice> = (set) => ({
     set((state) => {
       return { needUpdateEarnings: state.needUpdateEarnings + 1 }
     })
+  },
+
+  rewardEVMTokenList: [],
+  setRewardEVMTokenList(list) {
+    set({ rewardEVMTokenList: list })
+  },
+  updateRewardEVMTokenList(token) {
+    set((state) => ({
+      rewardEVMTokenList: state.rewardEVMTokenList.map((item) => {
+        if (item.chainId === token.chainId && item.token === token.token) {
+          return { ...token }
+        }
+        return item
+      }),
+    }))
   },
 })

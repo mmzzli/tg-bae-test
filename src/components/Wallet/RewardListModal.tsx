@@ -18,13 +18,8 @@ interface Props {
 import { config, evmChainList } from '@/config/wagmi-config'
 import { Chain, encodeFunctionData } from 'viem'
 import { tokenIconMap } from '@/config/token-icon'
-import {
-  useEstimateGas,
-  useReadContract,
-  useSwitchChain,
-  useWaitForTransactionReceipt,
-} from 'wagmi'
-import { getBalance, getGasPrice, estimateGas } from '@wagmi/core'
+import { useReadContract, useWaitForTransactionReceipt } from 'wagmi'
+import { getBalance, getGasPrice } from '@wagmi/core'
 import { abi } from '@/config/abi'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
 import { CustomToast, typeOptions } from '../comm/Toast'
@@ -32,9 +27,8 @@ import { approveEvent, giftSign, verifyWithdraw } from '@/api'
 import { formatUSD } from '@/utils/utils'
 import { useAccount } from '@/pages/Wallet/utils/walletProvider'
 import useWallet from '@/pages/Wallet/hooks/useWallet'
-import getEvmGas, { getEvmGasBigint } from '@/pages/Wallet/utils/estimateGas/getEvmGas'
+import { getEvmGasBigint } from '@/pages/Wallet/utils/estimateGas/getEvmGas'
 import { AssetsToken } from '@/store/wallet/tokenType/AssetsToken'
-import { parseUnits } from 'viem'
 
 const contractAddress = '0x359E9Ef12132ea2a49701F838B5CdFbc13771AaF'
 const contractAddressTestnet = '0xF165cFb92441544cF9DEF72427028Db85b0aDEe2'
@@ -310,7 +304,9 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
       if (balance) {
         const res = await balance
         console.log('balance', res)
-        const estimatedGas = gasLimit ? BigInt(Number(gasLimit) * 4) : 100000n
+        const estimatedGas = gasLimit
+          ? (BigInt(gasLimit.toString()) * BigInt(900)) / BigInt(200)
+          : BigInt(100000)
         let totalCost = calculateTotalCost(estimatedGas, gasPrice ? gasPrice : 1000000000n)
         if (res.value < totalCost) {
           toast({
@@ -326,7 +322,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
 
       try {
         // const hash = await window.ethereum.request({
-        //   method: 'eth_sendTransaction', // or eth_sendTransaction
+        //   method: 'eth_sendTransaction',
         //   params: [
         //     {
         //       from: address,
@@ -339,14 +335,16 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
         //   ],
         // })
         const hash = await hanleWalletAction({
-          method: 'eth_sendTransaction', // or eth_sendTransaction
+          method: 'eth_sendTransaction',
           params: [
             {
               from: address,
               to: contractAddress,
               chainId: chainId,
               data: abiData,
-              gasLimit: (gasLimit ? BigInt(Number(gasLimit) * 4) : 100000n).toString(),
+              gasLimit: gasLimit
+                ? (BigInt(gasLimit.toString()) * BigInt(900)) / BigInt(200)
+                : BigInt(100000),
               gasPrice: gasPrice.toString(),
             },
           ],

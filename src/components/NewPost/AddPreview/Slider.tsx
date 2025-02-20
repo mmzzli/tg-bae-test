@@ -263,6 +263,7 @@ const TransparentSlider: React.FC<SliderProps> = ({
                   src={previewVideoUrl}
                   preload="metadata"
                   // autoPlay
+                  poster={frames[0]?.url}
                   playsInline
                   muted
                 />

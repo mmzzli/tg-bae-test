@@ -22,6 +22,7 @@ export default function Copy(p: CopyProps) {
     className,
     animate,
     onCopy: onCustomCopy,
+    children,
     ...restProps
   } = props
 
@@ -49,14 +50,21 @@ export default function Copy(p: CopyProps) {
 
   return (
     <CopyToClipboard text={text || ''} onCopy={onCopy} options={{ format: 'text/plain' }}>
-      <button {...restProps} className={classNames(baseStyles, spaceStyles, boxStyles, className)}>
-        {animate && copied ? (
-          <IconCopySuccess className="text-green" fontSize={iconFontSize} />
-        ) : (
-          <IconCopy fontSize={iconFontSize} />
-        )}
-        <span>{btnText}</span>
-      </button>
+      {children ? (
+        children
+      ) : (
+        <button
+          {...restProps}
+          className={classNames(baseStyles, spaceStyles, boxStyles, className)}
+        >
+          {animate && copied ? (
+            <IconCopySuccess className="text-green" fontSize={iconFontSize} />
+          ) : (
+            <IconCopy fontSize={iconFontSize} />
+          )}
+          <span>{btnText}</span>
+        </button>
+      )}
     </CopyToClipboard>
   )
 }

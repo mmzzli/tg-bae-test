@@ -1,4 +1,3 @@
-import { BackButton } from '@vkruglikov/react-telegram-web-app'
 import { TContainer, TCopy, TTokenImage } from '@/components/tmd'
 import useLoginInfo from '@/store/wallet/hooks/useLoginInfo'
 import { getChainByChainId } from '@/store/wallet/util/tokenHelper'
@@ -6,12 +5,11 @@ import { useTokenStore } from '@/store/wallet/walletToken'
 import { useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { zeroAddress } from 'viem'
-import BaseButton from '@/components/BaseButton/BaseButton'
 import { ToastId, useToast } from '@chakra-ui/react'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
-import useCopy from '@/hooks/useCopy'
 import QRCode from 'react-qr-code'
 import { IconDown2 } from '@/components/tmd/icons/arrowDown2'
+import { cn } from '@/utils/utils'
 
 export function ReceivePageComponent(props: {
   chain?: string
@@ -25,7 +23,6 @@ export function ReceivePageComponent(props: {
   // from home need props
   const { chain: chainIdStr, address: tokenAddress } = props
   const toast = useToast()
-  const { copy } = useCopy()
 
   const navigate = useNavigate()
   const qrRef = useRef<any>(null)
@@ -52,9 +49,7 @@ export function ReceivePageComponent(props: {
   const onCopy = () => {
     if (toastIdRef.current) {
       const currentToastId = toastIdRef.current
-      setTimeout(() => {
-        toast.close(currentToastId)
-      }, 500)
+      toast.close(currentToastId)
     }
     toastIdRef.current = toast({
       render: () => {
@@ -143,14 +138,19 @@ export function ReceivePageComponent(props: {
               </div>
 
               <div className={`my-2 w-full`}>
-                <BaseButton
-                  text="Copy Address"
-                  handler={async () => {
-                    await copy(address)
-                    onCopy()
-                  }}
-                  height="52px"
-                />
+                <TCopy
+                  onCopy={onCopy}
+                  text={address || ''}
+                  className="ml-[18px] rounded-full border-[0.5px] border-l1 px-[18px] py-[8px] text-t2"
+                >
+                  <button
+                    className={cn(
+                      'h-[52px] w-full relative no-tap flex items-center justify-center gap-2 bg-[#6254FF] dark:bg-[#4A3AFF] rounded-[42px] text-white dark:text-[#E0E2F6] text-sm font-medium cursor-pointer'
+                    )}
+                  >
+                    Copy address
+                  </button>
+                </TCopy>
               </div>
             </div>
           </div>

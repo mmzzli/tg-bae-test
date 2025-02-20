@@ -303,7 +303,7 @@ export type IHistoryType = {
   chainId?: IWeb3ChainType | undefined
   type?: 'OKX' | 'Rango' | '' | 'Ston.fi' | 'Jupiter'
   requestId?: string | undefined
-  historyType: 'Swap' | 'Send' | 'Approve' | 'Receive' | 'Pay' | 'Gift' | 'Witdraw'
+  historyType: 'Swap' | 'Send' | 'Approve' | 'Receive' | 'Pay' | 'Gift' | 'Withdraw'
   status?: 'success' | 'pending' | 'failed' | 'fail' | 'loading' | 'unknow'
 
   blocknumber?: string | undefined

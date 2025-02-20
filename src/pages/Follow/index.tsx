@@ -12,7 +12,7 @@ import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import Empty from '../../components/comm/Empty'
 import Icon from '../../components/comm/Icon'
 import { useSwipeBack } from '@/hooks/useSwipeBack'
-import { animated } from 'react-spring/web'
+import { animated } from '@react-spring/web'
 
 const FollowPage: FC = () => {
   const { uid } = useParams()

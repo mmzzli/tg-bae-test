@@ -1,4 +1,4 @@
-import { useSpring } from 'react-spring'
+import { useSpring } from '@react-spring/web'
 import { useDrag } from 'react-use-gesture'
 import { useNavigate } from 'react-router-dom'
 import { RefObject, useEffect, useCallback } from 'react'

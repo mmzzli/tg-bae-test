@@ -1,7 +1,7 @@
 import { FC, useState, useRef, useEffect } from 'react'
 import { Box } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
-import { animated } from 'react-spring/web'
+import { animated } from '@react-spring/web'
 import OtherUserProfile from '@/components/PersonalDetails/OtherUserProfile'
 import useCacheVideo, { useOthersViewList } from '@/store/hook/useResourceList'
 import PostList from '@/components/PostList/PostList'

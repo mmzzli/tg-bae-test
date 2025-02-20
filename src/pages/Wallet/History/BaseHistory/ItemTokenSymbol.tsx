@@ -95,7 +95,22 @@ const ItemTokenSymbol = ({ history }: { history: IHistoryType }) => {
           </div>
         )
       case 'Approve':
-      case 'Withdraw':
+      case 'Withdraw':{
+        if (toToken && (history.toAmount || history.fromAmount)) {
+          return (
+            <div className="flex w-full justify-center">
+            <div className="relative">
+              <TokenImg
+                symbol={fromToken.symbol}
+                image={fromToken.image}
+                chainId={fromToken.chainId}
+                isNative={!fromToken.address}
+                symbolSize={36}
+              />
+            </div>
+          </div>
+          )
+        }
         return (
           <div className="flex w-full justify-center">
             <div className="relative">
@@ -110,11 +125,11 @@ const ItemTokenSymbol = ({ history }: { history: IHistoryType }) => {
             </div>
           </div>
         )
+      }
       default:
         break
     }
   }, [fromToken, history, toToken])
-  debugger
   return (
     <div className="flex items-center">
       <div className="relative mr-2 flex min-w-[46px]">{tokenSymbol}</div>

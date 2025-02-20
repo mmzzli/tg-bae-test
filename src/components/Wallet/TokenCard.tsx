@@ -8,23 +8,19 @@ import BigNumber from 'bignumber.js'
 import { useAccount, useBalance } from '@/pages/Wallet/utils/walletProvider'
 import { AssetsToken } from '@/store/wallet/tokenType/AssetsToken'
 import AdaptiveNumber, { NumberType } from '@/pages/Wallet/components/AdaptiveNumber'
+import { useEffect } from 'react'
+import { useStore } from '@/store'
 
 interface TokenCardProps {
   token: (typeof supportEVMTokenList)[0]
-  onTokenSelect: (
-    token: (typeof supportEVMTokenList)[0],
-    balance: AssetsToken | undefined
-  ) => void
+  onTokenSelect: (token: (typeof supportEVMTokenList)[0], balance: AssetsToken | undefined) => void
 }
 
 export const TokenCard = ({ token, onTokenSelect }: TokenCardProps) => {
   const { address } = useAccount()
+  const updateRewardEVMTokenList = useStore((state) => state.updateRewardEVMTokenList)
 
-  const balance = useBalance(
-    address,
-    token.chainId,
-    token.address
-  )
+  const balance = useBalance(address, token.chainId, token.address)
 
   const balanceValue = balance?.formatted ?? 0
 
@@ -51,6 +47,15 @@ export const TokenCard = ({ token, onTokenSelect }: TokenCardProps) => {
   }
 
   const usdValueFormat = formatToUsd(balanceValue.toString(), price)
+
+  useEffect(() => {
+    if (balance?.balance && balance.balance !== '0') {
+      updateRewardEVMTokenList({
+        ...token,
+        usdValue: new BigNumber(balanceValue.toString() || '0').multipliedBy(price).toNumber(),
+      })
+    }
+  }, [balance?.balance])
 
   return (
     <div

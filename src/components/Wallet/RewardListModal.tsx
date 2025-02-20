@@ -115,7 +115,6 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
             console.log('setWriteContractSuccess')
             setIsHandled(true)
             verifyWithdrawEve()
-            onFinish?.()
           }
         } else if (res.status === 2) {
           stopPolling()
@@ -415,7 +414,6 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
         setIsHandled(true)
         stopPolling()
         verifyWithdrawEve()
-        onFinish?.()
       }
     }, [isConfirmed])
 
@@ -450,6 +448,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
         amount: currentWithdrawInProgress?.withdraw_gifts || 0,
         hash: hash as `0x${string}`,
       })
+      onFinish?.()
     }
 
     const resetState = () => {

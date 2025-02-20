@@ -490,6 +490,8 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
               Your assets are on multiple networks. Please select one network you want to withdraw
               from.
             </div>
+            {/* <div className="h-[226px] relative">
+              <div className="absolute top-0 bottom-0 -left-[24px] -right-[24px] overflow-auto pb-5 px-6"> */}
             <div className="flex items-center text-[16px] text-[#999] font-normal mt-9 mb-4">
               Available :&nbsp;<span className="text-[#333333]">{totalReward}</span>
             </div>
@@ -525,6 +527,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
                 </span>
               </div>
             ))}
+            {/* </div> */}
 
             <div className="mt-7 mx-[18px] mb-[30px]">
               <BaseButton

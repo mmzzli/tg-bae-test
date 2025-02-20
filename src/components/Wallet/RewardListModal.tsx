@@ -18,7 +18,12 @@ interface Props {
 import { config, evmChainList } from '@/config/wagmi-config'
 import { Chain, encodeFunctionData } from 'viem'
 import { tokenIconMap } from '@/config/token-icon'
-import { useEstimateGas, useReadContract, useSwitchChain, useWaitForTransactionReceipt } from 'wagmi'
+import {
+  useEstimateGas,
+  useReadContract,
+  useSwitchChain,
+  useWaitForTransactionReceipt,
+} from 'wagmi'
 import { getBalance, getGasPrice, estimateGas } from '@wagmi/core'
 import { abi } from '@/config/abi'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
@@ -264,7 +269,7 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
         BigInt(_deadline),
         signatures,
       ])
-      
+
       const abiData = encodeFunctionData({
         abi,
         functionName: 'withdrawMultiToken',
@@ -284,15 +289,15 @@ const RewardListModal = forwardRef<ChildMethods, Props>(
       let gasLimit = await getEvmGasBigint({
         fromAddress: address as string,
         toAddress: contractAddress,
-        token: {isNative : true} as AssetsToken,
+        token: { isNative: true } as AssetsToken,
         chainId,
-        data: abiData
+        data: abiData,
       })
 
       // const gasLimit = await estimateGas(config, {
       //   chainId: currentChain.id as 1 | 56 | undefined,
       // })
-      debugger
+      // debugger
       console.log(gasPrice, gasLimit)
       const balance =
         address && currentChain

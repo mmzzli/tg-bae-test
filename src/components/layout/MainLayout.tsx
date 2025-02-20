@@ -189,6 +189,10 @@ export const MainLayout: React.FC = () => {
           return navigate('/home')
         }
 
+        if (window.location.pathname == '/wallet') {
+          return navigate('/profile')
+        }
+
         navigate(-1)
       })
       setExpanded(window.Telegram.WebApp.isExpanded)
@@ -250,10 +254,10 @@ export const MainLayout: React.FC = () => {
       ) {
         tgApp.BackButton.hide()
       } else {
-        tgApp.BackButton.show()
+        if (!tgApp.BackButton.is_visible) tgApp.BackButton.show()
       }
     }
-    if (HIDE_TAB_BOTTOM.find(i => location.pathname.indexOf(i) !== -1)) {
+    if (HIDE_TAB_BOTTOM.find((i) => location.pathname.indexOf(i) !== -1)) {
       setHiddenTabBottom(true)
     } else {
       setHiddenTabBottom(false)
@@ -326,17 +330,25 @@ export const MainLayout: React.FC = () => {
           paddingTop: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
         }}
       >
-        {
-          hiddenTabBottom ?
-          <div className='size-full' style={{position: 'fixed', zIndex: 999}}>
+        {hiddenTabBottom ? (
+          <div
+            className="size-full bg-white inset-0"
+            style={{
+              position: 'fixed',
+              zIndex: 99,
+              paddingTop:
+                'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
+              paddingBottom:
+                'calc(var(--tg-safe-area-inset-bottom) + var(--tg-content-safe-area-inset-bottom))',
+            }}
+          >
             <Outlet />
           </div>
-          : <Outlet />
-        }
+        ) : (
+          <Outlet />
+        )}
       </div>
-      {
-        hiddenTabBottom ? null : <Menu />
-      }
+      {hiddenTabBottom ? null : <Menu />}
       <VideoDialog></VideoDialog>
       <ImageDialog></ImageDialog>
       <WsHandler />

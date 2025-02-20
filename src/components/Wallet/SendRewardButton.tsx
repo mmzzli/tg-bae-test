@@ -302,8 +302,8 @@ export const SendRewardButton = ({
               ).toString(),
               gasPrice: getCurrentGasPrice(feesPerGas).toString(),
             },
+            'Send',
           ],
-          buttonText: 'Send',
         })
         console.log('window.ethereum.request', hash)
         setHash(hash as `0x${string}}`)

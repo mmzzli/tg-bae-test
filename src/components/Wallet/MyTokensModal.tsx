@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle } from 'react'
+import { forwardRef, useEffect, useImperativeHandle } from 'react'
 import { useBoolean } from '@chakra-ui/react'
 
 import { BaseModal } from '@/components/Modal/BaseModal'
@@ -25,10 +25,13 @@ const MyTokensModal = forwardRef<ChildMethods, { userInfo: OthersUserInfo }>(
       },
     }))
 
-    const { setVirtualRoutePage, virtualRoutePage } = useStore((state) => ({
-      setVirtualRoutePage: state.setVirtualRoutePage,
-      virtualRoutePage: state.virtualRoutePage,
-    }))
+    const { setVirtualRoutePage, virtualRoutePage, rewardEVMTokenList, setRewardEVMTokenList } =
+      useStore((state) => ({
+        setVirtualRoutePage: state.setVirtualRoutePage,
+        virtualRoutePage: state.virtualRoutePage,
+        rewardEVMTokenList: state.rewardEVMTokenList,
+        setRewardEVMTokenList: state.setRewardEVMTokenList,
+      }))
 
     const onTokenSelect = (
       token: (typeof supportEVMTokenList)[0],
@@ -56,6 +59,12 @@ const MyTokensModal = forwardRef<ChildMethods, { userInfo: OthersUserInfo }>(
 
     const [isBaseModalOpen, { toggle, off }] = useBoolean(false)
 
+    useEffect(() => {
+      if (rewardEVMTokenList.length === 0) {
+        setRewardEVMTokenList(supportEVMTokenList)
+      }
+    }, [])
+
     return (
       <>
         {virtualRoutePage?.name === 'SendRewardPage' && <SendRewardPage />}
@@ -81,15 +90,17 @@ const MyTokensModal = forwardRef<ChildMethods, { userInfo: OthersUserInfo }>(
               <div className="m-4"></div>
             </div>
             <div className="absolute top-[48px] left-0 right-0 pr-6 bottom-0 flex flex-col overflow-y-auto no-scrollbar">
-              {supportEVMTokenList.map((token) => {
-                return (
-                  <TokenCard
-                    key={token.chainId + token.token}
-                    token={token}
-                    onTokenSelect={onTokenSelect}
-                  />
-                )
-              })}
+              {rewardEVMTokenList
+                .sort((a, b) => (b.usdValue || 0) - (a.usdValue || 0))
+                .map((token) => {
+                  return (
+                    <TokenCard
+                      key={token.chainId + token.token}
+                      token={token}
+                      onTokenSelect={onTokenSelect}
+                    />
+                  )
+                })}
               <div className="min-h-[48px]"></div>
             </div>
           </div>

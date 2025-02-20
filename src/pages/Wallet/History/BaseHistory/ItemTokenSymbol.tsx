@@ -6,6 +6,7 @@ import { shortenAddress } from '@/store/wallet/util'
 import { TIcon } from '@/components/tmd'
 import { getBalance } from '@/store/wallet/util/tokenHelper'
 import { useTokenStore } from '@/store/wallet/walletToken'
+import { IconContract } from '@/components/tmd/icons/contract'
 
 const ItemTokenSymbol = ({ history }: { history: IHistoryType }) => {
   const { tokenList } = useTokenStore()
@@ -94,15 +95,17 @@ const ItemTokenSymbol = ({ history }: { history: IHistoryType }) => {
           </div>
         )
       case 'Approve':
+      case 'Witdraw':
         return (
           <div className="flex w-full justify-center">
             <div className="relative">
-              <div className="relative flex size-9 flex-none items-center justify-center rounded-full bg-t1">
-                <TIcon
+              <div className="relative flex size-9 flex-none items-center justify-center rounded-full bg-bg3">
+                <IconContract className="size-5"/>
+                {/* <TIcon
                   className="m-auto text-white dark:text-black"
                   fontSize="20"
                   name="tg_wallet_address"
-                />
+                /> */}
               </div>
             </div>
           </div>

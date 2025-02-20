@@ -291,6 +291,7 @@ export const SendRewardButton = ({
         console.log('window.ethereum.request', hash)
         setHash(hash as `0x${string}}`)
       } catch (error) {
+        console.log('eth_sendTransaction error')
         setWriteContractError(true)
       }
     })
@@ -304,6 +305,8 @@ export const SendRewardButton = ({
       })
       return slideButtonRef.current?.reset()
     }
+
+    setWriteContractError(null)
 
     // await switchChain()
     if (tokenAddress !== '0x0000000000000000000000000000000000000000' && needApprove) {

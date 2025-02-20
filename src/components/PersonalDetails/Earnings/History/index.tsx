@@ -3,7 +3,7 @@ import { Tabs } from 'antd-mobile'
 import { Box } from '@chakra-ui/react'
 import { useEffect, useState, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { animated } from 'react-spring'
+import { animated } from 'react-spring/web'
 
 import { useStore } from '@/store/store'
 import { accountdetailList, getGiftHistory } from '@/api'

@@ -95,7 +95,7 @@ const ItemTokenSymbol = ({ history }: { history: IHistoryType }) => {
           </div>
         )
       case 'Approve':
-      case 'Witdraw':
+      case 'Withdraw':
         return (
           <div className="flex w-full justify-center">
             <div className="relative">

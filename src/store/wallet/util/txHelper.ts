@@ -1002,7 +1002,7 @@ const methodsToHistory = (
     }
     result.source = 'OKX'
     if (first.methodId === '0xae2915f7') {
-      result.historyType = 'Witdraw'
+      result.historyType = 'Withdraw'
     }
     // if (first.methodId === '0x185f755c') {
     //   result.historyType =  'Reward'

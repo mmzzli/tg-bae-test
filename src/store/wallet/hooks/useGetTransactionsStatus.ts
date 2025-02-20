@@ -183,6 +183,32 @@ const useGetTransactionsStatus = () => {
       const toChainId = toChain?.id
       const chainId = fromChainId
 
+      //........
+      const currentTime = dayjs()
+      const targetDateTime = dayjs(find?.time)
+      let tiemDiff = currentTime.diff(targetDateTime, 'seconds') >= 60 * 1
+      if (fromChain?.id === chains.ethereum.id) {
+        tiemDiff = currentTime.diff(targetDateTime, 'seconds') >= 60 * 5
+      }
+      
+      if (tiemDiff) {
+        const checked = await fromHashExistCheck(
+          fromChain,
+          fromAddress,
+          hash,
+          chainId as number
+        )
+        if (checked.status === 'failed' || checked.status === 'unknow' || checked.status === 'pending') {
+          return {
+            bridgeHash: '',
+            status: 'failed',
+            extra: undefined
+          } as BridgeStatusType
+        }
+      }
+
+      //.............
+
       if (fromChainId === toChainId) {
         return await fromHashExistCheck(
           fromChain,

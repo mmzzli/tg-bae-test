@@ -6,6 +6,7 @@ import { shortenAddress } from '@/store/wallet/util'
 import { TIcon } from '@/components/tmd'
 import { getBalance } from '@/store/wallet/util/tokenHelper'
 import { useTokenStore } from '@/store/wallet/walletToken'
+import { IconContract } from '@/components/tmd/icons/contract'
 
 const ItemTokenSymbol = ({ history }: { history: IHistoryType }) => {
   const { tokenList } = useTokenStore()
@@ -94,15 +95,17 @@ const ItemTokenSymbol = ({ history }: { history: IHistoryType }) => {
           </div>
         )
       case 'Approve':
+      case 'Witdraw':
         return (
           <div className="flex w-full justify-center">
             <div className="relative">
-              <div className="relative flex size-9 flex-none items-center justify-center rounded-full bg-t1">
-                <TIcon
+              <div className="relative flex size-9 flex-none items-center justify-center rounded-full bg-bg3">
+                <IconContract className="size-5"/>
+                {/* <TIcon
                   className="m-auto text-white dark:text-black"
                   fontSize="20"
                   name="tg_wallet_address"
-                />
+                /> */}
               </div>
             </div>
           </div>
@@ -111,7 +114,7 @@ const ItemTokenSymbol = ({ history }: { history: IHistoryType }) => {
         break
     }
   }, [fromToken, history, toToken])
-  // debugger
+  debugger
   return (
     <div className="flex items-center">
       <div className="relative mr-2 flex min-w-[46px]">{tokenSymbol}</div>
@@ -123,25 +126,19 @@ const ItemTokenSymbol = ({ history }: { history: IHistoryType }) => {
               : 'Cross-chain Swap'
             : history.historyType}
 
-          {history.status === 'fail' || history.status === 'failed' ? (
-            <div className="px-[4px] py-[2px] ml-[4px] inline-block border-[1px] border-red2 text-red2 font-normal text-xs rounded-[4px] scale-[0.8]">
-              <i className="iconfont icon-kong text-red2 text-[12px]"></i>
-              <span className="ml-[4px]">Fail</span>
-            </div>
-          ) : null}
+            {
+                (history.status === "fail" || history.status === "failed") ? <div className='px-[4px] py-[2px] ml-[4px] inline-block border-[1px] border-red2 text-red2 font-normal text-xs rounded-[4px] scale-[0.8]'>
+                  <i className="iconfont icon-kong text-red2 text-[12px]"></i>
+                  <span className='ml-[4px]'>Fail</span>
+                </div> : null
+            }
         </span>
         <div className="flex items-center text-xs font-normal text-b2">
-          {history.historyType === 'Receive' ? 'from' : history.historyType === 'Send' ? 'to' : ''}{' '}
-          &nbsp;
-          {shortenAddress(
-            history.historyType === 'Receive'
-              ? history.fromAddress
-              : history.historyType === 'Send'
-                ? history.toAddress
-                : history.hash,
-            6,
-            4
-          )}
+          {history.historyType === 'Receive' ? 'from' : history.historyType === 'Send' ? 'to' : ""} &nbsp;
+          { shortenAddress(
+            history.historyType === 'Receive' ? history.fromAddress : history.historyType === 'Send' ? history.toAddress : history.hash,
+             6, 4
+             )}
         </div>
       </div>
     </div>

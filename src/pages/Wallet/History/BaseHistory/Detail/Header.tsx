@@ -35,6 +35,7 @@ const Header = ({ tx }: { tx: IHistoryType }) => {
         case 'success':
           return "Successful"
         case 'failed':
+        case 'fail':
           return "Failed"
         case 'pending':
           return "Pending..."

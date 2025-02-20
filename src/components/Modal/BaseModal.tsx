@@ -70,7 +70,7 @@ export const BaseModal: FC<BottomSheetProps> = ({
   showHandle = true,
   usePortal = false,
   portalContainer,
-  id
+  id,
 }) => {
   const getTelegramTheme = (): { isDark: boolean; backgroundColor: string } => {
     try {
@@ -126,7 +126,7 @@ export const BaseModal: FC<BottomSheetProps> = ({
     <div
       className={`fixed inset-0 z-[9999] ${
         isOpen ? 'visible dark:bg-black/80 bg-black/70' : 'invisible'
-      } transition-all duration-300`}
+      } transition-all duration-300 prevent-touch-back`}
       onClick={handleBackdropClick}
       role="dialog"
       aria-modal="true"

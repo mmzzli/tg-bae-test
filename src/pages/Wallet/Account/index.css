@@ -1,0 +1,26 @@
+.launchHeadImg {
+
+  --opacity-launch: 1;
+  &.dark {
+    --opacity-launch: 0.05;
+  }
+  .border-cy {
+    background: linear-gradient(90deg, rgba(234, 235, 243, var(--opacity-launch)), rgba(255, 255, 255, var(--opacity-launch)));
+  }
+  .border-in {
+    background: linear-gradient(90deg, rgba(255, 255, 255, var(--opacity-launch)), rgba(234, 235, 243, var(--opacity-launch)));
+  } 
+}
+
+.requestCy {
+  animation: spin 1s linear infinite; 
+}
+
+@keyframes spin {  
+  from {  
+    transform: rotate(0deg);  
+  }  
+  to {  
+    transform: rotate(360deg);  
+  }  
+} 

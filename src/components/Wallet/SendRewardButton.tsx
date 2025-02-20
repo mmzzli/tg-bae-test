@@ -1,15 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { SlideButton, SlideButtonHandle } from '../BaseButton/SlideButton'
 import {
-  useAccount,
-  useChainId,
   useEstimateFeesPerGas,
   useEstimateGas,
   useEstimateMaxPriorityFeePerGas,
   useReadContract,
-  useSwitchChain,
   useWaitForTransactionReceipt,
-  useWriteContract,
 } from 'wagmi'
 import { abi, approveAbi } from '@/config/abi'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
@@ -24,6 +20,10 @@ import BigNumber from 'bignumber.js'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { getBalance } from '@wagmi/core'
 import { config } from '@/config/wagmi-config'
+import useWallet from '@/pages/Wallet/hooks/useWallet'
+import { useAccount } from '@/pages/Wallet/utils/walletProvider'
+import { getEvmGasBigint } from '@/pages/Wallet/utils/estimateGas/getEvmGas'
+import { AssetsToken } from '@/store/wallet/tokenType/AssetsToken'
 
 export const SendRewardButton = ({
   amount,
@@ -97,8 +97,7 @@ export const SendRewardButton = ({
     hash,
   })
 
-  const currentChainId = useChainId()
-  const { switchChainAsync } = useSwitchChain()
+  const { hanleWalletAction } = useWallet()
 
   const {
     data: allowance,
@@ -109,10 +108,24 @@ export const SendRewardButton = ({
     abi: approveAbi,
     functionName: 'allowance',
     args: [address as `0x${string}`, contractAddress as `0x${string}`],
+    chainId,
     query: {
       enabled: tokenAddress !== '0x0000000000000000000000000000000000000000',
     },
   })
+
+  useEffect(() => {
+    if (
+      address &&
+      tokenAddress !== '0x0000000000000000000000000000000000000000' &&
+      !allowanceLoading &&
+      !allowance
+    ) {
+      refetchAllowance()
+    }
+  }, [address, tokenAddress, allowanceLoading])
+
+  console.log('0000000000000000000=>', allowance, allowanceLoading, address, tokenAddress)
 
   const needApprove = useMemo(() => {
     if (tokenAddress === '0x0000000000000000000000000000000000000000') {
@@ -176,16 +189,16 @@ export const SendRewardButton = ({
     }
   }
 
-  const switchChain = async () => {
-    try {
-      await switchChainAsync({ chainId })
-    } catch (error) {
-      toast({
-        render: () => <CustomToast title="Switch chain failed" type={typeOptions.error} />,
-        position: 'bottom',
-      })
-    }
-  }
+  // const switchChain = async () => {
+  //   try {
+  //     await switchChainAsync({ chainId })
+  //   } catch (error) {
+  //     toast({
+  //       render: () => <CustomToast title="Switch chain failed" type={typeOptions.error} />,
+  //       position: 'bottom',
+  //     })
+  //   }
+  // }
 
   const calculateTotalCost = (
     estimatedGas: bigint,
@@ -227,8 +240,6 @@ export const SendRewardButton = ({
           })
         : null
 
-      console.log(balance)
-
       if (balance) {
         const res = await balance
         console.log('balance', res)
@@ -248,25 +259,6 @@ export const SendRewardButton = ({
 
   const reward = () => {
     checkGasBalance(async () => {
-      // writeContract({
-      //   address: contractAddress as `0x${string}`,
-      //   chainId,
-      //   abi,
-      //   functionName: 'reward',
-      //   args: [
-      //     parseUnits('0', decimals),
-      //     tokenAddress as `0x${string}`,
-      //     parseUnits(amount, decimals),
-      //     BigInt(current_uid),
-      //     BigInt(toUid),
-      //   ],
-      //   value:
-      //     tokenAddress === '0x0000000000000000000000000000000000000000'
-      //       ? parseUnits(amount, decimals)
-      //       : 0n,
-      //   gasPrice: 2000000000n,
-      //   gas: gasConfig.gasLimit,
-      // })
       const abiData = encodeFunctionData({
         abi,
         functionName: 'reward',
@@ -280,7 +272,18 @@ export const SendRewardButton = ({
       })
 
       try {
-        const hash = await window.ethereum.request({
+        let gas = await getEvmGasBigint({
+          fromAddress: address as string,
+          toAddress: contractAddress,
+          // token: {isNative : true} as AssetsToken,
+          token: (tokenAddress === '0x0000000000000000000000000000000000000000'
+            ? { isNative: false, address: tokenAddress }
+            : { isNative: true }) as AssetsToken,
+          chainId,
+          data: abiData,
+        })
+        console.log(gasLimit)
+        const hash = await hanleWalletAction({
           method: 'eth_sendTransaction', // or eth_sendTransaction
           params: [
             {
@@ -292,14 +295,21 @@ export const SendRewardButton = ({
                   : '0x0',
               chainId: chainId,
               data: abiData,
-              gasLimit: (gasLimit ? BigInt(Number(gasLimit) * 3) : 100000n).toString(),
+              // gasLimit: (gasLimit ? BigInt(Number(gasLimit) * 3) : 100000n).toString(),
+              gasLimit: (gas
+                ? (BigInt(gas.toString()) * BigInt(900)) / BigInt(200)
+                : BigInt(200000)
+              ).toString(),
               gasPrice: getCurrentGasPrice(feesPerGas).toString(),
             },
+            'Send',
           ],
         })
         console.log('window.ethereum.request', hash)
-        setHash(hash)
+        setHash(hash as `0x${string}}`)
       } catch (error) {
+        console.log('eth_sendTransaction error')
+        console.log(error)
         setWriteContractError(true)
       }
     })
@@ -314,37 +324,42 @@ export const SendRewardButton = ({
       return slideButtonRef.current?.reset()
     }
 
-    await switchChain()
+    setWriteContractError(null)
 
+    // await switchChain()
     if (tokenAddress !== '0x0000000000000000000000000000000000000000' && needApprove) {
       console.warn('Approve:', tokenAddress as `0x${string}`, parseUnits(amount, decimals))
 
       setIsApproving(true)
       checkGasBalance(async () => {
-        // writeContract({
-        //   address: tokenAddress as `0x${string}`,
-        //   chainId,
-        //   abi: approveAbi,
-        //   functionName: 'approve',
-        //   args: [contractAddress as `0x${string}`, maxUint256],
-        //   ...gasConfig,
-        // })
         const abiData = encodeFunctionData({
           abi: approveAbi,
           functionName: 'approve',
           args: [contractAddress as `0x${string}`, maxUint256],
         })
 
+        let gas = await getEvmGasBigint({
+          fromAddress: address as string,
+          toAddress: contractAddress,
+          // token: {isNative : true} as AssetsToken,
+          token: { isNative: false, address: tokenAddress } as AssetsToken,
+          chainId,
+          data: abiData,
+        })
+
         try {
-          const hash = await window.ethereum.request({
-            method: 'eth_sendTransaction', // or eth_sendTransaction
+          const hash: any = await hanleWalletAction({
+            method: 'eth_sendTransaction',
             params: [
               {
                 from: address,
                 to: tokenAddress,
                 chainId: chainId,
                 data: abiData,
-                gasLimit: (gasLimit ? BigInt(Number(gasLimit) * 3) : 60000n).toString(),
+                gasLimit: (gas
+                  ? (BigInt(gas.toString()) * BigInt(900)) / BigInt(200)
+                  : BigInt(60000)
+                ).toString(),
                 gasPrice: getCurrentGasPrice(feesPerGas).toString(),
               },
             ],
@@ -442,12 +457,12 @@ export const SendRewardButton = ({
     }
   }, [hash])
 
-  useEffect(() => {
-    if (currentChainId !== chainId) {
-      console.log('need chainId changed')
-      switchChain()
-    }
-  }, [currentChainId])
+  // useEffect(() => {
+  //   if (currentChainId !== chainId) {
+  //     console.log('need chainId changed')
+  //     switchChain()
+  //   }
+  // }, [currentChainId])
 
   useEffect(() => {
     let lastTap = 0

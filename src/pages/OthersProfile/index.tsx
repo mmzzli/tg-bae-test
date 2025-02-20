@@ -1,7 +1,7 @@
 import { FC, useState, useRef, useEffect } from 'react'
 import { Box } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
-import { animated } from 'react-spring'
+import { animated } from '@react-spring/web'
 import OtherUserProfile from '@/components/PersonalDetails/OtherUserProfile'
 import useCacheVideo, { useOthersViewList } from '@/store/hook/useResourceList'
 import PostList from '@/components/PostList/PostList'
@@ -10,8 +10,9 @@ import { throttle } from '@/utils/chat/schedulers'
 import { useSwipeBack } from '@/hooks/useSwipeBack'
 // import { useTMAUtils } from '@/hooks/useTMAUtils'
 
-const SCROLL_THRESHOLD = 110
+const SCROLL_THRESHOLD = 214
 const SWIPE_THRESHOLD = 100
+const SCROLL_HEADER_THRESHOLD = 120
 
 const OthersProfile: FC = () => {
   const navigate = useNavigate()
@@ -25,6 +26,8 @@ const OthersProfile: FC = () => {
   }))
   const titleRef = useRef<HTMLHeadingElement>(null)
   const [showTopTitle, setShowTopTitle] = useState(false)
+  const [showHeader, setShowHeader] = useState(false)
+
   const [scale, setScale] = useState(1) // 控制背景图片的缩放
 
   const { bind, x } = useSwipeBack({
@@ -36,16 +39,15 @@ const OthersProfile: FC = () => {
       ? userInfo?.background_img.url
       : '/src/assets/image/profile/bg-header.png'
 
-    useCacheVideo(
-      list,
-      page,
-      setCacheVideoIndex,
-      getCacheVideoindex,
-      updateCacheVideo,
-      'profileScrollableDiv',
-      'video-card'
-    )
-
+  useCacheVideo(
+    list,
+    page,
+    setCacheVideoIndex,
+    getCacheVideoindex,
+    updateCacheVideo,
+    'profileScrollableDiv',
+    'video-card'
+  )
 
   useEffect(() => {
     const scrollDiv = scrollDivRef.current
@@ -58,8 +60,11 @@ const OthersProfile: FC = () => {
 
       // 控制标题显示
       const shouldShowTitle = scrollTop >= SCROLL_THRESHOLD
+      const shouldShowHeader = scrollTop >= SCROLL_HEADER_THRESHOLD
+
       setShowTopTitle(shouldShowTitle)
-      if (shouldShowTitle) {
+      setShowHeader(shouldShowHeader)
+      if (shouldShowHeader) {
         window.Telegram?.WebApp?.setHeaderColor('#ffffff')
       } else {
         window.Telegram?.WebApp?.setHeaderColor('#000000')
@@ -85,14 +90,33 @@ const OthersProfile: FC = () => {
         height:
           'calc(100vh - 84px - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top))',
         x,
-        touchAction: 'pan-y'
       }}
     >
+      <div
+        className="fixed top-0 left-0 right-0 bg-white dark:bg-black z-10"
+        style={{
+          display: showHeader ? 'block' : 'none',
+          height: `${
+            parseInt(
+              getComputedStyle(document.documentElement).getPropertyValue(
+                '--tg-safe-area-inset-top'
+              )
+            ) > 0 ||
+            parseInt(
+              getComputedStyle(document.documentElement).getPropertyValue(
+                '--tg-content-safe-area-inset-top'
+              )
+            ) > 0
+              ? '0'
+              : '68px'
+          }`,
+        }}
+      ></div>
       <div
         className="bg-area fixed top-0 left-0 "
         style={{
           backgroundImage: `url('${imgUrl}')`,
-          display: showTopTitle ? 'none' : 'block',
+          display: showHeader ? 'none' : 'block',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           transform: `scale(${scale})`,
@@ -103,7 +127,7 @@ const OthersProfile: FC = () => {
         {/* <div onClick={handleSuccess}>点击成功</div> */}
       </div>
       <h3
-        className="fixed text-black dark:text-[#E0E2F6] text-[20px] flex items-center duration-300 ease-out"
+        className="fixed text-black dark:text-[#E0E2F6] text-[20px] duration-300 ease-out"
         style={{
           opacity: showTopTitle ? 1 : 0,
           transform: `translateX(-50%)`,
@@ -113,13 +137,18 @@ const OthersProfile: FC = () => {
               ? 'calc(var(--tg-safe-area-inset-top) + 10px)'
               : 'calc(var(--tg-safe-area-inset-top) + 24px)'
           }`,
+          width: '170px',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          textAlign: 'center',
         }}
       >
         {userInfo?.username}
       </h3>
       <div
         ref={titleRef}
-        className="content-area absolute top-[113px] left-0 w-full h-full  bg-white dark:bg-black"
+        className="content-area absolute top-[113px] left-0 w-full bg-white dark:bg-black"
       >
         <OtherUserProfile />
         <Box borderTop="1px solid rgba(255, 255, 255, 0.10)">

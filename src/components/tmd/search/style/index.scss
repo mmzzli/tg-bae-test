@@ -1,0 +1,8 @@
+.tmd-search{
+  .adm-input{
+    @apply min-h-fit;
+  }
+  .adm-input-element{
+    @apply text-t1 text-sm font-normal caret-red;
+  }
+}

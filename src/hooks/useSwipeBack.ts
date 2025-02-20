@@ -1,4 +1,4 @@
-import { useSpring } from 'react-spring'
+import { useSpring } from '@react-spring/web'
 import { useDrag } from 'react-use-gesture'
 import { useNavigate } from 'react-router-dom'
 import { RefObject, useEffect, useCallback } from 'react'
@@ -8,13 +8,15 @@ interface UseSwipeBackOptions {
   swipeThreshold?: number
   velocityThreshold?: number
   minSwipeDistance?: number
+  className?: string
 }
 
 export const useSwipeBack = ({
   scrollRef,
   swipeThreshold = 100,
   velocityThreshold = 0.5,
-  minSwipeDistance = 50
+  minSwipeDistance = 50,
+  className,
 }: UseSwipeBackOptions) => {
   const navigate = useNavigate()
   const [{ x }, api] = useSpring(() => ({
@@ -23,16 +25,19 @@ export const useSwipeBack = ({
       tension: 250,
       friction: 25,
       mass: 1,
-      clamp: true
-    }
+      clamp: true,
+    },
   }))
 
-  const preventScroll = useCallback((e: TouchEvent) => {
-    // 只在右滑时阻止滚动
-    if (x.get() > 0) {
-      e.preventDefault()
-    }
-  }, [x])
+  const preventScroll = useCallback(
+    (e: TouchEvent) => {
+      // 只在右滑时阻止滚动
+      if (x.get() > 0) {
+        e.preventDefault()
+      }
+    },
+    [x]
+  )
 
   useEffect(() => {
     return () => {
@@ -41,8 +46,12 @@ export const useSwipeBack = ({
   }, [preventScroll])
 
   const bind = useDrag(
-    ({ down, movement: [mx], direction: [xDir], velocity, cancel }) => {
+    ({ down, movement: [mx], direction: [xDir], velocity, cancel, event }) => {
       const scrollElement = scrollRef.current
+      const target = event.target as HTMLElement
+      if (className && target.closest(`.${className}`)) {
+        return // 如果是指定类名的元素，则不触发滑动返回
+      }
       if (!scrollElement || scrollElement.scrollLeft > 0) {
         document.removeEventListener('touchmove', preventScroll)
         cancel()
@@ -60,8 +69,8 @@ export const useSwipeBack = ({
           immediate: true,
           config: {
             tension: 250,
-            friction: 25
-          }
+            friction: 25,
+          },
         })
       } else {
         document.removeEventListener('touchmove', preventScroll)
@@ -77,11 +86,11 @@ export const useSwipeBack = ({
             config: {
               tension: 200,
               friction: 25,
-              duration: 180
+              duration: 180,
             },
             onRest: () => {
               navigate(-1)
-            }
+            },
           })
         } else {
           api.start({
@@ -89,8 +98,8 @@ export const useSwipeBack = ({
             immediate: false,
             config: {
               tension: 200,
-              friction: 20
-            }
+              friction: 20,
+            },
           })
         }
       }

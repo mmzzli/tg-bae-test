@@ -89,6 +89,22 @@ export const ChainToken: { [key: number]: { symbol: string; name: string } } = {
     symbol: 'USDC',
     name: 'Bsc-USDC',
   },
+  20: {
+    symbol: 'USDC',
+    name: 'Eth-USDC',
+  },
+  21: {
+    symbol: 'Sol',
+    name: 'Solana',
+  },
+  22: {
+    symbol: 'USDT',
+    name: 'Sol-USDT',
+  },
+  23: {
+    symbol: 'USDC',
+    name: 'Sol-USDC',
+  },
 }
 
 interface ChainBrowserConfig {

@@ -50,7 +50,7 @@ const bscTestnet = defineChain({
 export const evmChainList =
   import.meta.env.VITE_APP_ENV === 'production'
     ? ([mainnet, bsc] as const)
-    : ([mainnet, bsc, bscTestnet] as const)
+    : ([mainnet, bsc] as const)
 
 const usdtAddressOnEvm = {
   [arbitrum.id]: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
@@ -99,6 +99,7 @@ export const supportEVMTokenList = evmChainList
       isNative: true,
       address: '',
       rewardContractAddress: contractAddress[chain.id as keyof typeof contractAddress],
+      usdValue: 0,
     },
     {
       chainId: chain.id,
@@ -107,6 +108,7 @@ export const supportEVMTokenList = evmChainList
       icon: tokenIconMap['USDT'],
       address: usdtAddressOnEvm[chain.id],
       rewardContractAddress: contractAddress[chain.id as keyof typeof contractAddress],
+      usdValue: 0,
     },
     {
       chainId: chain.id,
@@ -115,6 +117,7 @@ export const supportEVMTokenList = evmChainList
       icon: tokenIconMap['USDC'],
       address: usdcAddressOnEvm[chain.id],
       rewardContractAddress: contractAddress[chain.id as keyof typeof contractAddress],
+      usdValue: 0,
     },
   ])
   .flat()

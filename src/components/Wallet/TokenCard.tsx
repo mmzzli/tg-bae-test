@@ -1,44 +1,30 @@
 import { supportEVMTokenList } from '@/config/wagmi-config'
 import PriceService from '@/utils/wallet/PriceService'
 import { formatUnits } from 'viem'
-import { useBalance } from 'wagmi'
-import { useAccount } from 'wagmi'
+// import { useBalance } from 'wagmi'
+// import { useAccount } from 'wagmi'
 import TokenIcon from './TokenIcon'
 import BigNumber from 'bignumber.js'
+import { useAccount, useBalance } from '@/pages/Wallet/utils/walletProvider'
+import { AssetsToken } from '@/store/wallet/tokenType/AssetsToken'
+import AdaptiveNumber, { NumberType } from '@/pages/Wallet/components/AdaptiveNumber'
+import { useEffect } from 'react'
+import { useStore } from '@/store'
 
 interface TokenCardProps {
   token: (typeof supportEVMTokenList)[0]
-  onTokenSelect: (
-    token: (typeof supportEVMTokenList)[0],
-    balance: ReturnType<typeof useBalance>['data']
-  ) => void
+  onTokenSelect: (token: (typeof supportEVMTokenList)[0], balance: AssetsToken | undefined) => void
 }
 
 export const TokenCard = ({ token, onTokenSelect }: TokenCardProps) => {
   const { address } = useAccount()
+  const updateRewardEVMTokenList = useStore((state) => state.updateRewardEVMTokenList)
 
-  const { data: balance } = useBalance({
-    query: {
-      retry: 3,
-      retryDelay: 1000,
-      refetchOnWindowFocus: false,
-      refetchOnMount: true,
-      refetchOnReconnect: false,
-      refetchInterval: 20000,
-    },
-    address,
-    ...(token.isNative
-      ? { chainId: token.chainId }
-      : { token: token.address as `0x${string}`, chainId: token.chainId }),
-  })
+  const balance = useBalance(address, token.chainId, token.address)
 
-  const balanceValue = balance
-    ? Number(formatUnits(balance.value, balance.decimals)).toString().split('.')[1]?.length > 6
-      ? Number(formatUnits(balance.value, balance.decimals)).toFixed(6)
-      : Number(formatUnits(balance.value, balance.decimals))
-    : 0
+  const balanceValue = balance?.formatted ?? 0
 
-  const price = PriceService.getInstance().getPrice(token.token) || 0
+  const price = balance?.price || 0
 
   // const usdValue = +balanceValue * price
   // const usdValueFormat = usdValue
@@ -62,6 +48,15 @@ export const TokenCard = ({ token, onTokenSelect }: TokenCardProps) => {
 
   const usdValueFormat = formatToUsd(balanceValue.toString(), price)
 
+  useEffect(() => {
+    if (balance?.balance && balance.balance !== '0') {
+      updateRewardEVMTokenList({
+        ...token,
+        usdValue: new BigNumber(balanceValue.toString() || '0').multipliedBy(price).toNumber(),
+      })
+    }
+  }, [balance?.balance])
+
   return (
     <div
       className="flex justify-between items-center min-h-[74px]"
@@ -71,7 +66,9 @@ export const TokenCard = ({ token, onTokenSelect }: TokenCardProps) => {
         <TokenIcon token={token.token} chainName={token.chainName} />
         <div className="flex flex-col">
           <span className="text-[16px] font-medium text-[#12122A]">{token.token}</span>
-          <span className="text-[12px] font-normal text-[#616184]">{balanceValue}</span>
+          <span className="text-[12px] font-normal text-[#616184]">
+            <AdaptiveNumber type={NumberType.BALANCE} value={balanceValue} decimalSubLen={4} />
+          </span>
         </div>
       </div>
 

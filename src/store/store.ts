@@ -15,6 +15,9 @@ import { createTGSlice, TGSlice } from '@/store/slices/tg'
 import { createTaskSlice, TaskSlice } from './slices/taskSlice'
 import { createSystemSlice, SystemSlice } from './slices/systemSlice'
 import { createWebSocketSlice, WebSocketSlice } from './slices/websocket'
+import { createUserStore, IUserStore } from './wallet/walletUser'
+import { createTokenStore, ITokenStore } from './wallet/walletToken'
+import { createCommonStore, ICommonStore } from './wallet/walletCommon'
 
 export interface StoreState
   extends UserSlice,
@@ -25,7 +28,10 @@ export interface StoreState
     TaskSlice,
     LinkPreviewSlice,
     SystemSlice,
-    WebSocketSlice {
+    WebSocketSlice,
+    IUserStore,
+    ITokenStore,
+    ICommonStore {
   recommendList: BaseListState
   viewList: BaseListState
 }
@@ -77,4 +83,7 @@ export const useStore = createStore(((...a) => ({
   ...createTaskSlice(...a),
   ...createSystemSlice(...a),
   ...createWebSocketSlice(...a),
+  ...createUserStore(...a),
+  ...createTokenStore(...a),
+  ...createCommonStore(...a),
 })) as StateCreator<StoreState, [], MyMiddlewares>)

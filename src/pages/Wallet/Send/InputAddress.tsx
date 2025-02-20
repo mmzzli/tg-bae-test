@@ -1,0 +1,174 @@
+import { getChainByChainId } from '@/store/wallet/util/tokenHelper'
+import { TextArea } from 'antd-mobile'
+import classNames from 'classnames'
+import React, { useEffect, useMemo, useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import AddressItem from './components/AddressItem'
+import { validateAddressFnMap } from '@/store/wallet/util/validateAddress'
+import { URLSearchParams } from 'url'
+import { BackButton, useWebApp } from '@vkruglikov/react-telegram-web-app'
+import { useAtomValue } from 'jotai'
+import { tonSendTransactionDataAtom } from '@/store/wallet/util/tonconnect'
+import { useTokenStore } from '@/store/wallet/walletToken'
+import { IconDelete2 } from '@/components/tmd/icons/delete2'
+import { IconScan } from '@/components/tmd/icons/scan'
+import BaseButton from '@/components/BaseButton/BaseButton'
+
+interface BaseIconButtonType {
+  onClick: () => void
+  children: React.ReactNode
+  classNames: string
+}
+const BaseIconButton = ({ onClick, children, ...props }: BaseIconButtonType) => {
+  return (
+    <div
+      onClick={onClick}
+      className={classNames(
+        'border-[0.5px] border-l1  py-[6px] px-[10px] text-xs flex item-center text-t1',
+        props.classNames || ''
+      )}
+    >
+      {children}
+    </div>
+  )
+}
+const ScanButton = ({ onClick }: { onClick: BaseIconButtonType['onClick'] }) => {
+  return (
+    <BaseIconButton onClick={onClick} classNames="rounded-full mr-4">
+      <IconScan />
+    </BaseIconButton>
+  )
+}
+
+const ClearButton = ({ onClick }: { onClick: BaseIconButtonType['onClick'] }) => {
+  return (
+    <BaseIconButton onClick={onClick} classNames="rounded-[42px] mr-2">
+      <IconDelete2 className="size-4" />
+      <div className="ml-[8px] flex items-center">
+        <span>Clear</span>
+      </div>
+    </BaseIconButton>
+  )
+}
+
+export default function InputAddress() {
+  const [searchStr, setSearchStr] = useSearchParams()
+  const navigate = useNavigate()
+  const address = searchStr.get('address') || ''
+  const chainId = searchStr.get('chainId') || ''
+  const toAddress = searchStr.get('toAddress') || ''
+  const btcAdrType = searchStr.get('btcAdrType') || ''
+  const [receiveAddress, setReceiveAddress] = useState(toAddress)
+  const WebApp = useWebApp()
+  const tonSendTxData = useAtomValue(tonSendTransactionDataAtom)
+  const { walletReportTxs } = useTokenStore()
+
+  useEffect(() => {
+    // @ts-ignore
+    const address = tonSendTxData?.[0].address
+    if (address) {
+      setReceiveAddress(address)
+    }
+  }, [])
+
+  const recentReceiveAddress = useMemo(() => {
+    const addressList = walletReportTxs
+      .filter((i) => i.type === 'send')
+      .filter((i) => !!i.source)
+      .filter((i) => Number(i.chainID) === Number(chainId))
+      .map((i) => JSON.parse(i.source).toAddress)
+      .filter((i) => !!i)
+    const uni = addressList.filter((item, index) => addressList.indexOf(item) === index).slice(0, 5)
+    return uni
+  }, [chainId, walletReportTxs])
+
+  const chain = getChainByChainId(Number(chainId))
+
+  const isValid =
+    validateAddressFnMap[chain?.type as keyof typeof validateAddressFnMap](receiveAddress)
+
+  useEffect(() => {
+    setSearchStr({ address, chainId, toAddress: receiveAddress, btcAdrType }, { replace: true })
+  }, [receiveAddress])
+
+  const confirmReceiveAddress = () => {
+    const urlSearchParams = {
+      chainId,
+      address,
+      toAddress: receiveAddress,
+      btcAdrType,
+    }
+    const urlSearchParamsStr = new URLSearchParams(urlSearchParams).toString()
+    navigate(`/wallet/send/input-amount?${urlSearchParamsStr}`)
+  }
+
+  const showScanQrPopup = () => {
+    WebApp?.showScanQrPopup(
+      {
+        text: 'Scan Address',
+      },
+      function (text: string) {
+        const address = text.includes(':') ? text.split(':')[1] : text
+        setReceiveAddress(address)
+        return true
+      }
+    )
+  }
+
+  return (
+    <div className="flex h-full flex-col !px-0">
+      {/* <BackButton onClick={() => navigate(-1)} /> */}
+      {/* <TScrollContent> */}
+      <div className="px-[20px] flex-1 overflow-y-auto">
+        <div className="mt-[15px] text-h3 font-semibold text-t1">Receiving address</div>
+        <div className="mt-[15px]">
+          <TextArea
+            value={receiveAddress}
+            placeholder={`${chain?.name} address`}
+            className="h-[46px] text-sm text-b1 placeholder:text-b3"
+            onChange={(val) => {
+              setReceiveAddress(val)
+            }}
+          />
+          {receiveAddress.length !== 0 && !isValid && (
+            <p className="absolute mt-[8px] text-xs text-error">Please enter a valid address</p>
+          )}
+        </div>
+        <div
+          className={classNames(
+            { 'border-b-[0.5px]': recentReceiveAddress.length > 0 },
+            'mt-10 flex justify-end   border-b-l1 pb-4'
+          )}
+        >
+          <ClearButton onClick={() => setReceiveAddress('')} />
+          <ScanButton onClick={showScanQrPopup} />
+        </div>
+        {recentReceiveAddress.length > 0 ? (
+          <div className="mt-[12px]">
+            <div className="mb-[12px] text-base text-t1">Transactions</div>
+            {recentReceiveAddress.map((address) => (
+              <AddressItem
+                address={address}
+                key={address}
+                onClick={(addressData: string) => {
+                  setReceiveAddress(addressData)
+                }}
+              />
+            ))}
+          </div>
+        ) : (
+          <></>
+        )}
+      </div>
+
+      <div className="py-[16px] px-[20px] flex-none">
+        <BaseButton
+          text="Confirm"
+          handler={confirmReceiveAddress}
+          disabled={!isValid}
+          height="52px"
+        />
+      </div>
+    </div>
+  )
+}

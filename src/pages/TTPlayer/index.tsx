@@ -13,6 +13,7 @@ const VideoPlayer = dynamic(() => import('@/components/TT/VideoPlayer'), { ssr: 
 
 import 'swiper/css'
 import 'swiper/css/pagination'
+import './index.css'
 export interface TVideo {
   url: string
   poster?: string
@@ -21,7 +22,8 @@ export interface TVideo {
 const TTPlayer: React.FC = () => {
   const videoRefs = useRef<Array<Player | null>>([])
   const swiperRef = useRef<SwiperType>()
-  const { list, hasMore, fetchMoreData, page, refresh, isLoading } = useRecommendList()
+  const { list: rawList, hasMore, fetchMoreData, page, refresh, isLoading } = useRecommendList()
+  const list = rawList.filter(item => item.price === 0 || item.is_pay === true)
   const [globalMuted, setGlobalMuted] = useState(() => false)
   const [isTouched, setIsTouched] = useState(() => false)
   const [activeIndex, setActiveIndex] = useState(0)

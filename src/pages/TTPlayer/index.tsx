@@ -47,6 +47,10 @@ const TTPlayer: React.FC = () => {
     if (list?.length && activeIndex + 2 > list?.length) {
       fetchMoreData()
     }
+    videoRefs.current.forEach((player) => {
+      player?.pause()
+    })
+    videoRefs.current[activeIndex]?.play()
   }, [activeIndex])
 
   useEffect(() => {

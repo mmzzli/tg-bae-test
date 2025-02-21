@@ -149,16 +149,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
         // 使用移动端预设配置
         presets: [MobilePreset],
       })
-      // playerRef.current.on(Events.ERROR, (err) => {
-      //   console.error('视频播放错误:', err)
-      //     // 自定义错误文案
-      //     let errorMessage = '播放出错，请稍后重试';
-      //     if (err.code === 4) {
-      //       errorMessage = '网络错误，请检查网络连接';
-      //     } else if (err.code === 2) {
-      //       errorMessage = '视频格式不支持，请尝试其他视频';
-      //     }
-      // })
+      playerRef.current.on(Events.ERROR, (err) => {
+        console.error('视频播放错误:', err)
+        setTimeout(() => {
+          playerRef.current?.play()
+        }, 1000)
+      })
       setVideoRef(playerRef.current)
     }
     return () => {

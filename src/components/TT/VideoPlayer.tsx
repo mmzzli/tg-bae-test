@@ -87,6 +87,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
   useEffect(() => {
     if (elRef.current) {
 
+      console.log(sourceItem.r2,'=======================jacbo');
       const playerConfig:any = {
         el: elRef.current,
         url: sourceItem.r2,

@@ -20,7 +20,7 @@ export interface TVideo {
 }
 
 const TTPlayer: React.FC = () => {
-  const videoRefs = useRef<Array<Player | null>>([])
+  const videoRefs = useRef<{ [key: number]: Player | null }>({})
   const swiperRef = useRef<SwiperType>()
   const { list: rawList, hasMore, fetchMoreData, page, refresh, isLoading } = useRecommendList()
   const list = rawList.filter(item => item.price === 0 || item.is_pay === true)
@@ -47,10 +47,10 @@ const TTPlayer: React.FC = () => {
     if (list?.length && activeIndex + 2 > list?.length) {
       fetchMoreData()
     }
-    videoRefs.current.forEach((player) => {
+    Object.values(videoRefs.current).forEach((player) => {
       player?.pause()
     })
-    videoRefs.current[activeIndex]?.play()
+    // videoRefs.current[activeIndex]?.play()
   }, [activeIndex])
 
   useEffect(() => {

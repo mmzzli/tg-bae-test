@@ -76,9 +76,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
   useEffect(() => {
     if (playerRef.current) {
       if (autoplay) {
-        setTimeout(() => {
-          playerRef.current?.play()
-        }, 1000)
+        playerRef.current?.play()
       } else {
         playerRef.current.pause()
       }
@@ -92,13 +90,21 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
         url: sourceItem.r2,
         // 视频封面图
         poster: sourceItem.thumbnail,
+        thumbnail: {
+          urls: [sourceItem.thumbnail || ''],
+          pic_num: 1,
+          col: 1,
+          row: 1,
+        },
         // 播放器容器元素
         el: elRef.current,
         // 启用行内播放，防止全屏
         playsinline: true,
-        autoplay,
+        autoplay: autoplay,
         autoplayMuted: true,
         muted: true,
+        // 播放器类型设置为H5
+        videoType: 'h5',
         // 播放器尺寸设置
         width: '100%',
         height: '100%',
@@ -124,7 +130,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
           // 等待超时时间(秒)
           waitingTimeOut: 10,
           // 缓冲区内等待超时时间(秒)
-          waitingInBufferTimeOut: 1,
+          waitingInBufferTimeOut: 5,
           // 最大等待跳转缓冲次数
           waitJampBufferMaxCnt: 2,
           // 定时器间隔(秒)
@@ -150,7 +156,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
           errorHandling: {
             ignoreDecodeError: true,
             skipUntilKeyframe: true
-          }
+          },
+          // 设置预加载为自动
+          preload: 'auto'
         },
         // 使用移动端预设配置
         presets: [MobilePreset],

@@ -21,6 +21,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
 }) => {
   const [swiper, setSwiper] = useState<SwiperType | null>(null)
   const [loading, setLoading] = useSafeState(true)
+  const [activeIndex, setActiveIndex] = useState(0)
 
   useEffect(() => {
     if (swiper && swiper.activeIndex !== currentIndex) {
@@ -87,7 +88,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
     >
       {images.length > 0 && (
         <div className="absolute top-[91px] text-white text-sm opacity-80 z-10 w-full text-right pr-4">
-          {currentIndex + 1} / {images.length}
+          {activeIndex + 1} / {images.length}
         </div>
       )}
 
@@ -110,6 +111,9 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
         resistance
         resistanceRatio={0.65}
         speed={300}
+        onSlideChange={(swiper) => {
+          setActiveIndex(swiper.activeIndex)
+        }}
       >
         {images.map((src, index) => (
           <SwiperSlide

@@ -31,6 +31,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve, exchangeRate 
   const handleVideoClick = useCallback(
     (video: FormatterListItem) => {
       if (ttMode && !(data.price > 0 && !data.is_pay)) {
+        console.log('tt mode')
         navigate('/tt-player', {
           state: {
             id: data.id,
@@ -125,7 +126,10 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve, exchangeRate 
                 className={
                   'absolute items-center justify-center overflow-hidden relative object-contain video-container z-[4] flex'
                 }
-                onClick={() => handleVideoClick(data)}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleVideoClick(data)
+                }}
               >
                 <Image
                   src={data.mediaCover ? formatImage(data.mediaCover, false) : ''}

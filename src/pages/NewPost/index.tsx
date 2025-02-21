@@ -336,21 +336,47 @@ export const NewPost: FC = () => {
                 type: 'bae',
               })
             )
-            // r2 update
-            const url = `${import.meta.env.VITE_APP_UPLOAD_URL}uploadall`
-            const r2Response = await axios.put(url, formData, {
-              headers: {
-                'Content-Type': 'multipart/form-data',
-                Authorization: `Bearer ${token}`,
-              },
-              onUploadProgress: (progressEvent: any) => {
-                const total = progressEvent.total
-                const current = progressEvent.loaded
-                const percentCompleted = Math.round((current * 100) / total)
-                console.log(`上传进度: ${percentCompleted}%`)
-              },
-            })
-            r2Url = r2Response.data.urls[0]
+            // 判断是否是.mp4格式
+            if(!videoFile.name.endsWith('.mp4')){
+              // mp4 格式转换
+              const postreqRes = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
+                headers: {
+                  'Content-Type': 'multipart/form-data',
+                  Authorization: `Bearer ${token}`,
+                },
+              })
+              const videoId = postreqRes.data.split('/').pop();
+              formData.append('vid', videoId)
+              const {data} = await axios.post(
+                import.meta.env.VITE_API_URL + 'api/v1/convert_req_file',
+                formData,
+                {
+                  headers: {
+                    'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${token}`,
+                  },
+                  timeout: 600000,
+                }
+              )
+              r2Url = data
+            }else{
+              // r2 update
+              const url = `${import.meta.env.VITE_APP_UPLOAD_URL}uploadall`
+              const r2Response = await axios.put(url, formData, {
+                headers: {
+                  'Content-Type': 'multipart/form-data',
+                  Authorization: `Bearer ${token}`,
+                },
+                onUploadProgress: (progressEvent: any) => {
+                  const total = progressEvent.total
+                  const current = progressEvent.loaded
+                  const percentCompleted = Math.round((current * 100) / total)
+                  console.log(`上传进度: ${percentCompleted}%`)
+                },
+              })
+              r2Url = r2Response.data.urls[0]
+            }
+            console.log(r2Url)
             // m3u8 update
             const response = await axios.post(upload_url, formData, {
               headers: {

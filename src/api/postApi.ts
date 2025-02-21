@@ -137,3 +137,8 @@ export const getVoteDetail = () => {
 export const postVote = (params: VoteReq) => {
   return post<VoteRes>(`/api/v1/vote`, params)
 }
+
+
+export const convertReqFile = (params: any) => {
+  return post<VoteRes>(`/api/v1/convert_req_file`, params)
+}

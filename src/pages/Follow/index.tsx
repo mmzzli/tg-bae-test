@@ -12,7 +12,7 @@ import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import Empty from '../../components/comm/Empty'
 import Icon from '../../components/comm/Icon'
 import { useSwipeBack } from '@/hooks/useSwipeBack'
-import { animated } from '@react-spring/web'
+import { animated, useSpring } from '@react-spring/web'
 
 const FollowPage: FC = () => {
   const { uid } = useParams()
@@ -48,6 +48,15 @@ const FollowPage: FC = () => {
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const { bind, x } = useSwipeBack({ scrollRef })
+  const styles = useSpring({
+    x,
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    touchAction: 'pan-y',
+  })
 
   useEffect(() => {
     if (uid && token) {
@@ -123,15 +132,7 @@ const FollowPage: FC = () => {
   return (
     <animated.div
       {...bind()}
-      style={{
-        x,
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        touchAction: 'pan-y',
-      }}
+      style={styles}
       className="dark:bg-black bg-white flex flex-col text-white px-4 z-10 overflow-hidden"
       ref={scrollRef}
     >

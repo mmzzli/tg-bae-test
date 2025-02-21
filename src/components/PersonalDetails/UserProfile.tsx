@@ -82,7 +82,7 @@ const UserProfile: FC = () => {
         </Link>
       </HStack>
 
-      <MoreText text={userInfo.bio} className={'leading-4'}></MoreText>
+      <MoreText text={userInfo.bio} textColor='#666' className={'leading-4'}></MoreText>
       <HStack p="24px 0" gap="56px" className="justify-between">
         <Box textAlign="center">
           <p

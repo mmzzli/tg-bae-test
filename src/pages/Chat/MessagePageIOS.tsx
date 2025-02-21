@@ -17,7 +17,7 @@ import { debounce } from '@/utils/chat/schedulers'
 import RewardButton from '@/components/Wallet/RewardButton'
 import { ImagePreviewIcon, VideoPreviewIcon } from '@/components/Chat/MessageRender'
 import { useSwipeBack } from '@/hooks/useSwipeBack'
-import { animated } from '@react-spring/web'
+import { animated ,useSpring} from '@react-spring/web'
 // const PAGE_SIZE = 20
 const isIOS = () => {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
@@ -43,6 +43,7 @@ const MessagePageIOS = () => {
   const [zIndex, setZIndex] = useState(98)
   const isIOSDevice = isIOS()
 
+
   const [initTgViewportHeight, setInitTgViewportHeight] = useState(0)
   const [initVisualViewportHeight, setInitVisualViewportHeight] = useState(0)
 
@@ -51,6 +52,13 @@ const MessagePageIOS = () => {
   const { bind, x } = useSwipeBack({
     scrollRef: containerRef,
     className: 'prevent-touch-back',
+  })
+
+  const styles = useSpring({
+    WebkitOverflowScrolling: 'touch',
+    transition: isIOS() ? 'height 0.3s ease-in-out' : '',
+    paddingTop: `calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 66px)`,
+    x,
   })
 
   useEffect(() => {
@@ -244,12 +252,7 @@ const MessagePageIOS = () => {
       ref={containerRef}
       {...bind()}
       className="absolute top-0 left-0 right-0 flex flex-col dark:bg-[#000000] bg-[#F5F7FC] z-[10] overflow-hidden slide-in-from-right"
-      style={{
-        WebkitOverflowScrolling: 'touch',
-        transition: isIOS() ? 'height 0.3s ease-in-out' : '',
-        paddingTop: `calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 66px)`,
-        x,
-      }}
+      style={styles}
     >
       <div
         className="absolute flex items-center left-0 right-0 top-0 px-[16px]"

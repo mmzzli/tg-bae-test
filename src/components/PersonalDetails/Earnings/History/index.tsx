@@ -4,7 +4,7 @@ import { SwiperRef } from 'antd-mobile/es/components/swiper'
 import { Box } from '@chakra-ui/react'
 import { useEffect, useState, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { animated } from '@react-spring/web'
+import { animated, useSpring } from '@react-spring/web'
 
 import { useStore } from '@/store/store'
 import { accountdetailList, getGiftHistory } from '@/api'
@@ -206,7 +206,10 @@ const EarningsHistory = () => {
   const [giftHasMore, setGiftHasMore] = useState(true)
   const [giftPage, setGiftPage] = useState(1)
   const [activeKey, setActiveKey] = useState(() => (type === 'cryptos' ? '2' : '1'))
-
+  const styles = useSpring({
+    paddingTop: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
+    transform: x.to((x) => `translateX(${x}px)`),
+  })
   useEffect(() => {
     if (rate) {
       setExchangeRate(Number(rate))
@@ -248,7 +251,7 @@ const EarningsHistory = () => {
   }
   const tabItems = [
     { key: '0', title: 'Telegram stars' },
-    { key: '1', title: 'Cryptos' }
+    { key: '1', title: 'Cryptos' },
   ]
   const swiperRef = useRef<SwiperRef>(null)
   const [activeIndex, setActiveIndex] = useState(0)
@@ -334,25 +337,28 @@ const EarningsHistory = () => {
           activeLineMode="fixed"
           // stretch={false}
           activeKey={tabItems[activeIndex].key}
-          onChange={key => {
-            const index = tabItems.findIndex(item => item.key === key)
+          onChange={(key) => {
+            const index = tabItems.findIndex((item) => item.key === key)
             setActiveIndex(index)
             swiperRef.current?.swipeTo(index)
           }}
         >
-          {tabItems.map(item => (
-            <Tabs.Tab title={item.title} key={item.key}  className={item.key=== "0" ? `px-[18px]`:`px-[18px] ml-[30px]`} />
+          {tabItems.map((item) => (
+            <Tabs.Tab
+              title={item.title}
+              key={item.key}
+              className={item.key === '0' ? `px-[18px]` : `px-[18px] ml-[30px]`}
+            />
           ))}
         </Tabs>
 
-
         <Swiper
-          direction='horizontal'
+          direction="horizontal"
           loop
           indicator={() => null}
           ref={swiperRef}
           defaultIndex={activeIndex}
-          onIndexChange={index => {
+          onIndexChange={(index) => {
             console.log(index)
             setActiveIndex(index)
             // handleChange(String(index))

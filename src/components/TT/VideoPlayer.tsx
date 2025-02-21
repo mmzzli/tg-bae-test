@@ -100,8 +100,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
         el: elRef.current,
         // 启用行内播放，防止全屏
         playsinline: true,
-        autoplay: true,
+        autoplay,
         autoplayMuted: true,
+        muted: allMuted,
         // 播放器尺寸设置
         width: '100%',
         height: '100%',

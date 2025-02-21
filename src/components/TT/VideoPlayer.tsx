@@ -114,10 +114,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
         plugins: [Mp4Plugin],
         // MP4插件配置
         mp4plugin: {
-          // 最大缓冲区长度(秒)
-          maxBufferLength: 2,
-          // 最小缓冲区长度(秒)
-          minBufferLength: 2,
+          // 增加音频解码配置
+          audioObjectType: 2, // 显式设置音频对象类型
+          // 减少缓冲区大小以提高兼容性
+          maxBufferLength: 1,
+          minBufferLength: 0.5,
           // 是否禁用缓冲区断开检查
           disableBufferBreakCheck: false,
           // 等待超时时间(秒)
@@ -135,25 +136,36 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
           },
           // 启用Web Worker进行解码
           enableWorker: true,
-          // 每个分片的大小(字节)
-          chunkSize: 20480,
+          // 调整分片大小
+          chunkSize: 10240, // 减小分片大小
           // 分段时长(秒)
           segmentDuration: 1,
-          // 重试次数
-          retryCount: 5,
+          // 增加重试次数
+          retryCount: 10,
           // 重试延迟(毫秒)
-          retryDelay: 100,
+          retryDelay: 200,
           // 最小处理长度(字节)
           onProcessMinLen: 256,
+          // 添加错误处理选项
+          errorHandling: {
+            ignoreDecodeError: true,
+            skipUntilKeyframe: true
+          }
         },
         // 使用移动端预设配置
         presets: [MobilePreset],
       })
+
+      // 增加更多错误处理
       playerRef.current.on(Events.ERROR, (err) => {
         console.error('视频播放错误:', err)
-        setTimeout(() => {
-          playerRef.current?.play()
-        }, 1000)
+        if (playerRef.current) {
+          playerRef.current.destroy()
+          setTimeout(() => {
+            // 重新初始化播放器
+            playerRef.current?.play()
+          }, 2000)
+        }
       })
       setVideoRef(playerRef.current)
     }

@@ -312,16 +312,17 @@ const EarningsHistory = () => {
   }
 
   return (
-    <animated.div
-      {...bind()}
-      ref={scrollRef}
-      id="earningsScrollableDiv"
-      className="fixed top-0 left-0 bottom-0 right-0 bg-[#FFF] z-10 scrollbar-hide"
-      style={{
-        paddingTop: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
-        transform: x.to((x) => `translateX(${x}px)`),
-      }}
-    >
+    // <animated.div
+    //   {...bind()}
+    //   ref={scrollRef}
+    //   id="earningsScrollableDiv"
+    //   className="fixed top-0 left-0 bottom-0 right-0 bg-[#FFF] z-10 scrollbar-hide"
+    //   style={{
+    //     paddingTop: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
+    //     transform: x.to((x) => `translateX(${x}px)`),
+    //   }}
+    // >
+    <>
       <div className="flex justify-between px-[16px]">
         <h3 className="text-[20px] text-[#333] font-[700] mt-[24px]">History</h3>
       </div>
@@ -404,7 +405,8 @@ const EarningsHistory = () => {
           </Tabs.Tab>
         </Tabs> */}
       </div>
-    </animated.div>
+    {/* </animated.div> */}
+    </>
   )
 }
 

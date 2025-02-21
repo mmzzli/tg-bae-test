@@ -102,7 +102,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
         playsinline: true,
         autoplay,
         autoplayMuted: true,
-        muted: allMuted,
+        muted: true,
         // 播放器尺寸设置
         width: '100%',
         height: '100%',

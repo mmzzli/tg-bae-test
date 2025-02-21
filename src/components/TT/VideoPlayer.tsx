@@ -111,7 +111,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
         // 视频填充模式：包含
         videoFillMode: 'contain',
         // 显示迷你进度条
-        miniprogress: true,
+        miniprogress: false,
         // 禁用默认控制栏
         controls: false,
         // 使用MP4插件

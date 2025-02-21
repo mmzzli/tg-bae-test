@@ -182,7 +182,10 @@ const MoreText: React.FC<MoreTextProps> = ({
             <p
               className="absolute bottom-0 text-[12px] right-0 px-1 cursor-pointer z-10"
               style={gradientStyle}
-              onClick={() => setIsExpanded(!isExpanded)}
+              onClick={(e) => {
+                e.stopPropagation()
+                setIsExpanded(!isExpanded)
+              }}
             >
               {isExpanded ? 'Less' : 'More'}
             </p>

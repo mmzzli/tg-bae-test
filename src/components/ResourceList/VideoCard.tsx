@@ -30,7 +30,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve, exchangeRate 
 
   const handleVideoClick = useCallback(
     (video: FormatterListItem) => {
-      if (ttMode) {
+      if (ttMode && !(data.price > 0 && !data.is_pay)) {
         navigate('/tt-player', {
           state: {
             id: data.id,

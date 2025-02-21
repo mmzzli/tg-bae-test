@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
-import { Tabs } from 'antd-mobile'
+import { Tabs, Swiper } from 'antd-mobile'
+import { SwiperRef } from 'antd-mobile/es/components/swiper'
 import { Box } from '@chakra-ui/react'
 import { useEffect, useState, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
@@ -245,13 +246,20 @@ const EarningsHistory = () => {
   const handleChange = (key: string) => {
     setActiveKey(key)
   }
+  const tabItems = [
+    { key: '0', title: 'Telegram stars' },
+    { key: '1', title: 'Cryptos' }
+  ]
+  const swiperRef = useRef<SwiperRef>(null)
+  const [activeIndex, setActiveIndex] = useState(0)
 
   useEffect(() => {
     // 设置头部颜色
     window.Telegram?.WebApp?.setHeaderColor('#fff')
 
     if (token) {
-      if (activeKey === '1') {
+      console.log(activeIndex)
+      if (activeIndex === 0) {
         setPage(1)
         setHasMore(true)
         fetchAccounts(1)
@@ -263,7 +271,7 @@ const EarningsHistory = () => {
         fetchGiftHistory(1)
       }
     }
-  }, [activeKey, token])
+  }, [activeIndex, token])
 
   const fetchGiftHistory = async (pageNum: number) => {
     if (cryptoLoading) return
@@ -304,21 +312,73 @@ const EarningsHistory = () => {
   }
 
   return (
-    <animated.div
-      {...bind()}
-      ref={scrollRef}
-      id="earningsScrollableDiv"
-      className="fixed top-0 left-0 bottom-0 right-0 bg-[#FFF] z-10 scrollbar-hide"
-      style={{
-        paddingTop: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
-        transform: x.to((x) => `translateX(${x}px)`),
-      }}
-    >
+    // <animated.div
+    //   {...bind()}
+    //   ref={scrollRef}
+    //   id="earningsScrollableDiv"
+    //   className="fixed top-0 left-0 bottom-0 right-0 bg-[#FFF] z-10 scrollbar-hide"
+    //   style={{
+    //     paddingTop: 'calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top))',
+    //     transform: x.to((x) => `translateX(${x}px)`),
+    //   }}
+    // >
+    <>
       <div className="flex justify-between px-[16px]">
         <h3 className="text-[20px] text-[#333] font-[700] mt-[24px]">History</h3>
       </div>
       <div className="mt-10">
         <Tabs
+          defaultActiveKey="1"
+          // activeKey={activeKey}
+          // onChange={(key) => handleChange(key)}
+          activeLineMode="fixed"
+          // stretch={false}
+          activeKey={tabItems[activeIndex].key}
+          onChange={key => {
+            const index = tabItems.findIndex(item => item.key === key)
+            setActiveIndex(index)
+            swiperRef.current?.swipeTo(index)
+          }}
+        >
+          {tabItems.map(item => (
+            <Tabs.Tab title={item.title} key={item.key}  className={item.key=== "0" ? `px-[18px]`:`px-[18px] ml-[30px]`} />
+          ))}
+        </Tabs>
+
+
+        <Swiper
+          direction='horizontal'
+          loop
+          indicator={() => null}
+          ref={swiperRef}
+          defaultIndex={activeIndex}
+          onIndexChange={index => {
+            console.log(index)
+            setActiveIndex(index)
+            // handleChange(String(index))
+          }}
+        >
+          <Swiper.Item>
+            <TelegramStars
+              data={data}
+              exchangeRate={exchangeRate}
+              fetchMoreData={fetchMoreData}
+              hasMore={hasMore}
+              starsLoading={starsLoading}
+            />
+          </Swiper.Item>
+          <Swiper.Item>
+            <Cryptos
+              giftData={giftData}
+              fetchMoreGiftData={fetchMoreGiftData}
+              giftHasMore={giftHasMore}
+              cryptoLoading={cryptoLoading}
+              handleClick={handleClick}
+            />
+          </Swiper.Item>
+        </Swiper>
+
+        {/* <Tabs
           defaultActiveKey="1"
           activeKey={activeKey}
           onChange={(key) => handleChange(key)}
@@ -343,9 +403,10 @@ const EarningsHistory = () => {
               handleClick={handleClick}
             />
           </Tabs.Tab>
-        </Tabs>
+        </Tabs> */}
       </div>
-    </animated.div>
+    {/* </animated.div> */}
+    </>
   )
 }
 

@@ -55,8 +55,6 @@ const MessagePageIOS = () => {
   })
 
   const styles = useSpring({
-    WebkitOverflowScrolling: 'touch',
-    transition: isIOS() ? 'height 0.3s ease-in-out' : '',
     paddingTop: `calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 66px)`,
     x,
   })
@@ -251,7 +249,7 @@ const MessagePageIOS = () => {
     <animated.div
       ref={containerRef}
       {...bind()}
-      className="absolute top-0 left-0 right-0 flex flex-col dark:bg-[#000000] bg-[#F5F7FC] z-[10] overflow-hidden slide-in-from-right"
+      className={`absolute top-0 left-0 right-0 flex flex-col dark:bg-[#000000] bg-[#F5F7FC] z-[10] overflow-hidden slide-in-from-right ${isIOS() ? 'height 0.3s ease-in-out' : ''}`}
       style={styles}
     >
       <div

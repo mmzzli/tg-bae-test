@@ -96,8 +96,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
         controls: false, // 不显示控制条
         loop: false, // 不需要循环
         miniprogress: false, // 不需要显示进度条
-        width: "0%", // 设置为 0，确保不显示
-        height: "0%", // 设置为 0，确保不显示
+        width: "100%", // 设置为 0，确保不显示
+        height: "100%", // 设置为 0，确保不显示
       };
 
       if (platform == "Android") {
@@ -122,6 +122,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
           onProcessMinLen: 256,
         };
       }
+
+      console.log(playerConfig,'=====playerConfig====jacobi');
 
       playerRef.current = new Player(playerConfig)
 

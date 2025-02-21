@@ -344,6 +344,7 @@ const EarningsHistory = () => {
           ))}
         </Tabs>
 
+
         <Swiper
           direction='horizontal'
           loop

@@ -4,7 +4,6 @@ import { retrieveLaunchParams } from '@telegram-apps/sdk'
 import { useMfa } from './Account/hooks/useMfa'
 import useWallet from './hooks/useWallet'
 import { string } from '@tma.js/sdk'
-import { useUserStore } from '@/store/wallet/walletUser'
 import { getSendSplToken, mockSolEvmChainId, sendSolTx } from '@/store/wallet/config/sol'
 
 import { BaseModal } from '@/components/Modal/BaseModal'
@@ -17,9 +16,7 @@ import { useStore } from '@/store'
 const WalletTest = () => {
   // const { tgLogin, getUserInfo } = useInitUser()
   const { hanleWalletAction } = useWallet()
-  // const {
-  //   walletUserInfo: { tonPublicKey, tonAddress, solanaAddress },
-  // } = useUserStore()
+  // const { tonPublicKey, tonAddress, solanaAddress } = useStore((state) => state.walletUserInfo)
   // const feeMode = useStore((state) => state.feeMode)
   // console.log('还会自动刷么feeMode', feeMode, Date.now())
   // const connect = async () => {

@@ -11,18 +11,17 @@ import { getTransactionDetail } from '@/store/wallet/util/transaction/getTransac
 import useTransactions from '@/store/wallet/hooks/useTransactions'
 import { getChainByChainId, getScanUrl } from '@/store/wallet/util/tokenHelper'
 import usePageOpen from '@/pages/Wallet/hooks/usePageOpen'
-import { useUserStore } from '@/store/wallet/walletUser'
 import useTransactionHash from '@/pages/Wallet/hooks/useTransactionHash'
+import { useStore } from '@/store'
 
 const DetailInfo = ({ tx }: { tx: IHistoryType }) => {
   const { updateTxs } = useTransactions({
     chain_id: -1,
     historyType: 'All',
-    status: 'all'
+    status: 'all',
   })
 
-  const fromNativeTokenSymbol =
-    tx.fromSwapTokens.chain?.chain?.nativeCurrency.symbol
+  const fromNativeTokenSymbol = tx.fromSwapTokens.chain?.chain?.nativeCurrency.symbol
   const fromToken = tx.fromSwapTokens.token
   const toToken = tx.toSwapTokens.token
 
@@ -33,13 +32,13 @@ const DetailInfo = ({ tx }: { tx: IHistoryType }) => {
         return {
           blocknumber: tx.blocknumber,
           endTime: tx.endTime,
-          gasAmount: tx.gasAmount
+          gasAmount: tx.gasAmount,
         }
       } else {
         const data = await getTransactionDetail({
           hash: tx.hash,
           chainId: tx.fromSwapTokens.chain?.id,
-          chainType: tx.fromSwapTokens.chain?.type
+          chainType: tx.fromSwapTokens.chain?.type,
         })
         if (data) {
           const result = {
@@ -47,13 +46,13 @@ const DetailInfo = ({ tx }: { tx: IHistoryType }) => {
             endTime: data?.timestamp,
             gasAmount: formatUnits(
               data?.gasAmount || 0n,
-              getChainByChainId(tx.fromSwapTokens.chain?.id as number)?.chain
-                ?.nativeCurrency.decimals as number
-            )
+              getChainByChainId(tx.fromSwapTokens.chain?.id as number)?.chain?.nativeCurrency
+                .decimals as number
+            ),
           }
           const upTx: IHistoryType = {
             ...tx,
-            ...result
+            ...result,
           }
           updateTxs({ history: upTx })
           return result
@@ -61,7 +60,7 @@ const DetailInfo = ({ tx }: { tx: IHistoryType }) => {
           return null
         }
       }
-    }
+    },
   })
 
   const gasInfo = useMemo(
@@ -77,10 +76,7 @@ const DetailInfo = ({ tx }: { tx: IHistoryType }) => {
         fromValue = tx.fromAmount
         toValue = tx.toAmount
       } else {
-        fromValue = formatUnits(
-          BigInt(tx.fromAmount ?? '0'),
-          fromToken.decimals
-        )
+        fromValue = formatUnits(BigInt(tx.fromAmount ?? '0'), fromToken.decimals)
         toValue = formatUnits(BigInt(tx.toAmount ?? '0'), toToken.decimals)
       }
       const toValueCalc = Number(toValue) / Number(fromValue)
@@ -89,26 +85,26 @@ const DetailInfo = ({ tx }: { tx: IHistoryType }) => {
           content={`1 ${fromToken.symbol.toLocaleUpperCase()} = ${numberFormat(
             toValueCalc
           )} ${toToken.symbol.toLocaleUpperCase()}`}
-          title={"Rate"}
+          title={'Rate'}
         ></DetailInfoItem>
       )
     }
   }, [fromToken, toToken, tx])
 
   const webApp = usePageOpen()
-  const { walletUserInfo: user } = useUserStore()
+  const user = useStore((state) => state.walletUserInfo)
 
   const { data: scanHash } = useTransactionHash({
     hash: tx.hash,
     chain: tx.fromSwapTokens?.chain,
-    tonAddress: user.tonAddress
+    tonAddress: user.tonAddress,
   })
 
   const chainScanTxUrl = useMemo(() => {
     return getScanUrl({
       hash: scanHash,
-      hashTest: "",
-      chain: tx.fromSwapTokens?.chain
+      hashTest: '',
+      chain: tx.fromSwapTokens?.chain,
     })
   }, [tx, scanHash])
 
@@ -119,33 +115,17 @@ const DetailInfo = ({ tx }: { tx: IHistoryType }) => {
       <DetailInfoItem
         isCopy
         content={tx.fromAddress}
-        title={
-          tx.historyType === 'Swap' ? (
-            "Sending address"
-          ) : (
-            "From"
-          )
-        }
+        title={tx.historyType === 'Swap' ? 'Sending address' : 'From'}
       ></DetailInfoItem>
       {tx.historyType !== 'Swap' && (
-        <DetailInfoItem
-          isCopy
-          content={tx.toAddress}
-          title={"To"}
-        ></DetailInfoItem>
+        <DetailInfoItem isCopy content={tx.toAddress} title={'To'}></DetailInfoItem>
       )}
       <DetailInfoItem
         content={dayjs(tx.time).format('DD/MM/YYYY, HH:mm:ss')}
-        title={"Date"}
+        title={'Date'}
       ></DetailInfoItem>
-      <DetailInfoItem
-        content={tx.historyType}
-        title={"Type"}
-      ></DetailInfoItem>
-      <DetailInfoItem
-        content={tx.fromSwapTokens.chain?.name}
-        title={"Network"}
-      ></DetailInfoItem>
+      <DetailInfoItem content={tx.historyType} title={'Type'}></DetailInfoItem>
+      <DetailInfoItem content={tx.fromSwapTokens.chain?.name} title={'Network'}></DetailInfoItem>
       <DetailInfoItem
         content={
           Number(gasInfo) > 0 && gasInfo ? (
@@ -167,7 +147,7 @@ const DetailInfo = ({ tx }: { tx: IHistoryType }) => {
             ''
           )
         }
-        title={"Network fee"}
+        title={'Network fee'}
       ></DetailInfoItem>
       <DetailInfoItem
         isLine
@@ -177,7 +157,7 @@ const DetailInfo = ({ tx }: { tx: IHistoryType }) => {
           </div>
         }
         isCopy
-        title={"Txhash"}
+        title={'Txhash'}
         copyContent={tx.hash}
       ></DetailInfoItem>
 

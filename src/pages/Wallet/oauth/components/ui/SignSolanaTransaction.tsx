@@ -3,12 +3,12 @@ import { TxInfo } from './TxInfo'
 import { mockSolEvmChainId } from '@/store/wallet/config/sol'
 import { getChainByChainId } from '@/store/wallet/util/tokenHelper'
 import solana from '@/store/wallet/chains/wagmiConfig/solana'
-import { useUserStore } from '@/store/wallet/walletUser'
 import { useSolanaTx } from '../../hooks/useSolanaTx'
 import { useToast } from '@chakra-ui/react'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { WalletRequestParams } from '@/store/wallet/type'
+import { useStore } from '@/store'
 
 interface TransferModel {
   txHex: string
@@ -19,9 +19,7 @@ export default function SignSolanaTransaction(props: {
   params: WalletRequestParams[]
   [other: string]: any
 }) {
-  const {
-    walletUserInfo: { solanaAddress },
-  } = useUserStore()
+  const { solanaAddress } = useStore((state) => state.walletUserInfo)
   const toast = useToast()
 
   const { /* chainType, */ fee, unit, onSuccess, params } = props

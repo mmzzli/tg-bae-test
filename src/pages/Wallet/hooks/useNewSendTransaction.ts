@@ -24,7 +24,6 @@
 // import useCommonStore from '@/stores/commonStore/hooks/useCommonStore'
 // import userStore from '@/stores/userStore'
 
-import { useUserStore } from '@/store/wallet/walletUser'
 import { useMfa } from '../Account/hooks/useMfa'
 import { DexTransaction } from '@/store/wallet/type'
 import { getChainByChainId } from '@/store/wallet/util/tokenHelper'
@@ -46,8 +45,12 @@ export type GetMfaParamsType = (params: {
 
 export const useNewSendTransaction = (type: 'Send' | 'Swap' | 'Gift') => {
   const { getMfaParams } = useMfa()
-  const { walletUserInfo } = useUserStore()
-  const { tonAddress, tonAddressTest, tonPublicKey, ethereumAddress: evmAddress } = walletUserInfo
+  const {
+    tonAddress,
+    tonAddressTest,
+    tonPublicKey,
+    ethereumAddress: evmAddress,
+  } = useStore((state) => state.walletUserInfo)
   // todo...
   const { addTx: setTransactionHistory } = useTransactions()
   // const [, setApproveHash] = useAtom(approveHashAtom)

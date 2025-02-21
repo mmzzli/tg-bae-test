@@ -6,10 +6,10 @@ import { CustomToast, typeOptions } from '../comm/Toast'
 import BaseButton from '../BaseButton/BaseButton'
 import { useAccount } from '@/pages/Wallet/utils/walletProvider'
 import { useTokenStore } from '@/store/wallet/walletToken'
-import { useUserStore } from '@/store/wallet/walletUser'
 import AdaptiveNumber, { NumberType } from '@/pages/Wallet/components/AdaptiveNumber'
 import { IconWallet } from '../tmd/icons/wallet'
 import { IconArrowRight } from '../tmd/icons/arrowRight'
+import { useStore } from '@/store'
 
 interface BalanceInfo {
   totalBalanceUsd: string
@@ -22,7 +22,7 @@ const ProfileConnectButton = ({ className }: { className?: string }) => {
   const toast = useToast()
   const { status, address } = useAccount()
   const { tokenList } = useTokenStore()
-  const { walletUserInfo } = useUserStore()
+  const walletUserInfo = useStore((state) => state.walletUserInfo)
   const connectModalRef = useRef<{ someMethod: () => void }>(null)
 
   const totalBal = useMemo(() => {
@@ -73,7 +73,7 @@ const ProfileConnectButton = ({ className }: { className?: string }) => {
             }}
           >
             <div className="flex items-center gap-2 overflow-hidden">
-              <IconWallet className="size-5 text-b1"/>
+              <IconWallet className="size-5 text-b1" />
               <span className="font-[500] truncate">
                 {walletUserInfo?.nickname || walletUserInfo.username || walletUserInfo.email}
               </span>
@@ -82,7 +82,7 @@ const ProfileConnectButton = ({ className }: { className?: string }) => {
               <span className="truncate text-b2">
                 <AdaptiveNumber value={totalBal} type={NumberType.USD} />
               </span>
-              <IconArrowRight className="size-4 text-b1"/>
+              <IconArrowRight className="size-4 text-b1" />
             </div>
           </div>
         </div>

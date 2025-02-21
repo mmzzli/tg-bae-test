@@ -25,7 +25,6 @@ import { useMemo } from 'react'
 import { formatUnits, parseUnits } from 'viem'
 import { FeeMode } from '../../components/FeeSelect'
 import { DexTransaction } from '@/store/wallet/type'
-import { useUserStore } from '@/store/wallet/walletUser'
 import { useTokenStore } from '@/store/wallet/walletToken'
 import { getChainByChainId } from '@/store/wallet/util/tokenHelper'
 import { Web3Type } from '@/store/wallet/chainType'
@@ -62,9 +61,10 @@ const useEstimatedGas = ({
   gasMagnMode?: boolean
 }) => {
   const feeMode = useStore((state) => state.feeMode)
-  const {
-    walletUserInfo: { ethereumAddress: evmAddress, solanaAddress: solAddress, tonAddress },
-  } = useUserStore()
+  const { solanaAddress: solAddress, ethereumAddress: evmAddress } = useStore(
+    (state) => state.walletUserInfo
+  )
+
   const { tokenList } = useTokenStore()
 
   const nativeToken = useMemo(

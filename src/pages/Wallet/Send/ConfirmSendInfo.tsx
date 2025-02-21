@@ -1,8 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { BackButton } from '@vkruglikov/react-telegram-web-app'
 import useLoginInfo from '@/store/wallet/hooks/useLoginInfo'
-import { useUserStore } from '@/store/wallet/walletUser'
 import { useTokenStore } from '@/store/wallet/walletToken'
 import { useChainId, useSwitchChain } from 'wagmi'
 import { getChainByChainId } from '@/store/wallet/util/tokenHelper'
@@ -38,9 +36,8 @@ function ConfirmSendInfo() {
   // const fromAddress = solAddress
   const btcAdrType = search.get('btcAdrType') || ''
   const amount = search.get('amount') || ''
-  const {
-    walletUserInfo: { tonPublicKey, tonAddress },
-  } = useUserStore()
+
+  const { tonPublicKey, tonAddress } = useStore((state) => state.walletUserInfo)
   const { tokenList: tokens } = useTokenStore()
   const feeMode = useStore((state) => state.feeMode)
   const token = useMemo(() => {

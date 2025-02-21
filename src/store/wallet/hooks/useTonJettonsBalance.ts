@@ -2,16 +2,16 @@ import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getTokenBalance, tonDecimals } from '../config/ton'
 import { formatUnits } from 'viem'
-import { useUserStore } from '../walletUser'
 import { BalanceToken } from '../tokenType/BalanceToken'
 import chains from '../chains'
 import useGetTokenList from './useGetTokenList'
+import { useStore } from '@/store'
 
 const getTonBalance = async ({
   token,
   decimals,
   symbol,
-  tonAddress
+  tonAddress,
 }: {
   token: string | undefined
   decimals?: number | undefined
@@ -21,7 +21,7 @@ const getTonBalance = async ({
   if (token) {
     const balance = await getTokenBalance({
       tonAddress: tonAddress ?? '',
-      tokenAddress: token
+      tokenAddress: token,
     })
 
     return {
@@ -29,14 +29,14 @@ const getTonBalance = async ({
       symbol,
       formatted: formatUnits(balance.value, decimals || tonDecimals) || '0',
       value: balance.value || 0n,
-      token
+      token,
     }
   }
   return undefined
 }
 
 const useTonJettonsBalance = () => {
-  const { walletUserInfo: user } = useUserStore()
+  const user = useStore((state) => state.walletUserInfo)
   const { tonToken } = useGetTokenList()
 
   const jettonTokens = tonToken.filter((item) => {
@@ -49,7 +49,7 @@ const useTonJettonsBalance = () => {
       user.tonAddress,
       ...jettonTokens.map((item) => {
         return item.address
-      })
+      }),
     ],
     staleTime: 0,
     refetchInterval: 20_000,
@@ -62,7 +62,7 @@ const useTonJettonsBalance = () => {
               token: item?.address,
               decimals: item?.decimals,
               symbol: item?.symbol,
-              tonAddress: user.tonAddress
+              tonAddress: user.tonAddress,
             })
           })
           const balances = await Promise.allSettled(querys)
@@ -76,7 +76,7 @@ const useTonJettonsBalance = () => {
       }
       console.log('useToken useTonJettonsBalance3')
       return undefined
-    }
+    },
   })
 
   const jettonTokenBalance = useMemo(() => {
@@ -87,23 +87,20 @@ const useTonJettonsBalance = () => {
             const data = item.value
             const find = jettonTokens.find((token) => {
               const dataAddr = (data as any)?.token ?? ''
-              return (
-                token.address.toLocaleUpperCase() ===
-                dataAddr.toLocaleUpperCase()
-              )
+              return token.address.toLocaleUpperCase() === dataAddr.toLocaleUpperCase()
             })
 
             const token: BalanceToken = {
               isNative: false,
               isToken: true,
               chainId: chains.ton.id,
-              decimals: data?.decimals ? data?.decimals : find?.decimals ?? 0,
+              decimals: data?.decimals ? data?.decimals : (find?.decimals ?? 0),
               symbol: find?.symbol ?? '',
               name: find?.symbol ?? '',
               address: find?.address ?? '',
               balance: (data?.value as bigint).toString(),
               formatted: data?.formatted?.toString(),
-              value: (data?.value as bigint).toString()
+              value: (data?.value as bigint).toString(),
             }
 
             return token
@@ -117,7 +114,7 @@ const useTonJettonsBalance = () => {
 
   return {
     ...jettonTokenBalancesQuery,
-    data: jettonTokenBalance ? [...jettonTokenBalance] : null
+    data: jettonTokenBalance ? [...jettonTokenBalance] : null,
   }
 }
 

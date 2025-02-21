@@ -26,7 +26,6 @@
 
 import { useUserStore } from '@/store/wallet/walletUser'
 import { useMfa } from '../Account/hooks/useMfa'
-import { useCommonStore } from '@/store/wallet/walletCommon'
 import { DexTransaction } from '@/store/wallet/type'
 import { getChainByChainId } from '@/store/wallet/util/tokenHelper'
 import { Web3Type } from '@/store/wallet/chainType'
@@ -34,6 +33,7 @@ import useTonTransaction from './useTonTransaction'
 import sendTon from '../utils/sendTransaction/sendTon'
 import sendEvm from '../utils/sendTransaction/sendEvm'
 import useTransactions from '@/store/wallet/hooks/useTransactions'
+import { useStore } from '@/store'
 
 export type GetMfaParamsType = (params: {
   content: any
@@ -52,7 +52,7 @@ export const useNewSendTransaction = (type: 'Send' | 'Swap' | 'Gift') => {
   const { addTx: setTransactionHistory } = useTransactions()
   // const [, setApproveHash] = useAtom(approveHashAtom)
   // const { setStatus } = useSwapStore()
-  const { feeMode } = useCommonStore()
+  const feeMode = useStore((state) => state.feeMode)
   const tonTransData = {
     fromAddress: `${tonAddress}`,
     publicKey: `${tonPublicKey}`,

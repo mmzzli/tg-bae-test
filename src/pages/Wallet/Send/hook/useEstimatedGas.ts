@@ -25,7 +25,6 @@ import { useMemo } from 'react'
 import { formatUnits, parseUnits } from 'viem'
 import { FeeMode } from '../../components/FeeSelect'
 import { DexTransaction } from '@/store/wallet/type'
-import { useCommonStore } from '@/store/wallet/walletCommon'
 import { useUserStore } from '@/store/wallet/walletUser'
 import { useTokenStore } from '@/store/wallet/walletToken'
 import { getChainByChainId } from '@/store/wallet/util/tokenHelper'
@@ -34,6 +33,8 @@ import { getPriorityFee, solDecimals } from '@/store/wallet/config/sol'
 import chains from '@/store/wallet/chains'
 import { getSendEvmGas } from '../../utils/sendTransaction/sendEvm'
 import getEvmGas from '../../utils/estimateGas/getEvmGas'
+import { useStore } from '@/store'
+
 const avgTonNativeTransferFee = '0.005'
 const avgTonJettonTransferFee = '0.05'
 
@@ -60,7 +61,7 @@ const useEstimatedGas = ({
   feeModeParams?: FeeMode
   gasMagnMode?: boolean
 }) => {
-  const { feeMode } = useCommonStore()
+  const feeMode = useStore((state) => state.feeMode)
   const {
     walletUserInfo: { ethereumAddress: evmAddress, solanaAddress: solAddress, tonAddress },
   } = useUserStore()

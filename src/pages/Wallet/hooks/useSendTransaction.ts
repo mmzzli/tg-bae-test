@@ -55,7 +55,6 @@
 // } from 'wagmi'
 
 import useTransactions from '@/store/wallet/hooks/useTransactions'
-import { useCommonStore } from '@/store/wallet/walletCommon'
 import { useMfa } from '../Account/hooks/useMfa'
 import { AssetsToken } from '@/store/wallet/tokenType/AssetsToken'
 import {
@@ -69,6 +68,7 @@ import { Web3Type } from '@/store/wallet/chainType'
 import { allChains } from '@/store/wallet/chains'
 import { IHistoryType } from '@/store/wallet/type'
 import { Buffer } from 'buffer'
+import { useStore } from '@/store'
 
 // import { TToast } from '@/components/tmd'
 // import { errorContents } from '@/config/const'
@@ -128,7 +128,7 @@ export type CustomRpcSchema = [
 ]
 const useSendTransaction = ({ chainId }: { chainId?: number | undefined }) => {
   // const { evmWallet } = useAtomValue(clientMapAtom)
-  const { feeMode } = useCommonStore()
+  const feeMode = useStore((state) => state.feeMode)
   const { addTx: setTransactionHistory } = useTransactions()
   // const config = evmChainsConfig()
   const { getMfaParams } = useMfa()

@@ -16,7 +16,6 @@ import classNames from 'clsx'
 import chains from '@/store/wallet/chains'
 import { IWeb3ChainType } from '@/store/wallet/chainType'
 import { AssetsToken } from '@/store/wallet/tokenType/AssetsToken'
-import { useCommonStore } from '@/store/wallet/walletCommon'
 import { Loading } from 'antd-mobile'
 import { useState } from 'react'
 import AdaptiveNumber, { NumberType } from './AdaptiveNumber'
@@ -25,6 +24,7 @@ import BaseButton from '@/components/BaseButton/BaseButton'
 import { IconAverage } from '@/components/tmd/icons/average'
 import { IconSlow } from '@/components/tmd/icons/slow'
 import { IconFast } from '@/components/tmd/icons/fast'
+import { useStore } from '@/store'
 
 /**
  * Enum representing different fee modes for gas fees.
@@ -160,7 +160,8 @@ const FeeSelect = ({
       }
     | undefined
 }) => {
-  const { feeMode, feeModeActions } = useCommonStore()
+  const feeMode = useStore((state) => state.feeMode)
+  const feeModeActions = useStore((state) => state.feeModeActions)
   const [renderFeeMode, setRenderFeeMode] = useState(feeMode)
 
   if (!modeFees) {

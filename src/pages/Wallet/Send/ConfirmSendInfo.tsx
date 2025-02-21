@@ -11,10 +11,10 @@ import chains from '@/store/wallet/chains'
 import useEstimatedGas, { UseEstimatedGasParamsType } from './hook/useEstimatedGas'
 import getSendEvmData from './utils/getSendEvmData'
 import ConfirmSendBtn, { sendEvmParams } from './components/ConfirmSendBtn'
-import { useCommonStore } from '@/store/wallet/walletCommon'
 import { TBottomButton, TContainer, TScrollContent } from '@/components/tmd'
 
 import ShowSendInfo from './components/ShowSendInfo'
+import { useStore } from '@/store'
 // import ConfirmSendBtn, { sendEvmParams } from './components/ConfirmSendBtn'
 
 // import tokenStore from '@/stores/tokenStore'
@@ -42,7 +42,7 @@ function ConfirmSendInfo() {
     walletUserInfo: { tonPublicKey, tonAddress },
   } = useUserStore()
   const { tokenList: tokens } = useTokenStore()
-  const { feeMode } = useCommonStore()
+  const feeMode = useStore((state) => state.feeMode)
   const token = useMemo(() => {
     return tokens?.find?.(
       (token) =>

@@ -50,11 +50,6 @@ const FollowPage: FC = () => {
   const { bind, x } = useSwipeBack({ scrollRef })
   const styles = useSpring({
     x,
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
     touchAction: 'pan-y',
   })
 
@@ -133,7 +128,7 @@ const FollowPage: FC = () => {
     <animated.div
       {...bind()}
       style={styles}
-      className="dark:bg-black bg-white flex flex-col text-white px-4 z-10 overflow-hidden"
+      className="fixed top-0 left-0 right-0 bottom-0 dark:bg-black bg-white flex flex-col text-white px-4 z-10 overflow-hidden"
       ref={scrollRef}
     >
       <div

@@ -39,12 +39,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
     }
   }, [allMuted, playerRef.current])
 
-  useEffect(() => {
-    if (autoplay && playerRef.current) {
-      playerRef.current.play()
-    }
-  }, [autoplay, playerRef.current])
-
   const onVideoPress = useCallback(() => {
     if (playerRef.current) {
       if (playerRef.current.paused) {
@@ -82,12 +76,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
   useEffect(() => {
     if (playerRef.current) {
       if (autoplay) {
-        playerRef.current.play()
+        setTimeout(() => {
+          playerRef.current?.play()
+        }, 1000)
       } else {
         playerRef.current.pause()
       }
     }
-  }, [autoplay])
+  }, [autoplay, playerRef.current])
 
   useEffect(() => {
     if (elRef.current) {

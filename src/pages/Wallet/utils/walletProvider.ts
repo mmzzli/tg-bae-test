@@ -6,12 +6,12 @@ import { retrieveLaunchParams } from '@telegram-apps/sdk'
 import { DEV_INIT_DATA_RAW } from '@/utils/constants'
 import useInitUser from '@/store/wallet/hooks/useInitUser'
 import { getCacheTokens } from '@/store/wallet/util/tokenHelper'
-import { useTokenStore } from '@/store/wallet/walletToken'
+import { useStore } from '@/store'
 
 export const useAccount = () => {
   const [initDataUnsafe] = useInitData()
 
-  const { walletUserInfo } = useTokenStore()
+  const walletUserInfo = useStore((state) => state.walletUserInfo)
 
   const [status, setStatus] = useState<'disconnected' | 'connected'>('disconnected')
   const [address, setAddress] = useState<`0x${string}` | undefined>(undefined)
@@ -21,11 +21,11 @@ export const useAccount = () => {
   useEffect(() => {
     checkUserInfo()
   }, [])
-  
+
   useEffect(() => {
     checkUserInfo()
   }, [JSON.stringify(walletUserInfo)])
-  
+
   const checkUserInfo = () => {
     const walletUserState: UserState = initUserState()
     const walletUserInfo: UserType = initUserInfo()
@@ -72,7 +72,11 @@ export const useConnect = () => {
   }
 }
 
-export const useBalance = (address: string | undefined, chainId: number, tokenAddress: string | undefined) => {
+export const useBalance = (
+  address: string | undefined,
+  chainId: number,
+  tokenAddress: string | undefined
+) => {
   const list = getCacheTokens() || []
   const find = list.find((i) => {
     if (tokenAddress) {
@@ -84,6 +88,6 @@ export const useBalance = (address: string | undefined, chainId: number, tokenAd
 }
 
 export const userefetchBalance = () => {
-  const { refreshTokenStore } = useTokenStore()
+  const refreshTokenStore = useStore((state) => state.refreshTokenStore)
   return { refreshTokenStore }
 }

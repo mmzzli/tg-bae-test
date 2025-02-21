@@ -4,12 +4,12 @@ import { getAllBalance, v1AllAssetApi } from '@/api/wallet'
 import { useStore } from '@/store'
 import { shallow } from 'zustand/shallow'
 import { CustomListInfo, WhiteListInfo } from '../type'
-import { useTokenStore } from '../walletToken'
 import chains from '../chains'
 
 const useUserTokens = () => {
   const user = useStore((state) => state.walletUserInfo)
-  const { customTokens, whiteTokens } = useTokenStore()
+  const customTokens = useStore((state) => state.customTokens)
+  const whiteTokens = useStore((state) => state.whiteTokens)
   const { ethereumAddress: evmAddress, solanaAddress, suiAddress } = user
 
   const { whiteTokensActions, customTokensActions } = useStore(

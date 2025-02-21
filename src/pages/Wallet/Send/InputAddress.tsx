@@ -9,10 +9,10 @@ import { URLSearchParams } from 'url'
 import { BackButton, useWebApp } from '@vkruglikov/react-telegram-web-app'
 import { useAtomValue } from 'jotai'
 import { tonSendTransactionDataAtom } from '@/store/wallet/util/tonconnect'
-import { useTokenStore } from '@/store/wallet/walletToken'
 import { IconDelete2 } from '@/components/tmd/icons/delete2'
 import { IconScan } from '@/components/tmd/icons/scan'
 import BaseButton from '@/components/BaseButton/BaseButton'
+import { useStore } from '@/store'
 
 interface BaseIconButtonType {
   onClick: () => void
@@ -61,7 +61,7 @@ export default function InputAddress() {
   const [receiveAddress, setReceiveAddress] = useState(toAddress)
   const WebApp = useWebApp()
   const tonSendTxData = useAtomValue(tonSendTransactionDataAtom)
-  const { walletReportTxs } = useTokenStore()
+  const walletReportTxs = useStore((state) => state.walletReportTxs)
 
   useEffect(() => {
     // @ts-ignore

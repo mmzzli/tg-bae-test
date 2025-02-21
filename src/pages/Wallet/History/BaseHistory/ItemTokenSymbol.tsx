@@ -1,15 +1,15 @@
 import React, { useMemo } from 'react'
-import classNames from 'classnames'
+// import classNames from 'classnames'
 import TokenImg from '../../components/TokenImg'
 import { IHistoryType } from '@/store/wallet/type'
 import { shortenAddress } from '@/store/wallet/util'
-import { TIcon } from '@/components/tmd'
+// import { TIcon } from '@/components/tmd'
 import { getBalance } from '@/store/wallet/util/tokenHelper'
-import { useTokenStore } from '@/store/wallet/walletToken'
 import { IconContract } from '@/components/tmd/icons/contract'
+import { useStore } from '@/store'
 
 const ItemTokenSymbol = ({ history }: { history: IHistoryType }) => {
-  const { tokenList } = useTokenStore()
+  const tokenList = useStore((state) => state.tokenList)
   const fromToken = useMemo(() => {
     const token = getBalance(
       tokenList,
@@ -95,27 +95,27 @@ const ItemTokenSymbol = ({ history }: { history: IHistoryType }) => {
           </div>
         )
       case 'Approve':
-      case 'Withdraw':{
+      case 'Withdraw': {
         if (toToken && (history.toAmount || history.fromAmount)) {
           return (
             <div className="flex w-full justify-center">
-            <div className="relative">
-              <TokenImg
-                symbol={fromToken.symbol}
-                image={fromToken.image}
-                chainId={fromToken.chainId}
-                isNative={!fromToken.address}
-                symbolSize={36}
-              />
+              <div className="relative">
+                <TokenImg
+                  symbol={fromToken.symbol}
+                  image={fromToken.image}
+                  chainId={fromToken.chainId}
+                  isNative={!fromToken.address}
+                  symbolSize={36}
+                />
+              </div>
             </div>
-          </div>
           )
         }
         return (
           <div className="flex w-full justify-center">
             <div className="relative">
               <div className="relative flex size-9 flex-none items-center justify-center rounded-full bg-bg3">
-                <IconContract className="size-5"/>
+                <IconContract className="size-5" />
                 {/* <TIcon
                   className="m-auto text-white dark:text-black"
                   fontSize="20"
@@ -141,19 +141,29 @@ const ItemTokenSymbol = ({ history }: { history: IHistoryType }) => {
               : 'Cross-chain Swap'
             : history.historyType}
 
-            {
-                (history.status === "fail" || history.status === "failed") ? <div className='px-[4px] py-[2px] ml-[4px] inline-block border-[1px] border-red2 text-red2 font-normal text-xs rounded-[4px] scale-[0.8]'>
-                  <i className="iconfont icon-kong text-red2 text-[12px]"></i>
-                  <span className='ml-[4px]'>Fail</span>
-                </div> : null
-            }
+          {history.status === 'fail' || history.status === 'failed' ? (
+            <div className="px-[4px] py-[2px] ml-[4px] inline-block border-[1px] border-red2 text-red2 font-normal text-xs rounded-[4px] scale-[0.8]">
+              <i className="iconfont icon-kong text-red2 text-[12px]"></i>
+              <span className="ml-[4px]">Fail</span>
+            </div>
+          ) : null}
         </span>
         <div className="flex items-center text-xs font-normal text-b2">
-          {history.historyType === 'Receive' ? 'from' : (history.historyType === 'Send' || history.historyType === 'Withdraw') ? 'to' : ""} &nbsp;
-          { shortenAddress(
-            history.historyType === 'Receive' ? history.fromAddress : (history.historyType === 'Send' || history.historyType === 'Withdraw') ? history.toAddress : history.hash,
-             6, 4
-             )}
+          {history.historyType === 'Receive'
+            ? 'from'
+            : history.historyType === 'Send' || history.historyType === 'Withdraw'
+              ? 'to'
+              : ''}{' '}
+          &nbsp;
+          {shortenAddress(
+            history.historyType === 'Receive'
+              ? history.fromAddress
+              : history.historyType === 'Send' || history.historyType === 'Withdraw'
+                ? history.toAddress
+                : history.hash,
+            6,
+            4
+          )}
         </div>
       </div>
     </div>

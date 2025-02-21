@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import useLoginInfo from '@/store/wallet/hooks/useLoginInfo'
-import { useTokenStore } from '@/store/wallet/walletToken'
 import { useChainId, useSwitchChain } from 'wagmi'
 import { getChainByChainId } from '@/store/wallet/util/tokenHelper'
 import { Web3Type } from '@/store/wallet/chainType'
@@ -38,7 +37,7 @@ function ConfirmSendInfo() {
   const amount = search.get('amount') || ''
 
   const { tonPublicKey, tonAddress } = useStore((state) => state.walletUserInfo)
-  const { tokenList: tokens } = useTokenStore()
+  const tokens = useStore((state) => state.tokenList)
   const feeMode = useStore((state) => state.feeMode)
   const token = useMemo(() => {
     return tokens?.find?.(

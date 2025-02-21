@@ -4,7 +4,6 @@ import useAsyncEffect from 'ahooks/lib/useAsyncEffect'
 import { mergeOkxHistory, sameHashMerge } from '../util/txHelper'
 import { IHistoryType, IOKXHistoryType, TransactionsType } from '../type'
 import { IChainId } from '../chainType'
-import { useTokenStore } from '../walletToken'
 import { UNSUPPROT_HISTORY_CHAIN } from '../chains'
 import { useStore } from '@/store'
 
@@ -25,7 +24,14 @@ export interface UseOkxTransactionsProps {
 
 const useOkxTransactions = (props?: UseOkxTransactionsProps) => {
   const user = useStore((state) => state.walletUserInfo)
-  const { tokenList, walletReportTxs, walletTxs, walletTxsActions } = useTokenStore()
+  const { tokenList, walletReportTxs, walletTxs, walletTxsActions } = useStore((state) => {
+    return {
+      tokenList: state.tokenList,
+      walletReportTxs: state.walletReportTxs,
+      walletTxs: state.walletTxs,
+      walletTxsActions: state.walletTxsActions,
+    }
+  })
 
   const [cursor, setCursor] = useState('')
   const [okxList, setOkxList] = useState<IOKXHistoryType[]>([])

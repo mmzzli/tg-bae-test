@@ -5,7 +5,6 @@ import ConnectModal from './ConnectModal'
 import { CustomToast, typeOptions } from '../comm/Toast'
 import BaseButton from '../BaseButton/BaseButton'
 import { useAccount } from '@/pages/Wallet/utils/walletProvider'
-import { useTokenStore } from '@/store/wallet/walletToken'
 import AdaptiveNumber, { NumberType } from '@/pages/Wallet/components/AdaptiveNumber'
 import { IconWallet } from '../tmd/icons/wallet'
 import { IconArrowRight } from '../tmd/icons/arrowRight'
@@ -21,7 +20,7 @@ const ProfileConnectButton = ({ className }: { className?: string }) => {
   const navigate = useNavigate()
   const toast = useToast()
   const { status, address } = useAccount()
-  const { tokenList } = useTokenStore()
+  const tokenList = useStore((state) => state.tokenList)
   const walletUserInfo = useStore((state) => state.walletUserInfo)
   const connectModalRef = useRef<{ someMethod: () => void }>(null)
 

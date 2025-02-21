@@ -25,7 +25,6 @@ import { useMemo } from 'react'
 import { formatUnits, parseUnits } from 'viem'
 import { FeeMode } from '../../components/FeeSelect'
 import { DexTransaction } from '@/store/wallet/type'
-import { useTokenStore } from '@/store/wallet/walletToken'
 import { getChainByChainId } from '@/store/wallet/util/tokenHelper'
 import { Web3Type } from '@/store/wallet/chainType'
 import { getPriorityFee, solDecimals } from '@/store/wallet/config/sol'
@@ -65,7 +64,7 @@ const useEstimatedGas = ({
     (state) => state.walletUserInfo
   )
 
-  const { tokenList } = useTokenStore()
+  const tokenList = useStore((state) => state.tokenList)
 
   const nativeToken = useMemo(
     () => tokenList.find((token) => token.isNative && token.chainId === chainId),

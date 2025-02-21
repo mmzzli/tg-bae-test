@@ -93,13 +93,19 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
         url: sourceItem.r2,
         poster: sourceItem.thumbnail,
         playsinline: true,
-        autoplay: autoplay, // 不自动播放
-        autoplayMuted:true,
-        controls: false, // 不显示控制条
-        loop: false, // 不需要循环
-        miniprogress: false, // 不需要显示进度条
-        width: "100%", // 设置为 0，确保不显示
-        height: "100%", // 设置为 0，确保不显示
+        autoplay: true,
+        autoplayMuted: true,
+        videoInit: true,
+        width: "100%",
+        height: "100%",
+        lang: "en",
+        loop: true,
+        miniprogress: false,
+        controls: false,
+        closePauseVideoFocus: true,
+        closePlayVideoFocus: true,
+        inactive: 0,
+        presets: [MobilePreset],
       };
 
       if (platform == "Android") {

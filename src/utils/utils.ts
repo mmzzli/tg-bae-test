@@ -498,3 +498,16 @@ export const formatUSD = (
     .replace(/\.0+$/, '')
     .replace(/(\.[1-9]*)0+$/, '$1')}`
 }
+
+
+export function getDeviceType() {
+  const userAgent = navigator.userAgent.toLowerCase();
+
+  if (/iphone|ipod/.test(userAgent)) {
+    return "iOS";
+  } else if (/android/.test(userAgent)) {
+    return "Android";
+  } else {
+    return "Unknown";
+  }
+}

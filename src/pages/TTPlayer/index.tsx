@@ -102,7 +102,7 @@ const TTPlayer: React.FC = () => {
         <SwiperSlide key={`${index}`}>
           {item.type === 0 ? (
             <VideoPlayer
-              key={index}
+              key={item.id}
               sourceItem={item}
               setVideoRef={handleVideoRef(index)}
               autoplay={index === activeIndex}

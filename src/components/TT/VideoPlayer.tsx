@@ -93,7 +93,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
         url: sourceItem.r2,
         poster: sourceItem.thumbnail,
         playsinline: true,
-        autoplay: true, // 不自动播放
+        autoplay: autoplay, // 不自动播放
         controls: false, // 不显示控制条
         loop: false, // 不需要循环
         miniprogress: false, // 不需要显示进度条

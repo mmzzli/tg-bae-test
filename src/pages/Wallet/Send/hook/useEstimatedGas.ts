@@ -25,15 +25,14 @@ import { useMemo } from 'react'
 import { formatUnits, parseUnits } from 'viem'
 import { FeeMode } from '../../components/FeeSelect'
 import { DexTransaction } from '@/store/wallet/type'
-import { useCommonStore } from '@/store/wallet/walletCommon'
-import { useUserStore } from '@/store/wallet/walletUser'
-import { useTokenStore } from '@/store/wallet/walletToken'
 import { getChainByChainId } from '@/store/wallet/util/tokenHelper'
 import { Web3Type } from '@/store/wallet/chainType'
 import { getPriorityFee, solDecimals } from '@/store/wallet/config/sol'
 import chains from '@/store/wallet/chains'
 import { getSendEvmGas } from '../../utils/sendTransaction/sendEvm'
 import getEvmGas from '../../utils/estimateGas/getEvmGas'
+import { useStore } from '@/store'
+
 const avgTonNativeTransferFee = '0.005'
 const avgTonJettonTransferFee = '0.05'
 
@@ -60,11 +59,12 @@ const useEstimatedGas = ({
   feeModeParams?: FeeMode
   gasMagnMode?: boolean
 }) => {
-  const { feeMode } = useCommonStore()
-  const {
-    walletUserInfo: { ethereumAddress: evmAddress, solanaAddress: solAddress, tonAddress },
-  } = useUserStore()
-  const { tokenList } = useTokenStore()
+  const feeMode = useStore((state) => state.feeMode)
+  const { solanaAddress: solAddress, ethereumAddress: evmAddress } = useStore(
+    (state) => state.walletUserInfo
+  )
+
+  const tokenList = useStore((state) => state.tokenList)
 
   const nativeToken = useMemo(
     () => tokenList.find((token) => token.isNative && token.chainId === chainId),

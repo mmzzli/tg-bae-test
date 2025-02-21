@@ -17,7 +17,6 @@ import covertToAssetsToken from '../covertToAssetsToken'
 import { setPassKey } from '@/components/tmd/utils/crypto'
 import { sendRawTransactionApi } from '@/store/wallet/config/evm'
 import { v1AddAssetApi } from '@/api/wallet'
-import { useTokenStore } from '@/store/wallet/walletToken'
 import { useStore } from '@/store'
 
 export const minPriorityFeePerGas = 200000n

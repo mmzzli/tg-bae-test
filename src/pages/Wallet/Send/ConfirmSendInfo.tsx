@@ -1,9 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { BackButton } from '@vkruglikov/react-telegram-web-app'
 import useLoginInfo from '@/store/wallet/hooks/useLoginInfo'
-import { useUserStore } from '@/store/wallet/walletUser'
-import { useTokenStore } from '@/store/wallet/walletToken'
 import { useChainId, useSwitchChain } from 'wagmi'
 import { getChainByChainId } from '@/store/wallet/util/tokenHelper'
 import { Web3Type } from '@/store/wallet/chainType'
@@ -11,10 +8,10 @@ import chains from '@/store/wallet/chains'
 import useEstimatedGas, { UseEstimatedGasParamsType } from './hook/useEstimatedGas'
 import getSendEvmData from './utils/getSendEvmData'
 import ConfirmSendBtn, { sendEvmParams } from './components/ConfirmSendBtn'
-import { useCommonStore } from '@/store/wallet/walletCommon'
 import { TBottomButton, TContainer, TScrollContent } from '@/components/tmd'
 
 import ShowSendInfo from './components/ShowSendInfo'
+import { useStore } from '@/store'
 // import ConfirmSendBtn, { sendEvmParams } from './components/ConfirmSendBtn'
 
 // import tokenStore from '@/stores/tokenStore'
@@ -38,11 +35,10 @@ function ConfirmSendInfo() {
   // const fromAddress = solAddress
   const btcAdrType = search.get('btcAdrType') || ''
   const amount = search.get('amount') || ''
-  const {
-    walletUserInfo: { tonPublicKey, tonAddress },
-  } = useUserStore()
-  const { tokenList: tokens } = useTokenStore()
-  const { feeMode } = useCommonStore()
+
+  const { tonPublicKey, tonAddress } = useStore((state) => state.walletUserInfo)
+  const tokens = useStore((state) => state.tokenList)
+  const feeMode = useStore((state) => state.feeMode)
   const token = useMemo(() => {
     return tokens?.find?.(
       (token) =>

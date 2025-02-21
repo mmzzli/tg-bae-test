@@ -18,7 +18,7 @@ import BaseButton from '@/components/BaseButton/BaseButton'
 // import { useAtomValue } from 'jotai'
 // import { tonSendTransactionDataAtom } from '@/store/wallet/util/tonconnect'
 import useLoginInfo from '@/store/wallet/hooks/useLoginInfo'
-import { useTokenStore } from '@/store/wallet/walletToken'
+import { useStore } from '@/store'
 
 const rateButton = [
   {
@@ -68,7 +68,7 @@ function InputAmount() {
     )
     setInputAmount(amount)
   }
-  const { tokenList } = useTokenStore()
+  const tokenList = useStore((state) => state.tokenList)
   // const tonSendTxData = useAtomValue(tonSendTransactionDataAtom)
   const { getAddressByToken } = useLoginInfo()
   useEffect(() => {

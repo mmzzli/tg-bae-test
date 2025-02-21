@@ -122,5 +122,3 @@ export const createTokenStore: StateCreator<ITokenStore> = (set, get) => ({
     })
   },
 })
-
-export const useTokenStore = () => useStore((state) => state, shallow)

@@ -1,13 +1,13 @@
 import React, { FC, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AdaptiveNumber, { NumberType } from '../../components/AdaptiveNumber'
-import { useTokenStore } from '@/store/wallet/walletToken'
 import { IconWallet } from '@/components/tmd/icons/wallet'
 import { IconArrowDown } from '@/components/tmd/icons/arrowDown'
 import usePopup from '../../hooks/usePopup'
 import clsx from 'clsx'
 import WalletAddress from './WalletAddress'
 import WalletMenus from './WalletMenus'
+import { useStore } from '@/store'
 
 const WalletBtn = () => {
   const { setOpen, component, open } = usePopup({
@@ -36,7 +36,7 @@ const WalletBtn = () => {
 }
 
 const WalletHeader = () => {
-  const { tokenList } = useTokenStore()
+  const tokenList = useStore((state) => state.tokenList)
 
   const totalBal = useMemo(() => {
     return tokenList
@@ -64,8 +64,8 @@ const WalletHeader = () => {
 
       <div className="rounded-lg bg-[#F7F9FC] px-3.5 py-3 w-full mt-6">
         <p className="text-[13px] text-b2 leading-normal font-normal">
-          Only select EVM/BSC/Solana/Ton tokens are shown. Other tokens can’t be used here. We will soon
-          support other tokens.
+          Only select EVM/BSC/Solana/Ton tokens are shown. Other tokens can’t be used here. We will
+          soon support other tokens.
         </p>
       </div>
     </div>

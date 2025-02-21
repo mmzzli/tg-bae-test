@@ -20,7 +20,6 @@ import { AssetsToken } from '@/store/wallet/tokenType/AssetsToken'
 import { ChainGasFeesType } from '@/store/wallet/type'
 import FeeSelect, { FeeMode, getEvmFeeConfig, ModeFeesType } from '../../components/FeeSelect'
 import BigNumber from 'bignumber.js'
-import { useCommonStore } from '@/store/wallet/walletCommon'
 import { formatUnits } from 'viem'
 import { formatFees } from '../utils/number'
 import chains from '@/store/wallet/chains'
@@ -30,6 +29,7 @@ import { TCopy, TTokenImage } from '@/components/tmd'
 import { numberFormat } from '@/components/tmd/utils/crypto'
 import { IconArrowRight } from '@/components/tmd/icons/arrowRight'
 import usePopup from '../../hooks/usePopup'
+import { useStore } from '@/store'
 
 // import { ChainGasFeesType } from '@/hooks/api/chain'
 
@@ -107,7 +107,7 @@ function ShowSendInfo({
   const fontSize = Math.max(defaultFontSize - Math.floor(fontLength / 4) * subFontSize, minFontSize)
   const [isFocus, setIsFocus] = useState(false)
 
-  const { feeMode } = useCommonStore()
+  const feeMode = useStore((state) => state.feeMode)
 
   const handleMemo = (val: string) => {
     memoChange && memoChange(val)

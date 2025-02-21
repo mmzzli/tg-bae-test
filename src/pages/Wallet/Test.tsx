@@ -4,23 +4,21 @@ import { retrieveLaunchParams } from '@telegram-apps/sdk'
 import { useMfa } from './Account/hooks/useMfa'
 import useWallet from './hooks/useWallet'
 import { string } from '@tma.js/sdk'
-import { useUserStore } from '@/store/wallet/walletUser'
 import { getSendSplToken, mockSolEvmChainId, sendSolTx } from '@/store/wallet/config/sol'
-import { useCommonStore } from '@/store/wallet/walletCommon'
+
 import { BaseModal } from '@/components/Modal/BaseModal'
 import { useState } from 'react'
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { Input } from 'antd-mobile'
+import { useStore } from '@/store'
 // import NiceModal from '@ebay/nice-modal-react'
 
 const WalletTest = () => {
   // const { tgLogin, getUserInfo } = useInitUser()
   const { hanleWalletAction } = useWallet()
-  // const {
-  //   walletUserInfo: { tonPublicKey, tonAddress, solanaAddress },
-  // } = useUserStore()
-  // const { feeMode } = useCommonStore()
-
+  // const { tonPublicKey, tonAddress, solanaAddress } = useStore((state) => state.walletUserInfo)
+  // const feeMode = useStore((state) => state.feeMode)
+  // console.log('还会自动刷么feeMode', feeMode, Date.now())
   // const connect = async () => {
   //   let userInfo
   //   try {

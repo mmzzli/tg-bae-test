@@ -7,7 +7,6 @@ import BaseButton from '@/components/BaseButton/BaseButton'
 import { TPasscodeInput, TPasscodeInputRef } from '@/components/tmd'
 import { IconEyeOpen } from '@/components/tmd/icons/eyeOpen'
 import { IconEyeClose } from '@/components/tmd/icons/eyeClose'
-// import { useStore } from '@/store'
 
 export type PayPinType = 'reset' | 'confirm' | 'set' | 'change'
 export type PayPinBaseRefType = {
@@ -48,9 +47,6 @@ const PaypinBase = forwardRef<PayPinBaseRefType, PayPinBaseType>(
     },
     ref
   ) => {
-    // const webapp = useWebApp()
-    // const { t } = useTranslation()
-    // const { userState } = useUserStore()
     const navigate = useNavigate()
     const [pass, setPass] = useState('')
     const passcodeRef = useRef<TPasscodeInputRef | any>()

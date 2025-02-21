@@ -1,13 +1,9 @@
 import { StateCreator } from 'zustand'
 import { StoreState, useStore } from '../store'
 import { shallow } from 'zustand/shallow'
-import {
-  UserType,
-  UserState,
-} from './type'
+import { UserType, UserState } from './type'
 import { InitDataUnsafe } from '@vkruglikov/react-telegram-web-app'
 import { STORAGE_KEY } from './util/tokenHelper'
-
 
 export const initUserInfo = () => {
   const userInfo = localStorage.getItem(STORAGE_KEY.user)
@@ -26,7 +22,7 @@ export const initUserState = () => {
       loginTime: undefined,
       tokenExpiredAt: undefined,
       setTradePassword: false,
-      token: ''
+      token: '',
     }
   return JSON.parse(userState)
 }
@@ -48,7 +44,7 @@ export interface IUserStore {
 export const createUserStore: StateCreator<IUserStore> = (set, get) => ({
   tgData: {
     data: undefined,
-    query: undefined
+    query: undefined,
   },
   userInfoRefresh: 0,
   userState: initUserState(),
@@ -56,14 +52,13 @@ export const createUserStore: StateCreator<IUserStore> = (set, get) => ({
   updateUserStateAction: (info: UserState) => {
     localStorage.setItem(STORAGE_KEY.userState, JSON.stringify(info))
     set((state) => {
-      return { userState: { ...state.userState, ...info }}
+      return { userState: { ...state.userState, ...info } }
     })
   },
   updateTgAction: (data: InitDataUnsafe, query: string) => {
     set((state) => {
-      return { tgData: { data, query }}
+      return { tgData: { data, query } }
     })
-
   },
   updateUserInfoAction: (info: UserType) => {
     localStorage.setItem(STORAGE_KEY.user, JSON.stringify(info))
@@ -75,8 +70,5 @@ export const createUserStore: StateCreator<IUserStore> = (set, get) => ({
     set((state) => {
       return { userInfoRefresh: new Date().getTime() }
     })
-
   },
 })
-
-export const useUserStore = () => useStore((state) => state, shallow)

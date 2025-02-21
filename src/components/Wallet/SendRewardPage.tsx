@@ -22,7 +22,7 @@ const SendRewardPage = () => {
     chainName,
     uid,
   } = virtualRoutePage?.params || {}
-  const incomeToken: AssetsToken | undefined = useStore().tokenList.find(
+  const incomeToken: AssetsToken | undefined = useStore((state) => state.tokenList).find(
     (i) =>
       i.address === (balance as AssetsToken).address &&
       i.chainId === (balance as AssetsToken).chainId &&

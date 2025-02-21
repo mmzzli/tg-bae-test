@@ -4,14 +4,15 @@ import { useNavigate } from 'react-router-dom'
 import PayPinBase, { PayPinBaseRefType } from './PaypinBase'
 import EmailConfirm from './EmailConfirm'
 import useTradePwd from '@/hooks/wallet/useTradePwd'
-import { useUserStore } from '@/store/wallet/walletUser'
 import { useToast } from '@chakra-ui/react'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
+import { useStore } from '@/store'
 
 const Forget = () => {
   const navigate = useNavigate()
   const { resetTradePwd } = useTradePwd()
-  const { userState } = useUserStore()
+  const userState = useStore((state) => state.userState)
+
   const toast = useToast()
 
   const from = 'reset'

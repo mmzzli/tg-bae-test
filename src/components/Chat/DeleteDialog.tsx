@@ -127,7 +127,7 @@ export const DeleteDialogWarp = NiceModal.create(
         <DialogContent>
           <div className="w-[312px] pb-[24px] bg-[#fff] text-white text-center rounded-[16px]">
             <div className="mt-[30px] text-[#333] font-[500] text-[18px] ">{title}</div>
-            {value && <div className='text-[#333] mt-2 px-6 text-[14px]'>{value}</div>}
+            {value && <div className='text-[#666] mt-2 px-6 text-[14px]'>{value}</div>}
             <div className="flex justify-center gap-4 mt-[30px]">
               <div
                 className="cursor-pointer flex items-center justify-center w-[120px] h-[40px] border-[#CCC] border rounded-[20px] text-[#333] text-[14px] font-[500]"

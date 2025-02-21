@@ -18,7 +18,7 @@ import { setPassKey } from '@/components/tmd/utils/crypto'
 import { tonSignMessage, v1AddAssetApi } from '@/api/wallet'
 import { allChains } from '@/store/wallet/chains'
 import { CustomToast, typeOptions } from '@/components/comm/Toast'
-import { useTokenStore } from '@/store/wallet/walletToken'
+import { useStore } from '@/store'
 
 type ITonSigningType = {
   token: AssetsToken | undefined
@@ -48,7 +48,7 @@ const useTonTransaction = (transInfo: ITonSigningType) => {
   // const { tonPublicKey } = useLoginInfo()
   const { waitForTonTransactionSuccess } = useTonTransactions()
   const toast = useToast()
-  const { refreshTokenStore } = useTokenStore()
+  const refreshTokenStore = useStore((state) => state.refreshTokenStore)
 
   const handleTransferMessage = async (data?: TonSendTransactionParams) => {
     try {

@@ -1,7 +1,7 @@
 import { FC, useState, useRef, useEffect } from 'react'
 import { Box } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
-import { animated } from '@react-spring/web'
+import { animated, useSpring } from '@react-spring/web'
 import OtherUserProfile from '@/components/PersonalDetails/OtherUserProfile'
 import useCacheVideo, { useOthersViewList } from '@/store/hook/useResourceList'
 import PostList from '@/components/PostList/PostList'
@@ -32,6 +32,12 @@ const OthersProfile: FC = () => {
 
   const { bind, x } = useSwipeBack({
     scrollRef: scrollDivRef,
+  })
+
+  const styles = useSpring({
+    height:
+      'calc(100vh - 84px - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top))',
+    x,
   })
 
   const imgUrl =
@@ -86,11 +92,7 @@ const OthersProfile: FC = () => {
       className="relative w-full overflow-auto bg-white dark:bg-black scrollbar-hide"
       id="profileScrollableDiv"
       ref={scrollDivRef}
-      style={{
-        height:
-          'calc(100vh - 84px - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top))',
-        x,
-      }}
+      style={styles}
     >
       <div
         className="fixed top-0 left-0 right-0 bg-white dark:bg-black z-10"

@@ -1,9 +1,9 @@
+import { useStore } from '@/store'
 import chains from '../chains'
 import { AssetsToken } from '../tokenType/AssetsToken'
-import { useUserStore } from '../walletUser'
 
 export default function useLoginInfo() {
-  const { walletUserInfo } = useUserStore()
+  const walletUserInfo = useStore((state) => state.walletUserInfo)
 
   const getAddressByToken = (token?: AssetsToken) => {
     //btcWalletType?: WalletType

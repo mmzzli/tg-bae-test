@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '@chakra-ui/react'
 // import { useAccount } from 'wagmi'
-import { animated } from '@react-spring/web'
+import { animated, useSpring } from '@react-spring/web'
 
 import BaseButton from '@/components/BaseButton/BaseButton'
 import { StarsIcon, RightIcon } from '@/assets/icons'
@@ -21,6 +21,13 @@ const Earnings = () => {
   const toast = useToast()
   const scrollRef = useRef<HTMLDivElement>(null)
   const { bind, x } = useSwipeBack({ scrollRef })
+
+  const styles = useSpring({
+    x,
+    touchAction: 'pan-y',
+    height: 'calc(100vh - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top))',
+  })
+
   const { token } = useStore((state) => ({
     token: state.token,
   }))
@@ -96,12 +103,7 @@ const Earnings = () => {
     <animated.div
       {...bind()}
       ref={scrollRef}
-      style={{
-        x,
-        touchAction: 'pan-y',
-        height:
-          'calc(100vh - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top))',
-      }}
+      style={styles}
       className="px-4 fixed w-screen bg-[#fff] z-10 scrollbar-hide pt-6"
       id="scrollable"
     >

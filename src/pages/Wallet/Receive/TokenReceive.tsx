@@ -1,7 +1,6 @@
 import { TContainer, TCopy, TTokenImage } from '@/components/tmd'
 import useLoginInfo from '@/store/wallet/hooks/useLoginInfo'
 import { getChainByChainId } from '@/store/wallet/util/tokenHelper'
-import { useTokenStore } from '@/store/wallet/walletToken'
 import { useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { zeroAddress } from 'viem'
@@ -10,6 +9,7 @@ import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import QRCode from 'react-qr-code'
 import { IconDown2 } from '@/components/tmd/icons/arrowDown2'
 import { cn } from '@/utils/utils'
+import { useStore } from '@/store'
 
 export function ReceivePageComponent(props: {
   chain?: string
@@ -30,7 +30,7 @@ export function ReceivePageComponent(props: {
 
   // from market and other page need params
   const chainId = chainIdStr || '-1'
-  const { tokenList: tokens } = useTokenStore()
+  const tokens = useStore((state) => state.tokenList)
 
   const { getAddressAsChainId } = useLoginInfo()
 

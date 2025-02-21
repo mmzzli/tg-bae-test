@@ -16,5 +16,3 @@ export const createCommonStore: StateCreator<ICommonStore> = (set, get) => ({
     })
   },
 })
-
-export const useCommonStore = () => useStore((state) => state, shallow)

@@ -1,48 +1,60 @@
-import { useEffect, useMemo } from "react";
-import chains, { okxChains } from "../chains";
-import useGetTokenList from "./useGetTokenList";
-import { useOkxBalanceAccount } from "./useOkxAccount";
-import useTonBalance from "./useTonBalance";
-import useTonJettonsBalance from "./useTonJettonsBalance";
-import { IChainType } from "../chainType";
-import { BalanceToken } from "../tokenType/BalanceToken";
-import { useTokenStore } from "../walletToken";
-import { AssetsToken } from "../tokenType/AssetsToken";
-import { formatUnits, parseUnits } from "viem";
-import { getChainByChainId, getWalletTokensKey, jsonFilter, setCache } from "../util/tokenHelper";
-import { ReportSourcePendingToIHistoryType, reportTx, txListToTransactionsType, txsFilter } from "../util/txHelper";
+import { useEffect, useMemo } from 'react'
+import chains, { okxChains } from '../chains'
+import useGetTokenList from './useGetTokenList'
+import { useOkxBalanceAccount } from './useOkxAccount'
+import useTonBalance from './useTonBalance'
+import useTonJettonsBalance from './useTonJettonsBalance'
+import { IChainType } from '../chainType'
+import { BalanceToken } from '../tokenType/BalanceToken'
+import { AssetsToken } from '../tokenType/AssetsToken'
+import { formatUnits, parseUnits } from 'viem'
+import { getChainByChainId, getWalletTokensKey, jsonFilter, setCache } from '../util/tokenHelper'
+import {
+  ReportSourcePendingToIHistoryType,
+  reportTx,
+  txListToTransactionsType,
+  txsFilter,
+} from '../util/txHelper'
 import { useStore } from '@/store'
-import { IHistoryType, ReportHistoryType, ReportSourceType } from "../type";
-import useGetTransactionsStatus from "./useGetTransactionsStatus";
-import { getTransactionDetail } from "../util/transaction/getTransactionDetail";
-import { txReportListGet } from "@/api/wallet";
+import { IHistoryType, ReportHistoryType, ReportSourceType } from '../type'
+import useGetTransactionsStatus from './useGetTransactionsStatus'
+import { getTransactionDetail } from '../util/transaction/getTransactionDetail'
+import { txReportListGet } from '@/api/wallet'
 import useAsyncEffect from 'ahooks/lib/useAsyncEffect'
 
 const useTokens = () => {
-  const okxBalancesQuery = useOkxBalanceAccount(
-    okxChains.map((i) => i.id).join(',')
-  )
-  const {
-    walletTokens,
-    refetch,
-    isLoading: tokenListLoading
-  } = useGetTokenList()
+  const okxBalancesQuery = useOkxBalanceAccount(okxChains.map((i) => i.id).join(','))
+  const { walletTokens, refetch, isLoading: tokenListLoading } = useGetTokenList()
 
   const tonBalanceQuery = useTonBalance()
   const tonJettonBalanceQuery = useTonJettonsBalance()
-  const { tokenList, refreshTime, tokensActions, updateLoadingState } = useTokenStore()
   const { getTransactionStatus } = useGetTransactionsStatus()
-  const { walletTxUpdateActions, walletTxReportActions, walletTxsActions } = useTokenStore()
+  const {
+    tokenList,
+    refreshTime,
+    tokensActions,
+    updateLoadingState,
+    walletTxUpdateActions,
+    walletTxReportActions,
+    walletTxsActions,
+  } = useStore((state) => {
+    return {
+      tokenList: state.tokenList,
+      refreshTime: state.refreshTime,
+      tokensActions: state.tokensActions,
+      updateLoadingState: state.updateLoadingState,
+      walletTxUpdateActions: state.walletTxUpdateActions,
+      walletTxReportActions: state.walletTxReportActions,
+      walletTxsActions: state.walletTxsActions,
+    }
+  })
 
   const balances = useMemo(
     () => [
       ...(okxBalancesQuery.data ? okxBalancesQuery.data : []),
       ...(tonJettonBalanceQuery.data ? tonJettonBalanceQuery.data : []),
     ],
-    [
-      okxBalancesQuery.data,
-      tonJettonBalanceQuery.data,
-    ]
+    [okxBalancesQuery.data, tonJettonBalanceQuery.data]
   )
 
   const tonNativeBalance = useMemo(() => {
@@ -58,23 +70,19 @@ const useTokens = () => {
       balance: tonBalanceQuery.data?.balance,
       formatted: tonBalanceQuery.data?.formatted.toString(),
       value: tonBalanceQuery.data?.balance.toString(),
-      type: undefined
+      type: undefined,
     } as BalanceToken
   }, [tonBalanceQuery])
 
   const listBalance: BalanceToken[] = useMemo(() => {
-    const values = balances
-      ? [...balances, tonNativeBalance]
-      : []
+    const values = balances ? [...balances, tonNativeBalance] : []
     return JSON.parse(JSON.stringify(values))
   }, [balances, tonNativeBalance])
 
   const mergeAllTokenList = () => {
     const balancesData = listBalance
 
-    const source = tokenList.length
-      ? tokenList.map((i) => ({ ...i }) as AssetsToken)
-      : []
+    const source = tokenList.length ? tokenList.map((i) => ({ ...i }) as AssetsToken) : []
     if (source.length) {
       let noRiskList: AssetsToken[] = []
       if (!walletTokens.length) {
@@ -82,9 +90,7 @@ const useTokens = () => {
       }
       walletTokens.forEach((i) => {
         const findIdx = source.findIndex(
-          (j) =>
-            i.chainId === j.chainId &&
-            i.address?.toLowerCase() === j.address?.toLowerCase()
+          (j) => i.chainId === j.chainId && i.address?.toLowerCase() === j.address?.toLowerCase()
         )
 
         if (findIdx === -1) {
@@ -93,7 +99,7 @@ const useTokens = () => {
             ...i,
             id,
             balance: '0',
-            formatted: '0'
+            formatted: '0',
           }
           noRiskList.push(assets)
         } else {
@@ -127,8 +133,7 @@ const useTokens = () => {
         const find = balancesData.find(
           (balanceToken) =>
             Number(balanceToken.chainId) === Number(assetsToken.chainId) &&
-            balanceToken.address?.toLocaleUpperCase() ===
-              assetsToken.address?.toLocaleUpperCase()
+            balanceToken.address?.toLocaleUpperCase() === assetsToken.address?.toLocaleUpperCase()
         )
 
         if (find) {
@@ -136,10 +141,7 @@ const useTokens = () => {
           if (find?.balance) {
             balance = find.balance
             // sui rpc query balance can only get balance
-            formatted = formatUnits(
-              BigInt(balance),
-              assetsToken.decimals || 9
-            )
+            formatted = formatUnits(BigInt(balance), assetsToken.decimals || 9)
           } else {
             formatted = find?.formatted ?? '0'
             balance = parseUnits(
@@ -153,8 +155,7 @@ const useTokens = () => {
         if (!find && !fetching) {
           if (
             (assetsToken.chainId === chains.ton.id && noTonError) ||
-            (okxChains.find((i) => i.id === assetsToken.chainId) &&
-              noOkxError)
+            (okxChains.find((i) => i.id === assetsToken.chainId) && noOkxError)
           ) {
             balance = '0'
             formatted = '0'
@@ -164,7 +165,7 @@ const useTokens = () => {
         const assets: AssetsToken = {
           ...assetsToken,
           formatted,
-          balance
+          balance,
         }
         return assets
       })
@@ -174,8 +175,7 @@ const useTokens = () => {
       const find = balancesData.find(
         (balanceToken) =>
           Number(balanceToken.chainId) === Number(apiToken.chainId) &&
-          balanceToken.address?.toLocaleUpperCase() ===
-            apiToken.address?.toLocaleUpperCase()
+          balanceToken.address?.toLocaleUpperCase() === apiToken.address?.toLocaleUpperCase()
       )
       const id = `${apiToken?.address}-${apiToken.chainId}-${apiToken.symbol}`
       let formatted = find?.formatted ?? '0'
@@ -184,16 +184,13 @@ const useTokens = () => {
         balance = find?.balance
         formatted = formatUnits(BigInt(balance), apiToken.decimals || 9)
       } else {
-        balance = parseUnits(
-          formatted?.toString?.() ?? formatted,
-          apiToken.decimals
-        ).toString()
+        balance = parseUnits(formatted?.toString?.() ?? formatted, apiToken.decimals).toString()
       }
       const assets: AssetsToken = {
         ...apiToken,
         id,
         formatted,
-        balance
+        balance,
       }
       return assets
     })
@@ -211,7 +208,7 @@ const useTokens = () => {
     const txsResult = await txReportListGet({
       page: 0,
       limit: 250,
-      userID: useStore.getState().walletUserInfo.id
+      userID: useStore.getState().walletUserInfo.id,
     })
     debugger
     if (txsResult && txsResult.records) {
@@ -231,16 +228,15 @@ const useTokens = () => {
       useStore.getState().walletTxs,
       (iHistory) => iHistory.status === 'success'
     )
-    const pends = useStore.getState().walletReportTxs
-      .filter((i: ReportHistoryType) => jsonFilter(i.source))
+    const pends = useStore
+      .getState()
+      .walletReportTxs.filter((i: ReportHistoryType) => jsonFilter(i.source))
       .map((i) => {
-        const find = txsSuccess.find(
-          (j) => j.hash.toLowerCase() === i.tx.toLowerCase()
-        )
+        const find = txsSuccess.find((j) => j.hash.toLowerCase() === i.tx.toLowerCase())
         if (find?.status === 'success' && i.source.includes('normal')) {
           return {
             ...i,
-            source: i.source.replace('pending', 'success')
+            source: i.source.replace('pending', 'success'),
           }
         }
         return i
@@ -264,7 +260,7 @@ const useTokens = () => {
         cachedPends.map((iHistory: IHistoryType, index) =>
           getTransactionStatus({ find: iHistory }).then((statusRes) => ({
             index,
-            statusRes
+            statusRes,
           }))
         )
       )
@@ -296,20 +292,20 @@ const useTokens = () => {
         const res = await getTransactionDetail({
           hash: tx.hash,
           chainId: tx.fromSwapTokens.chain?.id,
-          chainType: tx.fromSwapTokens.chain?.type
+          chainType: tx.fromSwapTokens.chain?.type,
         })
         const toRes = await getTransactionDetail({
           hash: tx.toHash,
           chainId: tx.toSwapTokens.chain?.id,
-          chainType: tx.toSwapTokens.chain?.type
+          chainType: tx.toSwapTokens.chain?.type,
         })
         if (res) {
           tx.blocknumber = res?.blocknumber
           tx.endTime = res?.timestamp
           tx.gasAmount = formatUnits(
             res?.gasAmount || 0n,
-            getChainByChainId(tx.fromSwapTokens.chain?.id as number)?.chain
-              ?.nativeCurrency.decimals as number
+            getChainByChainId(tx.fromSwapTokens.chain?.id as number)?.chain?.nativeCurrency
+              .decimals as number
           )
         }
 
@@ -319,9 +315,9 @@ const useTokens = () => {
             endTime: toRes.timestamp,
             gasAmount: formatUnits(
               toRes?.gasAmount || 0n,
-              getChainByChainId(tx.toSwapTokens.chain?.id as number)?.chain
-                ?.nativeCurrency.decimals as number
-            )
+              getChainByChainId(tx.toSwapTokens.chain?.id as number)?.chain?.nativeCurrency
+                .decimals as number
+            ),
           }
       } catch (e) {
         console.warn('get gas failed')

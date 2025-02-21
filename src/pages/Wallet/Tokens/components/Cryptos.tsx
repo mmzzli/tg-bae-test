@@ -2,10 +2,16 @@ import React, { FC, useState } from 'react'
 import { Skeleton } from 'antd-mobile'
 import { ChainItemWithSwitch } from './ChainItem'
 import { CustomPullToRefresh } from '@/pages/Wallet/components/CustomPullToRefresh'
-import { useTokenStore } from '@/store/wallet/walletToken'
+import { useStore } from '@/store'
 
 const Cryptos: FC = () => {
-  const { tokenList, isLoading, refreshTokenStore } = useTokenStore()
+  const { tokenList, isLoading, refreshTokenStore } = useStore((state) => {
+    return {
+      tokenList: state.tokenList,
+      isLoading: state.isLoading,
+      refreshTokenStore: state.refreshTokenStore,
+    }
+  })
 
   return (
     <>

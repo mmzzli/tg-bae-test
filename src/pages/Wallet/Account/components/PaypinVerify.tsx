@@ -3,7 +3,7 @@ import PayPinBase, { PayPinBaseRefType } from './PaypinBase'
 import { errorContents } from '@/config/wallet/const'
 import useTradePwd from '@/hooks/wallet/useTradePwd'
 import { useNavigate } from 'react-router-dom'
-import { useUserStore } from '@/store/wallet/walletUser'
+import { useStore } from '@/store'
 
 const PaypinVerify = ({
   onSuccess,
@@ -16,7 +16,8 @@ const PaypinVerify = ({
 }) => {
   const navigate = useNavigate()
   const { verifyTradePwd } = useTradePwd()
-  const { updateUserStateAction, userState } = useUserStore()
+  const updateUserStateAction = useStore((state) => state.updateUserStateAction)
+  const userState = useStore((state) => state.userState)
 
   const [isError, setIsError] = useState(false)
   const [errMsg, setErrMsg] = useState('')

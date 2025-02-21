@@ -1,16 +1,15 @@
 import { useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useTokenStore } from '@/store/wallet/walletToken'
 import { AssetsToken } from '@/store/wallet/tokenType/AssetsToken'
 import { ZERO_ADDRESS } from '@/store/wallet/util/tokenHelper'
-import { BackButton } from '@vkruglikov/react-telegram-web-app'
 import SelectToken from '../Send/components/SelectToken'
+import { useStore } from '@/store'
 
 function SelectReceiveToken() {
   const [urlSearchStr] = useSearchParams()
   const chainId = urlSearchStr.get('chainId')
   const navigate = useNavigate()
-  const { tokenList } = useTokenStore()
+  const tokenList = useStore((state) => state.tokenList)
   const [tokens, setTokens] = useState(tokenList || [])
 
   const onSearch = (search: string) => {

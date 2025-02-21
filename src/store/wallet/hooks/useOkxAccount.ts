@@ -1,12 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
 import { getAllHistoryByAccount, getAllTokenBalancesByAccount } from '@/api/wallet'
 import { BalanceToken } from '../tokenType/BalanceToken'
-import { useUserStore } from '../walletUser'
+import { useStore } from '@/store'
 
-const getBalanceFromOkxAccount = async (params: {
-  accountId: string
-  chains: string
-}) => {
+const getBalanceFromOkxAccount = async (params: { accountId: string; chains: string }) => {
   try {
     const tokenAssets = await getAllTokenBalancesByAccount(params)
     return tokenAssets || null
@@ -31,7 +28,7 @@ export const getHistoryFromOkxAccount = async (params: {
 }
 
 export const useOkxBalanceAccount = (chains: string) => {
-  const { walletUserInfo: user } = useUserStore()
+  const user = useStore((state) => state.walletUserInfo)
   const query = useQuery({
     queryKey: ['getBalanceFromOkxAccount', user.okxAccount, chains],
     refetchOnWindowFocus: false,
@@ -42,7 +39,7 @@ export const useOkxBalanceAccount = (chains: string) => {
         if (user.okxAccount) {
           const res = await getBalanceFromOkxAccount({
             accountId: user.okxAccount,
-            chains
+            chains,
           })
           if (res) {
             const balanceList: BalanceToken[] = res.map((item) => {
@@ -60,7 +57,7 @@ export const useOkxBalanceAccount = (chains: string) => {
                 balance: undefined,
                 formatted: item.balance,
                 value: undefined,
-                type: 'okx'
+                type: 'okx',
               } as BalanceToken
             })
             return balanceList
@@ -70,7 +67,7 @@ export const useOkxBalanceAccount = (chains: string) => {
         console.warn(e)
       }
       return null
-    }
+    },
   })
   if (!user.okxAccount) {
     return {
@@ -78,7 +75,7 @@ export const useOkxBalanceAccount = (chains: string) => {
       isFetching: false,
       isError: true,
       isLoading: false,
-      refetch: () => {}
+      refetch: () => {},
     }
   }
 
@@ -86,7 +83,7 @@ export const useOkxBalanceAccount = (chains: string) => {
 }
 
 export const useOkxHistoryAccount = (cursor: string, chainIndex: string) => {
-  const { walletUserInfo: user } = useUserStore()
+  const user = useStore((state) => state.walletUserInfo)
 
   const query = useQuery({
     queryKey: ['getHistoryFromOkxAccount', user.okxAccount, cursor],
@@ -98,13 +95,13 @@ export const useOkxHistoryAccount = (cursor: string, chainIndex: string) => {
           const resHis = await getHistoryFromOkxAccount({
             accountId: user.okxAccount,
             cursor,
-            chainIndex
+            chainIndex,
           })
           console.log('okx account history res', resHis)
           if (resHis) {
             return {
               cursor: resHis?.cursor,
-              transactionList: resHis?.transactionList
+              transactionList: resHis?.transactionList,
             }
           }
         }
@@ -112,19 +109,19 @@ export const useOkxHistoryAccount = (cursor: string, chainIndex: string) => {
         //...
       }
       return {}
-    }
+    },
   })
   // 检查地址，避免发出无意义请求
   if (!user.okxAccount) {
     return {
       data: {
         cursor: '',
-        transactionList: []
+        transactionList: [],
       },
       isFetching: false,
       isError: true,
       isLoading: false,
-      refetch: () => {}
+      refetch: () => {},
     }
   }
   return query

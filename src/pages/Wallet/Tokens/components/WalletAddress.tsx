@@ -1,10 +1,10 @@
 import { TCopy, TTokenImage } from '@/components/tmd'
+import { useStore } from '@/store'
 import bsc from '@/store/wallet/chains/wagmiConfig/bsc'
 import ethereum from '@/store/wallet/chains/wagmiConfig/ethereum'
 import solana from '@/store/wallet/chains/wagmiConfig/solana'
 import ton from '@/store/wallet/chains/wagmiConfig/ton'
 import { IWeb3ChainType } from '@/store/wallet/chainType'
-import { useUserStore } from '@/store/wallet/walletUser'
 
 const WalletAddressItem = ({ address, chain }: { address: string; chain: IWeb3ChainType }) => {
   return (
@@ -27,9 +27,7 @@ const WalletAddressItem = ({ address, chain }: { address: string; chain: IWeb3Ch
 }
 
 const WalletAddress = () => {
-  const {
-    walletUserInfo: { solanaAddress, ethereumAddress, tonAddress },
-  } = useUserStore()
+  const { solanaAddress, ethereumAddress, tonAddress } = useStore((state) => state.walletUserInfo)
 
   const wallets = [
     {

@@ -1,13 +1,13 @@
 import { getTonBalance } from '../config/ton'
 import { useQuery } from '@tanstack/react-query'
-import { useUserStore } from '../walletUser'
+import { useStore } from '@/store'
 
 interface useTonBalanceReturnType {
   balance: string
   formatted: string
 }
 const useTonBalance = () => {
-  const { walletUserInfo: user } = useUserStore()
+  const user = useStore((state) => state.walletUserInfo)
 
   return useQuery({
     queryKey: ['TonBalance', user?.tonAddress],
@@ -18,7 +18,7 @@ const useTonBalance = () => {
       if (user?.tonAddress) {
         try {
           const value = (await getTonBalance({
-            tonAddress: user?.tonAddress
+            tonAddress: user?.tonAddress,
           })) as useTonBalanceReturnType
 
           console.log('useToken useTonBalance2', value)
@@ -31,9 +31,9 @@ const useTonBalance = () => {
       console.log('useToken useTonBalance4')
       return {
         balance: '0',
-        formatted: '0'
+        formatted: '0',
       }
-    }
+    },
   })
 }
 

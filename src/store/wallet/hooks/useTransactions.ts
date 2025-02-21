@@ -7,10 +7,10 @@ import {
   reportTx,
   txListToTransactionsType,
 } from '../util/txHelper'
-import { useTokenStore } from '../walletToken'
 import { txReportListGet } from '@/api/wallet'
 import { sleep } from '../util'
 import { jsonFilter } from '../util/tokenHelper'
+import { useStore } from '@/store'
 
 export interface UseTransactionsProps {
   chain_id?: number // -1, 1, 56...
@@ -34,6 +34,7 @@ const useTransactions = (props?: UseTransactionsProps) => {
   const address = props?.address
 
   const [loading, setLoading] = useState(false) // not need
+
   const {
     walletUserInfo: user,
     tokenList,
@@ -41,7 +42,16 @@ const useTransactions = (props?: UseTransactionsProps) => {
     walletTxUpdateActions,
     walletTxReportActions,
     walletTxsActions,
-  } = useTokenStore()
+  } = useStore((state) => {
+    return {
+      walletUserInfo: state.walletUserInfo,
+      tokenList: state.tokenList,
+      walletTxs: state.walletTxs,
+      walletTxUpdateActions: state.walletTxUpdateActions,
+      walletTxReportActions: state.walletTxReportActions,
+      walletTxsActions: state.walletTxsActions,
+    }
+  })
 
   const txs: TransactionsType = useMemo(() => {
     let temp: TransactionsType = walletTxs

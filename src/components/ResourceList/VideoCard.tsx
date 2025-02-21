@@ -29,28 +29,36 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve, exchangeRate 
   }))
 
   const handleVideoClick = useCallback(
-    (video: FormatterListItem) => {
-      if (ttMode && !(data.price > 0 && !data.is_pay)) {
-        console.log('tt mode')
-        navigate('/tt-player', {
-          state: {
-            id: data.id,
-          },
-        })
-        return
+    (() => {
+      let timeoutId: NodeJS.Timeout | null = null
+      return (video: FormatterListItem) => {
+        if (timeoutId) {
+          clearTimeout(timeoutId)
+        }
+        timeoutId = setTimeout(() => {
+          if (ttMode && !(data.price > 0 && !data.is_pay)) {
+            console.log('tt mode')
+            navigate('/tt-player', {
+              state: {
+                id: data.id,
+              },
+            })
+            return
+          }
+          if (!data?.trailer && data.price > 0 && !data.is_pay && data.uid != getCurrentUid()) {
+            return
+          }
+          const videoDom = videoCardContainer?.current?.querySelector('video')
+          console.log('video card')
+          setCacheVideoIndex(video.id)
+          setVideoResource(video)
+          if (videoDom) {
+            videoDom.pause()
+            videoDom.muted = false
+          }
+        }, 300) // 设置防抖时间为300毫秒
       }
-      if (!data?.trailer && data.price > 0 && !data.is_pay && data.uid != getCurrentUid()) {
-        return
-      }
-      const videoDom = videoCardContainer?.current?.querySelector('video')
-      console.log('video card')
-      setCacheVideoIndex(video.id)
-      setVideoResource(video)
-      if (videoDom) {
-        videoDom.pause()
-        videoDom.muted = false
-      }
-    },
+    })(),
     [ttMode, data.is_pay, data.trailer, data.uid]
   )
 

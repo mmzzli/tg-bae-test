@@ -93,7 +93,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
         url: sourceItem.r2,
         poster: sourceItem.thumbnail,
         playsinline: true,
-        autoplay: true,
+        autoplay: autoplay,
         autoplayMuted: true,
         videoInit: true,
         width: "100%",

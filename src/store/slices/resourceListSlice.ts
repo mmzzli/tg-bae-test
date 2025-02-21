@@ -277,7 +277,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
   },
 
   recommendList: { ...initialListState },
-  ttMode: false,
+  ttMode: true,
   setTtMode: (ttMode: boolean) => {
     set({ ttMode })
   },

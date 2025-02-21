@@ -55,6 +55,7 @@ const TTPlayer: React.FC = () => {
 
   useEffect(() => {
     if (state?.id && list?.length > 0) {
+      console.log(state?.id,'00000000000000000-jacob=----');
       const index = list.findIndex((item) => item.id === state.id)
       if (index !== -1) {
         setActiveIndex(index)

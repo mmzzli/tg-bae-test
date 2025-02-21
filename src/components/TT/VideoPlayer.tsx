@@ -123,6 +123,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
         };
       }
 
+
       console.log(playerConfig,'=====playerConfig====jacobi');
 
       playerRef.current = new Player(playerConfig)

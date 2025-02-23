@@ -29,7 +29,7 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
   const videoPlayerInit = () => {
 
     const playerInstance = createVideoElement();
-    playerInstance.controls = true;
+    playerInstance.controls = false;
 
     playerInstance.style.width='100%'
     playerInstance.style.height='100%'

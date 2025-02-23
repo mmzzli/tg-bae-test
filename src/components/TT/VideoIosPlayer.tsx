@@ -16,7 +16,8 @@ type VideoPlayerPropsAndIndex = VideoPlayerProps & {
 }
 const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
   const { sourceItem, setVideoRef, allMuted, setAllMuted, autoplay, activeIndex, index } = props
-  const { r2: mp4Url } = sourceItem
+  const { r2: mp4Url,thumbnail:poster } = sourceItem
+  console.log(sourceItem,'jacob===========');
 
   const swiperSlide = useSwiperSlide()
 
@@ -60,6 +61,7 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
 
   return (
     <div className="fixed w-full h-full object-contain z-10 bg-black inset-0" ref={videoWrapperRef}>
+      <img src={poster} width={'100%'} height={'100%'} alt=""/>
       <div className="pt-3" style={{ height: '11vh' }}>
         <UserInfo
           id={sourceItem?.id}

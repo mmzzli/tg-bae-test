@@ -32,6 +32,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
 
   useEffect(() => {
     loadImage(currentIndex)
+    window?.videoElement?.pause();
   }, [currentIndex, images])
 
   // load the current image

@@ -552,10 +552,6 @@ export function createVideoElement() {
 
 export function destroyVideo() {
   console.log(`destroyVideo`);
-  if (timer) {
-    clearTimeout(timer);
-    timer = null;
-  }
 
   // 销毁已有的视频实例
   if (window.videoElement) {
@@ -572,23 +568,20 @@ export function destroyVideo() {
     console.log(`播放器实例已销毁`);
   }
 
-  timer = setTimeout(() => {
     // 销毁已有的视频实例
-    if (window.videoElement) {
-      window.videoElement?.pause();
-      window.videoElement?.remove();
-      window.videoElement = null;
-      console.log("视频实例已销毁");
-    }
-    if (window.playerInstance) {
-      window.playerInstance.pause();
-      window.playerInstance.destroy();
-      window.playerInstance = null;
-      console.log(`播放器实例已销毁`);
-    }
-    clearTimeout(timer);
-    timer = null;
-  }, 1500);
+  if (window.videoElement) {
+    window.videoElement?.pause();
+    window.videoElement?.remove();
+    window.videoElement = null;
+    console.log("视频实例已销毁");
+  }
+  if (window.playerInstance) {
+    window.playerInstance.pause();
+    window.playerInstance.destroy();
+    window.playerInstance = null;
+    console.log(`播放器实例已销毁`);
+  }
+
 }
 
 export function cancelDestroyVideo() {

@@ -150,9 +150,10 @@ export const UserInfo = memo(
 
     return (
       <div
-        className="absolute left-4 right-4 z-[14] flex flex-col cursor-pointer no-tap pb-4"
+        className="absolute left-4 right-4 z-[14] flex flex-col cursor-pointer no-tap pb-4 "
         style={{
-          bottom: `20px`,
+          bottom: `20vh`,
+          zIndex:'100'
         }}
       >
         <div className="flex items-center justify-between">

@@ -33,6 +33,10 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
 
     playerInstance.style.width='100%'
     playerInstance.style.height='100%'
+    playerInstance.style.position = 'absolute'
+    playerInstance.style.top = '0'
+    playerInstance.style.left = 0;
+    playerInstance.style.zIndex = 99;
 
 
     playerInstance.src = mp4Url;
@@ -68,22 +72,29 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
 
   }, [swiperSlide.isVisible, index, activeIndex])
 
+  useEffect(() => {
+    if(index == activeIndex){
+      console.log('=====================')
+    }
+  }, [showVideo,index, activeIndex]);
+
   return (
     <div className="fixed w-full h-full object-contain z-10 bg-black inset-0" ref={videoWrapperRef}>
-      <img style={{position:'absolute',left:0, top:0,display:showVideo?'none':'block'}} src={poster} width={'100%'} height={'100%'} alt=""/>
-      <div className="pt-3" style={{ height: '11vh' }}>
-        <UserInfo
-          id={sourceItem?.id}
-          avatar={sourceItem?.avatar}
-          username={sourceItem?.username}
-          content={sourceItem?.title}
-          uid={sourceItem?.uid}
-          info={sourceItem}
-          bottom={bottom}
-          is_follow={sourceItem?.is_follow}
-          created_at={sourceItem?.created_at}
-          onClose={handleClose}
-        />
+      <img style={{position:'absolute',left:0, top:0,display:showVideo?'none':'block',zIndex:'98'}} src={poster} width={'100%'} height={'100%'} alt=""/>
+
+      <UserInfo
+        id={sourceItem?.id}
+        avatar={sourceItem?.avatar}
+        username={sourceItem?.username}
+        content={sourceItem?.title}
+        uid={sourceItem?.uid}
+        info={sourceItem}
+        bottom={bottom}
+        is_follow={sourceItem?.is_follow}
+        created_at={sourceItem?.created_at}
+        onClose={handleClose}
+      />
+      <div className="pt-3" style={{ height:'11vh', position:'absolute',bottom:0, zIndex:100,width:'100%' }}>
         <ResourceFooter data={sourceItem}></ResourceFooter>
       </div>
     </div>

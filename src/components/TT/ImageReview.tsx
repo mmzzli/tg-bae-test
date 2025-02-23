@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Swiper as SwiperType } from 'swiper'
-import { Swiper, SwiperSlide } from 'swiper/react'
+import { Swiper, SwiperSlide,useSwiperSlide } from 'swiper/react'
 import { FreeMode, Navigation } from 'swiper/modules'
-import { cn, formatImage } from '@/utils/utils'
+import {cn, destroyVideo, formatImage} from '@/utils/utils'
 import { handleZoomAndPan } from '@/components/Image/resizeAndMove'
 
 import 'swiper/css'
@@ -12,16 +12,21 @@ interface ImagePreviewProps {
   isOpen: boolean
   images: string[]
   currentIndex: number
+  index:number
+  activeIndex:number
 }
 
 const ImagePreview: React.FC<ImagePreviewProps> = ({
   isOpen,
   images,
   currentIndex,
+  activeIndex:wrapperActiveIndex,
+  index
 }) => {
   const [swiper, setSwiper] = useState<SwiperType | null>(null)
   const [loading, setLoading] = useSafeState(true)
   const [activeIndex, setActiveIndex] = useState(0)
+  const swiperSlide = useSwiperSlide()
 
   useEffect(() => {
     if (swiper && swiper.activeIndex !== currentIndex) {
@@ -29,6 +34,12 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
       setLoading(true)
     }
   }, [currentIndex, swiper])
+
+  useEffect(() => {
+    if(swiperSlide.isVisible && index==wrapperActiveIndex){
+      destroyVideo()
+    }
+  }, [swiperSlide.isVisible,index,wrapperActiveIndex]);
 
   useEffect(() => {
     loadImage(currentIndex)

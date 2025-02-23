@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useCallback, useState, memo } from 'react'
+import { HStack } from '@chakra-ui/react'
 import { useSwiperSlide } from 'swiper/react'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import { useSafeArea } from '@/hooks/useSafeArea'
@@ -16,6 +17,7 @@ import BaseButton from '@/components/BaseButton/BaseButton'
 import MoreText from '@/components/More/MoreText'
 import PurchaseButton from '@/components/ResourceList/PurchaseButton'
 import { ReplayButton, PlayButton, ProgressDisplay } from '@/components/ResourceList/VideoDialog'
+import { VolumeMuteIcon, VolumeSpeakerIcon } from '@/assets/icons'
 
 type VideoPlayerPropsAndIndex = VideoPlayerProps & {
   index: number
@@ -144,7 +146,7 @@ export const UserInfo = memo(
             )}
           </div>
         </div>
-        <MoreText textColor={'#fff'} text={content || ''} bgColor={'#000'} onTextClick={onClose}/>
+        <MoreText textColor={'#fff'} text={content || ''} bgColor={'#000'} onTextClick={onClose} />
         {info && info?.price > 0 && !info?.is_pay && info?.uid !== current_uid && (
           <div className="mt-2">
             <PurchaseButton
@@ -177,9 +179,11 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
   const [playing, setPlaying] = useState(false)
   const [ended, setEnded] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const setHomeVideoMuted = useStore((state) => state.setHomeVideoMuted)
+  const homeVideoMuted = useStore((state) => state.homeVideoMuted)
 
   const { bottom } = useSafeArea()
-  const [showVideo, setShowVideo] = useState(false)
+  const [showThumbnail, setShowThumbnail] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
 
 
@@ -193,6 +197,7 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
     videoElement.style.zIndex = '99'
     videoElement.src = mp4Url
 
+    setShowThumbnail(true)
     videoElement.addEventListener('timeupdate', () => {
       if (videoElement.duration) {
         const currentProgress = (videoElement.currentTime / videoElement.duration) * 100
@@ -211,23 +216,24 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
     })
 
     videoElement.addEventListener('waiting', () => {
-      console.log('Video waiting')
       setIsLoading(true)
+      setShowThumbnail(true)
     })
 
     videoElement.addEventListener('playing', () => {
-      console.log('Video started playing')
       setIsLoading(false)
+      setShowThumbnail(false)
     })
 
     videoElement.addEventListener('ended', () => {
-      console.log('Video ended')
       setPlaying(false)
       setEnded(true)
     })
 
-    videoElement.addEventListener('loadedmetadata', () => {
-      console.log('Video metadata loaded')
+    videoElement.addEventListener('loadedmetadata', (e: any) => {
+      if (e.target.duration !== undefined) {
+        setDuration(e.target.duration)
+      }
     })
 
     videoRef.current = videoElement
@@ -238,6 +244,12 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
       videoWrapperEl.insertBefore(videoElement, firstChild)
     }
   }
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = homeVideoMuted
+    }
+  }, [homeVideoMuted])
 
   const togglePlay = useCallback(() => {
     if (videoRef.current) {
@@ -269,62 +281,49 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
     [duration]
   )
 
-  const handleClose = useCallback(() => {}, [])
+  const handleClose = useCallback(() => { }, [])
 
   useEffect(() => {
-    setShowVideo(false)
     setTimeout(() => {
       if (swiperSlide.isVisible && index === activeIndex) {
         videoPlayerInit()
-        setShowVideo(true)
       }
     }, 0)
     return () => {
       if (videoRef.current) {
-        videoRef.current.removeEventListener('timeupdate', () => {})
-        videoRef.current.removeEventListener('pause', () => {})
-        videoRef.current.removeEventListener('play', () => {})
-        videoRef.current.removeEventListener('waiting', () => {})
-        videoRef.current.removeEventListener('playing', () => {})
-        videoRef.current.removeEventListener('ended', () => {})
-        videoRef.current.removeEventListener('loadedmetadata', () => {})
+        videoRef.current.removeEventListener('timeupdate', () => { })
+        videoRef.current.removeEventListener('pause', () => { })
+        videoRef.current.removeEventListener('play', () => { })
+        videoRef.current.removeEventListener('waiting', () => { })
+        videoRef.current.removeEventListener('playing', () => { })
+        videoRef.current.removeEventListener('ended', () => { })
+        videoRef.current.removeEventListener('loadedmetadata', () => { })
       }
     }
   }, [swiperSlide.isVisible, index, activeIndex])
-
-  useEffect(() => {
-    if (index == activeIndex) {
-      console.log('=====================')
-    }
-  }, [showVideo, index, activeIndex])
 
   return (
     <div className="fixed w-full h-full object-contain z-10 bg-black inset-0 flex flex-col">
       <div className="relative flex-1" ref={videoWrapperRef}>
         <img
           style={{
-            position: 'absolute',
-            left: 0,
-            top: 0,
-            display: showVideo ? 'none' : 'block',
-            zIndex: '11',
+            display: showThumbnail ? 'block' : 'none'
           }}
           src={poster}
-          width={'100%'}
-          height={'100%'}
+          className="w-full h-full z-[11] top-0 left-0 right-0 bottom-0 absolute object-contain"
           alt=""
         />
         <div
-            className="top-0 left-0 right-0 z-[12] absolute w-full h-full bg-video-gradient"
-            onClick={togglePlay}
+          className="top-0 left-0 right-0 z-[12] absolute w-full h-full bg-video-gradient"
+          onClick={togglePlay}
         ></div>
         {!isLoading && !playing ? (
-            info?.price && !info?.is_pay && ended ? (
-              <ReplayButton onClick={togglePlay} />
-            ) : (
-              <PlayButton onClick={togglePlay} />
-            )
-          ) : null}
+          info?.price && !info?.is_pay && ended ? (
+            <ReplayButton onClick={togglePlay} />
+          ) : (
+            <PlayButton onClick={togglePlay} />
+          )
+        ) : null}
         <div
           ref={progressBarRef}
           className="absolute bottom-[-6px] left-0 right-0 touch-none z-[100]"
@@ -357,6 +356,26 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
           created_at={sourceItem?.created_at}
           onClose={handleClose}
         />
+         <HStack
+          position="absolute"
+          bottom={"15vh"}
+          right="16px"
+          p="5px"
+          gap="4px"
+          rounded="full"
+          zIndex={101}
+          bg="rgba(0,0,0,0.4)"
+          cursor="pointer"
+          onClick={() => {
+            setHomeVideoMuted(!homeVideoMuted)
+          }}
+        >
+          {homeVideoMuted ? (
+            <Image src={VolumeMuteIcon} className="w-[22px] h-[22px] text-white" />
+          ) : (
+            <Image src={VolumeSpeakerIcon} className="w-[22px] h-[22px] text-white" />
+          )}
+      </HStack>
       </div>
       <div className="pt-3" style={{ height: '11vh', width: '100%' }}>
         <ResourceFooter data={sourceItem}></ResourceFooter>

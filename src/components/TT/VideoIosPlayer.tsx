@@ -27,6 +27,10 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
   const videoPlayerInit = () => {
 
     const playerInstance = createVideoElement();
+
+    playerInstance.style.width='100%'
+    playerInstance.style.height='100%'
+
     playerInstance.src = mp4Url;
     // playerInstance.poster = coverBaseUrl.value;
     console.log(`PLAYER.SRC => `, mp4Url);
@@ -48,7 +52,8 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
 
 
   useEffect(() => {
-    if (index === activeIndex){
+    if (swiperSlide.isVisible && index === activeIndex){
+      console.log('jacob===========');
       videoPlayerInit()
     }
   }, [swiperSlide.isVisible, index, activeIndex])

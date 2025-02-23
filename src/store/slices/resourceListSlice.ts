@@ -180,6 +180,9 @@ export interface ResourceListSlice {
   homeVideoMuted: boolean
   setHomeVideoMuted: (muted: boolean) => void
 
+  ttVideoMuted: boolean
+  setTtVideoMuted: (muted: boolean) => void
+
   ttMode: boolean
   setTtMode: (ttMode: boolean) => void
 }
@@ -443,6 +446,11 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
   homeVideoMuted: true,
   setHomeVideoMuted: (muted) => {
     set({ homeVideoMuted: muted })
+  },
+
+  ttVideoMuted: true,
+  setTtVideoMuted: (muted) => {
+    set({ ttVideoMuted: muted })
   },
   // 根据当前索引更新缓存池
   updateCacheVideo: (videoList, force = false) => {

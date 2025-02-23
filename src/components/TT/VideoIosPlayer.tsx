@@ -179,8 +179,8 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
   const [playing, setPlaying] = useState(false)
   const [ended, setEnded] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  const setHomeVideoMuted = useStore((state) => state.setHomeVideoMuted)
-  const homeVideoMuted = useStore((state) => state.homeVideoMuted)
+  const setTtVideoMuted = useStore((state) => state.setTtVideoMuted)
+  const ttVideoMuted = useStore((state) => state.ttVideoMuted)
 
   const { bottom } = useSafeArea()
   const [showThumbnail, setShowThumbnail] = useState(false)
@@ -246,10 +246,16 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
   }
 
   useEffect(() => {
+    setTimeout(() => {
+      setTtVideoMuted(false)
+    }, 100)
+  }, [])
+
+  useEffect(() => {
     if (videoRef.current) {
-      videoRef.current.muted = homeVideoMuted
+      videoRef.current.muted = ttVideoMuted
     }
-  }, [homeVideoMuted])
+  }, [ttVideoMuted])
 
   const togglePlay = useCallback(() => {
     if (videoRef.current) {
@@ -287,10 +293,15 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
     setTimeout(() => {
       if (swiperSlide.isVisible && index === activeIndex) {
         videoPlayerInit()
+      } else {
+        if (videoRef.current) {
+          videoRef.current.pause()
+        }
       }
     }, 0)
     return () => {
       if (videoRef.current) {
+        videoRef.current.pause()
         videoRef.current.removeEventListener('timeupdate', () => { })
         videoRef.current.removeEventListener('pause', () => { })
         videoRef.current.removeEventListener('play', () => { })
@@ -367,10 +378,10 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
           bg="rgba(0,0,0,0.4)"
           cursor="pointer"
           onClick={() => {
-            setHomeVideoMuted(!homeVideoMuted)
+            setTtVideoMuted(!ttVideoMuted)
           }}
         >
-          {homeVideoMuted ? (
+          {ttVideoMuted ? (
             <Image src={VolumeMuteIcon} className="w-[22px] h-[22px] text-white" />
           ) : (
             <Image src={VolumeSpeakerIcon} className="w-[22px] h-[22px] text-white" />

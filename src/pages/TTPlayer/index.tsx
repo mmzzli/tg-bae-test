@@ -9,21 +9,25 @@ import type { Swiper as SwiperType } from 'swiper'
 
 import ImagePreview from '@/components/TT/ImageReview'
 import useCacheVideo, { useRecommendList } from '@/store/hook/useResourceList'
-const VideoPlayer = dynamic(() => import('@/components/TT/VideoPlayer'), { ssr: false })
-
+import { useStore } from '@/store'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import './index.css'
+import { isIOS } from '@/utils/utils'
+import VideoIosPlayer from '@/components/TT/VideoIosPlayer'
 export interface TVideo {
   url: string
   poster?: string
 }
 
+const VideoPlayer = dynamic(() => import('@/components/TT/VideoPlayer'), { ssr: false })
 const TTPlayer: React.FC = () => {
   const videoRefs = useRef<{ [key: number]: Player | null }>({})
   const swiperRef = useRef<SwiperType>()
-  const { list: rawList, hasMore, fetchMoreData, page, refresh, isLoading } = useRecommendList()
-  const list = rawList.filter(item => item.price === 0 || item.is_pay === true)
+  // const { fetchMoreData } = useRecommendList()
+  const { list: rawList, isLoading, page, hasMore } = useStore((state) => state.recommendList)
+  const setRecommendPage = useStore((state) => state.setRecommendPage)
+  const list = rawList.filter((item) => item.price === 0 || item.is_pay === true)
   const [globalMuted, setGlobalMuted] = useState(() => false)
   const [isTouched, setIsTouched] = useState(() => false)
   const [activeIndex, setActiveIndex] = useState(0)
@@ -35,22 +39,24 @@ const TTPlayer: React.FC = () => {
     setGlobalMuted(muted)
   }, [])
 
+  const fetchMoreData = () => {
+    if (!isLoading && hasMore) {
+      setRecommendPage(page + 1)
+    }
+  }
+
   const handleVideoRef = (index: number) => (ref: Player | null) => {
     if (videoRefs.current) videoRefs.current[index] = ref
   }
 
   useEffect(() => {
-    window.Telegram?.WebApp?.setHeaderColor('#000')
+    window.Telegram?.WebApp?.setHeaderColor(isIOS ? '#ffffff' : '#000000')
   }, [])
 
   useEffect(() => {
     if (list?.length && activeIndex + 2 > list?.length) {
       fetchMoreData()
     }
-    Object.values(videoRefs.current).forEach((player) => {
-      player?.pause()
-    })
-    // videoRefs.current[activeIndex]?.play()
   }, [activeIndex])
 
   useEffect(() => {
@@ -65,7 +71,6 @@ const TTPlayer: React.FC = () => {
       }
     }
   }, [state?.id, list])
-
   return (
     <Swiper
       className="h-full w-full z-[10] fixed top-0 left-0 bg-[#000]"
@@ -100,7 +105,7 @@ const TTPlayer: React.FC = () => {
       {list.map((item, index) => (
         <SwiperSlide key={`${index}`}>
           {item.type === 0 ? (
-            <VideoPlayer
+            <VideoIosPlayer
               key={index}
               sourceItem={item}
               setVideoRef={handleVideoRef(index)}
@@ -108,10 +113,11 @@ const TTPlayer: React.FC = () => {
               allMuted={globalMuted}
               setAllMuted={setAllMuted}
               isTouched={isTouched}
+              index={index}
               activeIndex={activeIndex}
             />
           ) : (
-            <ImagePreview isOpen={true} images={item?.media || []} currentIndex={0} />
+            <ImagePreview index={index} activeIndex={activeIndex}  isOpen={true} images={item?.media || []} currentIndex={0} />
           )}
         </SwiperSlide>
       ))}

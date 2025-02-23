@@ -18,6 +18,7 @@ const monthNames = [
   'Nov',
   'Dec',
 ]
+let timer:any = null;
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -509,5 +510,91 @@ export function getDeviceType() {
     return "Android";
   } else {
     return "Unknown";
+  }
+}
+
+export const isIOS = getDeviceType() === "iOS";
+export const isAndroid = getDeviceType() === "Android";
+
+
+export function createVideoElement() {
+  // 如果视频元素已经存在，则直接返回
+  if (window.videoElement) {
+    return window.videoElement;
+  }
+
+  // 创建一个新的 video 元素
+  const video = document.createElement("video");
+  // 设置 video 元素的属性
+  video.id = "video-el";
+  video.setAttribute("playsinline", "true");
+  video.setAttribute("webkit-playsinline", "true");
+  video.setAttribute("x5-playsinline", "true");
+  video.setAttribute("mediatype", "video");
+  video.setAttribute("preload", "auto");
+  video.setAttribute("autoplay", "true");
+  video.setAttribute("x5-video-player-type", "h5-page");
+  video.setAttribute("x5-video-player-fullscreen", "false");
+  video.setAttribute("fullscreen", "false");
+  video.setAttribute("muted", "true");
+
+  // 保存视频元素以便下次使用
+  window.videoElement = video;
+
+  // 移除视频元素，并返回
+  video.remove();
+
+  return video;
+}
+
+
+
+
+export function destroyVideo() {
+  console.log(`destroyVideo`);
+  if (timer) {
+    clearTimeout(timer);
+    timer = null;
+  }
+
+  // 销毁已有的视频实例
+  if (window.videoElement) {
+    window.videoElement?.pause();
+    window.videoElement?.remove();
+    window.videoElement = null;
+    console.log("视频实例已销毁");
+    return;
+  }
+  if (window.playerInstance) {
+    window.playerInstance.pause();
+    window.playerInstance.destroy();
+    window.playerInstance = null;
+    console.log(`播放器实例已销毁`);
+  }
+
+  timer = setTimeout(() => {
+    // 销毁已有的视频实例
+    if (window.videoElement) {
+      window.videoElement?.pause();
+      window.videoElement?.remove();
+      window.videoElement = null;
+      console.log("视频实例已销毁");
+    }
+    if (window.playerInstance) {
+      window.playerInstance.pause();
+      window.playerInstance.destroy();
+      window.playerInstance = null;
+      console.log(`播放器实例已销毁`);
+    }
+    clearTimeout(timer);
+    timer = null;
+  }, 1500);
+}
+
+export function cancelDestroyVideo() {
+  console.log(`cancelDestroyVideo`);
+  if (timer) {
+    clearTimeout(timer);
+    timer = null;
   }
 }

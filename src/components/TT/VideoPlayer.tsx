@@ -9,9 +9,9 @@ import 'xgplayer/dist/index.min.css'
 import { UserInfo } from '@/components/ResourceList/VideoDialog'
 import { useSafeArea } from '@/hooks/useSafeArea'
 import ResourceFooter from '@/components/ResourceList/ResourceFooter'
-import {getDeviceType} from "@/utils/utils";
-const platform = getDeviceType();
-type VideoPlayerProps = {
+import { getDeviceType } from '@/utils/utils'
+const platform = getDeviceType()
+export type VideoPlayerProps = {
   sourceItem: FormatterListItem
   setVideoRef: (ref: Player | null) => void
   autoplay: boolean
@@ -19,9 +19,10 @@ type VideoPlayerProps = {
   setAllMuted: (muted: boolean) => void
   isTouched: boolean
   activeIndex: number
+  index: number
 }
 const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
-  const { sourceItem, setVideoRef, allMuted, setAllMuted, autoplay } = props
+  const { sourceItem, setVideoRef, allMuted, setAllMuted, autoplay, activeIndex, index } = props
 
   const swiperSlide = useSwiperSlide()
   const elRef = useRef<HTMLDivElement | null>(null)
@@ -53,11 +54,16 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
   }, [playerRef.current])
 
   useEffect(() => {
-    if (!swiperSlide.isVisible && playerRef.current) {
+    if (!swiperSlide.isVisible && playerRef.current && index !== activeIndex) {
       playerRef.current.pause()
     }
 
-    if (swiperSlide.isVisible && playerRef.current && playerRef.current.isCanplay) {
+    if (
+      swiperSlide.isVisible &&
+      playerRef.current &&
+      playerRef.current.isCanplay &&
+      index === activeIndex
+    ) {
       if (playerRef.current) {
         console.log('can play:', playerRef.current)
         setTimeout(() => {
@@ -72,7 +78,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
         playerRef.current.pause()
       }
     }
-  }, [swiperSlide.isVisible, playerRef.current])
+  }, [swiperSlide.isVisible, playerRef.current, index, activeIndex])
 
   useEffect(() => {
     if (playerRef.current) {
@@ -86,22 +92,28 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
 
   useEffect(() => {
     if (elRef.current) {
-
-      const playerConfig:any = {
+      const playerConfig: any = {
         el: elRef.current,
         url: sourceItem.r2,
         poster: sourceItem.thumbnail,
         playsinline: true,
-        autoplay: false, // 不自动播放
-        controls: false, // 不显示控制条
-        loop: false, // 不需要循环
-        miniprogress: false, // 不需要显示进度条
-        width: "100%", // 设置为 0，确保不显示
-        height: "100%", // 设置为 0，确保不显示
-      };
+        autoplay: autoplay,
+        autoplayMuted: true,
+        videoInit: true,
+        width: '100%',
+        height: '100%',
+        lang: 'en',
+        loop: true,
+        miniprogress: false,
+        controls: false,
+        closePauseVideoFocus: true,
+        closePlayVideoFocus: true,
+        inactive: 0,
+        presets: [MobilePreset],
+      }
 
-      if (platform == "Android") {
-        playerConfig.plugins = [Mp4Plugin]; // 使用 Mp4Plugin
+      if (platform == 'Android') {
+        playerConfig.plugins = [Mp4Plugin] // 使用 Mp4Plugin
         playerConfig.mp4plugin = {
           maxBufferLength: 3,
           minBufferLength: 3,
@@ -111,8 +123,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
           waitJampBufferMaxCnt: 2,
           tickInSeconds: 0.1,
           reqOptions: {
-            mode: "cors",
-            method: "GET",
+            mode: 'cors',
+            method: 'GET',
           },
           enableWorker: true,
           chunkSize: 15625,
@@ -120,10 +132,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
           retryCount: 2,
           retryDelay: 100,
           onProcessMinLen: 256,
-        };
+        }
       }
 
-      console.log(playerConfig,'=====playerConfig====jacobi');
+      console.log(playerConfig, '=====playerConfig====jacobi')
 
       playerRef.current = new Player(playerConfig)
 

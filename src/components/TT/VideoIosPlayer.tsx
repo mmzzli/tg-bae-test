@@ -246,12 +246,6 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
   }
 
   useEffect(() => {
-    setTimeout(() => {
-      setTtVideoMuted(false)
-    }, 100)
-  }, [])
-
-  useEffect(() => {
     if (videoRef.current) {
       videoRef.current.muted = ttVideoMuted
     }
@@ -293,10 +287,6 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
     setTimeout(() => {
       if (swiperSlide.isVisible && index === activeIndex) {
         videoPlayerInit()
-      } else {
-        if (videoRef.current) {
-          videoRef.current.pause()
-        }
       }
     }, 0)
     return () => {
@@ -318,7 +308,9 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
       <div className="relative flex-1" ref={videoWrapperRef}>
         <img
           style={{
-            display: showThumbnail ? 'block' : 'none'
+            display: showThumbnail ? 'block' : 'none',
+            opacity: showThumbnail ? 1 : 0,
+            transition: 'opacity 1s ease'
           }}
           src={poster}
           className="w-full h-full z-[11] top-0 left-0 right-0 bottom-0 absolute object-contain"

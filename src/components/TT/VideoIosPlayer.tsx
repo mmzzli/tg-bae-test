@@ -90,8 +90,16 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
           src={mp4Url}
           autoPlay={autoplay}
           muted={true}
-          controls={true}
           loop={true}
+          controls={false}
+          playsInline
+          webkit-playsinline="true"
+          x5-playsinline="true"
+          x5-video-player-type="h5"
+          x5-video-player-fullscreen="false"
+          preload="auto"
+          x-webkit-airplay="allow"
+          className="w-full h-full"
         ></video>
       </div>
 

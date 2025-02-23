@@ -25,7 +25,8 @@ const TTPlayer: React.FC = () => {
   const videoRefs = useRef<{ [key: number]: Player | null }>({})
   const swiperRef = useRef<SwiperType>()
   // const { fetchMoreData } = useRecommendList()
-  const { list: rawList } = useStore((state) => state.recommendList)
+  const { list: rawList, isLoading, page, hasMore } = useStore((state) => state.recommendList)
+  const setRecommendPage = useStore((state) => state.setRecommendPage)
   const list = rawList.filter((item) => item.price === 0 || item.is_pay === true)
   const [globalMuted, setGlobalMuted] = useState(() => false)
   const [isTouched, setIsTouched] = useState(() => false)
@@ -38,27 +39,28 @@ const TTPlayer: React.FC = () => {
     setGlobalMuted(muted)
   }, [])
 
+  const fetchMoreData = () => {
+    if (!isLoading && hasMore) {
+      setRecommendPage(page + 1)
+    }
+  }
+
   const handleVideoRef = (index: number) => (ref: Player | null) => {
     if (videoRefs.current) videoRefs.current[index] = ref
   }
 
   useEffect(() => {
-    window.Telegram?.WebApp?.setHeaderColor('#000')
+    window.Telegram?.WebApp?.setHeaderColor(isIOS ? '#fff' : '#000')
   }, [])
 
   useEffect(() => {
     if (list?.length && activeIndex + 2 > list?.length) {
-      // fetchMoreData()
+      fetchMoreData()
     }
-    Object.values(videoRefs.current).forEach((player) => {
-      player?.pause()
-    })
-    // videoRefs.current[activeIndex]?.play()
   }, [activeIndex])
 
   useEffect(() => {
     if (state?.id && list?.length > 0) {
-      console.log(state?.id, '00000000000000000-jacob=----')
       const index = list.findIndex((item) => item.id === state.id)
       if (index !== -1) {
         setActiveIndex(index)
@@ -69,8 +71,6 @@ const TTPlayer: React.FC = () => {
       }
     }
   }, [state?.id, list])
-
-  console.log(isIOS, '==========isIos')
   return (
     <Swiper
       className="h-full w-full z-[10] fixed top-0 left-0 bg-[#000]"
@@ -99,7 +99,6 @@ const TTPlayer: React.FC = () => {
         swiperRef.current = swiper
       }}
       onSlideChange={(swiper) => {
-        console.log(swiper.activeIndex, '=======jacob')
         setActiveIndex(swiper.activeIndex)
       }}
     >

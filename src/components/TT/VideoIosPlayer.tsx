@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useCallback, useState, memo } from 'react'
+import React, {useRef, useEffect, useCallback, useState, memo, useMemo} from 'react'
 import { HStack } from '@chakra-ui/react'
 import { useSwiperSlide } from 'swiper/react'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
@@ -18,6 +18,7 @@ import MoreText from '@/components/More/MoreText'
 import PurchaseButton from '@/components/ResourceList/PurchaseButton'
 import { ReplayButton, PlayButton, ProgressDisplay } from '@/components/ResourceList/VideoDialog'
 import { VolumeMuteIcon, VolumeSpeakerIcon } from '@/assets/icons'
+import {videoScale} from "@/utils/video";
 
 type VideoPlayerPropsAndIndex = VideoPlayerProps & {
   index: number
@@ -170,6 +171,7 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
   const info = useStore((state) => state.videoResource)
   const swiperSlide = useSwiperSlide()
 
+  const containerDomRef = useRef<HTMLDivElement |null>(null)
   const videoWrapperRef = useRef<HTMLDivElement | null>(null)
   const progressBarRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>()
@@ -186,6 +188,13 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
   const [isDragging, setIsDragging] = useState(false)
 
 
+  const scale = useMemo(() => {
+    console.log(sourceItem,containerDomRef.current,'jacob===========');
+    if(containerDomRef && containerDomRef.current && sourceItem){
+      return videoScale({ ...sourceItem }, containerDomRef.current)
+    }
+    return 'object-contain'
+  }, [containerDomRef,containerDomRef.current,sourceItem]);
   const videoPlayerInit = () => {
     const videoElement = createVideoElement()
     videoElement.controls = false
@@ -196,6 +205,8 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
     videoElement.style.left = '0'
     videoElement.style.zIndex = '99'
     videoElement.src = mp4Url
+    videoElement.className = scale;
+    console.log(scale,'jacob===========');
 
     setShowThumbnail(true)
     videoElement.addEventListener('timeupdate', () => {
@@ -293,12 +304,8 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
   useEffect(() => {
     setTimeout(() => {
       if (swiperSlide.isVisible && index === activeIndex) {
-        console.log('jacob===========');
         videoPlayerInit()
-        console.log(window.videoElement,'jacob===========');
         window.videoElement.play()
-      }else{
-
       }
     }, 0)
     return () => {
@@ -315,9 +322,11 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
     }
   }, [swiperSlide.isVisible, index, activeIndex])
 
+
+
   return (
-    <div className="fixed w-full h-full object-contain z-10 bg-black inset-0 flex flex-col">
-      <div className="relative flex-1" ref={videoWrapperRef}>
+    <div className="fixed w-full h-full object-contain z-10 bg-black inset-0 flex flex-col" ref={containerDomRef}>
+      <div className="relative" style={{height:'89vh'}} ref={videoWrapperRef}>
         <img
           style={{
             display: showThumbnail ? 'block' : 'none',

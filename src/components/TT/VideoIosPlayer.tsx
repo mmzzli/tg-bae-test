@@ -189,6 +189,7 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
   const videoPlayerInit = () => {
     const videoElement = createVideoElement()
     videoElement.controls = false
+    videoElement.loop = true
     videoElement.style.width = '100%'
     videoElement.style.height = '100%'
     videoElement.style.top = '0'
@@ -292,7 +293,13 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
   useEffect(() => {
     setTimeout(() => {
       if (swiperSlide.isVisible && index === activeIndex) {
+        console.log('jacob===========');
         videoPlayerInit()
+        console.log(window.videoElement,'jacob===========');
+        window.videoElement.muted = true
+        window.videoElement.play()
+      }else{
+
       }
     }, 0)
     return () => {

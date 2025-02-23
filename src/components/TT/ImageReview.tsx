@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Swiper as SwiperType } from 'swiper'
 import { Swiper, SwiperSlide,useSwiperSlide } from 'swiper/react'
 import { FreeMode, Navigation } from 'swiper/modules'
-import { cn, formatImage } from '@/utils/utils'
+import {cn, destroyVideo, formatImage} from '@/utils/utils'
 import { handleZoomAndPan } from '@/components/Image/resizeAndMove'
 
 import 'swiper/css'
@@ -36,7 +36,9 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
   }, [currentIndex, swiper])
 
   useEffect(() => {
-    window?.videoElement?.pause();
+    if(swiperSlide.isVisible && index==wrapperActiveIndex){
+      destroyVideo()
+    }
   }, [swiperSlide.isVisible,index,wrapperActiveIndex]);
 
   useEffect(() => {

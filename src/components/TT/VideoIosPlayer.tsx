@@ -19,7 +19,6 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
   const { r2: mp4Url } = sourceItem
 
   const swiperSlide = useSwiperSlide()
-  const elRef = useRef<HTMLDivElement | null>(null)
 
   const playerRef = useRef<HTMLVideoElement | null>(null)
 
@@ -57,9 +56,7 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
     if (swiperSlide.isVisible && playerRef.current && activeIndex === index) {
       if (playerRef.current) {
         console.log('can play:', playerRef.current)
-        setTimeout(() => {
-          playerRef.current?.play()
-        }, 1000)
+        playerRef.current?.play()
       }
     }
 

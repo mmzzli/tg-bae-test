@@ -50,7 +50,7 @@ const TTPlayer: React.FC = () => {
   }
 
   useEffect(() => {
-    window.Telegram?.WebApp?.setHeaderColor(isIOS ? '#fff' : '#000')
+    window.Telegram?.WebApp?.setHeaderColor(isIOS ? '#ffffff' : '#000000')
   }, [])
 
   useEffect(() => {

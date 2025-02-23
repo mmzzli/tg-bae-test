@@ -167,7 +167,6 @@ export const UserInfo = memo(
 const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
   const { sourceItem, setVideoRef, allMuted, setAllMuted, autoplay, activeIndex, index } = props
   const { r2: mp4Url, thumbnail: poster } = sourceItem
-  console.log(sourceItem, 'jacob===========')
   const info = useStore((state) => state.videoResource)
   const swiperSlide = useSwiperSlide()
 
@@ -237,6 +236,10 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
     })
 
     videoRef.current = videoElement
+
+    if (videoRef.current && videoRef.current.paused) {
+      videoRef.current?.play();
+    }
 
     const videoWrapperEl = videoWrapperRef.current
     if (videoWrapperEl) {

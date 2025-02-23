@@ -511,3 +511,6 @@ export function getDeviceType() {
     return "Unknown";
   }
 }
+
+export const isIOS = getDeviceType() === "iOS";
+export const isAndroid = getDeviceType() === "Android";

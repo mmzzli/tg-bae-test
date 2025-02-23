@@ -14,6 +14,8 @@ const VideoPlayer = dynamic(() => import('@/components/TT/VideoPlayer'), { ssr: 
 import 'swiper/css'
 import 'swiper/css/pagination'
 import './index.css'
+import {isIOS} from "@/utils/utils";
+import VideoIosPlayer from "@/components/TT/VideoIosPlayer";
 export interface TVideo {
   url: string
   poster?: string
@@ -65,8 +67,10 @@ const TTPlayer: React.FC = () => {
         }
       }
     }
+
   }, [state?.id, list])
 
+  console.log(isIOS,'==========isIos')
   return (
     <Swiper
       className="h-full w-full z-[10] fixed top-0 left-0 bg-[#000]"
@@ -95,22 +99,33 @@ const TTPlayer: React.FC = () => {
         swiperRef.current = swiper
       }}
       onSlideChange={(swiper) => {
+        console.log(swiper.activeIndex,'=======jacob');
         setActiveIndex(swiper.activeIndex)
       }}
     >
       {list.map((item, index) => (
-        <SwiperSlide key={`${index}`}>
+        <SwiperSlide key={`${index}`} >
           {item.type === 0 ? (
-            <VideoPlayer
-              key={item.id}
+            isIOS? <VideoIosPlayer key={index}
+                                   sourceItem={item}
+                                   setVideoRef={handleVideoRef(index)}
+                                   autoplay={index === activeIndex}
+                                   allMuted={globalMuted}
+                                   setAllMuted={setAllMuted}
+                                   isTouched={isTouched}
+                                   index={index}
+                                   activeIndex={activeIndex}/>: <VideoPlayer
+              key={index}
               sourceItem={item}
               setVideoRef={handleVideoRef(index)}
               autoplay={index === activeIndex}
               allMuted={globalMuted}
               setAllMuted={setAllMuted}
               isTouched={isTouched}
+              index={index}
               activeIndex={activeIndex}
             />
+
           ) : (
             <ImagePreview isOpen={true} images={item?.media || []} currentIndex={0} />
           )}

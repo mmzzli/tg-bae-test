@@ -236,6 +236,9 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
     })
 
     videoRef.current = videoElement
+    if (videoRef.current) {
+      videoRef.current.muted = ttVideoMuted
+    }
 
     if (videoRef.current && videoRef.current.paused) {
       videoRef.current?.play();
@@ -294,7 +297,7 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
     }, 0)
     return () => {
       if (videoRef.current) {
-        videoRef.current.pause()
+        // videoRef.current.pause()
         videoRef.current.removeEventListener('timeupdate', () => { })
         videoRef.current.removeEventListener('pause', () => { })
         videoRef.current.removeEventListener('play', () => { })

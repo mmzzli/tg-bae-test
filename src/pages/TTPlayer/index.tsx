@@ -9,23 +9,24 @@ import type { Swiper as SwiperType } from 'swiper'
 
 import ImagePreview from '@/components/TT/ImageReview'
 import useCacheVideo, { useRecommendList } from '@/store/hook/useResourceList'
-const VideoPlayer = dynamic(() => import('@/components/TT/VideoPlayer'), { ssr: false })
-
+import { useStore } from '@/store'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import './index.css'
-import {isIOS} from "@/utils/utils";
-import VideoIosPlayer from "@/components/TT/VideoIosPlayer";
+import { isIOS } from '@/utils/utils'
+import VideoIosPlayer from '@/components/TT/VideoIosPlayer'
 export interface TVideo {
   url: string
   poster?: string
 }
 
+const VideoPlayer = dynamic(() => import('@/components/TT/VideoPlayer'), { ssr: false })
 const TTPlayer: React.FC = () => {
   const videoRefs = useRef<{ [key: number]: Player | null }>({})
   const swiperRef = useRef<SwiperType>()
-  const { list: rawList, hasMore, fetchMoreData, page, refresh, isLoading } = useRecommendList()
-  const list = rawList.filter(item => item.price === 0 || item.is_pay === true)
+  // const { fetchMoreData } = useRecommendList()
+  const { list: rawList } = useStore((state) => state.recommendList)
+  const list = rawList.filter((item) => item.price === 0 || item.is_pay === true)
   const [globalMuted, setGlobalMuted] = useState(() => false)
   const [isTouched, setIsTouched] = useState(() => false)
   const [activeIndex, setActiveIndex] = useState(0)
@@ -47,7 +48,7 @@ const TTPlayer: React.FC = () => {
 
   useEffect(() => {
     if (list?.length && activeIndex + 2 > list?.length) {
-      fetchMoreData()
+      // fetchMoreData()
     }
     Object.values(videoRefs.current).forEach((player) => {
       player?.pause()
@@ -57,7 +58,7 @@ const TTPlayer: React.FC = () => {
 
   useEffect(() => {
     if (state?.id && list?.length > 0) {
-      console.log(state?.id,'00000000000000000-jacob=----');
+      console.log(state?.id, '00000000000000000-jacob=----')
       const index = list.findIndex((item) => item.id === state.id)
       if (index !== -1) {
         setActiveIndex(index)
@@ -67,10 +68,9 @@ const TTPlayer: React.FC = () => {
         }
       }
     }
-
   }, [state?.id, list])
 
-  console.log(isIOS,'==========isIos')
+  console.log(isIOS, '==========isIos')
   return (
     <Swiper
       className="h-full w-full z-[10] fixed top-0 left-0 bg-[#000]"
@@ -99,22 +99,14 @@ const TTPlayer: React.FC = () => {
         swiperRef.current = swiper
       }}
       onSlideChange={(swiper) => {
-        console.log(swiper.activeIndex,'=======jacob');
+        console.log(swiper.activeIndex, '=======jacob')
         setActiveIndex(swiper.activeIndex)
       }}
     >
       {list.map((item, index) => (
-        <SwiperSlide key={`${index}`} >
+        <SwiperSlide key={`${index}`}>
           {item.type === 0 ? (
-            isIOS? <VideoIosPlayer key={index}
-                                   sourceItem={item}
-                                   setVideoRef={handleVideoRef(index)}
-                                   autoplay={index === activeIndex}
-                                   allMuted={globalMuted}
-                                   setAllMuted={setAllMuted}
-                                   isTouched={isTouched}
-                                   index={index}
-                                   activeIndex={activeIndex}/>: <VideoPlayer
+            <VideoIosPlayer
               key={index}
               sourceItem={item}
               setVideoRef={handleVideoRef(index)}
@@ -125,7 +117,6 @@ const TTPlayer: React.FC = () => {
               index={index}
               activeIndex={activeIndex}
             />
-
           ) : (
             <ImagePreview isOpen={true} images={item?.media || []} currentIndex={0} />
           )}

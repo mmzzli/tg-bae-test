@@ -1,100 +1,364 @@
-import React, { useRef, useEffect, useCallback, useState } from 'react'
+import React, { useRef, useEffect, useCallback, useState, memo } from 'react'
 import { useSwiperSlide } from 'swiper/react'
-
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
-import Player, { Events } from 'xgplayer'
-import Mp4Plugin from 'xgplayer-mp4'
-import MobilePreset from 'xgplayer/es/presets/mobile'
-import 'xgplayer/dist/index.min.css'
-import { UserInfo } from '@/components/ResourceList/VideoDialog'
 import { useSafeArea } from '@/hooks/useSafeArea'
 import ResourceFooter from '@/components/ResourceList/ResourceFooter'
-import {createVideoElement, getDeviceType, isIOS} from '@/utils/utils'
+import { createVideoElement, getDeviceType, isIOS } from '@/utils/utils'
 import { VideoPlayerProps } from '@/components/TT/VideoPlayer'
+import { useProfileNavigation } from '@/hooks/useProfileNavigation'
+import { useStore } from '@/store'
+import { useTMAUtils } from '@/hooks/useTMAUtils'
+import { follow, getSomeoneProfile, totalAvailableInvoice } from '@/api'
+import { UserItem } from '@/types'
+import Image from '@/components/Image/Image'
+import { getTimeStringAutoShort } from '@/utils/utils'
+import BaseButton from '@/components/BaseButton/BaseButton'
+import MoreText from '@/components/More/MoreText'
+import PurchaseButton from '@/components/ResourceList/PurchaseButton'
+import { ReplayButton, PlayButton, ProgressDisplay } from '@/components/ResourceList/VideoDialog'
+
 type VideoPlayerPropsAndIndex = VideoPlayerProps & {
   index: number
 }
+
+export const UserInfo = memo(
+  ({
+    avatar,
+    username,
+    content,
+    uid,
+    bottom,
+    is_follow,
+    created_at,
+    id,
+    info,
+    onClose,
+    exchangeRate,
+  }: {
+    id: number | undefined
+    avatar: string | undefined
+    username: string | undefined
+    content: string | undefined
+    uid: number | undefined
+    bottom: number
+    is_follow?: boolean
+    created_at?: number | string
+    info: FormatterListItem | null
+    onClose: () => void
+    exchangeRate?: number
+  }) => {
+    const followResource = useStore((state) => state.followResource)
+    const setFollowResource = useStore((state) => state.setFollowResource)
+    const [isFollowLoading, setIsFollowLoading] = useState<boolean>(false)
+    const jumpToProfilePage = useProfileNavigation()
+    const setVideoResource = useStore((state) => state.setVideoResource)
+    const userInfo = useStore((state) => state.userInfo)
+    const { getCurrentUid } = useTMAUtils()
+    const current_uid = getCurrentUid()
+    const [isPaid, setIsPaid] = useState<boolean>(false)
+    const doFollow = async () => {
+      if (!uid || !id) return
+      setIsFollowLoading(true)
+      await getSomeoneProfile(uid)
+      await follow({
+        fansid: id,
+        tgid: uid,
+      })
+      setIsFollowLoading(false)
+      const res: any = followResource?.map((user) =>
+        user.uid === uid ? { ...user, boll: !user.boll } : user
+      )
+      setFollowResource(res)
+    }
+
+    const handleToProfilePage = useCallback(() => {
+      jumpToProfilePage({ uid } as UserItem)
+      setVideoResource(null)
+    }, [uid])
+
+    const resourcesEve = (post_id: number, url: string, is_pay?: boolean) => {
+      const options = is_pay ? { is_pay } : {}
+      const medias = url.split(',')
+      const picUrl = medias.find((item) => !item.endsWith('.m3u8'))
+      const media = medias.find((item) => item.endsWith('.m3u8'))
+      if (media) {
+        setVideoResource({
+          ...info,
+          media: [media],
+          mediaCover: picUrl ?? '',
+          ...options,
+        } as FormatterListItem)
+      }
+    }
+
+    return (
+      <div
+        className="absolute left-4 right-4 z-[100] flex flex-col cursor-pointer no-tap pb-4 "
+        style={{
+          bottom: 0,
+        }}
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <Image
+              rect={true}
+              type="avatar"
+              src={avatar}
+              alt="avatar"
+              className="w-12 h-12 rounded-full"
+              onClick={handleToProfilePage}
+            />
+            <div className=" flex-col pl-2">
+              <div>
+                <span className="text-white text-[16px] font-[500]" onClick={handleToProfilePage}>
+                  {username}
+                </span>
+                {created_at && (
+                  <span className="ml-[4px] text-white text-[12px] font-[400]">{getTimeStringAutoShort(new Date(created_at).getTime(), true)}</span>
+                )}
+              </div>
+              <div className="text-white text-[12px] flex">
+                {!is_follow && current_uid !== uid && (
+                  <div className="pl-1.5 text-white text-[12px]">Bae selected</div>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="pl-4">
+            {followResource?.some((user) => user.uid === uid && !user.is_follow) && (
+              <BaseButton
+                text={
+                  followResource?.some((user) => user.uid === uid && user.boll)
+                    ? `Following`
+                    : `Follow`
+                }
+                loading={isFollowLoading}
+                loadingColor="border-t-[#999]"
+                width={
+                  followResource?.some((user) => user.uid === uid && user.boll) ? '104px' : '80px'
+                }
+                height="34px"
+                handler={doFollow}
+                className={`border-[0.5px]  bg-transparent text-white border-[#CDCDD4] `}
+              />
+            )}
+          </div>
+        </div>
+        <MoreText textColor={'#fff'} text={content || ''} bgColor={'#000'} onTextClick={onClose}/>
+        {info && info?.price > 0 && !info?.is_pay && info?.uid !== current_uid && (
+          <div className="mt-2">
+            <PurchaseButton
+              price={info?.price || 0}
+              post_id={info?.id || 0}
+              resourcesEve={resourcesEve}
+              setIsPaid={setIsPaid}
+              exchangeRate={exchangeRate || 0}
+            />
+          </div>
+        )}
+      </div>
+    )
+  }
+)
+
+
 const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
   const { sourceItem, setVideoRef, allMuted, setAllMuted, autoplay, activeIndex, index } = props
-  const { r2: mp4Url,thumbnail:poster } = sourceItem
-  console.log(sourceItem,'jacob===========');
-
+  const { r2: mp4Url, thumbnail: poster } = sourceItem
+  console.log(sourceItem, 'jacob===========')
+  const info = useStore((state) => state.videoResource)
   const swiperSlide = useSwiperSlide()
 
   const videoWrapperRef = useRef<HTMLDivElement | null>(null)
+  const progressBarRef = useRef<HTMLDivElement>(null)
+  const videoRef = useRef<HTMLVideoElement>()
+  const [duration, setDuration] = useState(0)
+  const [progress, setProgress] = useState(0)
+  const [playing, setPlaying] = useState(false)
+  const [ended, setEnded] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   const { bottom } = useSafeArea()
-  const [showVideo,setShowVideo] = useState(false)
+  const [showVideo, setShowVideo] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
+
 
   const videoPlayerInit = () => {
+    const videoElement = createVideoElement()
+    videoElement.controls = false
+    videoElement.style.width = '100%'
+    videoElement.style.height = '100%'
+    videoElement.style.top = '0'
+    videoElement.style.left = '0'
+    videoElement.style.zIndex = '99'
+    videoElement.src = mp4Url
 
-    const playerInstance = createVideoElement();
-    playerInstance.controls = false;
+    videoElement.addEventListener('timeupdate', () => {
+      if (videoElement.duration) {
+        const currentProgress = (videoElement.currentTime / videoElement.duration) * 100
+        setProgress(currentProgress)
+        setDuration(videoElement.duration)
+      }
+    })
+    videoElement.addEventListener('pause', () => {
+      console.log('Video paused')
+      setPlaying(false)
+    })
 
-    playerInstance.style.width='100%'
-    playerInstance.style.height='100%'
-    playerInstance.style.position = 'absolute'
-    playerInstance.style.top = '0'
-    playerInstance.style.left = 0;
-    playerInstance.style.zIndex = 99;
+    videoElement.addEventListener('play', () => {
+      console.log('Video playing')
+      setPlaying(true)
+    })
 
+    videoElement.addEventListener('waiting', () => {
+      console.log('Video waiting')
+      setIsLoading(true)
+    })
 
-    playerInstance.src = mp4Url;
-    // playerInstance.poster = coverBaseUrl.value;
-    console.log(`PLAYER.SRC => `, mp4Url);
+    videoElement.addEventListener('playing', () => {
+      console.log('Video started playing')
+      setIsLoading(false)
+    })
 
-    const videoWrapperEl = videoWrapperRef.current;
+    videoElement.addEventListener('ended', () => {
+      console.log('Video ended')
+      setPlaying(false)
+      setEnded(true)
+    })
+
+    videoElement.addEventListener('loadedmetadata', () => {
+      console.log('Video metadata loaded')
+    })
+
+    videoRef.current = videoElement
+
+    const videoWrapperEl = videoWrapperRef.current
     if (videoWrapperEl) {
-      const firstChild = videoWrapperEl.firstChild;
-
-      videoWrapperEl.insertBefore(playerInstance, firstChild);
-
+      const firstChild = videoWrapperEl.firstChild
+      videoWrapperEl.insertBefore(videoElement, firstChild)
     }
+  }
 
-  };
+  const togglePlay = useCallback(() => {
+    if (videoRef.current) {
+      setEnded(false)
+      if (playing) {
+        videoRef.current.pause()
+      } else {
+        videoRef.current.muted = false
+        videoRef.current.play()
+      }
+      setPlaying((prev) => !prev)
+    }
+  }, [playing])
 
+  const handleSeek = useCallback(
+    (e: React.MouseEvent | React.TouchEvent) => {
+      const progressBar = progressBarRef.current
+      if (!progressBar || !videoRef.current || duration === 0) return
 
-  const handleClose = useCallback(() => {
+      const rect = progressBar.getBoundingClientRect()
+      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
+      const x = Math.max(0, Math.min(clientX - rect.left, rect.width))
+      const newProgress = (x / rect.width) * 100
+      const newTime = (newProgress / 100) * duration
 
-  }, [])
+      setProgress(newProgress)
+      videoRef.current.currentTime = newTime
+    },
+    [duration]
+  )
 
-
+  const handleClose = useCallback(() => {}, [])
 
   useEffect(() => {
     setShowVideo(false)
-    setTimeout(()=>{
-      if (swiperSlide.isVisible && index === activeIndex){
-        console.log('jacob===========');
+    setTimeout(() => {
+      if (swiperSlide.isVisible && index === activeIndex) {
         videoPlayerInit()
         setShowVideo(true)
       }
-    })
-
+    }, 0)
+    return () => {
+      if (videoRef.current) {
+        videoRef.current.removeEventListener('timeupdate', () => {})
+        videoRef.current.removeEventListener('pause', () => {})
+        videoRef.current.removeEventListener('play', () => {})
+        videoRef.current.removeEventListener('waiting', () => {})
+        videoRef.current.removeEventListener('playing', () => {})
+        videoRef.current.removeEventListener('ended', () => {})
+        videoRef.current.removeEventListener('loadedmetadata', () => {})
+      }
+    }
   }, [swiperSlide.isVisible, index, activeIndex])
 
   useEffect(() => {
-    if(index == activeIndex){
+    if (index == activeIndex) {
       console.log('=====================')
     }
-  }, [showVideo,index, activeIndex]);
+  }, [showVideo, index, activeIndex])
 
   return (
-    <div className="fixed w-full h-full object-contain z-10 bg-black inset-0" ref={videoWrapperRef}>
-      <img style={{position:'absolute',left:0, top:0,display:showVideo?'none':'block',zIndex:'98'}} src={poster} width={'100%'} height={'100%'} alt=""/>
-
-      <UserInfo
-        id={sourceItem?.id}
-        avatar={sourceItem?.avatar}
-        username={sourceItem?.username}
-        content={sourceItem?.title}
-        uid={sourceItem?.uid}
-        info={sourceItem}
-        bottom={bottom}
-        is_follow={sourceItem?.is_follow}
-        created_at={sourceItem?.created_at}
-        onClose={handleClose}
-      />
-      <div className="pt-3" style={{ height:'11vh', position:'absolute',bottom:0, zIndex:100,width:'100%' }}>
+    <div className="fixed w-full h-full object-contain z-10 bg-black inset-0 flex flex-col">
+      <div className="relative flex-1" ref={videoWrapperRef}>
+        <img
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            display: showVideo ? 'none' : 'block',
+            zIndex: '11',
+          }}
+          src={poster}
+          width={'100%'}
+          height={'100%'}
+          alt=""
+        />
+        <div
+            className="top-0 left-0 right-0 z-[12] absolute w-full h-full bg-video-gradient"
+            onClick={togglePlay}
+        ></div>
+        {!isLoading && !playing ? (
+            info?.price && !info?.is_pay && ended ? (
+              <ReplayButton onClick={togglePlay} />
+            ) : (
+              <PlayButton onClick={togglePlay} />
+            )
+          ) : null}
+        <div
+          ref={progressBarRef}
+          className="absolute bottom-[-6px] left-0 right-0 touch-none z-[100]"
+          onMouseDown={() => setIsDragging(true)}
+          onMouseMove={(e) => isDragging && handleSeek(e)}
+          onMouseUp={() => setIsDragging(false)}
+          onTouchStart={() => setIsDragging(true)}
+          onTouchMove={(e) => isDragging && handleSeek(e)}
+          onTouchEnd={() => setIsDragging(false)}
+        >
+          <div className="relative group h-8 -my-2 flex items-center cursor-pointer no-tap">
+            <div className="absolute inset-0" />
+            <div
+              className={`w-full h-[2px] group-hover:h-2'}
+                    bg-white/20 rounded-full transition-[height] duration-200`}
+            >
+              <ProgressDisplay progress={progress} isDragging={isDragging} />
+            </div>
+          </div>
+        </div>
+        <UserInfo
+          id={sourceItem?.id}
+          avatar={sourceItem?.avatar}
+          username={sourceItem?.username}
+          content={sourceItem?.title}
+          uid={sourceItem?.uid}
+          info={sourceItem}
+          bottom={bottom}
+          is_follow={sourceItem?.is_follow}
+          created_at={sourceItem?.created_at}
+          onClose={handleClose}
+        />
+      </div>
+      <div className="pt-3" style={{ height: '11vh', width: '100%' }}>
         <ResourceFooter data={sourceItem}></ResourceFooter>
       </div>
     </div>

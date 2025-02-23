@@ -20,7 +20,7 @@ import PurchaseButton from './PurchaseButton'
 import { ReplayTrangleIcon } from '@/assets/icons'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
 
-const PlayButton = memo(({ onClick }: { onClick: () => void }) => (
+export const PlayButton = memo(({ onClick }: { onClick: () => void }) => (
   <div
     onClick={onClick}
     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 no-tap z-[22] w-[72px] h-[72px] bg-[rgba(0,0,0,.8)] flex items-center justify-center rounded-full"
@@ -29,7 +29,7 @@ const PlayButton = memo(({ onClick }: { onClick: () => void }) => (
   </div>
 ))
 
-const ReplayButton = memo(({ onClick }: { onClick: () => void }) => (
+export const ReplayButton = memo(({ onClick }: { onClick: () => void }) => (
   <HStack
     position="fixed"
     top="0"
@@ -66,7 +66,7 @@ const CloseButton = memo(({ onClose }: { onClose: () => void }) => (
   </div>
 ))
 
-const ProgressDisplay = memo(
+export const ProgressDisplay = memo(
   ({ progress, isDragging }: { progress: number; isDragging: boolean }) => (
     <div className="h-full bg-white rounded-full relative " style={{ width: `${progress}%` }}>
       <div
@@ -152,7 +152,7 @@ export const UserInfo = memo(
       <div
         className="absolute left-4 right-4 z-[14] flex flex-col cursor-pointer no-tap pb-4 "
         style={{
-          bottom: `20vh`,
+          bottom: bottom ? `20vh` : bottom,
           zIndex:'100'
         }}
       >

@@ -117,7 +117,7 @@ const TTPlayer: React.FC = () => {
               activeIndex={activeIndex}
             />
           ) : (
-            <ImagePreview isOpen={true} images={item?.media || []} currentIndex={0} />
+            <ImagePreview index={index} activeIndex={activeIndex}  isOpen={true} images={item?.media || []} currentIndex={0} />
           )}
         </SwiperSlide>
       ))}

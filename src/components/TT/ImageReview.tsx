@@ -7,21 +7,27 @@ import { handleZoomAndPan } from '@/components/Image/resizeAndMove'
 
 import 'swiper/css'
 import { useSafeState } from 'ahooks'
+import {useSwiperSlide} from "swiper/swiper-react";
 
 interface ImagePreviewProps {
   isOpen: boolean
   images: string[]
   currentIndex: number
+  index:number
+  activeIndex:number
 }
 
 const ImagePreview: React.FC<ImagePreviewProps> = ({
   isOpen,
   images,
   currentIndex,
+  activeIndex:wrapperActiveIndex,
+  index
 }) => {
   const [swiper, setSwiper] = useState<SwiperType | null>(null)
   const [loading, setLoading] = useSafeState(true)
   const [activeIndex, setActiveIndex] = useState(0)
+  const swiperSlide = useSwiperSlide()
 
   useEffect(() => {
     if (swiper && swiper.activeIndex !== currentIndex) {
@@ -31,8 +37,11 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
   }, [currentIndex, swiper])
 
   useEffect(() => {
-    loadImage(currentIndex)
     window?.videoElement?.pause();
+  }, [swiperSlide.isVisible,index,wrapperActiveIndex]);
+
+  useEffect(() => {
+    loadImage(currentIndex)
   }, [currentIndex, images])
 
   // load the current image

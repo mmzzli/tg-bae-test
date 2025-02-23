@@ -1,10 +1,10 @@
-import React, {useRef, useEffect, useCallback, useState, memo, useMemo} from 'react'
+import React, { useRef, useEffect, useCallback, useState, memo, useMemo } from 'react'
 import { HStack } from '@chakra-ui/react'
 import { useSwiperSlide } from 'swiper/react'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import { useSafeArea } from '@/hooks/useSafeArea'
 import ResourceFooter from '@/components/ResourceList/ResourceFooter'
-import { createVideoElement, getDeviceType, isIOS } from '@/utils/utils'
+import { createVideoElement, destroyVideo, getDeviceType, isIOS } from '@/utils/utils'
 import { VideoPlayerProps } from '@/components/TT/VideoPlayer'
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import { useStore } from '@/store'
@@ -18,7 +18,7 @@ import MoreText from '@/components/More/MoreText'
 import PurchaseButton from '@/components/ResourceList/PurchaseButton'
 import { ReplayButton, PlayButton, ProgressDisplay } from '@/components/ResourceList/VideoDialog'
 import { VolumeMuteIcon, VolumeSpeakerIcon } from '@/assets/icons'
-import {videoScale} from "@/utils/video";
+import { videoScale } from '@/utils/video'
 
 type VideoPlayerPropsAndIndex = VideoPlayerProps & {
   index: number
@@ -117,7 +117,9 @@ export const UserInfo = memo(
                   {username}
                 </span>
                 {created_at && (
-                  <span className="ml-[4px] text-white text-[12px] font-[400]">{getTimeStringAutoShort(new Date(created_at).getTime(), true)}</span>
+                  <span className="ml-[4px] text-white text-[12px] font-[400]">
+                    {getTimeStringAutoShort(new Date(created_at).getTime(), true)}
+                  </span>
                 )}
               </div>
               <div className="text-white text-[12px] flex">
@@ -164,14 +166,13 @@ export const UserInfo = memo(
   }
 )
 
-
 const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
   const { sourceItem, setVideoRef, allMuted, setAllMuted, autoplay, activeIndex, index } = props
   const { r2: mp4Url, thumbnail: poster } = sourceItem
   const info = useStore((state) => state.videoResource)
   const swiperSlide = useSwiperSlide()
 
-  const containerDomRef = useRef<HTMLDivElement |null>(null)
+  const containerDomRef = useRef<HTMLDivElement | null>(null)
   const videoWrapperRef = useRef<HTMLDivElement | null>(null)
   const progressBarRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>()
@@ -187,14 +188,13 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
   const [showThumbnail, setShowThumbnail] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
 
-
   const scale = useMemo(() => {
-    console.log(sourceItem,containerDomRef.current,'jacob===========');
-    if(containerDomRef && containerDomRef.current && sourceItem){
+    console.log(sourceItem, containerDomRef.current, 'jacob===========')
+    if (containerDomRef && containerDomRef.current && sourceItem) {
       return videoScale({ ...sourceItem }, containerDomRef.current)
     }
     return 'object-contain'
-  }, [containerDomRef,containerDomRef.current,sourceItem]);
+  }, [containerDomRef, containerDomRef.current, sourceItem])
   const videoPlayerInit = () => {
     const videoElement = createVideoElement()
     videoElement.controls = false
@@ -205,8 +205,8 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
     videoElement.style.left = '0'
     videoElement.style.zIndex = '99'
     videoElement.src = mp4Url
-    videoElement.className = scale;
-    console.log(scale,'jacob===========');
+    videoElement.className = scale
+    console.log(scale, 'jacob===========')
 
     setShowThumbnail(true)
     videoElement.addEventListener('timeupdate', () => {
@@ -253,13 +253,13 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
     }
 
     if (videoRef.current && videoRef.current.paused) {
-      videoRef.current?.play();
+      videoRef.current?.play()
     }
 
     const videoWrapperEl = videoWrapperRef.current
+    console.log(videoWrapperEl, 'jacob===============videoWrapperEl')
     if (videoWrapperEl) {
-      const firstChild = videoWrapperEl.firstChild
-      videoWrapperEl.insertBefore(videoElement, firstChild)
+      videoWrapperEl.appendChild(videoElement)
     }
   }
 
@@ -299,39 +299,41 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
     [duration]
   )
 
-  const handleClose = useCallback(() => { }, [])
+  const handleClose = useCallback(() => {}, [])
 
   useEffect(() => {
-    setTimeout(() => {
-      if (swiperSlide.isVisible && index === activeIndex) {
-        videoPlayerInit()
-        window.videoElement.play()
-      }
-    }, 0)
+    if (swiperSlide.isVisible && index === activeIndex) {
+      videoPlayerInit()
+      window.videoElement.play()
+    }
     return () => {
       if (videoRef.current) {
         // videoRef.current.pause()
-        videoRef.current.removeEventListener('timeupdate', () => { })
-        videoRef.current.removeEventListener('pause', () => { })
-        videoRef.current.removeEventListener('play', () => { })
-        videoRef.current.removeEventListener('waiting', () => { })
-        videoRef.current.removeEventListener('playing', () => { })
-        videoRef.current.removeEventListener('ended', () => { })
-        videoRef.current.removeEventListener('loadedmetadata', () => { })
+        videoRef.current.removeEventListener('timeupdate', () => {})
+        videoRef.current.removeEventListener('pause', () => {})
+        videoRef.current.removeEventListener('play', () => {})
+        videoRef.current.removeEventListener('waiting', () => {})
+        videoRef.current.removeEventListener('playing', () => {})
+        videoRef.current.removeEventListener('ended', () => {})
+        videoRef.current.removeEventListener('loadedmetadata', () => {})
       }
     }
   }, [swiperSlide.isVisible, index, activeIndex])
-
-
+  const showId = useMemo(() => {
+    return swiperSlide.isVisible && index === activeIndex
+  }, [swiperSlide.isVisible, index, activeIndex])
 
   return (
-    <div className="fixed w-full h-full object-contain z-10 bg-black inset-0 flex flex-col" ref={containerDomRef}>
-      <div className="relative" style={{height:'89vh'}} ref={videoWrapperRef}>
+    <div
+      className="fixed w-full h-full object-contain z-10 bg-black inset-0 flex flex-col"
+      ref={containerDomRef}
+    >
+      <div className="relative" style={{ height: '89vh' }} ref={videoWrapperRef}>
         <img
           style={{
             display: showThumbnail ? 'block' : 'none',
             opacity: showThumbnail ? 1 : 0,
-            transition: 'opacity 1s ease'
+            transition: 'opacity 1s ease',
           }}
           src={poster}
           className="w-full h-full z-[11] top-0 left-0 right-0 bottom-0 absolute object-contain"
@@ -380,9 +382,9 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
           created_at={sourceItem?.created_at}
           onClose={handleClose}
         />
-         <HStack
+        <HStack
           position="absolute"
-          bottom={"15vh"}
+          bottom={'15vh'}
           right="16px"
           p="5px"
           gap="4px"
@@ -399,7 +401,7 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
           ) : (
             <Image src={VolumeSpeakerIcon} className="w-[22px] h-[22px] text-white" />
           )}
-      </HStack>
+        </HStack>
       </div>
       <div className="pt-3" style={{ height: '11vh', width: '100%' }}>
         <ResourceFooter data={sourceItem}></ResourceFooter>

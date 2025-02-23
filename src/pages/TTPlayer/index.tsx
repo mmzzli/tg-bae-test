@@ -99,6 +99,7 @@ const TTPlayer: React.FC = () => {
         swiperRef.current = swiper
       }}
       onSlideChange={(swiper) => {
+        console.log(swiper.activeIndex,'jacob============activeIndex====');
         setActiveIndex(swiper.activeIndex)
       }}
     >

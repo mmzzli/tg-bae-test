@@ -58,11 +58,14 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
 
   useEffect(() => {
     setShowVideo(false)
-    if (swiperSlide.isVisible && index === activeIndex){
-      console.log('jacob===========');
-      videoPlayerInit()
-      setShowVideo(true)
-    }
+    setTimeout(()=>{
+      if (swiperSlide.isVisible && index === activeIndex){
+        console.log('jacob===========');
+        videoPlayerInit()
+        setShowVideo(true)
+      }
+    })
+
   }, [swiperSlide.isVisible, index, activeIndex])
 
   return (

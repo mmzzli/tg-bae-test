@@ -24,13 +24,16 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
   const videoWrapperRef = useRef<HTMLDivElement | null>(null)
 
   const { bottom } = useSafeArea()
+  const [showVideo,setShowVideo] = useState(false)
 
   const videoPlayerInit = () => {
 
     const playerInstance = createVideoElement();
+    playerInstance.controls = true;
 
     playerInstance.style.width='100%'
     playerInstance.style.height='100%'
+
 
     playerInstance.src = mp4Url;
     // playerInstance.poster = coverBaseUrl.value;
@@ -41,6 +44,7 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
       const firstChild = videoWrapperEl.firstChild;
 
       videoWrapperEl.insertBefore(playerInstance, firstChild);
+
     }
 
   };
@@ -53,15 +57,17 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
 
 
   useEffect(() => {
+    setShowVideo(false)
     if (swiperSlide.isVisible && index === activeIndex){
       console.log('jacob===========');
       videoPlayerInit()
+      setShowVideo(true)
     }
   }, [swiperSlide.isVisible, index, activeIndex])
 
   return (
     <div className="fixed w-full h-full object-contain z-10 bg-black inset-0" ref={videoWrapperRef}>
-      <img src={poster} width={'100%'} height={'100%'} alt=""/>
+      <img style={{position:'absolute',left:0, top:0,display:showVideo?'none':'block'}} src={poster} width={'100%'} height={'100%'} alt=""/>
       <div className="pt-3" style={{ height: '11vh' }}>
         <UserInfo
           id={sourceItem?.id}

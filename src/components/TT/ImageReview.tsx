@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { Swiper as SwiperType } from 'swiper'
-import { Swiper, SwiperSlide } from 'swiper/react'
+import { Swiper, SwiperSlide,useSwiperSlide } from 'swiper/react'
 import { FreeMode, Navigation } from 'swiper/modules'
 import { cn, formatImage } from '@/utils/utils'
 import { handleZoomAndPan } from '@/components/Image/resizeAndMove'
 
 import 'swiper/css'
 import { useSafeState } from 'ahooks'
-import {useSwiperSlide} from "swiper/swiper-react";
 
 interface ImagePreviewProps {
   isOpen: boolean

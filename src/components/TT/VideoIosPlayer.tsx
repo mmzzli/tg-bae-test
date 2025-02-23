@@ -296,7 +296,6 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
         console.log('jacob===========');
         videoPlayerInit()
         console.log(window.videoElement,'jacob===========');
-        window.videoElement.muted = true
         window.videoElement.play()
       }else{
 

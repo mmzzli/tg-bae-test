@@ -13,7 +13,7 @@ import { useStore } from '@/store'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import './index.css'
-import { isIOS } from '@/utils/utils'
+import {destroyVideo, isIOS} from '@/utils/utils'
 import VideoIosPlayer from '@/components/TT/VideoIosPlayer'
 export interface TVideo {
   url: string
@@ -71,6 +71,8 @@ const TTPlayer: React.FC = () => {
       }
     }
   }, [state?.id, list])
+
+
   return (
     <Swiper
       className="h-full w-full z-[10] fixed top-0 left-0 bg-[#000]"
@@ -99,7 +101,7 @@ const TTPlayer: React.FC = () => {
         swiperRef.current = swiper
       }}
       onSlideChange={(swiper) => {
-        console.log(swiper.activeIndex,'jacob============activeIndex====');
+
         setActiveIndex(swiper.activeIndex)
       }}
     >

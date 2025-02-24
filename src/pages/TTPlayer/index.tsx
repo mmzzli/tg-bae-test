@@ -9,12 +9,13 @@ import type { Swiper as SwiperType } from 'swiper'
 
 import ImagePreview from '@/components/TT/ImageReview'
 import useCacheVideo, { useRecommendList } from '@/store/hook/useResourceList'
+import { destroyVideo, isIOS } from '@/utils/utils'
+import VideoIosPlayer from '@/components/TT/VideoIosPlayer'
 import { useStore } from '@/store'
 import 'swiper/css'
 import 'swiper/css/pagination'
+import 'swiper/css/virtual'
 import './index.css'
-import {destroyVideo, isIOS} from '@/utils/utils'
-import VideoIosPlayer from '@/components/TT/VideoIosPlayer'
 export interface TVideo {
   url: string
   poster?: string
@@ -70,8 +71,7 @@ const TTPlayer: React.FC = () => {
         }
       }
     }
-  }, [state?.id, list])
-
+  }, [state?.id])
 
   return (
     <Swiper
@@ -101,27 +101,34 @@ const TTPlayer: React.FC = () => {
         swiperRef.current = swiper
       }}
       onSlideChange={(swiper) => {
-
         setActiveIndex(swiper.activeIndex)
       }}
     >
       {list.map((item, index) => (
-        <SwiperSlide key={`${index}`}>
-          {item.type === 0 ? (
-            <VideoIosPlayer
-              key={index}
-              sourceItem={item}
-              setVideoRef={handleVideoRef(index)}
-              autoplay={index === activeIndex}
-              allMuted={globalMuted}
-              setAllMuted={setAllMuted}
-              isTouched={isTouched}
-              index={index}
-              activeIndex={activeIndex}
-            />
-          ) : (
-            <ImagePreview index={index} activeIndex={activeIndex}  isOpen={true} images={item?.media || []} currentIndex={0} />
-          )}
+        <SwiperSlide key={item.id} virtualIndex={index}>
+          <>
+            {item.type === 0 ? (
+              <VideoIosPlayer
+                key={index}
+                sourceItem={item}
+                setVideoRef={handleVideoRef(index)}
+                autoplay={index === activeIndex}
+                allMuted={globalMuted}
+                setAllMuted={setAllMuted}
+                isTouched={isTouched}
+                index={index}
+                activeIndex={activeIndex}
+              />
+            ) : (
+              <ImagePreview
+                index={index}
+                activeIndex={activeIndex}
+                isOpen={true}
+                images={item?.media || []}
+                currentIndex={0}
+              />
+            )}
+          </>
         </SwiperSlide>
       ))}
     </Swiper>

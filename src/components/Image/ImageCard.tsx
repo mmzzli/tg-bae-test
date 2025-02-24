@@ -75,7 +75,8 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
                         })
                   }}
                   onClick={() => {
-                    if (ttMode) {
+                    const currentPath = window.location.pathname
+                    if (ttMode && currentPath === '/home') {
                       navigate('/tt-player', {
                         state: {
                           id: data.id

@@ -339,7 +339,7 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
       <div className="relative" style={{ height: '89vh' }} ref={videoWrapperRef}>
         <img
           style={{
-            display: showThumbnail ? 'block' : 'none',
+            // display: showThumbnail ? 'block' : 'none',
             opacity: showThumbnail ? 1 : 0,
             transition: 'opacity 1s ease',
           }}

@@ -268,6 +268,7 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
     console.log(videoWrapperEl, 'jacob===============videoWrapperEl')
     if (videoWrapperEl) {
       videoWrapperEl.appendChild(videoElement)
+      videoElement.play()
     }
   }
 

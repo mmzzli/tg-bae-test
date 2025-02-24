@@ -40,10 +40,8 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
     console.log(swiperSlide.isVisible && index == wrapperActiveIndex,'jacob=============== swiperSlide.isVisible && index==wrapperActiveIndex');
     if(swiperSlide.isVisible && index==wrapperActiveIndex){
       if(window.videoElement){
-        window.videoElement.muted = true;
+        window.videoElement.pause();
       }
-      setTtVideoMuted(true)
-      destroyVideo()
     }
   }, [swiperSlide.isVisible,index,wrapperActiveIndex]);
 

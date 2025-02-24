@@ -28,7 +28,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
   const token = useStore((state) => state.token)
   const [loading, setLoading] = useState(false)
   const [loadingSkeleton, setLoadingSkeleton] = useState(true)
-  const [ landscape, setLandscape ] = useState(false)
+  const [landscape, setLandscape] = useState(false)
 
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -233,7 +233,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
 
           <div className='w-[100%]'
             style={{
-              display:loadingSkeleton ? 'block' : 'none'
+              display: loadingSkeleton ? 'block' : 'none'
             }}
           >
             <div className="h-[315px] w-[100%] relative overflow-hidden bg-[#F4F4F4] dark:bg-[#272727] rounded w-2/3">
@@ -247,7 +247,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
           {videoUrl && (
             <div
               style={{
-                display:loadingSkeleton ? 'none' : 'block'
+                display: loadingSkeleton ? 'none' : 'block'
               }}
             >
               {/* 视频元素 */}
@@ -276,7 +276,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
                 }}
               ></canvas>
               <img
-                 style={{
+                style={{
                   marginTop: "16px",
                   // display: "none",
                   width: "243px",

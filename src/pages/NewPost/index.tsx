@@ -324,6 +324,7 @@ export const NewPost: FC = () => {
         result: null,
         thread: async ({ upload_url }: { upload_url: string }) => {
           try {
+            // data
             const formData = new FormData()
             formData.append('file', videoFile)
             formData.append('name', videoFile.name)
@@ -337,7 +338,7 @@ export const NewPost: FC = () => {
               })
             )
             // 判断是否是.mp4格式
-            if(!videoFile.name.endsWith('.mp4')){
+            if (!videoFile.name.endsWith('.mp4')) {
               // mp4 格式转换
               const postreqRes = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
                 headers: {
@@ -347,7 +348,7 @@ export const NewPost: FC = () => {
               })
               const videoId = postreqRes.data.split('/').pop();
               formData.append('vid', videoId)
-              const {data} = await axios.post(
+              const { data } = await axios.post(
                 import.meta.env.VITE_API_URL + 'api/v1/convert_req_file',
                 formData,
                 {
@@ -359,7 +360,7 @@ export const NewPost: FC = () => {
                 }
               )
               r2Url = data
-            }else{
+            } else {
               // r2 update
               const url = `${import.meta.env.VITE_APP_UPLOAD_URL}uploadall`
               const r2Response = await axios.put(url, formData, {

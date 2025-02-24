@@ -38,6 +38,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
   useEffect(() => {
     console.log(swiperSlide.isVisible && index == wrapperActiveIndex,'jacob=============== swiperSlide.isVisible && index==wrapperActiveIndex');
     if(swiperSlide.isVisible && index==wrapperActiveIndex){
+      window.videoElement.muted = true;
       destroyVideo()
     }
   }, [swiperSlide.isVisible,index,wrapperActiveIndex]);

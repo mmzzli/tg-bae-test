@@ -152,7 +152,7 @@ export const UserInfo = memo(
       <div
         className="absolute left-4 right-4 z-[14] flex flex-col cursor-pointer no-tap pb-4 "
         style={{
-          bottom: bottom ? bottom : `20vh`,
+          bottom: 0,
           zIndex:'100'
         }}
       >

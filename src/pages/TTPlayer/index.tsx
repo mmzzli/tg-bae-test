@@ -37,7 +37,7 @@ const TTPlayer: React.FC = () => {
   const [globalMuted, setGlobalMuted] = useState(() => false)
   const [isTouched, setIsTouched] = useState(() => false)
   const [activeIndex, setActiveIndex] = useState(0)
-
+  const setTtVideoMuted = useStore((state) => state.setTtVideoMuted)
   const { state } = useLocation()
 
   const setAllMuted = useCallback((muted: boolean) => {
@@ -60,9 +60,9 @@ const TTPlayer: React.FC = () => {
 
     return () => {
       window.Telegram?.WebApp?.setHeaderColor('#000000')
-      window.videoElement.muted = true;
-      setGlobalMuted(true)
-      destroyVideo()
+      if(window.videoElement){
+        window.videoElement.pause();
+      }
     }
   }, [])
 

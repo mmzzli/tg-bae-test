@@ -41,6 +41,7 @@ export type FormatterListItem = Omit<ListItem['post'], 'media'> & {
   is_pay?: number | boolean
   trailer?: string
   r2?: string
+  trailer_r2?: string
 } & UserItem
 export interface ListState {
   list: FormatterListItem[]

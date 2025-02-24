@@ -101,7 +101,7 @@
     "ton-core": "^0.46.0",
     "ton-crypto": "^3.2.0",
     "tonweb": "^0.0.66",
-    "tus-js-client": "^4.2.3",
+    "tus-js-client": "^4.3.1",
     "use-local-storage": "^2.3.6",
     "vconsole": "^3.15.1",
     "viem": "2.x",

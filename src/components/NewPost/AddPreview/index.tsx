@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useState, RefObject, Dispatch, SetStateAction } from 'react'
 import { useBoolean, Text, useToast, Img } from '@chakra-ui/react'
 import axios, { AxiosResponse } from 'axios'
+import * as tus from "tus-js-client";
+
 import { SkeletonShine } from '@/components/Skeketon/ChatSkeleton'
 import { cutReq } from '@/api'
 import playIcon from '@/assets/icons/videoSwitch.svg'
@@ -15,6 +17,13 @@ import Trailer from '@/components/NewPost/AddPreview/Trailer'
 import Slider from '@/components/NewPost/AddPreview/Slider'
 import TrailerVideo from '@/components/NewPost/AddPreview/TrailerVideo'
 
+interface Metadata {
+  vid: string;
+  url: string;
+  start?: string; // 可选属性
+  end?: string;   // 可选属性
+}
+
 interface Frame {
   url: string
   time: number
@@ -26,6 +35,7 @@ interface VideoPlayerProps {
   setCover: Dispatch<SetStateAction<string | null>>
   videoSrc: string
   setTrailer: (url: string) => void
+  setTrailerR2: (url: string) => void
   trailer: string | null
   videoFile: File | null
 }
@@ -35,6 +45,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
   setCover,
   videoSrc: videoUrl,
   setTrailer,
+  setTrailerR2,
   trailer,
   videoFile,
 }) => {
@@ -265,6 +276,50 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
     if (!videoRefTrailer) {
       return
     }
+    setLoading(true)
+
+    // const postreqRes = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
+    //   headers: {
+    //     'Content-Type': 'multipart/form-data',
+    //     Authorization: `Bearer ${token}`,
+    //   },
+    // })
+
+    const uploadRes = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    const videoId = uploadRes.data.split('/').pop();
+
+    const metadata:any = {
+      vid: videoId,
+      url: uploadRes.data
+    }
+    if (!trailerBoll && boll) {
+      metadata["start"] = `${~~startTime}`
+      metadata["end"] = `${~~endTime}`
+    }
+
+    const upload = new tus.Upload(videoRefTrailer, {
+      endpoint: `${import.meta.env.VITE_APP_UPLOAD_R2_URL}files`, // 你的 tus 服务器地址
+      retryDelays: [0, 3000, 5000, 10000], // 失败时重试间隔
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      metadata: metadata,
+    })
+    upload.start();
+    const url = `https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${uploadRes.data.split('/').pop()}/manifest/video.m3u8`
+    const r2Url = `https://imgdev.bae.boo/${videoId}.mp4`
+    setTrailerR2(r2Url)
+    setTrailer(url)
+    setLoading(false)
+    setBoll(true)
+    off()
+    return
     setLoading(true)
     const formData = new FormData()
     const items = Date.now()

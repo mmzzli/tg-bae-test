@@ -550,6 +550,7 @@ export function createVideoElement() {
 
 export function destroyVideo() {
 
+
   // 销毁已有的视频实例
   if (window.videoElement) {
     window.videoElement?.pause();

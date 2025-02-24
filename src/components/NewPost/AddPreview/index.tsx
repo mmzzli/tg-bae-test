@@ -295,9 +295,48 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
     const videoId = uploadRes.data.split('/').pop();
 
     const metadata:any = {
-      vid: videoId,
+      // vid: videoId,
       url: uploadRes.data
     }
+
+    if(videoRefTrailer.name.endsWith('.mp4')){
+      const url = `${import.meta.env.VITE_APP_UPLOAD_URL}uploadall`
+      const formData = new FormData()
+      const items = Date.now()
+      formData.append('file', videoRefTrailer)
+      formData.append('name', `${items}`)
+      formData.append('type', 'bae')
+      // 截取视频使用
+      formData.append('start', `${~~startTime}`)
+      formData.append('end', `${~~endTime}`)
+      formData.append(
+        'meta',
+        JSON.stringify({
+          name: `${items}`,
+          type: 'bae',
+        })
+      )
+      axios.put(url, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+        onUploadProgress: (progressEvent: any) => {
+          const total = progressEvent.total
+          const current = progressEvent.loaded
+          const percentCompleted = Math.round((current * 100) / total)
+          console.log(`上传进度: ${percentCompleted}%`)
+        },
+      })
+      .then((r2Response) => {
+        setTrailerR2(r2Response.data.urls[0])
+      })
+
+    }else{
+      metadata["vid"] = videoId
+      setTrailerR2(`${import.meta.env.VITE_APP_UPLOAD_IMG_URL}${videoId}.mp4`)
+    }
+
     if (!trailerBoll && boll) {
       metadata["start"] = `${~~startTime}`
       metadata["end"] = `${~~endTime}`
@@ -313,11 +352,11 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
     })
     upload.start();
     const url = `https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${uploadRes.data.split('/').pop()}/manifest/video.m3u8`
-    const r2Url = `${import.meta.env.VITE_APP_UPLOAD_IMG_URL}${videoId}.mp4`
-    setTrailerR2(r2Url)
+    // const r2Url = `${import.meta.env.VITE_APP_UPLOAD_IMG_URL}${videoId}.mp4`
+    // setTrailerR2(r2Url)
     setTrailer(url)
     setLoading(false)
-    setBoll(true)
+    // setBoll(true)
     off()
     return
     setLoading(true)

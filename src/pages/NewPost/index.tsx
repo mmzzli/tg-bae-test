@@ -259,8 +259,9 @@ export const NewPost: FC = () => {
             currency: 0,
             price: price || 0,
           }
-          if (params.price && trailer) {
+          if (params.price && trailer && trailerR2) {
             params['trailer'] = trailer
+            params['trailer_r2'] = trailerR2
           }
           await postResources(params)
           // when sent page will back to task page,so we need to update the task list

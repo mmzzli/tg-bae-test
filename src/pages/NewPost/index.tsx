@@ -219,7 +219,6 @@ export const NewPost: FC = () => {
       return
     }
     if (!videoFile) {
-      console.log('error')
       return
     }
     if (!cover && !trailer) {
@@ -234,8 +233,7 @@ export const NewPost: FC = () => {
     try {
       setIsLoading(true)
       if (trailer) {
-        // 取消轮询
-        // await checkVideoURL(trailer)
+        await checkVideoURL(trailer)
       }
       const errorHandler = (error: any) => {
         toast({
@@ -261,9 +259,8 @@ export const NewPost: FC = () => {
             currency: 0,
             price: price || 0,
           }
-          if (params.price && trailer && trailerR2) {
+          if (params.price && trailer) {
             params['trailer'] = trailer
-            params['trailer_r2'] = trailerR2
           }
           await postResources(params)
           // when sent page will back to task page,so we need to update the task list
@@ -344,20 +341,15 @@ export const NewPost: FC = () => {
               })
             )
             // 判断是否是.mp4格式
-            if (true) {
-              // mp4 格式转换
-              // const postreqRes = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
-              //   headers: {
-              //     'Content-Type': 'multipart/form-data',
-              //     Authorization: `Bearer ${token}`,
-              //   },
-              // })
+            if (!videoFile.name.endsWith('.mp4')) {
 
-              const videoId:any = upload_url.split('/').pop();
-              formData.append('vid', videoId)
-              formData.append('url', upload_url)
-              console.log('cccc',upload_url, videoId)
-
+              const postreqRes = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
+                headers: {
+                  'Content-Type': 'multipart/form-data',
+                  Authorization: `Bearer ${token}`,
+                },
+              })
+              const videoId = postreqRes.data.split('/').pop();
               const upload = new tus.Upload(videoFile, {
                 endpoint: `${import.meta.env.VITE_APP_UPLOAD_R2_URL}files`, // 你的 tus 服务器地址
                 retryDelays: [0, 3000, 5000, 10000], // 失败时重试间隔
@@ -365,41 +357,33 @@ export const NewPost: FC = () => {
                   'Authorization': `Bearer ${token}`
                 },
                 metadata: {
-                  vid: videoId,
-                  url: upload_url
+                  vid: videoId
                 },
               })
-
-              updateUploadThread({
-                id: stepTwo,
-                progress: 100,
-                result: {
-                  data: "",
-                  status: 200
-                },
-                status: TaskStatus.COMPLETED,
-              })
-
-              // 启动上传
-              // Check if there are any previous uploads to continue.
+              r2Url = `${import.meta.env.VITE_APP_UPLOAD_IMG_URL}${videoId}.mp4`
               upload.start();
 
-              console.log(upload, videoFile)
-
-              r2Url = `https://imgdev.bae.boo/${videoId}.mp4`
-              return
-              const { data } = await axios.post(
-                import.meta.env.VITE_API_URL + 'api/v1/convert_req_file',
-                formData,
-                {
-                  headers: {
-                    'Content-Type': 'multipart/form-data',
-                    Authorization: `Bearer ${token}`,
-                  },
-                  timeout: 600000,
-                }
-              )
-              r2Url = data
+              // mp4 格式转换
+              // const postreqRes = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
+              //   headers: {
+              //     'Content-Type': 'multipart/form-data',
+              //     Authorization: `Bearer ${token}`,
+              //   },
+              // })
+              // const videoId = postreqRes.data.split('/').pop();
+              // formData.append('vid', videoId)
+              // const { data } = await axios.post(
+              //   import.meta.env.VITE_API_URL + 'api/v1/convert_req_file',
+              //   formData,
+              //   {
+              //     headers: {
+              //       'Content-Type': 'multipart/form-data',
+              //       Authorization: `Bearer ${token}`,
+              //     },
+              //     timeout: 600000,
+              //   }
+              // )
+              // r2Url = data
             } else {
               // r2 update
               const url = `${import.meta.env.VITE_APP_UPLOAD_URL}uploadall`
@@ -417,7 +401,7 @@ export const NewPost: FC = () => {
               })
               r2Url = r2Response.data.urls[0]
             }
-            console.log(r2Url, upload_url)
+            console.log(r2Url)
             // m3u8 update
             const response = await axios.post(upload_url, formData, {
               headers: {
@@ -434,7 +418,6 @@ export const NewPost: FC = () => {
                 console.log(`上传进度(upload_video): ${percentCompleted}%`)
               },
             })
-            console.log(response)
             updateUploadThread({
               id: stepTwo,
               progress: 100,
@@ -442,7 +425,6 @@ export const NewPost: FC = () => {
               status: TaskStatus.COMPLETED,
             })
           } catch (error) {
-            console.log(error)
             errorHandler(error)
           }
         },

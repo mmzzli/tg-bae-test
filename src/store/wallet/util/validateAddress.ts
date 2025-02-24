@@ -24,7 +24,6 @@ const validateTonAddress = (address: string) => {
 
 const validateSuiAddress = (address: string) => {
   const suiRegex = /^0x[0-9A-HJ-NP-Za-km-z]{64}$/
-  console.log(suiRegex.test(address), address, 'isValid')
   return suiRegex.test(address)
 }
 

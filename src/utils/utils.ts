@@ -296,10 +296,8 @@ export const genShareLinkFn = async (
 ) => {
   const shareText = encodeURIComponent(title)
   const { host, ref } = await getLinkHandlerAsync({ pid, uid })
-  console.log(host, ref, 'getLinkResult')
 
   const copyLink = encodeURIComponent(`${import.meta.env.VITE_API_URL}link/${ref}`)
-  console.log('copyLink', decodeURIComponent(copyLink))
 
   const shareLink = `https://t.me/share/url?url=${copyLink}&text=${shareText}`
   return {
@@ -551,21 +549,18 @@ export function createVideoElement() {
 
 
 export function destroyVideo() {
-  console.log(`destroyVideo`);
 
   // 销毁已有的视频实例
   if (window.videoElement) {
     window.videoElement?.pause();
     window.videoElement?.remove();
     window.videoElement = null;
-    console.log("视频实例已销毁");
     return;
   }
   if (window.playerInstance) {
     window.playerInstance.pause();
     window.playerInstance.destroy();
     window.playerInstance = null;
-    console.log(`播放器实例已销毁`);
   }
 
     // 销毁已有的视频实例
@@ -573,19 +568,15 @@ export function destroyVideo() {
     window.videoElement?.pause();
     window.videoElement?.remove();
     window.videoElement = null;
-    console.log("视频实例已销毁");
   }
   if (window.playerInstance) {
     window.playerInstance.pause();
     window.playerInstance.destroy();
     window.playerInstance = null;
-    console.log(`播放器实例已销毁`);
   }
-
 }
 
 export function cancelDestroyVideo() {
-  console.log(`cancelDestroyVideo`);
   if (timer) {
     clearTimeout(timer);
     timer = null;

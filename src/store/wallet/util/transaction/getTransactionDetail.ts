@@ -38,9 +38,6 @@ export const getTransactionDetail = async (
             hash: hash as Hex,
             chainId: chainId,
           })
-          console.log({
-            confirmations,
-          })
           if (confirmations <= 0n) return
 
           const detail = await getTransactionReceipt(config, {

@@ -12,6 +12,7 @@ import useCacheVideo, { useRecommendList } from '@/store/hook/useResourceList'
 import { destroyVideo, isIOS } from '@/utils/utils'
 import VideoIosPlayer from '@/components/TT/VideoIosPlayer'
 import { useStore } from '@/store'
+import { useTMAUtils } from '@/hooks/useTMAUtils'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import 'swiper/css/virtual'
@@ -26,9 +27,11 @@ const TTPlayer: React.FC = () => {
   const videoRefs = useRef<{ [key: number]: Player | null }>({})
   const swiperRef = useRef<SwiperType>()
   // const { fetchMoreData } = useRecommendList()
+  const { getCurrentUid } = useTMAUtils()
+  const currentUid = getCurrentUid()
   const { list: rawList, isLoading, page, hasMore } = useStore((state) => state.recommendList)
   const setRecommendPage = useStore((state) => state.setRecommendPage)
-  const list = rawList.filter((item) => item.price === 0 || item.is_pay === true)
+  const list = rawList.filter((item) => item.price === 0 || item.is_pay === true || item.uid === currentUid)
   const [globalMuted, setGlobalMuted] = useState(() => false)
   const [isTouched, setIsTouched] = useState(() => false)
   const [activeIndex, setActiveIndex] = useState(0)

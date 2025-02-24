@@ -43,6 +43,7 @@ const TTPlayer: React.FC = () => {
     setGlobalMuted(muted)
   }, [])
 
+
   const fetchMoreData = () => {
     if (!isLoading && hasMore) {
       setRecommendPage(page + 1)
@@ -55,6 +56,10 @@ const TTPlayer: React.FC = () => {
 
   useEffect(() => {
     window.Telegram?.WebApp?.setHeaderColor(isIOS ? '#ffffff' : '#000000')
+
+    return () =>{
+      setGlobalMuted(false)
+    }
   }, [])
 
   useEffect(() => {

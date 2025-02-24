@@ -4,7 +4,7 @@ import { useSwiperSlide } from 'swiper/react'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import { useSafeArea } from '@/hooks/useSafeArea'
 import ResourceFooter from '@/components/ResourceList/ResourceFooter'
-import { createVideoElement, destroyVideo, getDeviceType, isIOS } from '@/utils/utils'
+import { createVideoElement, destroyVideo, getDeviceType, isIOS, formatImage } from '@/utils/utils'
 import { VideoPlayerProps } from '@/components/TT/VideoPlayer'
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import { useStore } from '@/store'
@@ -335,7 +335,7 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
             opacity: showThumbnail ? 1 : 0,
             transition: 'opacity 1s ease',
           }}
-          src={poster}
+          src={poster ? formatImage(poster) : ''}
           className="w-full h-full z-[11] top-0 left-0 right-0 bottom-0 absolute object-contain"
           alt=""
         />

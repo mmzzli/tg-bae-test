@@ -386,7 +386,7 @@ export const NewPost: FC = () => {
 
               console.log(upload, videoFile)
 
-              r2Url = `https://imgdev.bae.boo/${videoId}.mp4`
+              r2Url = `${import.meta.env.VITE_APP_UPLOAD_IMG_URL}${videoId}.mp4`
               return
               const { data } = await axios.post(
                 import.meta.env.VITE_API_URL + 'api/v1/convert_req_file',

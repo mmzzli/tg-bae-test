@@ -31,7 +31,9 @@ const TTPlayer: React.FC = () => {
   const currentUid = getCurrentUid()
   const { list: rawList, isLoading, page, hasMore } = useStore((state) => state.recommendList)
   const setRecommendPage = useStore((state) => state.setRecommendPage)
-  const list = rawList.filter((item) => item.price === 0 || item.is_pay === true || item.uid === currentUid)
+  const list = rawList.filter(
+    (item) => item.price === 0 || item.is_pay === true || item.uid === currentUid
+  )
   const [globalMuted, setGlobalMuted] = useState(() => false)
   const [isTouched, setIsTouched] = useState(() => false)
   const [activeIndex, setActiveIndex] = useState(0)
@@ -42,7 +44,6 @@ const TTPlayer: React.FC = () => {
     if (!isTouched) setIsTouched(true)
     setGlobalMuted(muted)
   }, [])
-
 
   const fetchMoreData = () => {
     if (!isLoading && hasMore) {
@@ -55,9 +56,11 @@ const TTPlayer: React.FC = () => {
   }
 
   useEffect(() => {
-    window.Telegram?.WebApp?.setHeaderColor(isIOS ? '#ffffff' : '#000000')
+    window.Telegram?.WebApp?.setHeaderColor('#ffffff')
 
-    return () =>{
+    return () => {
+      window.Telegram?.WebApp?.setHeaderColor('#000000')
+
       destroyVideo()
       setGlobalMuted(false)
     }

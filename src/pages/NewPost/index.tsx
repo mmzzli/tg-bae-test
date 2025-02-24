@@ -1,6 +1,8 @@
 import React, { FC, useState, useEffect, useRef, useMemo } from 'react'
 import { Image, Button, Box, Input, useToast, Grid, GridItem } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
+import * as tus from "tus-js-client";
+
 import axios, { AxiosResponse } from 'axios'
 import { postResources, postReq } from '@/api'
 import { PostResourceReq } from '@/types'
@@ -50,6 +52,7 @@ export const NewPost: FC = () => {
   const [cover, setCover] = useState<string | null>(null)
   //
   const [trailer, setTrailer] = useState<string | null>(null)
+  const [trailerR2, setTrailerR2] = useState<string | null>(null)
 
   const [widths, setWidths] = useState<number[]>([])
   const [heights, setHeights] = useState<number[]>([])
@@ -216,6 +219,7 @@ export const NewPost: FC = () => {
       return
     }
     if (!videoFile) {
+      console.log('error')
       return
     }
     if (!cover && !trailer) {
@@ -230,7 +234,8 @@ export const NewPost: FC = () => {
     try {
       setIsLoading(true)
       if (trailer) {
-        await checkVideoURL(trailer)
+        // 取消轮询
+        // await checkVideoURL(trailer)
       }
       const errorHandler = (error: any) => {
         toast({
@@ -256,8 +261,9 @@ export const NewPost: FC = () => {
             currency: 0,
             price: price || 0,
           }
-          if (params.price && trailer) {
+          if (params.price && trailer && trailerR2) {
             params['trailer'] = trailer
+            params['trailer_r2'] = trailerR2
           }
           await postResources(params)
           // when sent page will back to task page,so we need to update the task list
@@ -338,16 +344,50 @@ export const NewPost: FC = () => {
               })
             )
             // 判断是否是.mp4格式
-            if (!videoFile.name.endsWith('.mp4')) {
+            if (true) {
               // mp4 格式转换
-              const postreqRes = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
+              // const postreqRes = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
+              //   headers: {
+              //     'Content-Type': 'multipart/form-data',
+              //     Authorization: `Bearer ${token}`,
+              //   },
+              // })
+
+              const videoId:any = upload_url.split('/').pop();
+              formData.append('vid', videoId)
+              formData.append('url', upload_url)
+              console.log('cccc',upload_url, videoId)
+
+              const upload = new tus.Upload(videoFile, {
+                endpoint: `${import.meta.env.VITE_APP_UPLOAD_R2_URL}files`, // 你的 tus 服务器地址
+                retryDelays: [0, 3000, 5000, 10000], // 失败时重试间隔
                 headers: {
-                  'Content-Type': 'multipart/form-data',
-                  Authorization: `Bearer ${token}`,
+                  'Authorization': `Bearer ${token}`
+                },
+                metadata: {
+                  vid: videoId,
+                  url: upload_url
                 },
               })
-              const videoId = postreqRes.data.split('/').pop();
-              formData.append('vid', videoId)
+
+              updateUploadThread({
+                id: stepTwo,
+                progress: 100,
+                result: {
+                  data: "",
+                  status: 200
+                },
+                status: TaskStatus.COMPLETED,
+              })
+
+              // 启动上传
+              // Check if there are any previous uploads to continue.
+              upload.start();
+
+              console.log(upload, videoFile)
+
+              r2Url = `https://imgdev.bae.boo/${videoId}.mp4`
+              return
               const { data } = await axios.post(
                 import.meta.env.VITE_API_URL + 'api/v1/convert_req_file',
                 formData,
@@ -377,7 +417,7 @@ export const NewPost: FC = () => {
               })
               r2Url = r2Response.data.urls[0]
             }
-            console.log(r2Url)
+            console.log(r2Url, upload_url)
             // m3u8 update
             const response = await axios.post(upload_url, formData, {
               headers: {
@@ -394,6 +434,7 @@ export const NewPost: FC = () => {
                 console.log(`上传进度(upload_video): ${percentCompleted}%`)
               },
             })
+            console.log(response)
             updateUploadThread({
               id: stepTwo,
               progress: 100,
@@ -401,6 +442,7 @@ export const NewPost: FC = () => {
               status: TaskStatus.COMPLETED,
             })
           } catch (error) {
+            console.log(error)
             errorHandler(error)
           }
         },
@@ -844,6 +886,7 @@ export const NewPost: FC = () => {
                 videoSrc={videoSrc || ''}
                 trailer={trailer}
                 setTrailer={setTrailer}
+                setTrailerR2={setTrailerR2}
                 videoFile={videoFile}
               />
             )}

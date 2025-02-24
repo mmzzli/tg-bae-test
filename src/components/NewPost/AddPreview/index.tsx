@@ -313,7 +313,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
     })
     upload.start();
     const url = `https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${uploadRes.data.split('/').pop()}/manifest/video.m3u8`
-    const r2Url = `https://imgdev.bae.boo/${videoId}.mp4`
+    const r2Url = `${import.meta.env.VITE_APP_UPLOAD_IMG_URL}${videoId}.mp4`
     setTrailerR2(r2Url)
     setTrailer(url)
     setLoading(false)

@@ -44,7 +44,6 @@ export const useIM = () => {
   }
 
   const receiveMessage = (message: WrappedMessage | WrappedMessage[], messageWindowId = '') => {
-    console.log('receiveMessage', message)
     if (messageWindowId) {
       return updateMessage(message, Number(messageWindowId))
     }

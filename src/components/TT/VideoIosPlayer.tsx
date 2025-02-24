@@ -188,6 +188,14 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
   const [showThumbnail, setShowThumbnail] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
 
+  const imageScale = useMemo(() => {
+    if (sourceItem?.width && sourceItem?.height) {
+      const ratio = +sourceItem.width / +sourceItem.height;
+      return ratio > 1 ? 'object-contain' : 'object-cover';
+    }
+    return 'object-contain'; // 默认使用 contain
+  }, [sourceItem?.width, sourceItem?.height]);
+
   const scale = useMemo(() => {
     console.log(sourceItem, containerDomRef.current, 'jacob===========')
     if (containerDomRef && containerDomRef.current && sourceItem) {
@@ -336,7 +344,7 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
             transition: 'opacity 1s ease',
           }}
           src={poster ? formatImage(poster) : ''}
-          className="w-full h-full z-[11] top-0 left-0 right-0 bottom-0 absolute object-contain"
+          className={`w-full h-full z-[11] top-0 left-0 right-0 bottom-0 absolute ${imageScale}`}
           alt=""
         />
         <div

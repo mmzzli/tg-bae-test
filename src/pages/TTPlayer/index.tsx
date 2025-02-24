@@ -55,12 +55,11 @@ const TTPlayer: React.FC = () => {
   }
 
   useEffect(() => {
-    window.Telegram?.WebApp?.setHeaderColor('#ffffff')
+    window.Telegram?.WebApp?.setHeaderColor(isIOS ? '#ffffff' : '#000000')
 
     return () =>{
       destroyVideo()
       setGlobalMuted(false)
-      window.Telegram?.WebApp?.setHeaderColor('#000000')
     }
   }, [])
 

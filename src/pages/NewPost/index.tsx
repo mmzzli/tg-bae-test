@@ -359,6 +359,7 @@ export const NewPost: FC = () => {
               //   },
               // })
               const videoId:any = upload_url.split('/').pop();
+              console.log(videoId, upload_url)
               const upload = new tus.Upload(videoFile, {
                 endpoint: `${import.meta.env.VITE_APP_UPLOAD_R2_URL}files`, // 你的 tus 服务器地址
                 retryDelays: [0, 3000, 5000, 10000], // 失败时重试间隔
@@ -366,7 +367,8 @@ export const NewPost: FC = () => {
                   'Authorization': `Bearer ${token}`
                 },
                 metadata: {
-                  vid: videoId
+                  vid: videoId,
+                  url: upload_url
                 },
               })
               r2Url = `${import.meta.env.VITE_APP_UPLOAD_IMG_URL}${videoId}.mp4`

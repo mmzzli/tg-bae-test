@@ -18,11 +18,9 @@ const TTPlayer: React.FC = () => {
   const setTtVideoMuted = useStore((state) => state.setTtVideoMuted)
   useEffect(() => {
     return () => {
-      setTtVideoMuted(true)
-      if (window.videoElement) {
-        window.videoElement.muted = true
+      if(window.videoElement){
+        window.videoElement.pause()
       }
-      destroyVideo()
     }
   }, [])
   return (

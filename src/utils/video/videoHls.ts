@@ -14,17 +14,15 @@ video.setAttribute('x-webkit-airplay', 'allow')
 video.id = 'default-video-player'
 
 export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLElement) => {
-  let url = videoCard.media[0]
+  let url = videoCard.r2
+  // todo trailer预告片需处理为 mp4
   if (videoCard.price > 0 && !videoCard.is_pay && videoCard.trailer) {
-    url = videoCard.trailer
+    url = videoCard.r2
   }
-  const curVideo = videoCardContainer.querySelector('video')
-
   video.setAttribute('video-id', '' + videoCard.id)
-  const homeVideoMuted = useStore.getState().homeVideoMuted
-  if (curVideo) return
-
   const videoParentContainer = videoCardContainer.querySelector('.video-container')
+
+  console.log(videoParentContainer,'jacob=================');
   if (!videoParentContainer) return
 
   video.style.visibility = 'hidden'
@@ -33,7 +31,7 @@ export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLE
   video.style.width = '100vw'
   video.style.height = 'auto'
   video.style.visibility = ''
-  video.style.position = 'absolute'
+  video.style.position = 'relative'
   video.style.zIndex = '0'
   video.loop = true
 
@@ -54,28 +52,18 @@ export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLE
     }
   }
 
-  const hls = new Hls({
-    enableWorker: true,
-    maxBufferLength: 30,
-    maxMaxBufferLength: 60,
-    autoStartLoad: true,
-    maxBufferHole: 0.5,
-    lowLatencyMode: true,
-  })
-  hls.loadSource(url)
-  hls.attachMedia(video)
+  video.src = url
 
   const unsubscribeRoute = useStore.subscribe((state) => {
     const currentPath = window.location.pathname
     if (video) {
       if (currentPath === '/home' || currentPath === '/christmas' || currentPath === '/') {
-        video.play().catch((error) => {
+        video.play().catch((error:any) => {
           console.log('视频播放失败:', error)
           video.muted = true
           video.play()
         })
       } else {
-        hls.destroy()
         video.pause()
       }
     }
@@ -88,30 +76,6 @@ export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLE
     }
   })
 
-  hls.on(Hls.Events.MANIFEST_PARSED, async () => {
-    try {
-      // 首先设置为静音以确保可以自动播放
-      video.muted = true
-      await video.play()
-
-      // 如果初始播放成功，再根据状态设置静音
-      if (!homeVideoMuted) {
-        // 添加延时以确保浏览器不会阻止取消静音
-        setTimeout(() => {
-          video.muted = homeVideoMuted
-        }, 100)
-      }
-    } catch (error) {
-      console.warn('视频播放失败:', error)
-      // 保持静音状态继续尝试播放
-      video.muted = true
-      try {
-        await video.play()
-      } catch (retryError) {
-        console.error('重试播放失败:', retryError)
-      }
-    }
-  })
 
   // 清理函数
   return () => {

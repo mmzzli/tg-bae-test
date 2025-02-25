@@ -452,7 +452,7 @@ const VideoDialog = () => {
             </div>
           )}
           {!isLoading && !playing ? (
-            info?.price && !info?.is_pay && ended ? (
+            info?.price && !info?.is_pay && ended && info.uid != getCurrentUid() ? (
               <ReplayButton onClick={togglePlay} />
             ) : (
               <PlayButton onClick={togglePlay} />

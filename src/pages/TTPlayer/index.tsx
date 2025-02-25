@@ -21,8 +21,6 @@ export interface TVideo {
   url: string
   poster?: string
 }
-
-const VideoPlayer = dynamic(() => import('@/components/TT/VideoPlayer'), { ssr: false })
 const TTPlayer: React.FC = () => {
   const videoRefs = useRef<{ [key: number]: Player | null }>({})
   const swiperRef = useRef<SwiperType>()

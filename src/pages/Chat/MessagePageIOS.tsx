@@ -11,13 +11,14 @@ import { OthersUserInfo } from '@/types'
 import Image from '@/components/Image/Image'
 import { cn } from '@/utils/utils'
 import SendMediaModal from '@/components/Chat/SendMediaModal'
+import DeleteMessageModal from '@/components/Chat/DeleteMessageModal'
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { debounce } from '@/utils/chat/schedulers'
 import RewardButton from '@/components/Wallet/RewardButton'
 import { ImagePreviewIcon, VideoPreviewIcon } from '@/components/Chat/MessageRender'
 import { useSwipeBack } from '@/hooks/useSwipeBack'
-import { animated ,useSpring} from '@react-spring/web'
+import { animated, useSpring } from '@react-spring/web'
 // const PAGE_SIZE = 20
 const isIOS = () => {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
@@ -42,7 +43,6 @@ const MessagePageIOS = () => {
   const containerRef = useRef<HTMLDivElement>(null)
   const [zIndex, setZIndex] = useState(98)
   const isIOSDevice = isIOS()
-
 
   const [initTgViewportHeight, setInitTgViewportHeight] = useState(0)
   const [initVisualViewportHeight, setInitVisualViewportHeight] = useState(0)
@@ -462,12 +462,15 @@ const MessagePageIOS = () => {
           }}
         />
       </div>
+      {/* REWARD */}
       <div
         className="absolute right-[2px] w-[48px]  flex items-center justify-center h-[36px] z-[98]"
         style={{ bottom: showInput ? '8px' : '35px' }}
       >
         <RewardButton userInfo={chatPeople || ({} as OthersUserInfo)} />
       </div>
+      {/* DELETE MESSAGE MODAL */}
+      <DeleteMessageModal receiver={chatPeople} />
     </animated.div>
   )
 }

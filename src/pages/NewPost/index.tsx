@@ -247,6 +247,15 @@ export const NewPost: FC = () => {
       const allSuccessHandler = async (uploadThreads: UploadThread[]) => {
         const url = uploadThreads.filter((task) => task.name === 'check_video_sync')[0].result
         try {
+          if(!cover){
+            toast({
+              render: () => {
+                return <CustomToast title="Please select cover" type={typeOptions.error} />
+              },
+              position: 'bottom',
+            })
+            return
+          }
           const medias = [url]
           cover && medias.unshift([cover])
           //
@@ -343,13 +352,13 @@ export const NewPost: FC = () => {
             // 判断是否是.mp4格式
             if (!videoFile.name.endsWith('.mp4')) {
 
-              const postreqRes = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
-                headers: {
-                  'Content-Type': 'multipart/form-data',
-                  Authorization: `Bearer ${token}`,
-                },
-              })
-              const videoId = postreqRes.data.split('/').pop();
+              // const postreqRes = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
+              //   headers: {
+              //     'Content-Type': 'multipart/form-data',
+              //     Authorization: `Bearer ${token}`,
+              //   },
+              // })
+              const videoId:any = upload_url.split('/').pop();
               const upload = new tus.Upload(videoFile, {
                 endpoint: `${import.meta.env.VITE_APP_UPLOAD_R2_URL}files`, // 你的 tus 服务器地址
                 retryDelays: [0, 3000, 5000, 10000], // 失败时重试间隔

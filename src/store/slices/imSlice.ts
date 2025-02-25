@@ -1,8 +1,9 @@
 import { StateCreator } from 'zustand'
 import BaeimSDK, { Conversation } from '@/components/SDK/BaeimSDK'
-import { MessageWindowListItem, ReplyMessage } from '@/components/Chat/types'
+import { MessageWindowListItem, ReplyMessage, WrappedMessage } from '@/components/Chat/types'
 import { OthersUserInfo } from '@/types'
 import { sortConversations } from '@/utils/chat/util'
+import { Start } from 'xgplayer'
 export interface IMSlice {
   connection: BaeimSDK | null
   setConnection: (connection: BaeimSDK) => void
@@ -34,6 +35,11 @@ export interface IMSlice {
   replyMessage: ReplyMessage | null
   setReplyMessage: (message: ReplyMessage | null) => void
   // REPLY END
+
+  // DELETE MESSAGE START
+  deleteMessage: WrappedMessage | null
+  setDeleteMessage: (message: WrappedMessage | null) => void
+  // DELETE MESSAGE END
 }
 
 export const createIMSlice: StateCreator<IMSlice> = (set) => ({
@@ -145,4 +151,9 @@ export const createIMSlice: StateCreator<IMSlice> = (set) => ({
   replyMessage: null,
   setReplyMessage: (message) => set({ replyMessage: message }),
   // REPLY END
+
+  // DELETE MESSAGE START
+  deleteMessage: null,
+  setDeleteMessage: (message) => set({ deleteMessage: message }),
+  // DELETE MESSAGE END
 })

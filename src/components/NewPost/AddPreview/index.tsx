@@ -349,6 +349,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
         'Authorization': `Bearer ${token}`
       },
       metadata: metadata,
+
     })
     upload.start();
     const url = `https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${uploadRes.data.split('/').pop()}/manifest/video.m3u8`

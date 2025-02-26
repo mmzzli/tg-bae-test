@@ -32,14 +32,16 @@ export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLE
   video.style.width = '100vw'
   video.style.height = 'auto'
   video.style.visibility = ''
-  video.style.position = 'relative'
+  video.style.position = 'absolute'
   video.style.zIndex = '0'
   video.loop = true
+  videoParentContainer.appendChild(video)
 
 
-  setTimeout(()=>{
-    videoParentContainer.appendChild(video)
-  },800)
+  video.addEventListener('play',()=>{
+    video.style.zIndex = '4'
+  })
+
 
   const switchBtn = videoParentContainer.querySelector('.video-card-switch') as HTMLElement | null
 

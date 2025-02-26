@@ -364,19 +364,20 @@ const ResourceList = ({
                 ...item,
                 media: [media],
                 mediaCover: picUrl,
+                thumbnail: picUrl,
                 ...options,
               },
               mostVisibleElement
             )
-            return { ...item, media: [media], mediaCover: picUrl, ...options, r2 }
+            return { ...item, media: [media], mediaCover: picUrl, thumbnail: picUrl, ...options, r2 }
           }
         }
         return { ...item, media: url.split(','), ...options }
       }
       return item
     })
-    setResources(updatedUsers)
     setResourcesList(updatedUsers)
+    setResources(updatedUsers)
   }
 
   useEffect(() => {

@@ -12,6 +12,7 @@ interface PostListProps {
 
 const RecommendList = ({ containerRef }: PostListProps) => {
   const { list, hasMore, fetchMoreData, page, isLoading } = useAllFeaturedList()
+  const setAllFeaturedList = useStore((state) => state.setAllFeaturedList)
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
   const updateCacheVideo = useStore((state) => state.updateCacheVideo)
@@ -90,6 +91,7 @@ const RecommendList = ({ containerRef }: PostListProps) => {
           virtualizer={virtualizer}
           hasMore={hasMore}
           // type="recommend"
+          setResourcesList={setAllFeaturedList}
         />
       </div>
       {isLoading && hasMore && (

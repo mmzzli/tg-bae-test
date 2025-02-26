@@ -211,6 +211,7 @@ const ResourceList = ({
   type,
   hasMore,
   onlySelected = false,
+  setResourcesList,
 }: {
   resources: FormatterListItem[]
   virtualList: VirtualItem[]
@@ -218,6 +219,7 @@ const ResourceList = ({
   type?: string
   hasMore?: boolean
   onlySelected?: boolean
+  setResourcesList: (resources: FormatterListItem[]) => void
 }) => {
   const navigate = useNavigate()
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
@@ -374,6 +376,7 @@ const ResourceList = ({
       return item
     })
     setResources(updatedUsers)
+    setResourcesList(updatedUsers)
   }
 
   useEffect(() => {
@@ -389,7 +392,7 @@ const ResourceList = ({
         title="No post yet."
         className="w-full fixed top-[63%] left-1/2 transform -translate-x-1/2 -translate-y-1/2"
         icon={
-          <Icon name="icon-Empty_white_post" style={{ width: '164px', height: '164px' }}></Icon>
+          <Icon name="icon-post" style={{ width: '164px', height: '164px' }}></Icon>
         }
       ></Empty>
     )

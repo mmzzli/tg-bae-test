@@ -14,10 +14,11 @@ video.setAttribute('x-webkit-airplay', 'allow')
 video.id = 'default-video-player'
 
 export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLElement) => {
-  let url = videoCard.r2
+  console.log(videoCard,'jacob=================');
+  let url = videoCard.media
   // todo trailer预告片需处理为 mp4
   if (videoCard.price > 0 && !videoCard.is_pay && videoCard.trailer) {
-    url = videoCard.r2
+    url = videoCard.media
   }
   video.setAttribute('video-id', '' + videoCard.id)
   const videoParentContainer = videoCardContainer.querySelector('.video-container')

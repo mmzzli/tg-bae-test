@@ -9,6 +9,7 @@ import {
   unstable_NormalPriority as NormalPriority,
 } from 'scheduler'
 import { converMedia } from '@/utils/video/media'
+import recommendJson from '@/assets/recommend.json'
 
 export type ListType = 'recommend' | 'view'
 
@@ -340,10 +341,11 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
 
       const { featured = [] } = page === 1 ? await recommendFeatured(`2:1`) : {}
       // const {featured} = await recommendFeatured(1)
-      const { posts: postsRes } = await getRecommendMedia({
-        page_num: page,
-        records: recordsNum,
-      })
+      // const { posts: postsRes } = await getRecommendMedia({
+      //   page_num: page,
+      //   records: recordsNum,
+      // })
+      const { posts: postsRes } = recommendJson
       const posts = [...featured, ...postsRes]
 
       const hasMore = posts.length >= recordsNum

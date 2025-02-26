@@ -14,8 +14,9 @@ import {
   AccountdetailRes,
   VoteReq,
   CutReqReq,
-  VoteRes
+  VoteRes,
 } from '@/types'
+import { string } from '@tma.js/sdk'
 
 export const postResources = (params: PostResourceReq) => {
   return post<string>(`/api/v1/post`, params)
@@ -41,13 +42,12 @@ export const postLike = (params: LikeReq) => {
 export const postReq = () => {
   return get(`/api/v1/postreq`)
 }
-export const cutReq = (params:CutReqReq) => {
-  return post<string>(`/api/v1/cut_req`,params)
+export const cutReq = (params: CutReqReq) => {
+  return post<string>(`/api/v1/cut_req`, params)
 }
-export const cutReqFile = (params:any) => {
-  return post<string>(`/api/v1/cut_req_file`,params)
+export const cutReqFile = (params: any) => {
+  return post<string>(`/api/v1/cut_req_file`, params)
 }
-
 
 export const deletePost = (pid: number) => {
   return del<string>(`/api/v1/post/${pid}`)
@@ -65,6 +65,48 @@ export const getConversationSync = (params: { uid: string; msg_count: number }) 
   return post<Conversation[]>(`${import.meta.env.VITE_APP_IM_URL}conversation/sync`, params, {
     headers: { token: import.meta.env.VITE_APP_IM_TOKEN },
   })
+}
+
+export const deleteMsg = (params: {
+  message_id: string
+  channel_id: string
+  channel_type: number
+  message_seq: number
+}) => {
+  return del<{ status: number; msg: string }>(`${import.meta.env.VITE_APP_IM_URL}message`, params, {
+    headers: { token: import.meta.env.VITE_APP_IM_TOKEN },
+  })
+}
+
+export const deleteBothMsg = (params: {
+  message_id: string
+  channel_id: string
+  channel_type: number
+  message_seq: number
+}) => {
+  return del<{ status: number; msg: string }>(
+    `${import.meta.env.VITE_APP_IM_URL}message/mutual`,
+    params,
+    {
+      headers: { token: import.meta.env.VITE_APP_IM_TOKEN },
+    }
+  )
+}
+
+export const revokeMsg = (params: {
+  message_id: string
+  channel_id: string
+  channel_type: number
+}) => {
+  const queryParams = new URLSearchParams(params as any).toString()
+
+  return post<{ status: number; msg: string }>(
+    `${import.meta.env.VITE_APP_IM_URL}message/revoke?${queryParams}`,
+    {},
+    {
+      headers: { token: import.meta.env.VITE_APP_IM_TOKEN },
+    }
+  )
 }
 
 export const getMessagesSync = (params: {
@@ -137,7 +179,6 @@ export const getVoteDetail = () => {
 export const postVote = (params: VoteReq) => {
   return post<VoteRes>(`/api/v1/vote`, params)
 }
-
 
 export const convertReqFile = (params: any) => {
   return post<VoteRes>(`/api/v1/convert_req_file`, params)

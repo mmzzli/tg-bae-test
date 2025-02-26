@@ -59,6 +59,7 @@ export const NewPost: FC = () => {
   const [isFocused, setIsFocused] = useState<boolean>(false)
   const [initTgViewportHeight, setInitTgViewportHeight] = useState(0)
   const initTgViewportHeightRef = useRef(0)
+  const [screenBoll, setScreenBoll] = useState(false)
 
   const { runGetDailyTask } = useGetDailyTask()
   const { refresh } = useViewList()
@@ -784,12 +785,17 @@ export const NewPost: FC = () => {
             {firstFileType === 'video' && (
               <>
                 {videoSrc ? (
-                  <Box maxW="600px" m="auto" position="relative">
+                  <Box maxW="600px" m="auto" position="relative" style={{
+                    width: screenBoll ? "220px" : "100%",
+                    // height: screenBoll ? "306px" : "auto",
+                    margin: screenBoll ? "unset" : "auto",
+                  }}>
                     <VideoPlayer
                       videoRef={videoRef}
                       videoRefCover={videoRefCover}
                       src={videoSrc}
-                      style={{ borderRadius: '4px', maxHeight: '380px' }}
+                      setScreenBoll={setScreenBoll}
+                      style={{ borderRadius: '4px', objectFit: "cover", height: screenBoll ? "306px" : "auto" }}
                     />
                     <VideoFrameSelector
                       videoRef={videoRefCover}

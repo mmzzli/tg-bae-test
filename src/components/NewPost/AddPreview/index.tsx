@@ -55,7 +55,8 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
   // 显示视频地址
   const [previewVideoUrl, setPreviewVideoUrl] = useState<string>('')
   const [frames, setFrames] = useState<Frame[]>([])
-  const [isBaseModalOpen, { toggle, on, off }] = useBoolean(false)
+  // const [isBaseModalOpen, { toggle, on, off }] = useBoolean(false)
+  const [isBaseModalOpen, setIsBaseModalOpen] = useState(false)
   const token = useStore((state) => state.token)
   const [loading, setLoading] = useState(false)
   const [loadingSkeleton, setLoadingSkeleton] = useState(true)
@@ -71,6 +72,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
   // 选择用哪个预告片
   const [trailerBoll, setTrailerBoll] = useState(false)
   const [boll, setBoll] = useState(true)
+  // 是否是横屏
   const [landscapeBoll, setLandscapeBoll] = useState(false)
 
   const isLandscape =
@@ -212,7 +214,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
       formData.append('url', response.data)
       setLoading(false)
       setBoll(true)
-      off()
+      setIsBaseModalOpen(false)
       const { data } = await axios.post(
         import.meta.env.VITE_API_URL + 'api/v1/cut_req_file',
         formData,
@@ -264,7 +266,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
           // }
           setTrailer(url)
           setLoading(false)
-          off()
+          setIsBaseModalOpen(false)
         }
       },
     })
@@ -294,12 +296,12 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
 
     const videoId = uploadRes.data.split('/').pop();
 
-    const metadata:any = {
+    const metadata: any = {
       // vid: videoId,
       url: uploadRes.data
     }
 
-    if(videoRefTrailer.name.endsWith('.mp4')){
+    if (videoRefTrailer.name.endsWith('.mp4')) {
       const url = `${import.meta.env.VITE_APP_UPLOAD_URL}uploadall`
       const formData = new FormData()
       const items = Date.now()
@@ -328,11 +330,11 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
           console.log(`上传进度: ${percentCompleted}%`)
         },
       })
-      .then((r2Response) => {
-        setTrailerR2(r2Response.data.urls[0])
-      })
+        .then((r2Response) => {
+          setTrailerR2(r2Response.data.urls[0])
+        })
 
-    }else{
+    } else {
       metadata["vid"] = videoId
       setTrailerR2(`${import.meta.env.VITE_APP_UPLOAD_IMG_URL}${videoId}.mp4`)
     }
@@ -358,7 +360,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
     setTrailer(url)
     setLoading(false)
     // setBoll(true)
-    off()
+    setIsBaseModalOpen(false)
     return
     setLoading(true)
     const formData = new FormData()
@@ -381,10 +383,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
   }
 
   const captureFrame = async () => {
-    if (true) {
-      customizationVideo(trailerBoll ? videoRefTrailer : videoFile)
-      return
-    }
+    customizationVideo(trailerBoll ? videoRefTrailer : videoFile)
 
     // if (!videoRef.current) return;
     // setLoading(true)
@@ -566,7 +565,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
                 height: '64px',
                 width: '64px',
               }}
-              onClick={() => toggle()}
+              onClick={() => setIsBaseModalOpen(true)}
             >
               <i className="iconfont icon-add text-[#999999] text-[20px]"></i>
             </p>
@@ -574,98 +573,103 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
         </div>
       </div>
 
-      <BaseModal
-        isOpen={isBaseModalOpen}
-        onClose={off}
-        id="postScroll"
-        // height={isLandscape ? '70vh' : '85vh'}
+      {isBaseModalOpen && <div
+        className="fixed inset-0 z-[999] bg-[#080808]"
         style={{
-          maxHeight: isLandscape ? '70vh' : '85vh',
-          height: 'auto',
-          overflow: 'auto',
+          paddingTop: 'calc(var(--tg-safe-area-inset-top) + 16px)',
+          paddingBottom: 'var(--tg-safe-area-inset-bottom)',
         }}
-        animation={{ duration: 400, timingFunction: 'ease-in-out' }}
-        theme={{
-          darkBackgroundColor: '#1a1a1a',
-          lightBackgroundColor: '#ffffff',
-          handleColor: '#d1d5db',
-        }}
-        closeOnBackdropClick={true}
-        showHandle={false}
       >
         <div
-          className="w-[100%]"
+          className="relative w-full h-full flex flex-col"
           style={{
-            display: loadingSkeleton ? 'block' : 'none',
+            paddingTop: 'var(--tg-content-safe-area-inset-top)',
+            paddingBottom: 'var(--tg-content-safe-area-inset-bottom)',
           }}
         >
-          <div className="h-[315px] w-[100%] relative overflow-hidden bg-[#F4F4F4] dark:bg-[#272727] rounded w-2/3">
-            <SkeletonShine />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+            style={{
+              display: loadingSkeleton ? 'block' : 'none',
+            }}
+          >
+            <div className="flex items-center justify-center h-full pb-10">
+              <i className="iconfont icon-loading animate-spin text-[#6254FF]" style={{ fontSize: '40px' }} />
+            </div>
           </div>
-          <div className="h-[100px] w-[100%] mt-8 relative overflow-hidden bg-[#F4F4F4] dark:bg-[#272727] rounded w-2/3">
-            <SkeletonShine />
-          </div>
-        </div>
 
-        <div
-          className="w-[100%]"
-          style={{
-            display: loadingSkeleton ? 'none' : 'block',
-          }}
-        >
-          <h2 className="text-[24px] text-[#333]">Add a preview</h2>
+          <div
+            className="w-[100%] pb-[50px]"
+            style={{
+              display: loadingSkeleton ? 'none' : 'block',
+            }}
+          >
+            <div className='flex justify-between px-[16px]'>
+              <h2 className="text-[20px] text-[#FFF]">Add a preview</h2>
+              <BaseButton
+                text="Done"
+                width="100%"
+                loading={loading}
+                className="h-[36px] w-[82px]"
+                handler={() => captureFrame()}
+              />
+            </div>
 
-          {videoUrl && (
-            <div className="pt-[14px]">
-              {/* Video Element */}
-              <div className="relative max-h-[330px] min-h-[100px] overflow-hidden w-[fit-content] rounded-[8px]">
-                <video
-                  ref={videoRef}
-                  src={previewVideoUrl || videoUrl}
-                  style={{ display: previewVideoUrl ? 'block' : 'block', width: landscapeBoll ? "100%" : '243px', minHeight: "200px" }}
-                  preload="metadata"
-                  autoPlay
-                  playsInline
-                  muted
-                  onClick={handleVideoClick} // Add click handler to toggle play/pause
-                />
-                {!isPlaying && (
-                  <Img
-                    className="w-[60px] h-[60px] absolute top-[50%] left-[50%] transform -translate-x-[50%] -translate-y-[50%] "
-                    src={playIcon}
-                    onClick={handleVideoClick}
+            {videoUrl && (
+              <div className="pt-[26px]">
+                {/* Video Element */}
+                <div className="relative h-[442px] min-h-[100px] overflow-hidden w-[fit-content] rounded-[8px]"
+                  style={{
+                    padding: landscapeBoll ? "0px" : "0px 24px"
+                  }}
+                >
+                  <video
+                    ref={videoRef}
+                    src={previewVideoUrl || videoUrl}
+                    style={{ width: landscapeBoll ? "100%" : '100%', minHeight: "200px" }}
+                    preload="metadata"
+                    className='relative top-[50%] left-[50%] transform -translate-x-[50%] -translate-y-[50%]'
+                    autoPlay
+                    playsInline
+                    muted
+                    onClick={handleVideoClick} // Add click handler to toggle play/pause
                   />
-                )}
-              </div>
-
-              <div className="bg-[#fff] rounded-tl-[16px] rounded-tr-[16px]">
-                <p className="text-[#999] pt-[20px] pb-[12px] font-normal">
-                  Select a clip from the video to use as a preview, or upload a video from album.
-                </p>
-
-                <div className="mt-2 flex items-center gap-2">
-                  <Trailer
-                    trailerBoll={trailerBoll}
-                    setTrailerBoll={setTrailerBoll}
-                    setVideoRefTrailer={setVideoRefTrailer}
-                    setPreviewVideoUrl={setPreviewVideoUrl}
-                  />
-                  <Slider
-                    duration={duration}
-                    handleSliderChange={handleSliderChange}
-                    setStartTime={setStartTime}
-                    setEndTime={setEndTime}
-                    trailerBoll={trailerBoll}
-                    setTrailerBoll={setTrailerBoll}
-                    videoRef={videoRef}
-                    setLoadingSkeleton={setLoadingSkeleton}
-                    setPreviewVideoUrl={setPreviewVideoUrl}
-                    previewVideoUrl={videoUrl}
-                    startTime={startTime}
-                  />
+                  {!isPlaying && (
+                    <Img
+                      className="w-[60px] h-[60px] absolute top-[50%] left-[50%] transform -translate-x-[50%] -translate-y-[50%] "
+                      src={playIcon}
+                      onClick={handleVideoClick}
+                    />
+                  )}
                 </div>
 
-                <div className="px-[20px] pt-[24px] pb-[20px]">
+                <div className="bg-[#080808] rounded-tl-[16px] rounded-tr-[16px] px-[24px]">
+                  <p className="text-[#999] pt-[20px] pb-[12px] font-normal">
+                    Select a clip from the video to use as a preview, or upload a video from album.
+                  </p>
+
+                  <div className="mt-2 flex items-center gap-2">
+                    <Trailer
+                      trailerBoll={trailerBoll}
+                      setTrailerBoll={setTrailerBoll}
+                      setVideoRefTrailer={setVideoRefTrailer}
+                      setPreviewVideoUrl={setPreviewVideoUrl}
+                    />
+                    <Slider
+                      duration={duration}
+                      handleSliderChange={handleSliderChange}
+                      setStartTime={setStartTime}
+                      setEndTime={setEndTime}
+                      trailerBoll={trailerBoll}
+                      setTrailerBoll={setTrailerBoll}
+                      videoRef={videoRef}
+                      setLoadingSkeleton={setLoadingSkeleton}
+                      setPreviewVideoUrl={setPreviewVideoUrl}
+                      previewVideoUrl={videoUrl}
+                      startTime={startTime}
+                    />
+                  </div>
+
+                  {/* <div className="px-[20px] pt-[24px] pb-[20px]">
                   <BaseButton
                     text="Done"
                     width="100%"
@@ -673,12 +677,13 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
                     className="h-[48px]"
                     handler={() => captureFrame()}
                   />
+                </div> */}
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
-      </BaseModal>
+      </div>}
     </>
   )
 }

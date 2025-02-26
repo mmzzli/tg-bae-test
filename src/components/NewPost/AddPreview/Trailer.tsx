@@ -58,16 +58,16 @@ const Trailer: React.FC<TrailerProps> = ({
     <div className="relative">
       {!videoSrc ? (
         <p
-          className="h-[64px] w-[64px] bg-[#F7F9FC] rounded-md flex items-center justify-center cursor-pointer"
+          className="h-[64px] w-[64px] bg-[#333] rounded-md flex items-center justify-center cursor-pointer"
           onClick={handleChooseFile}
         >
-          <i className="iconfont icon-add text-[#999999] text-[18px]"></i>
+          <i className="iconfont icon-add text-[#666666] text-[18px]"></i>
         </p>
       ) : (
         <div
           className="rounded-md relative bg-[#6254FF]"
           style={{
-            border: `2px solid ${trailerBoll ? '#6254FF' : '#fff'}`,
+            border: `2px solid ${trailerBoll ? '#fff' : '#fff'}`,
           }}
         >
           <div

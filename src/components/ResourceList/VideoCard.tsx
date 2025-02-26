@@ -143,7 +143,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve, exchangeRate 
                 <Image
                   src={data.mediaCover ? formatImage(data.mediaCover, false) : ''}
                   alt={data.title}
-                  wrapperClassName=" overflow-hidden"
+                  wrapperClassName=" overflow-hidden z-[3]"
                   errorClassName="rounded-[0px] h-[150px]"
                   className="object-left w-[100%] m-[auto]"
                   // onClick={() => handleVideoClick(data)}

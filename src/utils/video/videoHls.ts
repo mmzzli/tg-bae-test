@@ -18,7 +18,7 @@ export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLE
   let url = videoCard.media
   // todo trailer预告片需处理为 mp4
   if (videoCard.price > 0 && !videoCard.is_pay && videoCard.trailer) {
-    url = videoCard.media
+    url = [videoCard.trailer]
   }
   video.setAttribute('video-id', '' + videoCard.id)
   const videoParentContainer = videoCardContainer.querySelector('.video-container')
@@ -27,8 +27,8 @@ export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLE
   if (!videoParentContainer) return
 
   video.style.visibility = 'hidden'
-  videoParentContainer.appendChild(video)
 
+  video.src = url[0]
   video.style.width = '100vw'
   video.style.height = 'auto'
   video.style.visibility = ''
@@ -36,9 +36,10 @@ export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLE
   video.style.zIndex = '0'
   video.loop = true
 
-  setTimeout(() => {
-    video.style.zIndex = '4'
-  }, 500)
+
+  setTimeout(()=>{
+    videoParentContainer.appendChild(video)
+  },800)
 
   const switchBtn = videoParentContainer.querySelector('.video-card-switch') as HTMLElement | null
 
@@ -53,7 +54,6 @@ export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLE
     }
   }
 
-  video.src = url || ''
 
   const unsubscribeRoute = useStore.subscribe((state) => {
     const currentPath = window.location.pathname

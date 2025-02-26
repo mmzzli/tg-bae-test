@@ -141,7 +141,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve, exchangeRate 
                 }}
               >
                 <Image
-                  src={data.mediaCover ? formatImage(data.mediaCover, false) : ''}
+                  src={data.mediaCover}
                   alt={data.title}
                   wrapperClassName=" overflow-hidden z-[3]"
                   errorClassName="rounded-[0px] h-[150px]"

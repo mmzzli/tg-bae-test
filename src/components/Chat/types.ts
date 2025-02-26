@@ -13,6 +13,7 @@ export enum MessageType {
   IMAGE = 'IMAGE',
   VIDEO = 'VIDEO',
   REWARD = 'REWARD',
+  POST = 'POST',
 }
 
 export type MessageMetadata = FileMetadata | RewardMetadata
@@ -72,6 +73,8 @@ export type WrappedMessage = Message & {
   metadata?: MessageMetadata
   reply?: ReplyMessage
   showAvatar?: boolean
+  messageId?: string
+  clientMessageId?: string
 }
 export interface ChatListProps {
   chats: Conversation[]

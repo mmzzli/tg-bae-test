@@ -211,6 +211,7 @@ const ResourceList = ({
   type,
   hasMore,
   onlySelected = false,
+  setResourcesList,
 }: {
   resources: FormatterListItem[]
   virtualList: VirtualItem[]
@@ -218,6 +219,7 @@ const ResourceList = ({
   type?: string
   hasMore?: boolean
   onlySelected?: boolean
+  setResourcesList: (resources: FormatterListItem[]) => void
 }) => {
   const navigate = useNavigate()
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
@@ -374,6 +376,7 @@ const ResourceList = ({
       return item
     })
     setResources(updatedUsers)
+    setResourcesList(updatedUsers)
   }
 
   useEffect(() => {

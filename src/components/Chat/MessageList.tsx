@@ -97,13 +97,14 @@ export const MessageList = ({
 
     try {
       const msgs = await connection?.getMessages(channelInfo?.uid.toString() || '', {
-        limit: 5,
+        limit: 8,
         startMessageSeq: messages[0].messageSeq - 1,
         endMessageSeq: 0,
         pullMode: PullMode.Down,
       })
 
       if (msgs && msgs.length > 0) {
+        console.log(msgs)
         const result: WrappedMessage[] = msgs.map((message) => getWrappedMessage(message))
         updateMessage(result, Number(channelInfo?.uid), true)
       }
@@ -180,7 +181,7 @@ const MessageItem = memo(
         channelId={channelId}
         delay={800}
         id={message.id}
-        config={{ enableReply: true, enableCopy: true, enableDownload: false }}
+        config={{ enableReply: true, enableCopy: true, enableDownload: false, enableRevoke: true }}
       >
         <div
           className={`overflow-hidden rounded-lg max-w-[255px]

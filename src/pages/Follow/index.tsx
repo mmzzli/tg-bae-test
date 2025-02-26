@@ -172,7 +172,7 @@ const FollowPage: FC = () => {
                         icon={
                           <Icon
                             name="icon-follow"
-                            style={{ width: '164px', height: '164px' }}
+                            style={{ width: '120px', height: '120px' }}
                           ></Icon>
                         }
                       ></Empty>
@@ -203,7 +203,7 @@ const FollowPage: FC = () => {
                         icon={
                           <Icon
                             name="icon-follow"
-                            style={{ width: '164px', height: '164px' }}
+                            style={{ width: '120px', height: '120px' }}
                           ></Icon>
                         }
                       ></Empty>

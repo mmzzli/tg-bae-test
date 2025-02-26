@@ -273,7 +273,7 @@ const MyPosts = memo(
           title="No post yet."
           className="w-full mt-10"
           icon={
-            <Icon name="icon-post" style={{ width: '164px', height: '164px' }}></Icon>
+            <Icon name="icon-post" style={{ width: '120px', height: '120px' }}></Icon>
           }
         ></Empty>
       )
@@ -387,7 +387,7 @@ const OrderList = memo(
           icon={
             <Icon
               name="icon-post"
-              style={{ width: '164px', height: '164px' }}
+              style={{ width: '120px', height: '120px' }}
             />
           }
         ></Empty>

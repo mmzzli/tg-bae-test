@@ -186,7 +186,7 @@ const Searching = () => {
         <div>
           <Empty
             title="No search result."
-            icon={<Icon name="icon-a-Frame2085662443" style={{ width: '164px', height: '164px' }}></Icon>}
+            icon={<Icon name="icon-a-Frame2085662443" style={{ width: '120px', height: '120px' }}></Icon>}
           ></Empty>
         </div>
       )}

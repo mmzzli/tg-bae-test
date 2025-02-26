@@ -293,43 +293,12 @@ const VideoDialog = () => {
     const video = videoRef.current
     if (!video || !url) return
 
-    if (Hls.isSupported()) {
-      const hls = new Hls({
-        enableWorker: true,
-        maxBufferLength: 30,
-        maxMaxBufferLength: 60,
-        autoStartLoad: true,
-        maxBufferHole: 0.5,
-        lowLatencyMode: true,
+    video.src = url;
+    video.addEventListener('loadedmetadata', () => {
+      video.play().catch(() => {
+        console.log('自动播放失败')
       })
-
-      hls.loadSource(url)
-      hls.attachMedia(video)
-
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        video.muted = false
-        video.play().catch((error) => {
-          console.log('视频自动播放失败', error)
-          video.muted = true
-          video.play()
-        })
-      })
-
-      hls.on(Hls.Events.ERROR, () => {
-        setIsLoading(false)
-      })
-
-      return () => {
-        hls.destroy()
-      }
-    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      video.src = url
-      video.addEventListener('loadedmetadata', () => {
-        video.play().catch(() => {
-          console.log('自动播放失败')
-        })
-      })
-    }
+    })
   }, [url])
 
   useEffect(() => {

@@ -23,7 +23,7 @@ const PostList = ({ className, list, hasMore, fetchMoreData }: PostListProps) =>
         title="No post yet."
         className="w-full"
         icon={
-          <Icon name="icon-Empty_white_post" style={{ width: '164px', height: '164px' }}></Icon>
+          <Icon name="icon-post" style={{ width: '164px', height: '164px' }}></Icon>
         }
       ></Empty>
     )

@@ -5,7 +5,7 @@ import { TContainer } from '@/components/tmd'
 import BaseButton from '@/components/BaseButton/BaseButton'
 import clsx from 'clsx'
 import sentSubmitted from '@/components/tmd/svgs/send-submitted.png'
-
+import Icon from '@/components/comm/Icon'
 // @ts-ignore
 const AveragingProcessTime: Record<IWeb3Type, string> = {
   EVM: `1 minutes`,
@@ -35,7 +35,7 @@ export default function SendResult() {
         <div className="flex h-full flex-1 flex-col justify-between py-[16px]">
           <div>
             <div className="mb-[20px] mt-[160px] flex w-full justify-center">
-              <img className="w-28" src={sentSubmitted} alt="" />
+              <Icon name="icon-submitted" style={{ width: '164px', height: '164px' }}></Icon>
             </div>
 
             <div className="mb-[16px] w-full text-center text-xl font-semibold  text-t1">

@@ -273,7 +273,7 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
         <div className="flex-1 flex items-center justify-center">
           <Empty
             icon={
-              <Icon name="icon-a-Frame2085662446" style={{ width: '164px', height: '164px' }}></Icon>
+              <Icon name="icon-a-Frame2085662446" style={{ width: '120px', height: '120px' }}></Icon>
             }
             title="No Chat History"
           ></Empty>

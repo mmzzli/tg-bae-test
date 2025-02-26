@@ -35,7 +35,7 @@ export default function SendResult() {
         <div className="flex h-full flex-1 flex-col justify-between py-[16px]">
           <div>
             <div className="mb-[20px] mt-[160px] flex w-full justify-center">
-              <Icon name="icon-submitted" style={{ width: '164px', height: '164px' }}></Icon>
+              <Icon name="icon-submitted" style={{ width: '120px', height: '120px' }}></Icon>
             </div>
 
             <div className="mb-[16px] w-full text-center text-xl font-semibold  text-t1">

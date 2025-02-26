@@ -82,14 +82,16 @@ export const UserInfo = memo(
     const resourcesEve = (post_id: number, url: string, is_pay?: boolean) => {
       const options = is_pay ? { is_pay } : {}
       const medias = url.split(',')
-      const picUrl = medias.find((item) => !item.endsWith('.m3u8'))
+      const picUrl = medias.find((item) => !item.endsWith('.m3u8') && !item.endsWith('.mp4'))
       const media = medias.find((item) => item.endsWith('.m3u8'))
+      const r2 = medias.find((item) => item.endsWith('.mp4'))
       if (media) {
         setVideoResource({
           ...info,
           media: [media],
           mediaCover: picUrl ?? '',
           ...options,
+          r2
         } as FormatterListItem)
       }
     }

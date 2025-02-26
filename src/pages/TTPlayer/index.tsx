@@ -5,8 +5,6 @@ import { useLocation } from 'react-router-dom'
 import './index.css'
 import HomeList from '@/components/TT/HomeList'
 import ChristmasList from '@/components/TT/ChristmasList'
-import { destroyVideo } from '@/utils/utils'
-import { useStore } from '@/store'
 
 export interface TVideo {
   url: string
@@ -15,7 +13,6 @@ export interface TVideo {
 
 const TTPlayer: React.FC = () => {
   const { state } = useLocation()
-  const setTtVideoMuted = useStore((state) => state.setTtVideoMuted)
   useEffect(() => {
     return () => {
       if(window.videoElement){

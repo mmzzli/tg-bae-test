@@ -409,8 +409,9 @@ const ResourceList = ({ resources: initialResources, type, hasMore }: Props) => 
         runDailyWatch(post_id)
         if (item.act_type === 0) {
           const medias = url.split(',')
-          const picUrl = medias.find((item) => !item.endsWith('.m3u8'))
+          const picUrl = medias.find((item) => !item.endsWith('.m3u8') && !item.endsWith('.mp4'))
           const media = medias.find((item) => item.endsWith('.m3u8'))
+          const r2 = medias.find((item) => item.endsWith('.mp4'))
           setCacheVideoIndex(item.id)
           const videos = document.querySelectorAll('.video-card')
           const mostVisibleElement = Array.prototype.slice
@@ -432,7 +433,7 @@ const ResourceList = ({ resources: initialResources, type, hasMore }: Props) => 
               },
               mostVisibleElement
             )
-            return { ...item, media: [media], mediaCover: picUrl, ...options }
+            return { ...item, media: [media], mediaCover: picUrl, ...options, r2 }
           }
         }
         return { ...item, media: url.split(','), ...options }

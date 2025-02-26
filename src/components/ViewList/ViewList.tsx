@@ -273,7 +273,7 @@ const MyPosts = memo(
           title="No post yet."
           className="w-full mt-10"
           icon={
-            <Icon name="icon-Empty_white_post" style={{ width: '164px', height: '164px' }}></Icon>
+            <Icon name="icon-post" style={{ width: '164px', height: '164px' }}></Icon>
           }
         ></Empty>
       )
@@ -386,7 +386,7 @@ const OrderList = memo(
           className="w-full mt-10"
           icon={
             <Icon
-              name="icon-Empty_white_purchase"
+              name="icon-post"
               style={{ width: '164px', height: '164px' }}
             />
           }

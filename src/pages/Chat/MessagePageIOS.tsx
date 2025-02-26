@@ -11,7 +11,7 @@ import { OthersUserInfo } from '@/types'
 import Image from '@/components/Image/Image'
 import { cn } from '@/utils/utils'
 import SendMediaModal from '@/components/Chat/SendMediaModal'
-import DeleteMessageModal from '@/components/Chat/DeleteMessageModal'
+import { DeleteMessageDialog } from '@/components/Chat/DeleteMessageModal'
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { debounce } from '@/utils/chat/schedulers'
@@ -470,7 +470,7 @@ const MessagePageIOS = () => {
         <RewardButton userInfo={chatPeople || ({} as OthersUserInfo)} />
       </div>
       {/* DELETE MESSAGE MODAL */}
-      <DeleteMessageModal receiver={chatPeople} />
+      <DeleteMessageDialog receiver={chatPeople} />
     </animated.div>
   )
 }

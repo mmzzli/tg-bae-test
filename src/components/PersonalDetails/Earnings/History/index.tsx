@@ -99,7 +99,7 @@ const TelegramStars = ({
       </InfiniteScroll>
       {!starsLoading && data.accounts.length === 0 && (
         <div className="h-full flex items-center justify-center">
-          <Icon name="icon-history" style={{ width: '164px', height: '164px' }} />
+          <Icon name="icon-history" style={{ width: '120px', height: '120px' }} />
         </div>
       )}
     </div>
@@ -177,7 +177,7 @@ const Cryptos = ({
       </InfiniteScroll>
       {!cryptoLoading && giftData.length === 0 && (
         <div className="h-full flex items-center justify-center">
-          <Icon name="icon-history" style={{ width: '164px', height: '164px' }} />
+          <Icon name="icon-history" style={{ width: '120px', height: '120px' }} />
         </div>
       )}
     </div>

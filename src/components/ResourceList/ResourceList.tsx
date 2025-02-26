@@ -456,7 +456,7 @@ const ResourceList = ({ resources: initialResources, type, hasMore }: Props) => 
         title="No post yet."
         className="w-full min-h-[240px]"
         icon={
-          <Icon name="icon-post" style={{ width: '164px', height: '164px' }}></Icon>
+          <Icon name="icon-post" style={{ width: '120px', height: '120px' }}></Icon>
         }
       />
     )

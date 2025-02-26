@@ -10,7 +10,7 @@ const Empty: React.FC<{
 }> = ({ title, description, icon, children, className }) => {
   return (
     <div className={cn('flex flex-col items-center justify-center space-y-4', className)}>
-      {icon && <div className="icon w-[164px] h-[164px]">{icon}</div>}
+      {icon && <div className="icon w-[120px] h-[120px]">{icon}</div>}
       {title && (
         <Text color="#62636F" fontSize="14px" lineHeight="16px" marginBottom="4px">
           {title}

@@ -345,7 +345,7 @@ export const NewPost: FC = () => {
         thread: async ({ upload_url }: { upload_url: string }) => {
 
           // 判断是否是.mp4格式
-          if (videoFile.name.endsWith('.mp4')) {
+          if (videoFile.name.endsWith('.mp4') || videoFile.name.endsWith('.MP4')) {
 
             const url = `${import.meta.env.VITE_APP_UPLOAD_URL}uploadall`
             // 参数

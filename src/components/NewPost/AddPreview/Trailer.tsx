@@ -67,7 +67,7 @@ const Trailer: React.FC<TrailerProps> = ({
         <div
           className="rounded-md relative bg-[#6254FF]"
           style={{
-            border: `2px solid ${trailerBoll ? '#fff' : '#fff'}`,
+            border: `${trailerBoll ? '2px solid #fff' : 'none'}`,
           }}
         >
           <div

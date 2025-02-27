@@ -30,7 +30,7 @@ const AgeGate = () => {
       style={{ minHeight: '100vh', height: '100dvh' }}
     >
       <div className="mx-[auto] mt-[94px] mb-[50px] flex items-center justify-center">
-        <Icon name={'icon-a-Frame2085661681'} style={{ width: '164px', height: '164px' }}></Icon>
+        <Icon name={'icon-a-18'} style={{ width: '164px', height: '164px' }}></Icon>
       </div>
       <h3 className="text-[#333] text-[24px] text-center">Are you 18 years of age or older?</h3>
       <div className="text-[14px] mt-[10px] leading-[22px] text-center px-[5px]">

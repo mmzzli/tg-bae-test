@@ -134,10 +134,11 @@ const FollowPage: FC = () => {
       <div
         style={{
           paddingTop: `calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top) + 24px)`,
+          height: '100%',
         }}
       >
         <h1 className="text-[20px] font-bold text-[#333] dark:text-white">{title}</h1>
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-hidden h-full">
           <div className="flex flex-col h-full overflow-auto scrollbar-hide">
             {loading ? (
               <div className="flex-1 flex items-center justify-center">
@@ -166,13 +167,13 @@ const FollowPage: FC = () => {
                       <div className="h-[40px]"></div>
                     </InfiniteScroll>
                   ) : (
-                    <div className="h-full flex items-center justify-center pb-[40px]">
+                    <div className="w-full h-full flex items-center justify-center pb-[40px]">
                       <Empty
                         title="No followers yet."
                         icon={
                           <Icon
-                            name="icon-Empty_white_follow"
-                            style={{ width: '164px', height: '164px' }}
+                            name="icon-follow"
+                            style={{ width: '120px', height: '120px' }}
                           ></Icon>
                         }
                       ></Empty>
@@ -202,8 +203,8 @@ const FollowPage: FC = () => {
                         title="You haven't followed anyone."
                         icon={
                           <Icon
-                            name="icon-Empty_white_follow"
-                            style={{ width: '164px', height: '164px' }}
+                            name="icon-follow"
+                            style={{ width: '120px', height: '120px' }}
                           ></Icon>
                         }
                       ></Empty>

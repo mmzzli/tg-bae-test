@@ -4,7 +4,7 @@ import { useSwiperSlide } from 'swiper/react'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import { useSafeArea } from '@/hooks/useSafeArea'
 import ResourceFooter from '@/components/ResourceList/ResourceFooter'
-import { createVideoElement, destroyVideo, getDeviceType, isIOS } from '@/utils/utils'
+import { createVideoElement, destroyVideo, getDeviceType, isIOS, formatImage } from '@/utils/utils'
 import { VideoPlayerProps } from '@/components/TT/VideoPlayer'
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import { useStore } from '@/store'
@@ -82,14 +82,16 @@ export const UserInfo = memo(
     const resourcesEve = (post_id: number, url: string, is_pay?: boolean) => {
       const options = is_pay ? { is_pay } : {}
       const medias = url.split(',')
-      const picUrl = medias.find((item) => !item.endsWith('.m3u8'))
+      const picUrl = medias.find((item) => !item.endsWith('.m3u8') && !item.endsWith('.mp4'))
       const media = medias.find((item) => item.endsWith('.m3u8'))
+      const r2 = medias.find((item) => item.endsWith('.mp4'))
       if (media) {
         setVideoResource({
           ...info,
           media: [media],
           mediaCover: picUrl ?? '',
           ...options,
+          r2
         } as FormatterListItem)
       }
     }
@@ -188,6 +190,14 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
   const [showThumbnail, setShowThumbnail] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
 
+  const imageScale = useMemo(() => {
+    if (sourceItem?.width && sourceItem?.height) {
+      const ratio = +sourceItem.width / +sourceItem.height;
+      return ratio > 1 ? 'object-contain' : 'object-cover';
+    }
+    return 'object-contain'; // 默认使用 contain
+  }, [sourceItem?.width, sourceItem?.height]);
+
   const scale = useMemo(() => {
     console.log(sourceItem, containerDomRef.current, 'jacob===========')
     if (containerDomRef && containerDomRef.current && sourceItem) {
@@ -260,6 +270,7 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
     console.log(videoWrapperEl, 'jacob===============videoWrapperEl')
     if (videoWrapperEl) {
       videoWrapperEl.appendChild(videoElement)
+      videoElement.play()
     }
   }
 
@@ -331,12 +342,12 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
       <div className="relative" style={{ height: '89vh' }} ref={videoWrapperRef}>
         <img
           style={{
-            display: showThumbnail ? 'block' : 'none',
+            // display: showThumbnail ? 'block' : 'none',
             opacity: showThumbnail ? 1 : 0,
             transition: 'opacity 1s ease',
           }}
-          src={poster}
-          className="w-full h-full z-[11] top-0 left-0 right-0 bottom-0 absolute object-contain"
+          src={poster ? formatImage(poster) : ''}
+          className={`w-full h-full z-[11] top-0 left-0 right-0 bottom-0 absolute ${imageScale}`}
           alt=""
         />
         <div

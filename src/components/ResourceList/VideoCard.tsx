@@ -36,11 +36,12 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve, exchangeRate 
           clearTimeout(timeoutId)
         }
         timeoutId = setTimeout(() => {
-          if (ttMode && !(data.price > 0 && !data.is_pay)) {
-            console.log('tt mode')
+          const currentPath = window.location.pathname
+          if (ttMode && !(data.price > 0 && !data.is_pay && data.uid != getCurrentUid()) && ['/christmas', '/home'].includes(currentPath)) {
             navigate('/tt-player', {
               state: {
                 id: data.id,
+                sourcePath: currentPath,
               },
             })
             return

@@ -7,6 +7,7 @@ import { handleZoomAndPan } from '@/components/Image/resizeAndMove'
 
 import 'swiper/css'
 import { useSafeState } from 'ahooks'
+import {useStore} from "@/store";
 
 interface ImagePreviewProps {
   isOpen: boolean
@@ -27,7 +28,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
   const [loading, setLoading] = useSafeState(true)
   const [activeIndex, setActiveIndex] = useState(0)
   const swiperSlide = useSwiperSlide()
-
+  const setTtVideoMuted = useStore((state) => state.setTtVideoMuted)
   useEffect(() => {
     if (swiper && swiper.activeIndex !== currentIndex) {
       swiper.slideTo(currentIndex, 0)
@@ -38,7 +39,9 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
   useEffect(() => {
     console.log(swiperSlide.isVisible && index == wrapperActiveIndex,'jacob=============== swiperSlide.isVisible && index==wrapperActiveIndex');
     if(swiperSlide.isVisible && index==wrapperActiveIndex){
-      destroyVideo()
+      if(window.videoElement){
+        window.videoElement.pause();
+      }
     }
   }, [swiperSlide.isVisible,index,wrapperActiveIndex]);
 

@@ -26,11 +26,12 @@ export type PostResourceReq = {
   type: number
   currency: number
   price: number
-  duration?: number
+  duration?: string
   width?: string
   height?: string
   trailer?: string
   r2?: string
+  trailer_r2?: string
 }
 export type CutReqReq = {
   url: string,

@@ -88,8 +88,7 @@ const ImageCard: React.FC<ImageCardProps> = ({
                     if (
                       ttMode &&
                       !(data.price > 0 && !data.is_pay && data.uid != getCurrentUid()) &&
-                      (['/christmas', '/home'].includes(currentPath) ||
-                        profilePathRegex.test(currentPath))
+                      (['/christmas', '/home', '/profile'].includes(currentPath))
                     ) {
                       navigate('/tt-player', {
                         state: {

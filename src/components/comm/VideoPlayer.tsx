@@ -8,9 +8,10 @@ interface VideoPlayerProps {
   videoRef?: React.RefObject<HTMLVideoElement>;
   videoRefCover?: React.RefObject<HTMLVideoElement>;
   setScreenBoll:(boll:boolean)=>void
+  setDurationData: (data:any)=>void
 }
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, style, videoRef, videoRefCover, setScreenBoll }) => {
+const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, style, videoRef, videoRefCover, setScreenBoll, setDurationData }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleVideoClick = () => {
@@ -51,7 +52,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, style, videoRef, videoRe
     if (!video) return;
 
     const handleLoadedMetadata = () => {
-      console.log(video.videoWidth, video.videoHeight)
+      setDurationData({
+        duration: video.duration,
+        height: video.videoHeight,
+        width: video.videoWidth
+      })
       if(video.videoWidth < video.videoHeight){
         setScreenBoll(true)
       }else{

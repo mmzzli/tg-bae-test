@@ -26,6 +26,17 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
   // const [selectedFrame, setSelectedFrame] = useState<Frame | null>(null)
   const [isBaseModalOpen, { toggle, on, off }] = useBoolean(false)
   const token = useStore((state) => state.token)
+
+  const {
+    virtualRoutePage,
+    setVirtualRoutePage,
+    resetVirtualRoutePage,
+  } = useStore((state) => ({
+    virtualRoutePage: state.virtualRoutePage,
+    setVirtualRoutePage: state.setVirtualRoutePage,
+    resetVirtualRoutePage: state.resetVirtualRoutePage,
+  }))
+
   const [loading, setLoading] = useState(false)
   const [loadingSkeleton, setLoadingSkeleton] = useState(true)
   const [landscape, setLandscape] = useState(false)
@@ -203,33 +214,37 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
         bottom="8px"
         right="8px"
         cursor="pointer"
-        onClick={() => toggle()}
+        onClick={() => setVirtualRoutePage({ name: 'POSTFRAME', enterFrom: '/post' })}
       >
         Select cover
       </Text>
-      <BaseModal
-        isOpen={isBaseModalOpen}
-        onClose={off}
-        // height={isLandscape ? '70vh' : '85vh'}
+      {<div
+        className="fixed inset-0 z-[999] bg-[#080808]"
         style={{
-          maxHeight: isLandscape ? '70vh' : '85vh',
-          height: 'auto',
-          overflow: 'auto',
+          paddingTop: 'calc(var(--tg-safe-area-inset-top) + 16px)',
+          paddingBottom: 'var(--tg-safe-area-inset-bottom)',
+          display: virtualRoutePage?.name === "POSTFRAME" ? "block" : "none"
         }}
-        animation={{
-          duration: 400,
-          timingFunction: 'ease-in-out',
-        }}
-        theme={{
-          darkBackgroundColor: '#1a1a1a',
-          lightBackgroundColor: '#ffffff',
-          handleColor: '#d1d5db',
-        }}
-        closeOnBackdropClick={true}
-        showHandle={false}
       >
+        <div
+          className="relative w-full h-full flex flex-col"
+          style={{
+            paddingTop: 'var(--tg-content-safe-area-inset-top)',
+            paddingBottom: 'var(--tg-content-safe-area-inset-bottom)',
+          }}
+        >
         <div className="w-[100%]">
-          <h2 className="text-[24px] text-[#333] mt-[24px]">Select cover</h2>
+
+          <div className='flex justify-between px-[16px]'>
+            <h2 className="text-[20px] text-[#FFF]">Select cover</h2>
+            <BaseButton
+              text="Done"
+              width="100%"
+              loading={loading}
+              className="h-[36px] w-[82px]"
+              handler={() => {captureFrame();resetVirtualRoutePage()}}
+            />
+          </div>
 
           <div className='w-[100%]'
             style={{
@@ -269,24 +284,26 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
                 style={{
                   marginTop: "16px",
                   // display: "none",
-
                   width: "243px",
                   // height: "315px",
                   display: "none"
                 }}
               ></canvas>
-              <img
-                style={{
-                  marginTop: "16px",
-                  // display: "none",
-                  width: "243px",
-                }}
-                src={coverImg}
-              />
+              <div className='h-[442px] relative mt-[24px]'>
+                <img
+                  className='absolute top-[50%] left-[50%] transform -translate-x-[50%] -translate-y-[50%]'
+                  style={{
+                    width: false ? "220px" : "100%",
+                    height: false ? "306px" : "auto",
+                    margin: false ? "unset" : "auto",
+                  }}
+                  src={coverImg}
+                />
+              </div>
 
 
 
-              <div className="bg-[#fff] rounded-tl-[16px] rounded-tr-[16px]">
+              <div className='px-[24px]'>
                 <p className="text-center text-[#999] pt-[32px] pb-[15px]">
                   Swipe left and right to choose the best cover
                 </p>
@@ -301,10 +318,10 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
                     value={currentTime}
                     onInput={(e: any) => handleSliderChange(e.target.value)}
                   /> */}
-                  <Slider duration={duration} handleSliderChange={handleSliderChange} videoRef={videoRef} setLoadingSkeleton={setLoadingSkeleton} isBaseModalOpen={isBaseModalOpen} />
+                  <Slider duration={duration} handleSliderChange={handleSliderChange} videoRef={videoRef} setLoadingSkeleton={setLoadingSkeleton} isBaseModalOpen={virtualRoutePage?.name === "POSTFRAME"} />
                 </div>
 
-                <div className="px-[20px] pt-[24px] pb-[20px]">
+                {/* <div className="px-[20px] pt-[24px] pb-[20px]">
                   <BaseButton
                     text="Done"
                     width="100%"
@@ -315,7 +332,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
                       off()
                     }}
                   />
-                </div>
+                </div> */}
 
               </div>
 
@@ -345,7 +362,8 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
           )} */}
 
         </div>
-      </BaseModal>
+      </div>
+      </div>}
     </>
   )
 }

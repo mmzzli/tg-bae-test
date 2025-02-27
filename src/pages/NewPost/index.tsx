@@ -48,6 +48,11 @@ export const NewPost: FC = () => {
   // const [frameSelectorBoll, setFrameSelectorBoll] = useState<boolean>(false)
   // start
   const [price, setPrice] = useState<number | null>(null)
+  const [durationData, setDurationData] = useState({
+    duration: 0,
+    width: 0,
+    height: 0
+  })
   // cover
   const [cover, setCover] = useState<string | null>(null)
   //
@@ -261,10 +266,11 @@ export const NewPost: FC = () => {
           cover && medias.unshift([cover])
           //
           const params: PostResourceReq = {
-            duration: Math.floor(videoRef?.current?.duration || 0),
+            duration: String(Math.floor(durationData.duration)),
+            width: String(durationData.width),
+            height: String(durationData.height),
             media: medias.join(','),
             ...(title ? { title } : {}),
-            // r2: r2Url,
             type: 0,
             currency: 0,
             price: price || 0,
@@ -348,7 +354,7 @@ export const NewPost: FC = () => {
             formData.append('name', `${items}`)
             formData.append('type', 'bae')
 
-            axios.put(url, formData, {
+            const r2Response = await axios.put(url, formData, {
               headers: {
                 'Content-Type': 'multipart/form-data',
                 Authorization: `Bearer ${token}`,
@@ -360,9 +366,7 @@ export const NewPost: FC = () => {
                 console.log(`上传进度: ${percentCompleted}%`)
               },
             })
-              .then((r2Response) => {
-                updateUrl = r2Response.data.urls[0]
-              })
+            updateUrl = r2Response.data.urls[0]
           }else{
 
             const videoId = performance.timeOrigin * 1e6 + performance.now() * 1e3
@@ -384,7 +388,7 @@ export const NewPost: FC = () => {
           updateUploadThread({
             id: stepTwo,
             progress: 100,
-            result: "",
+            result: updateUrl,
             status: TaskStatus.COMPLETED,
           })
           // try {
@@ -844,6 +848,7 @@ export const NewPost: FC = () => {
                     <VideoPlayer
                       videoRef={videoRef}
                       videoRefCover={videoRefCover}
+                      setDurationData={setDurationData}
                       src={videoSrc}
                       setScreenBoll={setScreenBoll}
                       style={{ borderRadius: '4px', objectFit: "cover", height: screenBoll ? "306px" : "auto" }}

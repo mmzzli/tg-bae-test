@@ -531,11 +531,12 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
         </div>
       </div>
 
-      {virtualRoutePage?.name === "POST" && <div
+      {<div
         className="fixed inset-0 z-[999] bg-[#080808]"
         style={{
           paddingTop: 'calc(var(--tg-safe-area-inset-top) + 16px)',
           paddingBottom: 'var(--tg-safe-area-inset-bottom)',
+          display: virtualRoutePage?.name === "POST" ? "block" : "none"
         }}
       >
         <div

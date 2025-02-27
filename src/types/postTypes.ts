@@ -30,8 +30,6 @@ export type PostResourceReq = {
   width?: string
   height?: string
   trailer?: string
-  r2?: string
-  trailer_r2?: string
 }
 export type CutReqReq = {
   url: string,

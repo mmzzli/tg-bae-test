@@ -300,7 +300,8 @@ const useCacheVideo = (
   updateCache: (videos: FormatterListItem[]) => void, // 更新缓存的函数
   domId: string,
   cardClass: string = 'video-card',
-  random = 0
+  currentUid: number,
+  random = 0,
 ) => {
   const observerRef = useRef<IntersectionObserver | null>(null)
   const videos = list.filter((item) => item.type === 0)
@@ -375,7 +376,7 @@ const useCacheVideo = (
         // 找到对应的视频数据并播放
         const videoCard = videos.find((item) => item.id === currentId)
         if (videoCard && +videoId != currentId) {
-          videoHls(videoCard, visibleElements[0])
+          videoHls({...videoCard, currentUid}, visibleElements[0])
         }
       }
     } else {
@@ -436,7 +437,7 @@ const useCacheVideo = (
         // 找到对应的视频数据并播放
         const videoCard = videos.find((item) => item.id === currentId)
         if (videoCard) {
-          videoHls(videoCard, mostVisibleElement)
+          videoHls({...videoCard, currentUid}, mostVisibleElement)
         }
       }
     }
@@ -483,9 +484,8 @@ const useCacheVideo = (
 
       // 找到对应的视频数据并播放
       const videoCard = videos.find((item) => item.id === currentId)
-      console.log('uncle--->', videoCard)
       if (videoCard) {
-        videoHls(videoCard, visibleElement)
+        videoHls({...videoCard, currentUid}, visibleElement)
       }
     }
   })

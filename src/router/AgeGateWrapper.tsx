@@ -14,7 +14,7 @@ export const AgeGateWrapper = ({ children }: { children: React.ReactNode }) => {
       return
     }
 
-    if (location.pathname.startsWith('/profile') && location.pathname !== '/profile/earnings') {
+    if (location.pathname.startsWith('/profile') && location.pathname !== '/profile/earnings' || location.pathname === '/tt-player') {
       window.Telegram?.WebApp?.setHeaderColor('#000000')
     } else {
       window.Telegram?.WebApp?.setHeaderColor('#ffffff')

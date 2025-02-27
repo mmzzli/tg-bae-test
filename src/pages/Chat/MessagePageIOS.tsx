@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, memo } from 'react'
 import { MessageList } from '@/components/Chat/MessageList'
 // import { MessageList } from '@/components/Chat/NewMessageListOrigin'
 // import MessageInput from '@/components/Chat/MessageInput'
-import { MessageType, WrappedMessage } from '@/components/Chat/types'
+import { MessageType, PostMetadata, WrappedMessage } from '@/components/Chat/types'
 import { useParams } from 'react-router-dom'
 import { useFormatMessage } from '@/hooks/useFormatMessage'
 import { useIM } from '@/store/hook/userIM'
@@ -355,7 +355,7 @@ const MessagePageIOS = () => {
           <VideoPreviewIcon url={replyMessage?.message} />
         )}
         {replyMessage?.messageType === MessageType.POST && (
-          <PostPreview data={replyMessage?.metadata?.formattedData} />
+          <PostPreview data={(replyMessage.metadata as PostMetadata)?.formattedData} />
         )}
 
         <div className="flex flex-col flex-1 overflow-hidden text-sm">
@@ -377,7 +377,9 @@ const MessagePageIOS = () => {
               <span
                 className="text-sm font-normal line-clamp-2 text-[#333333]"
                 dangerouslySetInnerHTML={{
-                  __html: processText(replyMessage.metadata?.formattedData.title || ''),
+                  __html: processText(
+                    (replyMessage.metadata as PostMetadata)?.formattedData.title || ''
+                  ),
                 }}
               ></span>
             )}

@@ -23,6 +23,8 @@ const isAndroid = () => {
   return /android/.test(userAgent)
 }
 
+const REVOKE_TIME = 3 * 60 * 1000
+
 interface TooltipProps {
   content: WrappedMessage
   user: OthersUserInfo | IUserInfo | null
@@ -53,6 +55,7 @@ const Tooltip: React.FC<TooltipProps> = ({
   const isAndroidDevice = isAndroid()
   const [isLeftSide, setIsLeftSide] = useState(false)
   const setReplyMessage = useStore((state) => state.setReplyMessage)
+  const setDeleteMessage = useStore((state) => state.setDeleteMessage)
   const hideTooltip = useCallback(() => {
     if (activeTooltipId === id) {
       activeTooltipId = null
@@ -99,7 +102,6 @@ const Tooltip: React.FC<TooltipProps> = ({
 
   const showTooltip = useCallback(() => {
     if (targetRef.current) {
-      console.log(content)
       // 只有在以下情况才显示tooltip:
       // 1. 有文本内容
       // 2. 或者在iOS设备上且有URL且enableDownload为true
@@ -212,20 +214,21 @@ const Tooltip: React.FC<TooltipProps> = ({
       e.stopPropagation()
       console.log('handleReply', content, content.text || content.url || '')
       let message = content.text || content.url || ''
+      const messageWindow = useStore
+        .getState()
+        .messageWindowList.filter((item) => item.channel.channelID === content.channelID)
+      const _messageLatest = messageWindow[0].messages.filter((msg) => msg.id === content.id)
       // 处理页面数组不更新问题
       if (!message) {
-        const messageWindow = useStore
-          .getState()
-          .messageWindowList.filter((item) => item.channel.channelID === content.channelID)
         if (messageWindow.length > 0) {
-          const _message = messageWindow[0].messages.filter((msg) => msg.id === content.id)
-          if (_message.length > 0) {
-            const res = _message[0]
+          if (_messageLatest.length > 0) {
+            const res = _messageLatest[0]
             message = res.text || res.url || ''
           }
         }
       }
       setReplyMessage({
+        ..._messageLatest[0],
         channel: channelId,
         messageId: content.id,
         messageSeq: content.messageSeq,
@@ -278,6 +281,17 @@ const Tooltip: React.FC<TooltipProps> = ({
       }
     },
     [content.url, hideTooltip]
+  )
+
+  const handleRevokeConfirm = useCallback(
+    (e: React.MouseEvent | React.TouchEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      console.log(content)
+      setDeleteMessage(content)
+      hideTooltip()
+    },
+    [hideTooltip]
   )
 
   useEffect(() => {
@@ -363,6 +377,7 @@ const Tooltip: React.FC<TooltipProps> = ({
                 <span>Reply</span>
               </motion.div>
             )}
+
             {config.enableCopy && content.text && (
               <motion.div
                 className="flex flex-col items-center cursor-pointer text-[12px]"
@@ -382,6 +397,27 @@ const Tooltip: React.FC<TooltipProps> = ({
                   style={{ color: '#fff', fontSize: '20px' }}
                 />
                 <span>Copy</span>
+              </motion.div>
+            )}
+            {config.enableRevoke && (
+              <motion.div
+                className="flex flex-col items-center cursor-pointer text-[12px]"
+                onClick={handleRevokeConfirm}
+                onMouseDown={handleMouseDown}
+                onTouchStart={handleTouchStart}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                style={{
+                  touchAction: 'manipulation',
+                  WebkitTapHighlightColor: 'transparent',
+                  WebkitTouchCallout: 'none',
+                }}
+              >
+                <i
+                  className="iconfont icon-delete-bin-line"
+                  style={{ color: '#EB4B6D', fontSize: '20px' }}
+                />
+                <span className="text-[#EB4B6D]">Delete</span>
               </motion.div>
             )}
             {config.enableDownload && content.url && isIOSDevice && (

@@ -45,8 +45,8 @@ export function DeleteDialog({
 
       <Dialog open={isOpen} onOpenChange={handleCancel}>
         <DialogContent>
-          <div className="w-[312px] pb-[24px] dark:bg-[#1C1C1C] text-base font-medium bg-white dark:text-white text-[#333] text-center rounded-[16px]">
-            <div className="mt-[30px] font-[500] text-[18px]">{title}</div>
+          <div className="w-[312px] pb-[24px] pt-[30px] dark:bg-[#1C1C1C] text-base font-medium bg-white dark:text-white text-[#333] text-center rounded-[16px]">
+            <div className="font-[500] text-[18px]">{title}</div>
             <div className="flex justify-center gap-4 mt-[30px]">
               <div
                 className="cursor-pointer flex items-center justify-center w-[120px] h-[40px] border dark:border-white border-[#ccc] rounded-[20px] text-sm"
@@ -69,7 +69,15 @@ export function DeleteDialog({
 }
 
 export const DeleteDialogWarp = NiceModal.create(
-  ({ title = 'Delete this chat?', data, value }: { title?: string; data: FormatterListItem, value?:string }) => {
+  ({
+    title = 'Delete this chat?',
+    data,
+    value,
+  }: {
+    title?: string
+    data: FormatterListItem
+    value?: string
+  }) => {
     const { visible, hide, remove } = useModal()
     const [loading, setLoading] = useSafeState(false)
     const { id } = data
@@ -125,9 +133,9 @@ export const DeleteDialogWarp = NiceModal.create(
     return (
       <Dialog open={visible}>
         <DialogContent>
-          <div className="w-[312px] pb-[24px] bg-[#fff] text-white text-center rounded-[16px]">
-            <div className="mt-[30px] text-[#333] font-[500] text-[18px] ">{title}</div>
-            {value && <div className='text-[#666] mt-2 px-6 text-[14px]'>{value}</div>}
+          <div className="w-[312px] pb-[24px] pt-[30px] bg-[#fff] text-white text-center rounded-[16px]">
+            <div className="text-[#333] font-[500] text-[18px] ">{title}</div>
+            {value && <div className="text-[#666] mt-2 px-6 text-[14px]">{value}</div>}
             <div className="flex justify-center gap-4 mt-[30px]">
               <div
                 className="cursor-pointer flex items-center justify-center w-[120px] h-[40px] border-[#CCC] border rounded-[20px] text-[#333] text-[14px] font-[500]"

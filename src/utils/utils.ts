@@ -18,7 +18,7 @@ const monthNames = [
   'Nov',
   'Dec',
 ]
-let timer:any = null;
+let timer: any = null
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -50,6 +50,8 @@ export const getWrappedMessage = (message: FormattedMessage): WrappedMessage => 
     messageSeq: message.messageSeq,
     timestamp: message.timestamp,
     channelID: message.channel.channelID,
+    messageId: message.messageID,
+    messageClientId: message.clientMsgNo,
   }
 }
 
@@ -375,7 +377,9 @@ export const splitNumberParts = (num: number) => {
       const remainingPart = decimalPart.slice(zerosCount)
       // 计算剩余可用的位数 = 8 - zerosCount
       const remainingDigits = Math.max(8 - zerosCount, 0)
-      const processedDecimal = remainingPart ? truncateAndTrimZeros(remainingPart, remainingDigits) : null
+      const processedDecimal = remainingPart
+        ? truncateAndTrimZeros(remainingPart, remainingDigits)
+        : null
       return {
         integerPart,
         dot: '.0',
@@ -498,88 +502,81 @@ export const formatUSD = (
     .replace(/(\.[1-9]*)0+$/, '$1')}`
 }
 
-
 export function getDeviceType() {
-  const userAgent = navigator.userAgent.toLowerCase();
+  const userAgent = navigator.userAgent.toLowerCase()
 
   if (/iphone|ipod/.test(userAgent)) {
-    return "iOS";
+    return 'iOS'
   } else if (/android/.test(userAgent)) {
-    return "Android";
+    return 'Android'
   } else {
-    return "Unknown";
+    return 'Unknown'
   }
 }
 
-export const isIOS = getDeviceType() === "iOS";
-export const isAndroid = getDeviceType() === "Android";
-
+export const isIOS = getDeviceType() === 'iOS'
+export const isAndroid = getDeviceType() === 'Android'
 
 export function createVideoElement() {
   // 如果视频元素已经存在，则直接返回
   if (window.videoElement) {
-    return window.videoElement;
+    return window.videoElement
   }
 
   // 创建一个新的 video 元素
-  const video = document.createElement("video");
+  const video = document.createElement('video')
   // 设置 video 元素的属性
-  video.id = "video-el";
-  video.setAttribute("playsinline", "true");
-  video.setAttribute("webkit-playsinline", "true");
-  video.setAttribute("x5-playsinline", "true");
-  video.setAttribute("mediatype", "video");
-  video.setAttribute("preload", "auto");
-  video.setAttribute("autoplay", "true");
-  video.setAttribute("x5-video-player-type", "h5-page");
-  video.setAttribute("x5-video-player-fullscreen", "false");
-  video.setAttribute("fullscreen", "false");
-  video.setAttribute("muted", "true");
+  video.id = 'video-el'
+  video.setAttribute('playsinline', 'true')
+  video.setAttribute('webkit-playsinline', 'true')
+  video.setAttribute('x5-playsinline', 'true')
+  video.setAttribute('mediatype', 'video')
+  video.setAttribute('preload', 'auto')
+  video.setAttribute('autoplay', 'true')
+  video.setAttribute('x5-video-player-type', 'h5-page')
+  video.setAttribute('x5-video-player-fullscreen', 'false')
+  video.setAttribute('fullscreen', 'false')
+  video.setAttribute('muted', 'true')
 
   // 保存视频元素以便下次使用
-  window.videoElement = video;
+  window.videoElement = video
 
   // 移除视频元素，并返回
-  video.remove();
+  video.remove()
 
-  return video;
+  return video
 }
 
-
-
-
 export function destroyVideo() {
-
+  // 销毁已有的视频实例
+  if (window.videoElement) {
+    window.videoElement?.pause()
+    window.videoElement?.remove()
+    window.videoElement = null
+    return
+  }
+  if (window.playerInstance) {
+    window.playerInstance.pause()
+    window.playerInstance.destroy()
+    window.playerInstance = null
+  }
 
   // 销毁已有的视频实例
   if (window.videoElement) {
-    window.videoElement?.pause();
-    window.videoElement?.remove();
-    window.videoElement = null;
-    return;
+    window.videoElement?.pause()
+    window.videoElement?.remove()
+    window.videoElement = null
   }
   if (window.playerInstance) {
-    window.playerInstance.pause();
-    window.playerInstance.destroy();
-    window.playerInstance = null;
-  }
-
-    // 销毁已有的视频实例
-  if (window.videoElement) {
-    window.videoElement?.pause();
-    window.videoElement?.remove();
-    window.videoElement = null;
-  }
-  if (window.playerInstance) {
-    window.playerInstance.pause();
-    window.playerInstance.destroy();
-    window.playerInstance = null;
+    window.playerInstance.pause()
+    window.playerInstance.destroy()
+    window.playerInstance = null
   }
 }
 
 export function cancelDestroyVideo() {
   if (timer) {
-    clearTimeout(timer);
-    timer = null;
+    clearTimeout(timer)
+    timer = null
   }
 }

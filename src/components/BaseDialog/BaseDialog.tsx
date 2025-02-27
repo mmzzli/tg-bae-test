@@ -20,7 +20,11 @@ const Dialog: React.FC<DialogProps> = ({ open, onOpenChange, children }) => {
       className="fixed inset-0 w-screen h-screen overflow-hidden z-[999]"
       aria-modal="true"
       role="dialog"
-      onClick={() => onOpenChange?.(false)}
+      onClick={(e: any) => {
+        if (!document.querySelector('.bae-dialog-content')?.contains(e.target)) {
+          onOpenChange?.(false)
+        }
+      }}
     >
       {children}
     </div>,
@@ -60,7 +64,7 @@ const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps>(
         )}
         {...props}
       >
-        {children}
+        <div className="bae-dialog-content">{children}</div>
       </div>
     </>
   )

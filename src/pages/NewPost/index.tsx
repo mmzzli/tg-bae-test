@@ -532,7 +532,7 @@ export const NewPost: FC = () => {
           }
         },
       }
-
+      // 视频
       addUploadTask({
         uploadThreads: [getUploadUrlThread, uploadVideoThread, checkVideoSyncThread],
         onAllThreadsComplete: allSuccessHandler,

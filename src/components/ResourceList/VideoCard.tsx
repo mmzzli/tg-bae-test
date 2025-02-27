@@ -38,7 +38,6 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve, exchangeRate,
         }
         timeoutId = setTimeout(() => {
           const currentPath = window.location.pathname
-          console.log('jacob path', currentPath)
           const profilePathRegex = /^\/profile\/\d+$/
           if (ttMode && !(data.price > 0 && !data.is_pay && data.uid != getCurrentUid()) && (['/christmas', '/home'].includes(currentPath) || profilePathRegex.test(currentPath))) {
             navigate('/tt-player', {

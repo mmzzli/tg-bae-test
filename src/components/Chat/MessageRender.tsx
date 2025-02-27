@@ -6,6 +6,7 @@ import {
   MessageMetadata,
   MessageStatus,
   MessageType,
+  PostMetadata,
   ReplyMessage,
   RewardMetadata,
   WrappedMessage,
@@ -615,6 +616,6 @@ function isRewardMessage(
 
 function isPostMessage(
   message: WrappedMessage
-): message is WrappedMessage & { metadata: RewardMetadata } {
+): message is WrappedMessage & { metadata: PostMetadata } {
   return message.type === MessageType.POST
 }

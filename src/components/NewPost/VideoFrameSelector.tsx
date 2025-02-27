@@ -234,16 +234,21 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
           }}
         >
         <div className="w-[100%]">
-
-          <div className='flex justify-between px-[16px]'>
-            <h2 className="text-[20px] text-[#FFF]">Select cover</h2>
-            <BaseButton
-              text="Done"
-              width="100%"
-              loading={loading}
-              className="h-[36px] w-[82px]"
-              handler={() => {captureFrame();resetVirtualRoutePage()}}
-            />
+          <div
+            style={{
+              display: loadingSkeleton ? 'none' : 'block'
+            }}
+          >
+            <div className='flex justify-between px-[16px]'>
+              <h2 className="text-[20px] text-[#FFF]">Select cover</h2>
+              <BaseButton
+                text="Done"
+                width="100%"
+                loading={loading}
+                className="h-[36px] w-[82px]"
+                handler={() => {captureFrame();resetVirtualRoutePage()}}
+              />
+            </div>
           </div>
 
           <div className='w-[100%]'
@@ -251,11 +256,10 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
               display: loadingSkeleton ? 'block' : 'none'
             }}
           >
-            <div className="h-[315px] w-[100%] relative overflow-hidden bg-[#F4F4F4] dark:bg-[#272727] rounded w-2/3">
-              <SkeletonShine />
-            </div>
-            <div className="h-[100px] w-[100%] mt-8 relative overflow-hidden bg-[#F4F4F4] dark:bg-[#272727] rounded w-2/3">
-              <SkeletonShine />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+              <div className="flex items-center justify-center h-full pb-10">
+                <i className="iconfont icon-loading animate-spin text-[#6254FF]" style={{ fontSize: '40px' }} />
+              </div>
             </div>
           </div>
 

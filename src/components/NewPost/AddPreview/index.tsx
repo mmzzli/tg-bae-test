@@ -16,6 +16,7 @@ import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import Trailer from '@/components/NewPost/AddPreview/Trailer'
 import Slider from '@/components/NewPost/AddPreview/Slider'
 import TrailerVideo from '@/components/NewPost/AddPreview/TrailerVideo'
+import { MP4_REGEX } from '@/utils/constants';
 
 interface Metadata {
   vid: string;
@@ -55,8 +56,19 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
   // 显示视频地址
   const [previewVideoUrl, setPreviewVideoUrl] = useState<string>('')
   const [frames, setFrames] = useState<Frame[]>([])
-  const [isBaseModalOpen, { toggle, on, off }] = useBoolean(false)
+  const [isBaseModalOpen, setIsBaseModalOpen] = useState(false)
   const token = useStore((state) => state.token)
+
+  const {
+    virtualRoutePage,
+    setVirtualRoutePage,
+    resetVirtualRoutePage,
+  } = useStore((state) => ({
+    virtualRoutePage: state.virtualRoutePage,
+    setVirtualRoutePage: state.setVirtualRoutePage,
+    resetVirtualRoutePage: state.resetVirtualRoutePage,
+  }))
+
   const [loading, setLoading] = useState(false)
   const [loadingSkeleton, setLoadingSkeleton] = useState(true)
 
@@ -71,6 +83,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
   // 选择用哪个预告片
   const [trailerBoll, setTrailerBoll] = useState(false)
   const [boll, setBoll] = useState(true)
+  // 是否是横屏
   const [landscapeBoll, setLandscapeBoll] = useState(false)
 
   const isLandscape =
@@ -106,7 +119,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
         video.muted = false
         video.play()
       }
-      // setIsPlaying(!isPlaying) // Toggle the playing state
+      setIsPlaying(!isPlaying) // Toggle the playing state
     }
   }
 
@@ -183,92 +196,6 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
     }
   }, [videoRef, videoUrl])
 
-  async function checkVideoURL(url: string): Promise<AxiosResponse<any> | undefined> {
-    let isNotFound = true
-
-    while (isNotFound) {
-      try {
-        const response: AxiosResponse<any> = await axios.get(url)
-        isNotFound = false
-        return response
-      } catch (error: any) {
-        await new Promise((resolve) => setTimeout(resolve, 3000))
-      }
-    }
-  }
-
-  const videoUpload = async (formData: any) => {
-    // 是否是截取视频
-    if (!trailerBoll && boll) {
-      // 获取上传地址
-      const response = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      const id = response.data.split('/').pop()
-      setTrailer(`https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${id}/manifest/video.m3u8`)
-      formData.append('url', response.data)
-      setLoading(false)
-      setBoll(true)
-      off()
-      const { data } = await axios.post(
-        import.meta.env.VITE_API_URL + 'api/v1/cut_req_file',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${token}`,
-          },
-          timeout: 600000,
-        }
-      )
-      return
-    }
-    const response = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    await axios.post(response.data, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-      onUploadProgress: async (progressEvent: any) => {
-        const total = progressEvent.total
-        const current = progressEvent.loaded
-        const percentCompleted = Math.round((current * 100) / total)
-        console.log(percentCompleted)
-        if (percentCompleted >= 100) {
-          console.log(response.data)
-          const id = response.data.split('/').pop()
-          const url = `https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${id}/manifest/video.m3u8`
-          await checkVideoURL(url)
-          // 是否是截取视频
-          // if(!trailerBoll && boll){
-          //   setBoll(false)
-          //   const curl = await cutReq({
-          //     url,
-          //     filename: "trailer",
-          //     start: ~~startTime,
-          //     end: ~~endTime
-          //   })
-          //   await checkVideoURL(curl)
-          //   setTrailer(curl)
-          //   setLoading(false)
-          //   setBoll(true)
-          //   off();
-          //   return
-          // }
-          setTrailer(url)
-          setLoading(false)
-          off()
-        }
-      },
-    })
-  }
 
   // 自定义预告片
   const customizationVideo = async (videoRefTrailer: any) => {
@@ -277,114 +204,167 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
       return
     }
     setLoading(true)
+    console.log(trailerBoll)
+    // 是否是裁剪视频
 
-    // const postreqRes = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
+    const videoId = performance.timeOrigin * 1e6 + performance.now() * 1e3
+    console.log(videoId)
+    const metadata: any = {
+      vid: videoId,
+    }
+
+    if(trailerBoll){
+      if(videoRefTrailer.name.endsWith('.mp4')){
+        const url = `${import.meta.env.VITE_APP_UPLOAD_URL}uploadall`
+        // 参数
+        const formData = new FormData()
+        const items = Date.now()
+        formData.append('file', videoRefTrailer)
+        formData.append('name', `${items}`)
+        formData.append('type', 'bae')
+
+        axios.put(url, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
+          },
+          onUploadProgress: (progressEvent: any) => {
+            const total = progressEvent.total
+            const current = progressEvent.loaded
+            const percentCompleted = Math.round((current * 100) / total)
+            console.log(`上传进度: ${percentCompleted}%`)
+          },
+        })
+          .then((r2Response) => {
+            setTrailer(r2Response.data.urls[0])
+          })
+      }else{
+        const upload = new tus.Upload(videoRefTrailer, {
+          endpoint: `${import.meta.env.VITE_APP_UPLOAD_R2_URL}files`, // 你的 tus 服务器地址
+          retryDelays: [0, 3000, 5000, 10000], // 失败时重试间隔
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          metadata: metadata,
+        })
+        upload.start();
+        setTrailer(`${import.meta.env.VITE_APP_UPLOAD_IMG_URL}${videoId}.mp4`)
+      }
+    }else{
+
+      metadata["start"] = `${~~startTime}`
+      metadata["end"] = `${~~endTime}`
+
+      const upload = new tus.Upload(videoRefTrailer, {
+        endpoint: `${import.meta.env.VITE_APP_UPLOAD_R2_URL}files`, // 你的 tus 服务器地址
+        retryDelays: [0, 3000, 5000, 10000], // 失败时重试间隔
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        metadata: metadata,
+      })
+      upload.start();
+      setTrailer(`${import.meta.env.VITE_APP_UPLOAD_IMG_URL}${videoId}.mp4`)
+    }
+    setLoading(false)
+    // setVirtualRoutePage({ name: '', enterFrom: '' })
+    resetVirtualRoutePage()
+
+    return
+    setLoading(true)
+
+    // const uploadRes = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
     //   headers: {
     //     'Content-Type': 'multipart/form-data',
     //     Authorization: `Bearer ${token}`,
     //   },
     // })
 
-    const uploadRes = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    // const videoId = performance.timeOrigin * 1e6 + performance.now() * 1e3
 
-    const videoId = uploadRes.data.split('/').pop();
+    // const metadata: any = {
+    //   vid: videoId,
+    //   // url: uploadRes.data
+    //   // metadata["vid"] = videoId
+    // }
 
-    const metadata:any = {
-      // vid: videoId,
-      url: uploadRes.data
-    }
+    // if (trailerBoll && videoRefTrailer.name.endsWith('.mp4')) {
+    //   const url = `${import.meta.env.VITE_APP_UPLOAD_URL}uploadall`
+    //   const formData = new FormData()
+    //   const items = Date.now()
+    //   formData.append('file', videoRefTrailer)
+    //   formData.append('name', `${items}`)
+    //   formData.append('type', 'bae')
+    //   // 截取视频使用
+    //   formData.append('start', `${~~startTime}`)
+    //   formData.append('end', `${~~endTime}`)
+    //   formData.append(
+    //     'meta',
+    //     JSON.stringify({
+    //       name: `${items}`,
+    //       type: 'bae',
+    //     })
+    //   )
+    //   axios.put(url, formData, {
+    //     headers: {
+    //       'Content-Type': 'multipart/form-data',
+    //       Authorization: `Bearer ${token}`,
+    //     },
+    //     onUploadProgress: (progressEvent: any) => {
+    //       const total = progressEvent.total
+    //       const current = progressEvent.loaded
+    //       const percentCompleted = Math.round((current * 100) / total)
+    //       console.log(`上传进度: ${percentCompleted}%`)
+    //     },
+    //   })
+    //     .then((r2Response) => {
+    //       setTrailer(r2Response.data.urls[0])
+    //     })
 
-    if(videoRefTrailer.name.endsWith('.mp4')){
-      const url = `${import.meta.env.VITE_APP_UPLOAD_URL}uploadall`
-      const formData = new FormData()
-      const items = Date.now()
-      formData.append('file', videoRefTrailer)
-      formData.append('name', `${items}`)
-      formData.append('type', 'bae')
-      // 截取视频使用
-      formData.append('start', `${~~startTime}`)
-      formData.append('end', `${~~endTime}`)
-      formData.append(
-        'meta',
-        JSON.stringify({
-          name: `${items}`,
-          type: 'bae',
-        })
-      )
-      axios.put(url, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`,
-        },
-        onUploadProgress: (progressEvent: any) => {
-          const total = progressEvent.total
-          const current = progressEvent.loaded
-          const percentCompleted = Math.round((current * 100) / total)
-          console.log(`上传进度: ${percentCompleted}%`)
-        },
-      })
-      .then((r2Response) => {
-        setTrailerR2(r2Response.data.urls[0])
-      })
+    // }
 
-    }else{
-      metadata["vid"] = videoId
-      setTrailerR2(`${import.meta.env.VITE_APP_UPLOAD_IMG_URL}${videoId}.mp4`)
-    }
+    // if (!trailerBoll && boll) {
+    //   metadata["start"] = `${~~startTime}`
+    //   metadata["end"] = `${~~endTime}`
+    // }
 
-    if (!trailerBoll && boll) {
-      metadata["start"] = `${~~startTime}`
-      metadata["end"] = `${~~endTime}`
-    }
+    // const upload = new tus.Upload(videoRefTrailer, {
+    //   endpoint: `${import.meta.env.VITE_APP_UPLOAD_R2_URL}files`, // 你的 tus 服务器地址
+    //   retryDelays: [0, 3000, 5000, 10000], // 失败时重试间隔
+    //   headers: {
+    //     'Authorization': `Bearer ${token}`
+    //   },
+    //   metadata: metadata,
 
-    const upload = new tus.Upload(videoRefTrailer, {
-      endpoint: `${import.meta.env.VITE_APP_UPLOAD_R2_URL}files`, // 你的 tus 服务器地址
-      retryDelays: [0, 3000, 5000, 10000], // 失败时重试间隔
-      headers: {
-        'Authorization': `Bearer ${token}`
-      },
-      metadata: metadata,
+    // })
+    // upload.start();
+    // const url = `${import.meta.env.VITE_APP_UPLOAD_IMG_URL}${videoId}.mp4`
+    // setTrailer(url)
+    // setLoading(false)
+    // // setBoll(true)
+    // setVirtualRoutePage({ name: '', enterFrom: '' })
+    // return
+    // setLoading(true)
+    // const formData = new FormData()
+    // const items = Date.now()
+    // formData.append('file', videoRefTrailer)
+    // formData.append('name', `${items}`)
+    // formData.append('type', 'bae')
+    // // 截取视频使用
+    // formData.append('start', `${~~startTime}`)
+    // formData.append('end', `${~~endTime}`)
 
-    })
-    upload.start();
-    const url = `https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${uploadRes.data.split('/').pop()}/manifest/video.m3u8`
-    // const r2Url = `${import.meta.env.VITE_APP_UPLOAD_IMG_URL}${videoId}.mp4`
-    // setTrailerR2(r2Url)
-    setTrailer(url)
-    setLoading(false)
-    // setBoll(true)
-    off()
-    return
-    setLoading(true)
-    const formData = new FormData()
-    const items = Date.now()
-    formData.append('file', videoRefTrailer)
-    formData.append('name', `${items}`)
-    formData.append('type', 'bae')
-    // 截取视频使用
-    formData.append('start', `${~~startTime}`)
-    formData.append('end', `${~~endTime}`)
-
-    formData.append(
-      'meta',
-      JSON.stringify({
-        name: `${items}`,
-        type: 'bae',
-      })
-    )
-    videoUpload(formData)
+    // formData.append(
+    //   'meta',
+    //   JSON.stringify({
+    //     name: `${items}`,
+    //     type: 'bae',
+    //   })
+    // )
   }
 
   const captureFrame = async () => {
-    if (true) {
-      customizationVideo(trailerBoll ? videoRefTrailer : videoFile)
-      return
-    }
+    customizationVideo(trailerBoll ? videoRefTrailer : videoFile)
 
     // if (!videoRef.current) return;
     // setLoading(true)
@@ -447,17 +427,6 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
     // }, (endTime - startTime) * 1000); // 按秒设置时长
   }
 
-  const base64ToFile = (base64String: any, filename: string) => {
-    const arr = base64String.split(',')
-    const mime = arr[0].match(/:(.*?);/)[1]
-    const bstr = atob(arr[1])
-    let n = bstr.length
-    const u8arr = new Uint8Array(n)
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n)
-    }
-    return new File([u8arr], filename, { type: mime })
-  }
 
   useEffect(() => {
     if ((videoUrl || previewVideoUrl) && videoRef.current) {
@@ -482,17 +451,6 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
     }
   }, [videoUrl, previewVideoUrl])
 
-
-  // useEffect(() => {
-  //   const scrollable = document.getElementById('postScroll')
-  //   if (scrollable) {
-  //     scrollable.scrollTo({
-  //       top: scrollable.scrollHeight,
-  //       behavior: 'smooth',
-  //     })
-  //   }
-  // },[landscapeBoll, videoUrl, previewVideoUrl])
-
   useEffect(() => {
     const video = videoRef.current
     if (video) {
@@ -511,12 +469,12 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
-    if (!isBaseModalOpen) {
+    if (virtualRoutePage?.name !== "POST") {
       video.pause()
     } else {
       video.currentTime = 0
     }
-  }, [isBaseModalOpen])
+  }, [virtualRoutePage])
 
   return (
     <>
@@ -566,7 +524,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
                 height: '64px',
                 width: '64px',
               }}
-              onClick={() => toggle()}
+              onClick={() => setVirtualRoutePage({ name: 'POST', enterFrom: '/post' })}
             >
               <i className="iconfont icon-add text-[#999999] text-[20px]"></i>
             </p>
@@ -574,98 +532,104 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
         </div>
       </div>
 
-      <BaseModal
-        isOpen={isBaseModalOpen}
-        onClose={off}
-        id="postScroll"
-        // height={isLandscape ? '70vh' : '85vh'}
+      {<div
+        className="fixed inset-0 z-[999] bg-[#080808]"
         style={{
-          maxHeight: isLandscape ? '70vh' : '85vh',
-          height: 'auto',
-          overflow: 'auto',
+          paddingTop: 'calc(var(--tg-safe-area-inset-top) + 16px)',
+          paddingBottom: 'var(--tg-safe-area-inset-bottom)',
+          display: virtualRoutePage?.name === "POST" ? "block" : "none"
         }}
-        animation={{ duration: 400, timingFunction: 'ease-in-out' }}
-        theme={{
-          darkBackgroundColor: '#1a1a1a',
-          lightBackgroundColor: '#ffffff',
-          handleColor: '#d1d5db',
-        }}
-        closeOnBackdropClick={true}
-        showHandle={false}
       >
         <div
-          className="w-[100%]"
+          className="relative w-full h-full flex flex-col"
           style={{
-            display: loadingSkeleton ? 'block' : 'none',
+            paddingTop: 'var(--tg-content-safe-area-inset-top)',
+            paddingBottom: 'var(--tg-content-safe-area-inset-bottom)',
           }}
         >
-          <div className="h-[315px] w-[100%] relative overflow-hidden bg-[#F4F4F4] dark:bg-[#272727] rounded w-2/3">
-            <SkeletonShine />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+            style={{
+              display: loadingSkeleton ? 'block' : 'none',
+            }}
+          >
+            <div className="flex items-center justify-center h-full pb-10">
+              <i className="iconfont icon-loading animate-spin text-[#6254FF]" style={{ fontSize: '40px' }} />
+            </div>
           </div>
-          <div className="h-[100px] w-[100%] mt-8 relative overflow-hidden bg-[#F4F4F4] dark:bg-[#272727] rounded w-2/3">
-            <SkeletonShine />
-          </div>
-        </div>
 
-        <div
-          className="w-[100%]"
-          style={{
-            display: loadingSkeleton ? 'none' : 'block',
-          }}
-        >
-          <h2 className="text-[24px] text-[#333]">Add a preview</h2>
+          <div
+            className="w-[100%] pb-[50px]"
+            style={{
+              display: loadingSkeleton ? 'none' : 'block',
+            }}
+          >
+            <div className='flex justify-between px-[16px]'>
+              <h2 className="text-[20px] text-[#FFF]">Add a preview</h2>
+              <BaseButton
+                text="Done"
+                width="100%"
+                loading={loading}
+                className="h-[36px] w-[82px]"
+                handler={() => captureFrame()}
+              />
+            </div>
 
-          {videoUrl && (
-            <div className="pt-[14px]">
-              {/* Video Element */}
-              <div className="relative max-h-[330px] min-h-[100px] overflow-hidden w-[fit-content] rounded-[8px]">
-                <video
-                  ref={videoRef}
-                  src={previewVideoUrl || videoUrl}
-                  style={{ display: previewVideoUrl ? 'block' : 'block', width: landscapeBoll ? "100%" : '243px', minHeight: "200px" }}
-                  preload="metadata"
-                  autoPlay
-                  playsInline
-                  muted
-                  onClick={handleVideoClick} // Add click handler to toggle play/pause
-                />
-                {!isPlaying && (
-                  <Img
-                    className="w-[60px] h-[60px] absolute top-[50%] left-[50%] transform -translate-x-[50%] -translate-y-[50%] "
-                    src={playIcon}
-                    onClick={handleVideoClick}
+            {videoUrl && (
+              <div className="pt-[26px]">
+                {/* Video Element */}
+                <div className="relative h-[442px] min-h-[100px] overflow-hidden w-[fit-content] rounded-[8px]"
+                  style={{
+                    padding: landscapeBoll ? "0px" : "0px 24px"
+                  }}
+                >
+                  <video
+                    ref={videoRef}
+                    src={previewVideoUrl || videoUrl}
+                    style={{ width: landscapeBoll ? "100%" : '100%', minHeight: "200px" }}
+                    preload="metadata"
+                    className='relative top-[50%] left-[50%] transform -translate-x-[50%] -translate-y-[50%]'
+                    autoPlay
+                    playsInline
+                    muted
+                    onClick={handleVideoClick} // Add click handler to toggle play/pause
                   />
-                )}
-              </div>
-
-              <div className="bg-[#fff] rounded-tl-[16px] rounded-tr-[16px]">
-                <p className="text-[#999] pt-[20px] pb-[12px] font-normal">
-                  Select a clip from the video to use as a preview, or upload a video from album.
-                </p>
-
-                <div className="mt-2 flex items-center gap-2">
-                  <Trailer
-                    trailerBoll={trailerBoll}
-                    setTrailerBoll={setTrailerBoll}
-                    setVideoRefTrailer={setVideoRefTrailer}
-                    setPreviewVideoUrl={setPreviewVideoUrl}
-                  />
-                  <Slider
-                    duration={duration}
-                    handleSliderChange={handleSliderChange}
-                    setStartTime={setStartTime}
-                    setEndTime={setEndTime}
-                    trailerBoll={trailerBoll}
-                    setTrailerBoll={setTrailerBoll}
-                    videoRef={videoRef}
-                    setLoadingSkeleton={setLoadingSkeleton}
-                    setPreviewVideoUrl={setPreviewVideoUrl}
-                    previewVideoUrl={videoUrl}
-                    startTime={startTime}
-                  />
+                  {!isPlaying && (
+                    <Img
+                      className="w-[60px] h-[60px] absolute top-[50%] left-[50%] transform -translate-x-[50%] -translate-y-[50%] "
+                      src={playIcon}
+                      onClick={handleVideoClick}
+                    />
+                  )}
                 </div>
 
-                <div className="px-[20px] pt-[24px] pb-[20px]">
+                <div className="bg-[#080808] rounded-tl-[16px] rounded-tr-[16px] px-[24px]">
+                  <p className="text-[#999] pt-[20px] pb-[12px] font-normal">
+                    Select a clip from the video to use as a preview, or upload a video from album.
+                  </p>
+
+                  <div className="mt-2 flex items-center gap-2">
+                    <Trailer
+                      trailerBoll={trailerBoll}
+                      setTrailerBoll={setTrailerBoll}
+                      setVideoRefTrailer={setVideoRefTrailer}
+                      setPreviewVideoUrl={setPreviewVideoUrl}
+                    />
+                    <Slider
+                      duration={duration}
+                      handleSliderChange={handleSliderChange}
+                      setStartTime={setStartTime}
+                      setEndTime={setEndTime}
+                      trailerBoll={trailerBoll}
+                      setTrailerBoll={setTrailerBoll}
+                      videoRef={videoRef}
+                      setLoadingSkeleton={setLoadingSkeleton}
+                      setPreviewVideoUrl={setPreviewVideoUrl}
+                      previewVideoUrl={videoUrl}
+                      startTime={startTime}
+                    />
+                  </div>
+
+                  {/* <div className="px-[20px] pt-[24px] pb-[20px]">
                   <BaseButton
                     text="Done"
                     width="100%"
@@ -673,12 +637,13 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
                     className="h-[48px]"
                     handler={() => captureFrame()}
                   />
+                </div> */}
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
-      </BaseModal>
+      </div>}
     </>
   )
 }

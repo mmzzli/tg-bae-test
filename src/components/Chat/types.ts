@@ -1,4 +1,6 @@
+import { ListItem } from '@/types'
 import { Conversation, Channel } from '../SDK/BaeimSDK'
+import { FormatterListItem } from '@/store/slices/resourceListSlice'
 
 export enum MessageStatus {
   UNSENT = -1,
@@ -13,9 +15,10 @@ export enum MessageType {
   IMAGE = 'IMAGE',
   VIDEO = 'VIDEO',
   REWARD = 'REWARD',
+  POST = 'POST',
 }
 
-export type MessageMetadata = FileMetadata | RewardMetadata
+export type MessageMetadata = FileMetadata | RewardMetadata | PostMetadata
 
 export type MessageWindowListItem = {
   channel: Channel
@@ -31,6 +34,7 @@ export type ReplyMessage = {
   toUid: number
   toUsername: string
   revoke: boolean
+  metadata?: MessageMetadata
 }
 
 export type Message = {
@@ -61,6 +65,11 @@ export type RewardMetadata = {
   hash: string
 }
 
+export type PostMetadata = {
+  postData: ListItem
+  formattedData: FormatterListItem
+}
+
 export type WrappedMessage = Message & {
   id: string
   timestamp: number
@@ -72,6 +81,8 @@ export type WrappedMessage = Message & {
   metadata?: MessageMetadata
   reply?: ReplyMessage
   showAvatar?: boolean
+  messageId?: string
+  clientMessageId?: string
 }
 export interface ChatListProps {
   chats: Conversation[]

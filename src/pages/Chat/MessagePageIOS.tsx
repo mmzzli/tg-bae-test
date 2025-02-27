@@ -2,25 +2,47 @@ import { useState, useEffect, useRef, memo } from 'react'
 import { MessageList } from '@/components/Chat/MessageList'
 // import { MessageList } from '@/components/Chat/NewMessageListOrigin'
 // import MessageInput from '@/components/Chat/MessageInput'
-import { MessageType, WrappedMessage } from '@/components/Chat/types'
+import { MessageType, PostMetadata, WrappedMessage } from '@/components/Chat/types'
 import { useParams } from 'react-router-dom'
 import { useFormatMessage } from '@/hooks/useFormatMessage'
 import { useIM } from '@/store/hook/userIM'
 import { useStore } from '@/store'
 import { OthersUserInfo } from '@/types'
 import Image from '@/components/Image/Image'
-import { cn } from '@/utils/utils'
+import { cn, formatImage } from '@/utils/utils'
 import SendMediaModal from '@/components/Chat/SendMediaModal'
+import { DeleteMessageDialog } from '@/components/Chat/DeleteMessageModal'
 import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { debounce } from '@/utils/chat/schedulers'
 import RewardButton from '@/components/Wallet/RewardButton'
 import { ImagePreviewIcon, VideoPreviewIcon } from '@/components/Chat/MessageRender'
 import { useSwipeBack } from '@/hooks/useSwipeBack'
-import { animated ,useSpring} from '@react-spring/web'
+import { animated, useSpring } from '@react-spring/web'
+import { FormatterListItem } from '@/store/slices/resourceListSlice'
+import { useTMAUtils } from '@/hooks/useTMAUtils'
 // const PAGE_SIZE = 20
 const isIOS = () => {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
+}
+const processText = (text: string) => {
+  const trimmedText = text.replace(/\n/g, ' ').trim()
+  const replacedText = trimmedText.replace(
+    /<span style="color: rgb\(0, 0, 0\);">(.*?)<\/span>/g,
+    '$1'
+  )
+  const parts = replacedText.split(/(@\w+)/)
+  let processedText = ''
+
+  parts.forEach((part) => {
+    if (part.startsWith('@')) {
+      processedText += `<span style="color: #6761FF; cursor: pointer;">${part}</span>`
+    } else {
+      processedText += part
+    }
+  })
+
+  return processedText
 }
 const defaultMessages: WrappedMessage[] = []
 
@@ -42,7 +64,6 @@ const MessagePageIOS = () => {
   const containerRef = useRef<HTMLDivElement>(null)
   const [zIndex, setZIndex] = useState(98)
   const isIOSDevice = isIOS()
-
 
   const [initTgViewportHeight, setInitTgViewportHeight] = useState(0)
   const [initVisualViewportHeight, setInitVisualViewportHeight] = useState(0)
@@ -242,6 +263,7 @@ const MessagePageIOS = () => {
   useEffect(() => {
     if (replyMessage && replyMessage.channel === messageWindow?.channel.channelID) {
       inputRef.current?.focus()
+      console.warn(replyMessage)
     }
   }, [replyMessage])
 
@@ -301,7 +323,7 @@ const MessagePageIOS = () => {
         }}
       />
 
-      {/* Reply Message */}
+      {/* Reply Message START*/}
       <div
         className={cn(
           'items-center h-[58px] absolute left-0 right-0 dark:bg-black bg-[#ffffff] pl-6 pr-3',
@@ -332,20 +354,35 @@ const MessagePageIOS = () => {
         {replyMessage?.messageType === MessageType.VIDEO && (
           <VideoPreviewIcon url={replyMessage?.message} />
         )}
+        {replyMessage?.messageType === MessageType.POST && (
+          <PostPreview data={(replyMessage.metadata as PostMetadata)?.formattedData} />
+        )}
 
         <div className="flex flex-col flex-1 overflow-hidden text-sm">
           {/* Reply To */}
           <div className="font-medium text-[#6254FF]">Reply to {replyMessage?.toUsername}</div>
           {/* Reply Content */}
-          <div className="text-nowrap text-ellipsis overflow-hidden font-normal">
-            <span className="text-[#999999]">
+          <div className="flex text-nowrap text-ellipsis overflow-hidden font-normal">
+            <span className="text-[#999999] mr-1">
               {replyMessage?.messageType === MessageType.REWARD && 'Tips'}
               {replyMessage?.messageType === MessageType.IMAGE && 'Image'}
               {replyMessage?.messageType === MessageType.VIDEO && 'Video'}
+              {replyMessage?.messageType === MessageType.POST && '[Post]'}
             </span>
             <span className="text-[#333]">
               {replyMessage?.messageType === MessageType.TEXT && replyMessage.message}
             </span>
+
+            {replyMessage?.messageType === MessageType.POST && (
+              <span
+                className="text-sm font-normal line-clamp-2 text-[#333333]"
+                dangerouslySetInnerHTML={{
+                  __html: processText(
+                    (replyMessage.metadata as PostMetadata)?.formattedData.title || ''
+                  ),
+                }}
+              ></span>
+            )}
           </div>
         </div>
 
@@ -354,6 +391,7 @@ const MessagePageIOS = () => {
           <i className="iconfont icon-icon_close text-[24px] text-[#707579]"></i>
         </div>
       </div>
+      {/* Reply Message END*/}
 
       {/* FAKE INPUT */}
       <div
@@ -462,14 +500,38 @@ const MessagePageIOS = () => {
           }}
         />
       </div>
+      {/* REWARD */}
       <div
         className="absolute right-[2px] w-[48px]  flex items-center justify-center h-[36px] z-[98]"
         style={{ bottom: showInput ? '8px' : '35px' }}
       >
         <RewardButton userInfo={chatPeople || ({} as OthersUserInfo)} />
       </div>
+      {/* DELETE MESSAGE MODAL */}
+      <DeleteMessageDialog receiver={chatPeople} />
     </animated.div>
   )
 }
 
 export default MessagePageIOS
+
+const PostPreview = ({ data }: { data: FormatterListItem }) => {
+  const { getCurrentUid } = useTMAUtils()
+  let imageUrl = ''
+  if (data) {
+    imageUrl = data.thumbnail || data.media[0]
+  }
+
+  console.log(data.uid !== getCurrentUid() && data.price > 0 && !data.is_pay)
+  return (
+    <div className="relative w-10 h-10 rounded-[5px] overflow-hidden mr-[6px]">
+      <img src={formatImage(imageUrl, true)} alt="" style={{ width: '40px' }} />
+
+      {data.uid !== getCurrentUid() && data.price > 0 && !data.is_pay && (
+        <div className="absolute left-0 top-0 bottom-0 right-0 flex items-center justify-center">
+          <i className="iconfont icon-lock text-white"></i>
+        </div>
+      )}
+    </div>
+  )
+}

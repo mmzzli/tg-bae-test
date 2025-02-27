@@ -32,6 +32,7 @@ import { videoHls } from '@/utils/video/videoHls'
 import { VirtualItem, Virtualizer } from '@tanstack/react-virtual'
 import Links from '@/components/ResourceList/Links'
 import Saved from '@/components/ResourceList/Saved'
+import { MP4_REGEX } from '@/utils/constants'
 
 interface ShareDataProps {
   pid: number
@@ -344,9 +345,8 @@ const ResourceList = ({
         // runDailyWatch(post_id)
         if (item.act_type === 0 || item.act_type === 1) {
           const medias = url.split(',')
-          const picUrl = medias.find((item) => !item.endsWith('.m3u8') && !item.endsWith('.mp4'))
-          const media = medias.find((item) => item.endsWith('.m3u8'))
-          const r2 = medias.find((item) => item.endsWith('.mp4'))
+          const picUrl = medias.find((item) => !item.endsWith('.m3u8') && !MP4_REGEX.test(item))
+          const media = medias.find((item) => MP4_REGEX.test(item))
           setCacheVideoIndex(item.id)
           const videos = document.querySelectorAll('.video-card')
           const mostVisibleElement = Array.prototype.slice
@@ -369,7 +369,7 @@ const ResourceList = ({
               },
               mostVisibleElement
             )
-            return { ...item, media: [media], mediaCover: picUrl, thumbnail: picUrl, ...options, r2 }
+            return { ...item, media: [media], mediaCover: picUrl, thumbnail: picUrl, ...options }
           }
         }
         return { ...item, media: url.split(','), ...options }

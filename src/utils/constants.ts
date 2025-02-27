@@ -16,3 +16,5 @@ export const DEV_INIT_DATA_RAW = import.meta.env.VITE_APP_DEV_INIT_DATA_RAW || '
 export const CardRecommendProvider = createContext<
   { recommend: boolean; setVideoOpen: React.Dispatch<React.SetStateAction<boolean>> } | undefined
 >(undefined)
+
+export const MP4_REGEX = /\.mp4$/i

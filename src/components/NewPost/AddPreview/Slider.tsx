@@ -228,8 +228,8 @@ const TransparentSlider: React.FC<SliderProps> = ({
                   overflow: 'hidden',
                   top: '50%',
                   left: `calc(${Math.min(
-                    Math.max((selectedTime / videoDuration) * 100, (isLandscape ? 106 : 44) / 2 / sliderRef.current!.offsetWidth * 100),
-                    100 - (isLandscape ? 106 : 44) / 2 / sliderRef.current!.offsetWidth * 100
+                    Math.max((selectedTime / videoDuration) * 100, (isLandscape ? 106 : 44) / 2 / sliderRef.current!?.offsetWidth * 100),
+                    100 - (isLandscape ? 106 : 44) / 2 / sliderRef.current!?.offsetWidth * 100
                   )
                     }%)`,
                   width: isLandscape ? '106px' : '44px',

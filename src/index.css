@@ -90,8 +90,22 @@ button:focus {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
 /* Hide scrollbar for IE, Edge and Firefox */
 .no-scrollbar {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.rounded-checkbox .chakra-checkbox__control {
+  border-radius: 100%;
+  width: 18px;
+  height: 18px;
+}
+
+.rounded-checkbox .chakra-checkbox__control[data-checked] {
+  background-color: #EB4B6D !important;
+  border-color: #EB4B6D !important;
 }

@@ -19,6 +19,7 @@ import PurchaseButton from '@/components/ResourceList/PurchaseButton'
 import { ReplayButton, PlayButton, ProgressDisplay } from '@/components/ResourceList/VideoDialog'
 import { VolumeMuteIcon, VolumeSpeakerIcon } from '@/assets/icons'
 import { videoScale } from '@/utils/video'
+import { MP4_REGEX } from '@/utils/constants'
 
 type VideoPlayerPropsAndIndex = VideoPlayerProps & {
   index: number
@@ -82,16 +83,14 @@ export const UserInfo = memo(
     const resourcesEve = (post_id: number, url: string, is_pay?: boolean) => {
       const options = is_pay ? { is_pay } : {}
       const medias = url.split(',')
-      const picUrl = medias.find((item) => !item.endsWith('.m3u8') && !item.endsWith('.mp4'))
-      const media = medias.find((item) => item.endsWith('.m3u8'))
-      const r2 = medias.find((item) => item.endsWith('.mp4'))
+      const picUrl = medias.find((item) => !item.endsWith('.m3u8') && !MP4_REGEX.test(item))
+      const media = medias.find((item) => MP4_REGEX.test(item))
       if (media) {
         setVideoResource({
           ...info,
           media: [media],
           mediaCover: picUrl ?? '',
-          ...options,
-          r2
+          ...options
         } as FormatterListItem)
       }
     }
@@ -170,7 +169,8 @@ export const UserInfo = memo(
 
 const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
   const { sourceItem, setVideoRef, allMuted, setAllMuted, autoplay, activeIndex, index } = props
-  const { r2: mp4Url, thumbnail: poster } = sourceItem
+  const { media, thumbnail: poster } = sourceItem
+  const mp4Url = media.find((item) => MP4_REGEX.test(item))
   const info = useStore((state) => state.videoResource)
   const swiperSlide = useSwiperSlide()
 
@@ -185,6 +185,7 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
   const [isLoading, setIsLoading] = useState(true)
   const setTtVideoMuted = useStore((state) => state.setTtVideoMuted)
   const ttVideoMuted = useStore((state) => state.ttVideoMuted)
+  const [showLoader, setShowLoader] = useState(false)
 
   const { bottom } = useSafeArea()
   const [showThumbnail, setShowThumbnail] = useState(false)
@@ -280,6 +281,15 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
     }
   }, [ttVideoMuted])
 
+  useEffect(() => {
+    // const video = videoRef.current
+    if (isLoading) {
+      const timer = setTimeout(() => setShowLoader(true), 500)
+      return () => clearTimeout(timer)
+    }
+    setShowLoader(false)
+  }, [isLoading])
+
   const togglePlay = useCallback(() => {
     if (videoRef.current) {
       setEnded(false)
@@ -350,6 +360,11 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
           className={`w-full h-full z-[11] top-0 left-0 right-0 bottom-0 absolute ${imageScale}`}
           alt=""
         />
+        {showLoader && (
+            <div className="absolute z-[18] inset-0 flex items-center justify-center bg-black/50">
+              <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin" />
+            </div>
+        )}
         <div
           className="top-0 left-0 right-0 z-[12] absolute w-full h-full bg-video-gradient"
           onClick={togglePlay}

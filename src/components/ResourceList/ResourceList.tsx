@@ -32,6 +32,7 @@ import MoreText from '@/components/More/MoreText'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { videoHls } from '@/utils/video/videoHls'
 import { totalAvailableInvoice } from '@/api'
+import { MP4_REGEX } from '@/utils/constants'
 
 export interface ShareDataProps {
   pid: number
@@ -194,9 +195,10 @@ interface Props {
   hasMore?: boolean
   setCurrentShareData?: (data: ShareDataProps) => void
   getShareLink?: (title: string, pid: number, uid: number) => Promise<void>
+  setResourcesList?: (resources: FormatterListItem[]) => void
 }
 
-const ResourceList = ({ resources: initialResources, type, hasMore }: Props) => {
+const ResourceList = ({ resources: initialResources, type, hasMore, setResourcesList }: Props) => {
   const navigate = useNavigate()
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const [resources, setResources] = useState<FormatterListItem[]>([])
@@ -409,9 +411,8 @@ const ResourceList = ({ resources: initialResources, type, hasMore }: Props) => 
         runDailyWatch(post_id)
         if (item.act_type === 0) {
           const medias = url.split(',')
-          const picUrl = medias.find((item) => !item.endsWith('.m3u8') && !item.endsWith('.mp4'))
-          const media = medias.find((item) => item.endsWith('.m3u8'))
-          const r2 = medias.find((item) => item.endsWith('.mp4'))
+          const picUrl = medias.find((item) => !item.endsWith('.m3u8') && !MP4_REGEX.test(item))
+          const media = medias.find((item) => MP4_REGEX.test(item))
           setCacheVideoIndex(item.id)
           const videos = document.querySelectorAll('.video-card')
           const mostVisibleElement = Array.prototype.slice
@@ -429,11 +430,12 @@ const ResourceList = ({ resources: initialResources, type, hasMore }: Props) => 
                 ...item,
                 media: [media],
                 mediaCover: picUrl,
+                thumbnail: picUrl,
                 ...options,
               },
               mostVisibleElement
             )
-            return { ...item, media: [media], mediaCover: picUrl, ...options, r2 }
+            return { ...item, media: [media], mediaCover: picUrl, thumbnail: picUrl, ...options }
           }
         }
         return { ...item, media: url.split(','), ...options }
@@ -441,6 +443,9 @@ const ResourceList = ({ resources: initialResources, type, hasMore }: Props) => 
       return item
     })
     setResources(updatedUsers)
+    if (setResourcesList) {
+      setResourcesList(updatedUsers)
+    }
   }
 
   useEffect(() => {
@@ -510,6 +515,7 @@ const ResourceList = ({ resources: initialResources, type, hasMore }: Props) => 
                     data={data}
                     resourcesEve={resourcesEve}
                     exchangeRate={exchangeRate}
+                    sourceType={type}
                   />
                 ) : data.type === POST_TYPE_IMAGE ? (
                   <ImageCard
@@ -517,6 +523,7 @@ const ResourceList = ({ resources: initialResources, type, hasMore }: Props) => 
                     handleImageClick={(images, index) => handleImageClick(images, index, data.id)}
                     resourcesEve={resourcesEve}
                     exchangeRate={exchangeRate}
+                    sourceType={type}
                   />
                 ) : ( <VideoCard
                   data={data}

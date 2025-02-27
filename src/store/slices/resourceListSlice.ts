@@ -8,7 +8,7 @@ import {
   unstable_scheduleCallback as scheduleCallback,
   unstable_NormalPriority as NormalPriority,
 } from 'scheduler'
-import { converMedia } from '@/utils/video/media'
+import { MP4_REGEX } from '@/utils/constants'
 
 export type ListType = 'recommend' | 'view'
 
@@ -297,7 +297,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
   setRecommendList: (newList, merge = false) => {
     const list = merge ? [...get().recommendList.list, ...newList] : newList
     try {
-      window.m3u8Worker.postMessage({ tasks: list })
+      // window.m3u8Worker.postMessage({ tasks: list })
     } catch (error) {
       console.error('m3u8Worker', error)
     }
@@ -344,6 +344,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         page_num: page,
         records: recordsNum,
       })
+      // const { posts: postsRes } = recommendJson
       const posts = [...featured, ...postsRes]
 
       const hasMore = posts.length >= recordsNum
@@ -351,7 +352,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         ...user,
         ...post,
         media:
-          post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => item.endsWith('.m3u8')) || ''] : [post.media],
+          post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => MP4_REGEX.test(item)) || ''] : [post.media],
       }))
 
       get().setRecommendList(updatedPosts, page > 1)
@@ -420,7 +421,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       const updatedPosts = featured.map(({ post, user }: ListItem) => ({
         ...user,
         ...post,
-        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => item.endsWith('.m3u8')) || ''] : [post.media]
+        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => MP4_REGEX.test(item)) || ''] : [post.media]
           // post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
       }))
 
@@ -531,7 +532,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       isLoading = false
     }
 
-    const processQueue = () => {
+    const processQueue = async () => {
       if (isLoading || videoLoadQueue.length === 0) return
       isLoading = true
 
@@ -546,9 +547,6 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         processQueue()
         return
       }
-
-      let loadedFragments = 0
-
       const medias = video?.media[0]
       if (!medias) {
         console.error('Media not found for video:', video)
@@ -557,63 +555,30 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         return
       }
 
-      const media = medias.split(',').find((item) => item.endsWith('.m3u8'))
-      if (!media) {
-        console.error('No valid m3u8 media found for video:', video)
+      const media = medias.split(',').find((item) => MP4_REGEX.test(item))
+      const trailer = video.trailer;
+      console.log(medias,'===xxxxxxxxxxxxx======');
+      console.log(media,'====xxxxxxxxxxxxx====');
+      if (!media || !trailer) {
+        console.error('No valid mp4 media found for video:', video)
         isLoading = false
         processQueue()
         return
       }
+      const range = `bytes=0-1048576`;
+      const response = await fetch(media||trailer, {
+        headers: {
+          Range: range,
+        },
+      });
 
-      let max_fragment_count = 0
-      const hls = new Hls({
-        startPosition: 0,
-        maxBufferLength: 2,
-        enableWorker: true,
-        maxMaxBufferLength: 5,
-        autoStartLoad: true,
-        maxBufferHole: 0.5,
-        lowLatencyMode: false,
-        maxBufferSize: 10 * 1024 * 1024,
-      })
-      hls.loadSource(media)
-      hls.attachMedia(tempVideo)
+      if (!response.ok) {
+        throw new Error(`Failed to fetch: ${response.statusText}`);
+      }
+      const arrayBuffer = await response.arrayBuffer();
 
-      // 监听分片加载完成事件
-      hls.on(Hls.Events.FRAG_LOADED, () => {
-        loadedFragments++
-        console.log(`视频 ${video.id} Loaded fragment ${loadedFragments} 分片加载完成`)
-        if (loadedFragments >= Math.min(max_fragment_count)) {
-          isLoading = false
-          // hls.destroy()
-          hls.stopLoad()
-          video.loaded = true
-          video.hls = hls
-          processQueue()
-        }
-      })
 
-      hls.on(Hls.Events.MANIFEST_LOADED, () => {
-        console.log(`视频 ${video.id} 清单文件已加载完成。`)
-      })
 
-      hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
-        console.log(`视频 ${video.id} 流解析完成，开始缓存`)
-      })
-
-      hls.on(Hls.Events.LEVEL_LOADED, (event, data) => {
-        const levelIndex = data.level
-        const fragmentCount = data.details.fragments.length
-        console.log(`视频${video.id} Level ${levelIndex} 分片数量: ${fragmentCount}`)
-        max_fragment_count = fragmentCount
-      })
-
-      hls.on(Hls.Events.ERROR, (event, data) => {
-        isLoading = false
-        hls.destroy()
-        video.loaded = false
-        processQueue()
-      })
     }
 
     return Object.assign(
@@ -635,7 +600,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       isLoading = false
     }
 
-    const processQueue = () => {
+    const processQueue = async () => {
       if (isLoading || videoLoadQueue.length === 0) return
 
       // 标记正在加载
@@ -657,6 +622,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       let loadedFragments = 0
       let maxFragmentCount = 0
 
+      console.log(video,'===xxxxxxxxxxxxx======');
       const medias = video?.media[0]
       if (!medias) {
         console.error(`Media not found for video: ${video.id}`)
@@ -665,57 +631,29 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         return
       }
 
-      const media = medias.split(',').find((item) => item.endsWith('.m3u8'))
-      if (!media) {
-        console.error(`No valid m3u8 media found for video: ${video.id}`)
+      const media = medias.split(',').find((item) => MP4_REGEX.test(item))
+      const trailer = video.trailer;
+      console.log(medias,'===xxxxxxxxxxxxx======');
+      console.log(media,'====xxxxxxxxxxxxx====');
+      if (!media || !trailer) {
+        console.error('No valid mp4 media found for video:', video)
         isLoading = false
-        scheduleCallback(NormalPriority, processQueue)
+        processQueue()
         return
       }
-      const hls = new Hls({
-        startPosition: 0,
-        maxBufferLength: 2,
-        enableWorker: true,
-        maxMaxBufferLength: 5,
-        autoStartLoad: true,
-        maxBufferHole: 0.5,
-        lowLatencyMode: false,
-        maxBufferSize: 10 * 1024 * 1024,
-      })
-      hls.loadSource(media)
-      hls.attachMedia(videoElement)
+      const range = `bytes=0-1048576`;
+      const response = await fetch(media||trailer, {
+        headers: {
+          Range: range,
+        },
+      });
 
-      // 监听分片加载完成事件
-      hls.on(Hls.Events.FRAG_LOADED, () => {
-        loadedFragments++
-        console.log(`视频 ${video.id} 分片 ${loadedFragments} 已加载`)
+      if (!response.ok) {
+        throw new Error(`Failed to fetch: ${response.statusText}`);
+      }
+      const arrayBuffer = await response.arrayBuffer();
 
-        if (loadedFragments >= Math.min(maxFragmentCount)) {
-          console.log(`视频 ${video.id} 缓存完成`)
-          isLoading = false
-          hls.stopLoad()
-          video.loaded = true
-          video.hls = hls
-          scheduleCallback(NormalPriority, processQueue) // 调度下一个任务
-        }
-      })
 
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        console.log(`视频 ${video.id} 流解析完成`)
-      })
-
-      hls.on(Hls.Events.LEVEL_LOADED, (event, data) => {
-        maxFragmentCount = data.details.fragments.length
-        console.log(`视频 ${video.id} 分片总数: ${maxFragmentCount}`)
-      })
-
-      hls.on(Hls.Events.ERROR, (event, data) => {
-        console.error(`视频 ${video.id} 加载错误`, data)
-        isLoading = false
-        hls.destroy()
-        video.loaded = false
-        scheduleCallback(NormalPriority, processQueue)
-      })
     }
 
     return Object.assign(
@@ -774,7 +712,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
   setViewList: (newList, merge = false) => {
     const list = merge ? [...get().viewList.list, ...newList] : newList
 
-    window.m3u8Worker.postMessage({ tasks: list })
+    // window.m3u8Worker.postMessage({ tasks: list })
 
     set((state) => ({
       viewList: {
@@ -824,13 +762,14 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         records: recordsNum,
       })
       const hasMore = posts.length === recordsNum
-
+      console.log('jacob list>>>>1', posts)
       const updatedPosts = posts.map(({ post, user }) => ({
         ...user,
         ...post,
-        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => item.endsWith('.m3u8')) || ''] : [post.media]
+        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => MP4_REGEX.test(item)) || ''] : [post.media]
           // post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
       }))
+      console.log('jacob list>>>>2', updatedPosts)
       get().setViewList(updatedPosts, page > 1)
       get().setViewHasMore(hasMore)
     } catch (error) {
@@ -896,7 +835,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       const updatedPosts = posts.map((post) => ({
         ...post,
         ...othersUserInfo,
-        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => item.endsWith('.m3u8')) || ''] : [post.media]
+        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => MP4_REGEX.test(item)) || ''] : [post.media]
           // post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
       }))
       get().setOthersViewList(updatedPosts, page > 1)
@@ -914,7 +853,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     const updatedPosts = posts.map(({ post, user }: ListItem) => ({
       ...user,
       ...post,
-      media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => item.endsWith('.m3u8')) || ''] : [post.media]
+      media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => MP4_REGEX.test(item)) || ''] : [post.media]
         // post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
     }))
     set(() => ({
@@ -947,7 +886,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       const updatedPosts = posts.map(({ post, user }) => ({
         ...user,
         ...post,
-        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => item.endsWith('.m3u8')) || ''] : [post.media]
+        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => MP4_REGEX.test(item)) || ''] : [post.media]
           // post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
       }))
       get().setFavList(updatedPosts, page > 1)
@@ -972,7 +911,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     })),
   setFavList: (newList, merge = false) => {
     const list = merge ? [...get().favList.list, ...newList] : newList
-    window.m3u8Worker.postMessage({ tasks: list })
+    // window.m3u8Worker.postMessage({ tasks: list })
     set((state) => ({
       favList: {
         ...state.favList,
@@ -1018,7 +957,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       const updatedPosts = posts.map(({ post, user }) => ({
         ...user,
         ...post,
-        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => item.endsWith('.m3u8')) || ''] : [post.media]
+        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => MP4_REGEX.test(item)) || ''] : [post.media]
           // post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
       }))
       console.log(updatedPosts)
@@ -1044,7 +983,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     })),
   setOrderList: (newList, merge = false) => {
     const list = merge ? [...get().orderList.list, ...newList] : newList
-    window.m3u8Worker.postMessage({ tasks: list })
+    // window.m3u8Worker.postMessage({ tasks: list })
     set((state) => ({
       orderList: {
         ...state.orderList,

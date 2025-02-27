@@ -12,11 +12,10 @@ export const videoScale = (data: FormatterListItem, containerDom: HTMLDivElement
   if (aspect === containerAspect) {
     // 如果宽高比相等，直接返回 scale 为 1
     return 'object-cover'
-  } else if (aspect>1.2) {
-    // 横屏视频，使用 object-contain 以确保视频完整显示
+  } else if (aspect > containerAspect) {
     return 'object-contain'
   } else {
-    // 竖屏视频，使用 object-cover 以确保视频覆盖整个容器
+    // 视频宽高比更小（纵向撑满，裁切左右）
     return 'object-cover'
   }
 }

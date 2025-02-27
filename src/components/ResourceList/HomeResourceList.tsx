@@ -366,6 +366,7 @@ const ResourceList = ({
                 mediaCover: picUrl,
                 thumbnail: picUrl,
                 ...options,
+                currentUid: getCurrentUid(),
               },
               mostVisibleElement
             )

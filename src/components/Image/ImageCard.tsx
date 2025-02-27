@@ -15,12 +15,14 @@ interface ImageCardProps {
   handleImageClick: (images: string[], index: number) => void
   resourcesEve: (post_id: number, url: string, is_pay?: boolean) => void
   exchangeRate?: number
+  sourceType?: string
 }
 const ImageCard: React.FC<ImageCardProps> = ({
   data,
   handleImageClick,
   resourcesEve,
   exchangeRate,
+  sourceType,
 }) => {
   const { getCurrentUid } = useTMAUtils()
   const { ttMode } = useStore((state) => ({
@@ -82,11 +84,12 @@ const ImageCard: React.FC<ImageCardProps> = ({
                   }}
                   onClick={() => {
                     const currentPath = window.location.pathname
-                    if (ttMode && !(data.price > 0 && !data.is_pay && data.uid != getCurrentUid()) && ['/christmas', '/home'].includes(currentPath)) {
+                    if (ttMode && !(data.price > 0 && !data.is_pay && data.uid != getCurrentUid()) && ['/christmas', '/home', '/profile'].includes(currentPath)) {
                       navigate('/tt-player', {
                         state: {
                           id: data.id,
                           sourcePath: currentPath,
+                          sourceType: sourceType,
                         },
                       })
                       return

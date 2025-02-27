@@ -509,6 +509,7 @@ const ResourceList = ({ resources: initialResources, type, hasMore }: Props) => 
                     data={data}
                     resourcesEve={resourcesEve}
                     exchangeRate={exchangeRate}
+                    sourceType={type}
                   />
                 ) : data.type === POST_TYPE_IMAGE ? (
                   <ImageCard
@@ -516,6 +517,7 @@ const ResourceList = ({ resources: initialResources, type, hasMore }: Props) => 
                     handleImageClick={(images, index) => handleImageClick(images, index, data.id)}
                     resourcesEve={resourcesEve}
                     exchangeRate={exchangeRate}
+                    sourceType={type}
                   />
                 ) : ( <VideoCard
                   data={data}

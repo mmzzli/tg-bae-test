@@ -15,8 +15,9 @@ interface VideoCardProps {
   data: FormatterListItem
   resourcesEve: (post_id: number, url: string, is_pay?: boolean) => void
   exchangeRate?: number
+  sourceType?: string
 }
-const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve, exchangeRate }) => {
+const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve, exchangeRate, sourceType }) => {
   const videoCardContainer = useRef<HTMLDivElement>(null)
   const homeVideoMuted = useStore((state) => state.homeVideoMuted)
   const setHomeVideoMuted = useStore((state) => state.setHomeVideoMuted)
@@ -37,11 +38,12 @@ const VideoCard: React.FC<VideoCardProps> = ({ data, resourcesEve, exchangeRate 
         }
         timeoutId = setTimeout(() => {
           const currentPath = window.location.pathname
-          if (ttMode && !(data.price > 0 && !data.is_pay && data.uid != getCurrentUid()) && ['/christmas', '/home'].includes(currentPath)) {
+          if (ttMode && !(data.price > 0 && !data.is_pay && data.uid != getCurrentUid()) && ['/christmas', '/home', '/profile'].includes(currentPath)) {
             navigate('/tt-player', {
               state: {
                 id: data.id,
                 sourcePath: currentPath,
+                sourceType: sourceType,
               },
             })
             return

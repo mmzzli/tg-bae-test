@@ -55,9 +55,19 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
   // 显示视频地址
   const [previewVideoUrl, setPreviewVideoUrl] = useState<string>('')
   const [frames, setFrames] = useState<Frame[]>([])
-  // const [isBaseModalOpen, { toggle, on, off }] = useBoolean(false)
   const [isBaseModalOpen, setIsBaseModalOpen] = useState(false)
   const token = useStore((state) => state.token)
+
+  const {
+    virtualRoutePage,
+    setVirtualRoutePage,
+    resetVirtualRoutePage,
+  } = useStore((state) => ({
+    virtualRoutePage: state.virtualRoutePage,
+    setVirtualRoutePage: state.setVirtualRoutePage,
+    resetVirtualRoutePage: state.resetVirtualRoutePage,
+  }))
+
   const [loading, setLoading] = useState(false)
   const [loadingSkeleton, setLoadingSkeleton] = useState(true)
 
@@ -108,7 +118,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
         video.muted = false
         video.play()
       }
-      // setIsPlaying(!isPlaying) // Toggle the playing state
+      setIsPlaying(!isPlaying) // Toggle the playing state
     }
   }
 
@@ -185,92 +195,6 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
     }
   }, [videoRef, videoUrl])
 
-  async function checkVideoURL(url: string): Promise<AxiosResponse<any> | undefined> {
-    let isNotFound = true
-
-    while (isNotFound) {
-      try {
-        const response: AxiosResponse<any> = await axios.get(url)
-        isNotFound = false
-        return response
-      } catch (error: any) {
-        await new Promise((resolve) => setTimeout(resolve, 3000))
-      }
-    }
-  }
-
-  const videoUpload = async (formData: any) => {
-    // 是否是截取视频
-    if (!trailerBoll && boll) {
-      // 获取上传地址
-      const response = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      const id = response.data.split('/').pop()
-      setTrailer(`https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${id}/manifest/video.m3u8`)
-      formData.append('url', response.data)
-      setLoading(false)
-      setBoll(true)
-      setIsBaseModalOpen(false)
-      const { data } = await axios.post(
-        import.meta.env.VITE_API_URL + 'api/v1/cut_req_file',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${token}`,
-          },
-          timeout: 600000,
-        }
-      )
-      return
-    }
-    const response = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    await axios.post(response.data, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-      onUploadProgress: async (progressEvent: any) => {
-        const total = progressEvent.total
-        const current = progressEvent.loaded
-        const percentCompleted = Math.round((current * 100) / total)
-        console.log(percentCompleted)
-        if (percentCompleted >= 100) {
-          console.log(response.data)
-          const id = response.data.split('/').pop()
-          const url = `https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${id}/manifest/video.m3u8`
-          await checkVideoURL(url)
-          // 是否是截取视频
-          // if(!trailerBoll && boll){
-          //   setBoll(false)
-          //   const curl = await cutReq({
-          //     url,
-          //     filename: "trailer",
-          //     start: ~~startTime,
-          //     end: ~~endTime
-          //   })
-          //   await checkVideoURL(curl)
-          //   setTrailer(curl)
-          //   setLoading(false)
-          //   setBoll(true)
-          //   off();
-          //   return
-          // }
-          setTrailer(url)
-          setLoading(false)
-          setIsBaseModalOpen(false)
-        }
-      },
-    })
-  }
 
   // 自定义预告片
   const customizationVideo = async (videoRefTrailer: any) => {
@@ -279,107 +203,163 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
       return
     }
     setLoading(true)
+    console.log(trailerBoll)
+    // 是否是裁剪视频
 
-    // const postreqRes = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
+    const videoId = performance.timeOrigin * 1e6 + performance.now() * 1e3
+    console.log(videoId)
+    const metadata: any = {
+      vid: videoId,
+    }
+
+    if(trailerBoll){
+      if(videoRefTrailer.name.endsWith('.mp4')){
+        const url = `${import.meta.env.VITE_APP_UPLOAD_URL}uploadall`
+        // 参数
+        const formData = new FormData()
+        const items = Date.now()
+        formData.append('file', videoRefTrailer)
+        formData.append('name', `${items}`)
+        formData.append('type', 'bae')
+
+        axios.put(url, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
+          },
+          onUploadProgress: (progressEvent: any) => {
+            const total = progressEvent.total
+            const current = progressEvent.loaded
+            const percentCompleted = Math.round((current * 100) / total)
+            console.log(`上传进度: ${percentCompleted}%`)
+          },
+        })
+          .then((r2Response) => {
+            setTrailer(r2Response.data.urls[0])
+          })
+      }else{
+        const upload = new tus.Upload(videoRefTrailer, {
+          endpoint: `${import.meta.env.VITE_APP_UPLOAD_R2_URL}files`, // 你的 tus 服务器地址
+          retryDelays: [0, 3000, 5000, 10000], // 失败时重试间隔
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          metadata: metadata,
+        })
+        upload.start();
+        setTrailer(`${import.meta.env.VITE_APP_UPLOAD_IMG_URL}${videoId}.mp4`)
+      }
+    }else{
+
+      metadata["start"] = `${~~startTime}`
+      metadata["end"] = `${~~endTime}`
+
+      const upload = new tus.Upload(videoRefTrailer, {
+        endpoint: `${import.meta.env.VITE_APP_UPLOAD_R2_URL}files`, // 你的 tus 服务器地址
+        retryDelays: [0, 3000, 5000, 10000], // 失败时重试间隔
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        metadata: metadata,
+      })
+      upload.start();
+      setTrailer(`${import.meta.env.VITE_APP_UPLOAD_IMG_URL}${videoId}.mp4`)
+    }
+    setLoading(false)
+    // setVirtualRoutePage({ name: '', enterFrom: '' })
+    resetVirtualRoutePage()
+
+    return
+    setLoading(true)
+
+    // const uploadRes = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
     //   headers: {
     //     'Content-Type': 'multipart/form-data',
     //     Authorization: `Bearer ${token}`,
     //   },
     // })
 
-    const uploadRes = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    // const videoId = performance.timeOrigin * 1e6 + performance.now() * 1e3
 
-    const videoId = uploadRes.data.split('/').pop();
+    // const metadata: any = {
+    //   vid: videoId,
+    //   // url: uploadRes.data
+    //   // metadata["vid"] = videoId
+    // }
 
-    const metadata: any = {
-      // vid: videoId,
-      url: uploadRes.data
-    }
+    // if (trailerBoll && videoRefTrailer.name.endsWith('.mp4')) {
+    //   const url = `${import.meta.env.VITE_APP_UPLOAD_URL}uploadall`
+    //   const formData = new FormData()
+    //   const items = Date.now()
+    //   formData.append('file', videoRefTrailer)
+    //   formData.append('name', `${items}`)
+    //   formData.append('type', 'bae')
+    //   // 截取视频使用
+    //   formData.append('start', `${~~startTime}`)
+    //   formData.append('end', `${~~endTime}`)
+    //   formData.append(
+    //     'meta',
+    //     JSON.stringify({
+    //       name: `${items}`,
+    //       type: 'bae',
+    //     })
+    //   )
+    //   axios.put(url, formData, {
+    //     headers: {
+    //       'Content-Type': 'multipart/form-data',
+    //       Authorization: `Bearer ${token}`,
+    //     },
+    //     onUploadProgress: (progressEvent: any) => {
+    //       const total = progressEvent.total
+    //       const current = progressEvent.loaded
+    //       const percentCompleted = Math.round((current * 100) / total)
+    //       console.log(`上传进度: ${percentCompleted}%`)
+    //     },
+    //   })
+    //     .then((r2Response) => {
+    //       setTrailer(r2Response.data.urls[0])
+    //     })
 
-    if (videoRefTrailer.name.endsWith('.mp4')) {
-      const url = `${import.meta.env.VITE_APP_UPLOAD_URL}uploadall`
-      const formData = new FormData()
-      const items = Date.now()
-      formData.append('file', videoRefTrailer)
-      formData.append('name', `${items}`)
-      formData.append('type', 'bae')
-      // 截取视频使用
-      formData.append('start', `${~~startTime}`)
-      formData.append('end', `${~~endTime}`)
-      formData.append(
-        'meta',
-        JSON.stringify({
-          name: `${items}`,
-          type: 'bae',
-        })
-      )
-      axios.put(url, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`,
-        },
-        onUploadProgress: (progressEvent: any) => {
-          const total = progressEvent.total
-          const current = progressEvent.loaded
-          const percentCompleted = Math.round((current * 100) / total)
-          console.log(`上传进度: ${percentCompleted}%`)
-        },
-      })
-        .then((r2Response) => {
-          setTrailerR2(r2Response.data.urls[0])
-        })
+    // }
 
-    } else {
-      metadata["vid"] = videoId
-      setTrailerR2(`${import.meta.env.VITE_APP_UPLOAD_IMG_URL}${videoId}.mp4`)
-    }
+    // if (!trailerBoll && boll) {
+    //   metadata["start"] = `${~~startTime}`
+    //   metadata["end"] = `${~~endTime}`
+    // }
 
-    if (!trailerBoll && boll) {
-      metadata["start"] = `${~~startTime}`
-      metadata["end"] = `${~~endTime}`
-    }
+    // const upload = new tus.Upload(videoRefTrailer, {
+    //   endpoint: `${import.meta.env.VITE_APP_UPLOAD_R2_URL}files`, // 你的 tus 服务器地址
+    //   retryDelays: [0, 3000, 5000, 10000], // 失败时重试间隔
+    //   headers: {
+    //     'Authorization': `Bearer ${token}`
+    //   },
+    //   metadata: metadata,
 
-    const upload = new tus.Upload(videoRefTrailer, {
-      endpoint: `${import.meta.env.VITE_APP_UPLOAD_R2_URL}files`, // 你的 tus 服务器地址
-      retryDelays: [0, 3000, 5000, 10000], // 失败时重试间隔
-      headers: {
-        'Authorization': `Bearer ${token}`
-      },
-      metadata: metadata,
+    // })
+    // upload.start();
+    // const url = `${import.meta.env.VITE_APP_UPLOAD_IMG_URL}${videoId}.mp4`
+    // setTrailer(url)
+    // setLoading(false)
+    // // setBoll(true)
+    // setVirtualRoutePage({ name: '', enterFrom: '' })
+    // return
+    // setLoading(true)
+    // const formData = new FormData()
+    // const items = Date.now()
+    // formData.append('file', videoRefTrailer)
+    // formData.append('name', `${items}`)
+    // formData.append('type', 'bae')
+    // // 截取视频使用
+    // formData.append('start', `${~~startTime}`)
+    // formData.append('end', `${~~endTime}`)
 
-    })
-    upload.start();
-    const url = `https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${uploadRes.data.split('/').pop()}/manifest/video.m3u8`
-    // const r2Url = `${import.meta.env.VITE_APP_UPLOAD_IMG_URL}${videoId}.mp4`
-    // setTrailerR2(r2Url)
-    setTrailer(url)
-    setLoading(false)
-    // setBoll(true)
-    setIsBaseModalOpen(false)
-    return
-    setLoading(true)
-    const formData = new FormData()
-    const items = Date.now()
-    formData.append('file', videoRefTrailer)
-    formData.append('name', `${items}`)
-    formData.append('type', 'bae')
-    // 截取视频使用
-    formData.append('start', `${~~startTime}`)
-    formData.append('end', `${~~endTime}`)
-
-    formData.append(
-      'meta',
-      JSON.stringify({
-        name: `${items}`,
-        type: 'bae',
-      })
-    )
-    videoUpload(formData)
+    // formData.append(
+    //   'meta',
+    //   JSON.stringify({
+    //     name: `${items}`,
+    //     type: 'bae',
+    //   })
+    // )
   }
 
   const captureFrame = async () => {
@@ -446,17 +426,6 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
     // }, (endTime - startTime) * 1000); // 按秒设置时长
   }
 
-  const base64ToFile = (base64String: any, filename: string) => {
-    const arr = base64String.split(',')
-    const mime = arr[0].match(/:(.*?);/)[1]
-    const bstr = atob(arr[1])
-    let n = bstr.length
-    const u8arr = new Uint8Array(n)
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n)
-    }
-    return new File([u8arr], filename, { type: mime })
-  }
 
   useEffect(() => {
     if ((videoUrl || previewVideoUrl) && videoRef.current) {
@@ -481,17 +450,6 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
     }
   }, [videoUrl, previewVideoUrl])
 
-
-  // useEffect(() => {
-  //   const scrollable = document.getElementById('postScroll')
-  //   if (scrollable) {
-  //     scrollable.scrollTo({
-  //       top: scrollable.scrollHeight,
-  //       behavior: 'smooth',
-  //     })
-  //   }
-  // },[landscapeBoll, videoUrl, previewVideoUrl])
-
   useEffect(() => {
     const video = videoRef.current
     if (video) {
@@ -510,12 +468,12 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
-    if (!isBaseModalOpen) {
+    if (virtualRoutePage?.name !== "POST") {
       video.pause()
     } else {
       video.currentTime = 0
     }
-  }, [isBaseModalOpen])
+  }, [virtualRoutePage])
 
   return (
     <>
@@ -565,7 +523,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
                 height: '64px',
                 width: '64px',
               }}
-              onClick={() => setIsBaseModalOpen(true)}
+              onClick={() => setVirtualRoutePage({ name: 'POST', enterFrom: '/post' })}
             >
               <i className="iconfont icon-add text-[#999999] text-[20px]"></i>
             </p>
@@ -573,7 +531,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
         </div>
       </div>
 
-      {isBaseModalOpen && <div
+      {virtualRoutePage?.name === "POST" && <div
         className="fixed inset-0 z-[999] bg-[#080808]"
         style={{
           paddingTop: 'calc(var(--tg-safe-area-inset-top) + 16px)',

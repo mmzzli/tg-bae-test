@@ -35,13 +35,13 @@ export const NewPost: FC = () => {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [videoSrc, setVideoSrc] = useState<string | null>(null)
   const [title, setTitle] = useState<string>('')
-  let r2Url = ""
   const [isLoading, setIsLoading] = useState(false)
   const [firstFileType, setFirstFileType] = useState<string>('image')
   const [firstSelectFileType, setFirstSelectFileType] = useState<string>('')
   const [imgAttr, setImgAttr] = useState<any[]>([])
   const [files, setFiles] = useState<File[]>([])
   const token = useStore((state) => state.token)
+  let updateUrl = ""
 
   const containerRef = useRef<HTMLDivElement>(null)
   const postContentRef = useRef<HTMLDivElement>(null)
@@ -264,14 +264,13 @@ export const NewPost: FC = () => {
             duration: Math.floor(videoRef?.current?.duration || 0),
             media: medias.join(','),
             ...(title ? { title } : {}),
-            r2: r2Url,
+            // r2: r2Url,
             type: 0,
             currency: 0,
             price: price || 0,
           }
           if (params.price && trailer && trailerR2) {
             params['trailer'] = trailer
-            params['trailer_r2'] = trailerR2
           }
           await postResources(params)
           // when sent page will back to task page,so we need to update the task list
@@ -310,17 +309,17 @@ export const NewPost: FC = () => {
                 progress: ++percent >= 100 ? 99 : percent,
               })
             }, 100)
-            const response = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
-              headers: {
-                'Content-Type': 'multipart/form-data',
-                Authorization: `Bearer ${token}`,
-              },
-            })
+            // const response = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
+            //   headers: {
+            //     'Content-Type': 'multipart/form-data',
+            //     Authorization: `Bearer ${token}`,
+            //   },
+            // })
             clearInterval(timer)
             updateUploadThread({
               id: stepOne,
               progress: 100,
-              result: response.data,
+              result: "",
               status: TaskStatus.COMPLETED,
             })
           } catch (error) {
@@ -337,109 +336,160 @@ export const NewPost: FC = () => {
         depends: ['upload_url'],
         result: null,
         thread: async ({ upload_url }: { upload_url: string }) => {
-          try {
-            // data
+
+          // 判断是否是.mp4格式
+          if (videoFile.name.endsWith('.mp4')) {
+
+            const url = `${import.meta.env.VITE_APP_UPLOAD_URL}uploadall`
+            // 参数
             const formData = new FormData()
+            const items = Date.now()
             formData.append('file', videoFile)
-            formData.append('name', videoFile.name)
+            formData.append('name', `${items}`)
             formData.append('type', 'bae')
 
-            formData.append(
-              'meta',
-              JSON.stringify({
-                name: videoFile.name,
-                type: 'bae',
-              })
-            )
-            // 判断是否是.mp4格式
-            if (!videoFile.name.endsWith('.mp4')) {
-
-              // const postreqRes = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
-              //   headers: {
-              //     'Content-Type': 'multipart/form-data',
-              //     Authorization: `Bearer ${token}`,
-              //   },
-              // })
-              const videoId:any = upload_url.split('/').pop();
-              console.log(videoId, upload_url)
-              const upload = new tus.Upload(videoFile, {
-                endpoint: `${import.meta.env.VITE_APP_UPLOAD_R2_URL}files`, // 你的 tus 服务器地址
-                retryDelays: [0, 3000, 5000, 10000], // 失败时重试间隔
-                headers: {
-                  'Authorization': `Bearer ${token}`
-                },
-                metadata: {
-                  vid: videoId,
-                  url: upload_url
-                },
-              })
-              r2Url = `${import.meta.env.VITE_APP_UPLOAD_IMG_URL}${videoId}.mp4`
-              upload.start();
-
-              // mp4 格式转换
-              // const postreqRes = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
-              //   headers: {
-              //     'Content-Type': 'multipart/form-data',
-              //     Authorization: `Bearer ${token}`,
-              //   },
-              // })
-              // const videoId = postreqRes.data.split('/').pop();
-              // formData.append('vid', videoId)
-              // const { data } = await axios.post(
-              //   import.meta.env.VITE_API_URL + 'api/v1/convert_req_file',
-              //   formData,
-              //   {
-              //     headers: {
-              //       'Content-Type': 'multipart/form-data',
-              //       Authorization: `Bearer ${token}`,
-              //     },
-              //     timeout: 600000,
-              //   }
-              // )
-              // r2Url = data
-            } else {
-              // r2 update
-              const url = `${import.meta.env.VITE_APP_UPLOAD_URL}uploadall`
-              const r2Response = await axios.put(url, formData, {
-                headers: {
-                  'Content-Type': 'multipart/form-data',
-                  Authorization: `Bearer ${token}`,
-                },
-                onUploadProgress: (progressEvent: any) => {
-                  const total = progressEvent.total
-                  const current = progressEvent.loaded
-                  const percentCompleted = Math.round((current * 100) / total)
-                  console.log(`上传进度: ${percentCompleted}%`)
-                },
-              })
-              r2Url = r2Response.data.urls[0]
-            }
-            console.log(r2Url)
-            // m3u8 update
-            const response = await axios.post(upload_url, formData, {
+            axios.put(url, formData, {
               headers: {
                 'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${token}`,
               },
               onUploadProgress: (progressEvent: any) => {
                 const total = progressEvent.total
                 const current = progressEvent.loaded
                 const percentCompleted = Math.round((current * 100) / total)
-                updateUploadThread({
-                  id: stepTwo,
-                  progress: percentCompleted === 100 ? 99 : percentCompleted,
-                })
-                console.log(`上传进度(upload_video): ${percentCompleted}%`)
+                console.log(`上传进度: ${percentCompleted}%`)
               },
             })
-            updateUploadThread({
-              id: stepTwo,
-              progress: 100,
-              result: response,
-              status: TaskStatus.COMPLETED,
+              .then((r2Response) => {
+                updateUrl = r2Response.data.urls[0]
+              })
+          }else{
+
+            const videoId = performance.timeOrigin * 1e6 + performance.now() * 1e3
+            console.log(videoId)
+            const metadata: any = {
+              vid: videoId,
+            }
+            const upload = new tus.Upload(videoFile, {
+              endpoint: `${import.meta.env.VITE_APP_UPLOAD_R2_URL}files`, // 你的 tus 服务器地址
+              retryDelays: [0, 3000, 5000, 10000], // 失败时重试间隔
+              headers: {
+                'Authorization': `Bearer ${token}`
+              },
+              metadata: metadata,
             })
-          } catch (error) {
-            errorHandler(error)
+            upload.start();
+            updateUrl = `${import.meta.env.VITE_APP_UPLOAD_IMG_URL}${videoId}.mp4`
           }
+          updateUploadThread({
+            id: stepTwo,
+            progress: 100,
+            result: "",
+            status: TaskStatus.COMPLETED,
+          })
+          // try {
+          //   // data
+          //   const formData = new FormData()
+          //   formData.append('file', videoFile)
+          //   formData.append('name', videoFile.name)
+          //   formData.append('type', 'bae')
+
+          //   formData.append(
+          //     'meta',
+          //     JSON.stringify({
+          //       name: videoFile.name,
+          //       type: 'bae',
+          //     })
+          //   )
+          //   // 判断是否是.mp4格式
+          //   if (!videoFile.name.endsWith('.mp4')) {
+
+          //     // const postreqRes = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
+          //     //   headers: {
+          //     //     'Content-Type': 'multipart/form-data',
+          //     //     Authorization: `Bearer ${token}`,
+          //     //   },
+          //     // })
+          //     const videoId:any = upload_url.split('/').pop();
+          //     console.log(videoId, upload_url)
+          //     const upload = new tus.Upload(videoFile, {
+          //       endpoint: `${import.meta.env.VITE_APP_UPLOAD_R2_URL}files`, // 你的 tus 服务器地址
+          //       retryDelays: [0, 3000, 5000, 10000], // 失败时重试间隔
+          //       headers: {
+          //         'Authorization': `Bearer ${token}`
+          //       },
+          //       metadata: {
+          //         vid: videoId,
+          //         url: upload_url
+          //       },
+          //     })
+          //     r2Url = `${import.meta.env.VITE_APP_UPLOAD_IMG_URL}${videoId}.mp4`
+          //     upload.start();
+
+          //     // mp4 格式转换
+          //     // const postreqRes = await axios.get(import.meta.env.VITE_API_URL + 'api/v1/postreq', {
+          //     //   headers: {
+          //     //     'Content-Type': 'multipart/form-data',
+          //     //     Authorization: `Bearer ${token}`,
+          //     //   },
+          //     // })
+          //     // const videoId = postreqRes.data.split('/').pop();
+          //     // formData.append('vid', videoId)
+          //     // const { data } = await axios.post(
+          //     //   import.meta.env.VITE_API_URL + 'api/v1/convert_req_file',
+          //     //   formData,
+          //     //   {
+          //     //     headers: {
+          //     //       'Content-Type': 'multipart/form-data',
+          //     //       Authorization: `Bearer ${token}`,
+          //     //     },
+          //     //     timeout: 600000,
+          //     //   }
+          //     // )
+          //     // r2Url = data
+          //   } else {
+          //     // r2 update
+          //     const url = `${import.meta.env.VITE_APP_UPLOAD_URL}uploadall`
+          //     const r2Response = await axios.put(url, formData, {
+          //       headers: {
+          //         'Content-Type': 'multipart/form-data',
+          //         Authorization: `Bearer ${token}`,
+          //       },
+          //       onUploadProgress: (progressEvent: any) => {
+          //         const total = progressEvent.total
+          //         const current = progressEvent.loaded
+          //         const percentCompleted = Math.round((current * 100) / total)
+          //         console.log(`上传进度: ${percentCompleted}%`)
+          //       },
+          //     })
+          //     r2Url = r2Response.data.urls[0]
+          //   }
+          //   console.log(r2Url)
+          //   // m3u8 update
+          //   const response = await axios.post(upload_url, formData, {
+          //     headers: {
+          //       'Content-Type': 'multipart/form-data',
+          //     },
+          //     onUploadProgress: (progressEvent: any) => {
+          //       const total = progressEvent.total
+          //       const current = progressEvent.loaded
+          //       const percentCompleted = Math.round((current * 100) / total)
+          //       updateUploadThread({
+          //         id: stepTwo,
+          //         progress: percentCompleted === 100 ? 99 : percentCompleted,
+          //       })
+          //       console.log(`上传进度(upload_video): ${percentCompleted}%`)
+          //     },
+          //   })
+          //   updateUploadThread({
+          //     id: stepTwo,
+          //     progress: 100,
+          //     result: response,
+          //     status: TaskStatus.COMPLETED,
+          //   })
+          // } catch (error) {
+          //   errorHandler(error)
+          // }
         },
       }
 
@@ -451,9 +501,10 @@ export const NewPost: FC = () => {
         depends: ['upload_url', 'upload_video'],
         result: null,
         thread: async ({ upload_url, upload_video }: any) => {
-          if (upload_video.status === 200) {
+          if (true) {
             const id = upload_url.split('/').pop()
-            const url = `https://customer-sn5y0tm58c41dbpc.cloudflarestream.com/${id}/manifest/video.m3u8`
+            const url = updateUrl
+            console.log(url)
             let percent = 0
             const timer = setInterval(() => {
               const add = 1 / Math.log(percent + Math.E)

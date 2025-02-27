@@ -105,7 +105,7 @@ const Trailer: React.FC<TrailerProps> = ({
       )}
       <Input
         type="file"
-        accept=".mp4,.webm"
+        accept="video/mp4,video/webm"
         onChange={handleFileChange}
         style={{ display: 'none' }}
         ref={inputRef}

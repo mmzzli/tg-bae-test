@@ -256,6 +256,7 @@ const MyPosts = memo(
     updateHeight: (index: number) => void
   }) => {
     const { list, hasMore, fetchMoreData, page } = useViewList()
+    const setViewList = useStore((state) => state.setViewList)
 
     useEffect(() => {
       if (list.length) {
@@ -293,7 +294,7 @@ const MyPosts = memo(
         scrollThreshold={0.8}
         style={{ overflow: 'visible' }}
       >
-        <ResourceList resources={list} type="view" />
+        <ResourceList resources={list} type="view" setResourcesList={setViewList} />
       </InfiniteScroll>
     )
   }
@@ -310,6 +311,7 @@ const FavList = memo(
     updateHeight: (index: number) => void
   }) => {
     const { list, hasMore, fetchMoreData, page } = useFavList()
+    const setFavList = useStore((state) => state.setFavList)
     const scrollRef = useRef<HTMLDivElement>(null)
     const updateContainerHeight = () => {
       requestAnimationFrame(() => {
@@ -351,7 +353,7 @@ const FavList = memo(
           scrollThreshold={0.8}
           style={{ overflow: 'visible' }}
         >
-          <ResourceList resources={list} type="fav" hasMore={hasMore} />
+          <ResourceList resources={list} type="fav" hasMore={hasMore} setResourcesList={setFavList} />
         </InfiniteScroll>
       </div>
     )
@@ -369,7 +371,7 @@ const OrderList = memo(
     updateHeight: (index: number) => void
   }) => {
     const { list, hasMore, fetchMoreData, page } = useOrdersList()
-
+    const setOrdersList = useStore((state) => state.setOrderList)
     useEffect(() => {
       if (list.length) {
         setTimeout(() => {
@@ -407,7 +409,7 @@ const OrderList = memo(
         scrollThreshold={0.8}
         style={{ overflow: 'visible' }}
       >
-        <ResourceList resources={list} type="payment" />
+        <ResourceList resources={list} type="payment" setResourcesList={setOrdersList} />
       </InfiniteScroll>
     )
   }

@@ -8,8 +8,7 @@ import {
   unstable_scheduleCallback as scheduleCallback,
   unstable_NormalPriority as NormalPriority,
 } from 'scheduler'
-import { converMedia } from '@/utils/video/media'
-import recommendJson from '@/assets/recommend.json'
+import { MP4_REGEX } from '@/utils/constants'
 
 export type ListType = 'recommend' | 'view'
 
@@ -341,11 +340,11 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
 
       const { featured = [] } = page === 1 ? await recommendFeatured(`2:1`) : {}
       // const {featured} = await recommendFeatured(1)
-      // const { posts: postsRes } = await getRecommendMedia({
-      //   page_num: page,
-      //   records: recordsNum,
-      // })
-      const { posts: postsRes } = recommendJson
+      const { posts: postsRes } = await getRecommendMedia({
+        page_num: page,
+        records: recordsNum,
+      })
+      // const { posts: postsRes } = recommendJson
       const posts = [...featured, ...postsRes]
 
       const hasMore = posts.length >= recordsNum
@@ -556,7 +555,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         return
       }
 
-      const media = medias.split(',').find((item) => item.endsWith('.mp4'))
+      const media = medias.split(',').find((item) => MP4_REGEX.test(item))
       const trailer = video.trailer;
       console.log(medias,'===xxxxxxxxxxxxx======');
       console.log(media,'====xxxxxxxxxxxxx====');
@@ -632,7 +631,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         return
       }
 
-      const media = medias.split(',').find((item) => item.endsWith('.mp4'))
+      const media = medias.split(',').find((item) => MP4_REGEX.test(item))
       const trailer = video.trailer;
       console.log(medias,'===xxxxxxxxxxxxx======');
       console.log(media,'====xxxxxxxxxxxxx====');

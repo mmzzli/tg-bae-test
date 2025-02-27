@@ -11,8 +11,7 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { debounce } from '@/utils/chat/schedulers';
 import { getVoteDetail, postVote } from '@/api';
 import { cn } from '@/utils/utils'
-import { VoteReq } from '@/types'
-import { converMedia } from '@/utils/video/media';
+import { MP4_REGEX } from '@/utils/constants';
 
 interface PostListProps {
   containerRef: React.RefObject<HTMLDivElement>;
@@ -73,7 +72,7 @@ const JKFCampaignList = ({ containerRef }: PostListProps) => {
       res.media = res.media.map(({ post, user }: any) => ({
         ...user,
         ...post,
-        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => item.endsWith('.m3u8')) || ''] : [post.media]
+        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => MP4_REGEX.test(item)) || ''] : [post.media]
           // post.type === 1 && typeof post.media === 'string'
           //   ? post.media.split(',')
           //   : [post.media],

@@ -20,6 +20,7 @@ import { useGetDailyTask } from '@/hooks/useDailyTask'
 import { useViewList } from '@/store/hook/useResourceList'
 import MentionFeature from './MentionFeature'
 import { debounce } from '@/utils/chat/schedulers'
+import { MP4_REGEX } from '@/utils/constants';
 
 const isIOS = () => {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream

@@ -23,12 +23,12 @@ const TTPlayer: React.FC = () => {
   }, [])
 
   const renderList = () => {
-    switch (state.sourcePath) {
-      case '/home':
+    switch (true) {
+      case state.sourcePath === '/home':
         return <HomeList />
-      case '/christmas':
+      case state.sourcePath === '/christmas':
         return <ChristmasList />
-      case '/profile':
+      case state.sourcePath.startsWith('/profile'):
         return <ProfileList type={state.sourceType} />
       default:
         return null

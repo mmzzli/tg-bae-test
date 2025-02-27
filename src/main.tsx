@@ -3,9 +3,9 @@ import * as Sentry from '@sentry/react'
 import App from './App'
 import './index.css'
 // 初始化 Worker
-const m3u8Worker = new Worker(new URL('./utils/Worker/loadm3u8.ts', import.meta.url))
+// const m3u8Worker = new Worker(new URL('./utils/Worker/loadm3u8.ts', import.meta.url))
 
-window.m3u8Worker = m3u8Worker
+// window.m3u8Worker = m3u8Worker
 
 import('vconsole').then((VConsole) => {
   window.vConsole = VConsole

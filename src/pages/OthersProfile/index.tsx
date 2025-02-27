@@ -17,6 +17,7 @@ const SCROLL_HEADER_THRESHOLD = 120
 const OthersProfile: FC = () => {
   const navigate = useNavigate()
   const { list, hasMore, fetchMoreData, page } = useOthersViewList()
+  const setOthersViewList = useStore((state) => state.setOthersViewList)
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
   const updateCacheVideo = useStore((state) => state.updateCacheVideo)
@@ -154,7 +155,7 @@ const OthersProfile: FC = () => {
       >
         <OtherUserProfile />
         <Box borderTop="1px solid rgba(255, 255, 255, 0.10)">
-          <PostList list={list} hasMore={hasMore} fetchMoreData={fetchMoreData} />
+          <PostList list={list} hasMore={hasMore} fetchMoreData={fetchMoreData} setResourcesList={setOthersViewList} />
         </Box>
       </div>
     </animated.div>

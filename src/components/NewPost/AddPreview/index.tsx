@@ -16,6 +16,7 @@ import { CustomToast, typeOptions } from '@/components/comm/Toast'
 import Trailer from '@/components/NewPost/AddPreview/Trailer'
 import Slider from '@/components/NewPost/AddPreview/Slider'
 import TrailerVideo from '@/components/NewPost/AddPreview/TrailerVideo'
+import { MP4_REGEX } from '@/utils/constants';
 
 interface Metadata {
   vid: string;

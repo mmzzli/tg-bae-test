@@ -13,9 +13,10 @@ interface PostListProps {
   list: FormatterListItem[]
   hasMore: boolean
   fetchMoreData: () => void
+  setResourcesList?: (resources: FormatterListItem[]) => void
 }
 
-const PostList = ({ className, list, hasMore, fetchMoreData }: PostListProps) => {
+const PostList = ({ className, list, hasMore, fetchMoreData, setResourcesList }: PostListProps) => {
   console.log('PostList---------->', hasMore, list.length)
   if (!hasMore && !list.length) {
     return (
@@ -43,7 +44,7 @@ const PostList = ({ className, list, hasMore, fetchMoreData }: PostListProps) =>
         scrollThreshold={0.8}
         style={{ overflow: 'visible' }}
       >
-        <ResourceList resources={list} />
+        <ResourceList resources={list} setResourcesList={setResourcesList} type={"othersProfile"} />
       </InfiniteScroll>
     </div>
   )

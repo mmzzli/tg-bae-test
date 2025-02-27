@@ -16,7 +16,12 @@ interface ImageCardProps {
   resourcesEve: (post_id: number, url: string, is_pay?: boolean) => void
   exchangeRate?: number
 }
-const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resourcesEve, exchangeRate }) => {
+const ImageCard: React.FC<ImageCardProps> = ({
+  data,
+  handleImageClick,
+  resourcesEve,
+  exchangeRate,
+}) => {
   const { getCurrentUid } = useTMAUtils()
   const { ttMode } = useStore((state) => ({
     ttMode: state.ttMode,
@@ -41,10 +46,11 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
       <div className="border-t-[0.5px] border-[rgba(0,0,0,0.1)] relative z-[1]">
         <Swiper
           className={'z-[1]'}
-          indicator={(total, current) =>{
+          indicator={(total, current) => {
             SetCurrentIndex(current)
             return null
           }}
+          allowTouchMove={!(data.uid !== getCurrentUid() && !data.is_pay && data.price > 0)}
         >
           {data.media.map((image, index) => {
             return (
@@ -55,7 +61,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
                   maxHeight:
                     'calc(100vh - var(--tg-safe-area-inset-top) - var(--tg-content-safe-area-inset-top) - 85px - 64px - 50px - 26px)',
                 }}
-                className={'flex items-center  overflow-hidden justify-center'}
+                className={'flex items-center overflow-hidden justify-center'}
               >
                 <Image
                   src={[1, 2].includes(data?.act_type || 0) ? image : formatImage(image, false)}
@@ -66,19 +72,21 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
                       ? {
                           width: '100%',
                           height: 'auto',
-                          objectFit: 'cover'
+                          objectFit: 'cover',
                         }
                       : {
                           width: '100%',
                           height: firImageHeight ? firImageHeight + 'px' : 'calc(1.5*100vw)',
-                          objectFit: 'contain'
-                        })
+                          objectFit: 'contain',
+                        }),
                   }}
                   onClick={() => {
-                    if (ttMode) {
+                    const currentPath = window.location.pathname
+                    if (ttMode && !(data.price > 0 && !data.is_pay && data.uid != getCurrentUid()) && ['/christmas', '/home'].includes(currentPath)) {
                       navigate('/tt-player', {
                         state: {
-                          id: data.id
+                          id: data.id,
+                          sourcePath: currentPath,
                         },
                       })
                       return
@@ -94,7 +102,12 @@ const ImageCard: React.FC<ImageCardProps> = ({ data, handleImageClick, resources
           })}
         </Swiper>
         {data.uid !== getCurrentUid() && !data.is_pay && data.price > 0 && (
-          <FrostedGlass price={data.price} post_id={data.id} resourcesEve={resourcesEve} exchangeRate={exchangeRate || 0} />
+          <FrostedGlass
+            price={data.price}
+            post_id={data.id}
+            resourcesEve={resourcesEve}
+            exchangeRate={exchangeRate || 0}
+          />
         )}
         {data && data.type === 1 ? (
           <div className={'absolute z-10 top-0 right-0'}>

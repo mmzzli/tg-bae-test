@@ -98,8 +98,9 @@ const TelegramStars = ({
         ))}
       </InfiniteScroll>
       {!starsLoading && data.accounts.length === 0 && (
-        <div className="h-full flex items-center justify-center">
-          <Icon name="icon-search" style={{ width: '164px', height: '164px' }} />
+        <div className="h-full flex flex-col items-center justify-center">
+          <Icon name="icon-history" style={{ width: '120px', height: '120px' }} />
+          <div>Currently no transaction history.</div>
         </div>
       )}
     </div>
@@ -176,8 +177,9 @@ const Cryptos = ({
         ))}
       </InfiniteScroll>
       {!cryptoLoading && giftData.length === 0 && (
-        <div className="h-full flex items-center justify-center">
-          <Icon name="icon-Empty_white_purchase" style={{ width: '164px', height: '164px' }} />
+        <div className="h-full flex flex-col items-center justify-center">
+          <Icon name="icon-history" style={{ width: '120px', height: '120px' }} />
+          <div>Currently no transaction history.</div>
         </div>
       )}
     </div>
@@ -411,7 +413,7 @@ const EarningsHistory = () => {
           </Tabs.Tab>
         </Tabs> */}
       </div>
-    {/* </animated.div> */}
+      {/* </animated.div> */}
     </>
   )
 }

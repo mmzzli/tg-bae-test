@@ -269,7 +269,7 @@ export const NewPost: FC = () => {
             currency: 0,
             price: price || 0,
           }
-          if (params.price && trailer && trailerR2) {
+          if (params.price && trailer) {
             params['trailer'] = trailer
           }
           await postResources(params)

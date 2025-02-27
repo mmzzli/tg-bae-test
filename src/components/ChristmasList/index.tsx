@@ -12,9 +12,11 @@ interface PostListProps {
 
 const RecommendList = ({ containerRef }: PostListProps) => {
   const { list, hasMore, fetchMoreData, page, isLoading } = useAllFeaturedList()
+  const setAllFeaturedList = useStore((state) => state.setAllFeaturedList)
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
   const updateCacheVideo = useStore((state) => state.updateCacheVideo)
+  const videoCardContainer = useRef<HTMLDivElement>(null)
 
   useCacheVideo(
     list,
@@ -35,6 +37,17 @@ const RecommendList = ({ containerRef }: PostListProps) => {
   })
   let items = virtualizer.getVirtualItems()
 
+
+  useEffect(() => {
+    return () => {
+      // const videoDom = videoCardContainer?.current?.querySelector('video')
+      const videoDom = document.getElementById('default-video-player') as HTMLVideoElement
+      console.log('videoDom', videoDom)
+      if (videoDom) {
+        videoDom.pause()
+      }
+    }
+  }, [])
   useEffect(() => {
     const container = containerRef?.current
     if (!container) return
@@ -70,6 +83,7 @@ const RecommendList = ({ containerRef }: PostListProps) => {
           position: 'relative',
           overflow: 'hidden',
         }}
+        ref={videoCardContainer}
       >
         <HomeResourceList
           resources={list}
@@ -77,6 +91,7 @@ const RecommendList = ({ containerRef }: PostListProps) => {
           virtualizer={virtualizer}
           hasMore={hasMore}
           // type="recommend"
+          setResourcesList={setAllFeaturedList}
         />
       </div>
       {isLoading && hasMore && (

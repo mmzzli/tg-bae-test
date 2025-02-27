@@ -136,14 +136,16 @@ export const UserInfo = memo(
     const resourcesEve = (post_id: number, url: string, is_pay?: boolean) => {
       const options = is_pay ? { is_pay } : {}
       const medias = url.split(',')
-      const picUrl = medias.find((item) => !item.endsWith('.m3u8'))
+      const picUrl = medias.find((item) => !item.endsWith('.m3u8') && !item.endsWith('.mp4'))
       const media = medias.find((item) => item.endsWith('.m3u8'))
+      const r2 = medias.find((item) => item.endsWith('.mp4'))
       if (media) {
         setVideoResource({
           ...info,
           media: [media],
           mediaCover: picUrl ?? '',
           ...options,
+          r2
         } as FormatterListItem)
       }
     }
@@ -152,7 +154,7 @@ export const UserInfo = memo(
       <div
         className="absolute left-4 right-4 z-[14] flex flex-col cursor-pointer no-tap pb-4 "
         style={{
-          bottom: bottom ? bottom : `20vh`,
+          bottom: 0,
           zIndex:'100'
         }}
       >
@@ -452,7 +454,7 @@ const VideoDialog = () => {
             </div>
           )}
           {!isLoading && !playing ? (
-            info?.price && !info?.is_pay && ended ? (
+            info?.price && !info?.is_pay && ended && info.uid != getCurrentUid() ? (
               <ReplayButton onClick={togglePlay} />
             ) : (
               <PlayButton onClick={togglePlay} />

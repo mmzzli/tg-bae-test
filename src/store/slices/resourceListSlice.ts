@@ -297,7 +297,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
   setRecommendList: (newList, merge = false) => {
     const list = merge ? [...get().recommendList.list, ...newList] : newList
     try {
-      window.m3u8Worker.postMessage({ tasks: list })
+      // window.m3u8Worker.postMessage({ tasks: list })
     } catch (error) {
       console.error('m3u8Worker', error)
     }
@@ -352,7 +352,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         ...user,
         ...post,
         media:
-          post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => item.endsWith('.m3u8')) || ''] : [post.media],
+          post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => MP4_REGEX.test(item)) || ''] : [post.media],
       }))
 
       get().setRecommendList(updatedPosts, page > 1)
@@ -421,7 +421,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       const updatedPosts = featured.map(({ post, user }: ListItem) => ({
         ...user,
         ...post,
-        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => item.endsWith('.m3u8')) || ''] : [post.media]
+        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => MP4_REGEX.test(item)) || ''] : [post.media]
           // post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
       }))
 
@@ -712,7 +712,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
   setViewList: (newList, merge = false) => {
     const list = merge ? [...get().viewList.list, ...newList] : newList
 
-    window.m3u8Worker.postMessage({ tasks: list })
+    // window.m3u8Worker.postMessage({ tasks: list })
 
     set((state) => ({
       viewList: {
@@ -762,13 +762,14 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
         records: recordsNum,
       })
       const hasMore = posts.length === recordsNum
-
+      console.log('jacob list>>>>1', posts)
       const updatedPosts = posts.map(({ post, user }) => ({
         ...user,
         ...post,
-        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => item.endsWith('.m3u8')) || ''] : [post.media]
+        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => MP4_REGEX.test(item)) || ''] : [post.media]
           // post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
       }))
+      console.log('jacob list>>>>2', updatedPosts)
       get().setViewList(updatedPosts, page > 1)
       get().setViewHasMore(hasMore)
     } catch (error) {
@@ -834,7 +835,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       const updatedPosts = posts.map((post) => ({
         ...post,
         ...othersUserInfo,
-        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => item.endsWith('.m3u8')) || ''] : [post.media]
+        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => MP4_REGEX.test(item)) || ''] : [post.media]
           // post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
       }))
       get().setOthersViewList(updatedPosts, page > 1)
@@ -852,7 +853,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     const updatedPosts = posts.map(({ post, user }: ListItem) => ({
       ...user,
       ...post,
-      media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => item.endsWith('.m3u8')) || ''] : [post.media]
+      media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => MP4_REGEX.test(item)) || ''] : [post.media]
         // post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
     }))
     set(() => ({
@@ -885,7 +886,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       const updatedPosts = posts.map(({ post, user }) => ({
         ...user,
         ...post,
-        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => item.endsWith('.m3u8')) || ''] : [post.media]
+        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => MP4_REGEX.test(item)) || ''] : [post.media]
           // post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
       }))
       get().setFavList(updatedPosts, page > 1)
@@ -910,7 +911,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     })),
   setFavList: (newList, merge = false) => {
     const list = merge ? [...get().favList.list, ...newList] : newList
-    window.m3u8Worker.postMessage({ tasks: list })
+    // window.m3u8Worker.postMessage({ tasks: list })
     set((state) => ({
       favList: {
         ...state.favList,
@@ -956,7 +957,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
       const updatedPosts = posts.map(({ post, user }) => ({
         ...user,
         ...post,
-        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => item.endsWith('.m3u8')) || ''] : [post.media]
+        media: post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : post.media.split(',').length > 1 ? [post.media.split(',').find((item: string) => MP4_REGEX.test(item)) || ''] : [post.media]
           // post.type === 1 && typeof post.media === 'string' ? post.media.split(',') : [post.media],
       }))
       console.log(updatedPosts)
@@ -982,7 +983,7 @@ export const createResourceListSlice: StateCreator<ResourceListSlice> = (set, ge
     })),
   setOrderList: (newList, merge = false) => {
     const list = merge ? [...get().orderList.list, ...newList] : newList
-    window.m3u8Worker.postMessage({ tasks: list })
+    // window.m3u8Worker.postMessage({ tasks: list })
     set((state) => ({
       orderList: {
         ...state.orderList,

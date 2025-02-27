@@ -258,6 +258,8 @@ const MyPosts = memo(
     const { list, hasMore, fetchMoreData, page } = useViewList()
     const setViewList = useStore((state) => state.setViewList)
 
+    console.log('jacob list>>>>', list)
+
     useEffect(() => {
       if (list.length) {
         setTimeout(() => {

@@ -181,7 +181,7 @@ const MessageItem = memo(
         channelId={channelId}
         delay={800}
         id={message.id}
-        config={{ enableReply: true, enableCopy: true, enableDownload: false, enableRevoke: true }}
+        config={{ enableReply: true, enableCopy: true, enableDownload: false, enableRevoke: false }}
       >
         <div
           className={`overflow-hidden rounded-lg max-w-[255px]
@@ -257,6 +257,7 @@ const InfiniteList = ({
       window.removeEventListener('message-scroll-to-bottom', handleScrollToBottom)
     }
   }, [])
+  console.log(messageGroups)
   return (
     <div
       id="scrollableDiv"

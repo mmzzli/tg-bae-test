@@ -219,7 +219,7 @@ const ResourceList = ({ resources: initialResources, type, hasMore, setResources
   const setFollowResource = useStore((state) => state.setFollowResource)
   const followResource = useStore((state) => state.followResource)
   const videoInfo = useStore((state) => state.videoResource)
-  const { launchParams } = useTMAUtils()
+  const { launchParams, getCurrentUid } = useTMAUtils()
   const [isBaseModalOpen, { toggle, off }] = useBoolean(false)
   const [links, setLinks] = useSetState<ShreLinkProps>({
     shareLink: '',
@@ -432,6 +432,7 @@ const ResourceList = ({ resources: initialResources, type, hasMore, setResources
                 mediaCover: picUrl,
                 thumbnail: picUrl,
                 ...options,
+                currentUid: getCurrentUid(),
               },
               mostVisibleElement
             )

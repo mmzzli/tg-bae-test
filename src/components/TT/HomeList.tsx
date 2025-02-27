@@ -8,8 +8,6 @@ import { useLocation } from 'react-router-dom'
 import type { Swiper as SwiperType } from 'swiper'
 
 import ImagePreview from '@/components/TT/ImageReview'
-import useCacheVideo, { useRecommendList } from '@/store/hook/useResourceList'
-import { destroyVideo, isIOS } from '@/utils/utils'
 import VideoIosPlayer from '@/components/TT/VideoIosPlayer'
 import { useStore } from '@/store'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
@@ -49,10 +47,8 @@ const HomeList: React.FC = () => {
   }
 
   useEffect(() => {
-    window.Telegram?.WebApp?.setHeaderColor('#ffffff')
 
     return () => {
-      window.Telegram?.WebApp?.setHeaderColor('#000000')
       if(window.videoElement){
         window.videoElement.pause();
       }

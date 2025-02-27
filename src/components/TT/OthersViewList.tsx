@@ -45,10 +45,8 @@ const OthersViewList: React.FC = () => {
   }
 
   useEffect(() => {
-    window.Telegram?.WebApp?.setHeaderColor('#ffffff')
 
     return () => {
-      window.Telegram?.WebApp?.setHeaderColor('#000000')
       if(window.videoElement){
         window.videoElement.pause();
       }

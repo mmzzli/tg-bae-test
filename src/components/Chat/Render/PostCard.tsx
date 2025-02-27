@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { WrappedMessage } from '../types'
+import { PostMetadata, WrappedMessage } from '../types'
 import PostMsgSkeleton from '@/components/Skeketon/PostMsgSkeleton'
 import { getSingleMedia } from '@/api/list'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
@@ -12,58 +12,116 @@ import { ListItem } from '@/types'
 import { useNavigate } from 'react-router-dom'
 
 const POST_TYPE_IMAGE = 1
+const processText = (text: string) => {
+  const trimmedText = text.replace(/\n/g, ' ').trim()
+  const replacedText = trimmedText.replace(
+    /<span style="color: rgb\(0, 0, 0\);">(.*?)<\/span>/g,
+    '$1'
+  )
+  const parts = replacedText.split(/(@\w+)/)
+  let processedText = ''
 
-const PostCard: React.FC<{ message: WrappedMessage }> = ({ message }) => {
+  parts.forEach((part) => {
+    if (part.startsWith('@')) {
+      processedText += `<span style="color: #6761FF; cursor: pointer;">${part}</span>`
+    } else {
+      processedText += part
+    }
+  })
+
+  return processedText
+}
+const PostCard: React.FC<{ message: WrappedMessage & { metadata: PostMetadata } }> = ({
+  message,
+}) => {
   const navigate = useNavigate()
 
   const [error, setError] = useState(false)
   const [loading, setLoading] = useState(true)
   const [post, setPost] = useState<FormatterListItem[]>([])
   const [shareData, setShareData] = useState<ListItem[]>([])
-  const [postRef, setPostRef] = useState('')
+  const postRef = useRef('')
   const { setSharedPostList } = useStore((state) => ({
     setSharedPostList: state.setSharedPostList,
   }))
+  const { getCurrentUid } = useTMAUtils()
 
   console.log(message)
-  const getPost = async (url: string) => {
-    const parsedUrl = new URL(url)
 
-    const pathSegments = parsedUrl.pathname.split('/')
-    const lastParam = pathSegments[pathSegments.length - 1]
-    setPostRef(lastParam)
+  const getPost = useCallback(
+    async (url: string) => {
+      const parsedUrl = new URL(url)
 
-    try {
-      const data = await getSingleMedia(lastParam)
-      console.log(data)
-      if (data.media.length > 0) {
-        setShareData(data.media)
-        const { user, post } = data.media[0]
-        const formattedPost = {
-          ...user,
-          ...post,
-          media:
-            post.type === 1 && typeof post.media === 'string'
-              ? post.media.split(',')
-              : post.media.split(',').length > 1
-                ? [post.media.split(',').find((item: string) => item.endsWith('.m3u8')) || '']
-                : [post.media],
+      const pathSegments = parsedUrl.pathname.split('/')
+      const lastParam = pathSegments[pathSegments.length - 1]
+      postRef.current = lastParam
+
+      try {
+        const data = await getSingleMedia(lastParam)
+        console.log(data)
+        if (data.media.length > 0) {
+          setShareData(data.media)
+          const { user, post } = data.media[0]
+          const formattedPost = {
+            ...user,
+            ...post,
+            media:
+              post.type === 1 && typeof post.media === 'string'
+                ? post.media.split(',')
+                : post.media.split(',').length > 1
+                  ? [post.media.split(',').find((item: string) => item.endsWith('.m3u8')) || '']
+                  : [post.media],
+          }
+          setPost([formattedPost])
+
+          updateMessageByID({
+            ...message,
+            metadata: {
+              postData: data.media[0],
+              formattedData: formattedPost,
+            },
+          })
+
+          setTimeout(() => {
+            setLoading(false)
+          }, 300)
+        } else {
+          setError(true)
         }
-        setPost([formattedPost])
-
-        setTimeout(() => {
-          setLoading(false)
-        }, 300)
-      } else {
+      } catch (err) {
         setError(true)
       }
-    } catch (err) {
-      setError(true)
-    }
+    },
+    [message]
+  )
+
+  const getMessageWindow = (channelId: string) => {
+    return useStore.getState().messageWindowList.find((msg) => msg.channel.channelID === channelId)
   }
+
+  const updateMessageByID = useCallback((message: WrappedMessage) => {
+    const messageWindow = getMessageWindow(String(message.channelID))
+    if (messageWindow) {
+      useStore.getState().updateMessageWindowListItem({
+        ...messageWindow,
+        messages: messageWindow.messages.map((msg) => (msg.id === message.id ? message : msg)),
+      })
+    }
+  }, [])
+
   useEffect(() => {
-    if (message.url) {
+    if (!message.metadata && message.url) {
       getPost(message.url)
+    }
+    if (message.metadata && message.url) {
+      setLoading(false)
+      setShareData([message.metadata?.postData])
+      setPost([message?.metadata?.formattedData])
+      const parsedUrl = new URL(message.url)
+
+      const pathSegments = parsedUrl.pathname.split('/')
+      const lastParam = pathSegments[pathSegments.length - 1]
+      postRef.current = lastParam
     }
   }, [])
   if (loading)
@@ -73,41 +131,38 @@ const PostCard: React.FC<{ message: WrappedMessage }> = ({ message }) => {
       </div>
     )
   return (
-    <div className="cursor-pointer w-[255px] min-h-[300px] rounded-lg bg-[#ffffff]">
+    <div className="cursor-pointer w-[255px] rounded-lg bg-[#ffffff]">
       {post.map((data: FormatterListItem) => (
-        <>
+        <div key={data.id}>
           <div
             className="relative"
             onClick={() => {
               setSharedPostList(shareData)
-              navigate(`/shares?ref=${postRef}`)
+              console.warn(data)
+              // navigate(`/shares?ref=${postRef.current}`)
             }}
           >
-            {(data?.act_type === 1 || data?.act_type === 2) && ( // 使用可选链操作符
-              <div
-                className="absolute bottom-0 w-full z-[11]"
-                onClick={() => {
-                  // navigate(getUrl(data.act_type || 1))
-                }}
-              >
-                <div className="px-[3px] py-[16px] flex justify-between bg-[rgba(0, 0, 0, 0.5)]">
+            {(data?.act_type === 1 || data?.act_type === 2) && (
+              <div className="absolute bottom-0 w-full z-[11]">
+                <div className="px-[3px] flex justify-between items-center bg-[#00000085] h-[36px]">
                   <p className="text-sm text-white">
                     {' '}
-                    {data?.act_type === 1 ? 'Explore more' : 'Vote now'} // 使用可选链操作符
+                    {data?.act_type === 1 ? 'Explore more' : 'Vote now'}
                   </p>
                   <i className="iconfont icon-icon_arrow_right text-[#fff] text-[20px]"></i>
                 </div>
               </div>
             )}
-            {data?.type === POST_TYPE_IMAGE ? ( // 使用可选链操作符
-              <ImageCard data={data} />
-            ) : (
-              <VideoCard data={data} />
-            )}
+
+            {data?.type === POST_TYPE_IMAGE ? <ImageCard data={data} /> : <VideoCard data={data} />}
           </div>
 
           <div className="mx-3 mt-2 mb-3">
-            <span className="text-sm">{data?.title}</span>
+            <div
+              className="text-sm font-normal line-clamp-2 text-[#333333]"
+              dangerouslySetInnerHTML={{ __html: processText(data?.title) }}
+            ></div>
+
             <div className="flex items-center gap-1 mt-[6px]">
               <Image
                 rect
@@ -121,7 +176,22 @@ const PostCard: React.FC<{ message: WrappedMessage }> = ({ message }) => {
               <span className="text-[11px] text-[#666666]">{data?.username}</span>
             </div>
           </div>
-        </>
+
+          {data.uid !== getCurrentUid() && data.price > 0 && !data.is_pay && (
+            <div
+              className="h-[36px] flex items-center justify-center gap-1 mx-3 bg-[#6254FF] rounded-full mb-4"
+              onClick={() => {
+                setSharedPostList(shareData)
+                console.warn(data)
+                // navigate(`/shares?ref=${postRef.current}`)
+              }}
+            >
+              <i className="iconfont icon-lock text-white"></i>
+              <span className="text-[13px] text-white">Unlock post for {data.price}</span>
+              <i className="iconfont icon-stars text-[#FFC700]"></i>
+            </div>
+          )}
+        </div>
       ))}
     </div>
   )
@@ -133,16 +203,6 @@ const ImageCard = ({ data }: { data: FormatterListItem }) => {
   const { getCurrentUid } = useTMAUtils()
 
   const [currentIndex, SetCurrentIndex] = useState(0)
-
-  const firImageHeight = useMemo(() => {
-    if (data.pic_height && data.pic_width) {
-      const { width } = document.body.getBoundingClientRect()
-      const pic_width = Number(data.pic_width.split(':')[0])
-      const pic_height = Number(data.pic_height.split(':')[0])
-      return (pic_height * width) / pic_width
-    }
-    return 0
-  }, [data])
   return (
     <>
       <div className="border-t-[0.5px] border-[rgba(0,0,0,0.1)] relative z-[1]">
@@ -159,7 +219,6 @@ const ImageCard = ({ data }: { data: FormatterListItem }) => {
               <Swiper.Item
                 key={`${data.id}-${image}-${index}`}
                 style={{
-                  height: '280px',
                   maxHeight: '280px',
                 }}
                 className={'flex items-center overflow-hidden justify-center'}
@@ -177,7 +236,6 @@ const ImageCard = ({ data }: { data: FormatterListItem }) => {
                         }
                       : {
                           width: '100%',
-                          height: firImageHeight ? firImageHeight + 'px' : 'calc(1.5*100vw)',
                           objectFit: 'contain',
                         }),
                   }}
@@ -222,150 +280,54 @@ const ImageCard = ({ data }: { data: FormatterListItem }) => {
 
 const VideoCard = ({ data }: { data: FormatterListItem }) => {
   const videoCardContainer = useRef<HTMLDivElement>(null)
-  const cacheVideoIndex = useStore((state) => state.cacheVideoIndex)
-
-  const videoPlayerRef = useRef<HTMLVideoElement | null>(null)
-
-  const [playVideoTime, setPlayVideoTime] = useState(data.duration)
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout | null = null
-
-    const handleTimeUpdate = () => {
-      // 获取它的播放时间
-      // videoPlayerRef.current.
-      const lostTime = Number(data.duration) - (videoPlayerRef.current?.currentTime || 0)
-      setPlayVideoTime(lostTime < 0 ? 0 : lostTime)
-    }
-
-    const findVideoPlayer = () => {
-      videoPlayerRef.current = document.querySelector('#default-video-player')
-
-      if (cacheVideoIndex === data.id) {
-        if (videoPlayerRef.current) {
-          videoPlayerRef.current.addEventListener('timeupdate', handleTimeUpdate)
-
-          return () => {
-            if (videoPlayerRef.current) {
-              videoPlayerRef.current.removeEventListener('timeupdate', handleTimeUpdate)
-            }
-          }
-        } else {
-          timeoutId = setTimeout(findVideoPlayer, 100)
-        }
-      } else {
-        if (playVideoTime !== data.duration) {
-          setPlayVideoTime(data.duration)
-        }
-      }
-    }
-
-    findVideoPlayer()
-
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId)
-      }
-      if (videoPlayerRef.current) {
-        videoPlayerRef.current.removeEventListener('timeupdate', handleTimeUpdate)
-      }
-    }
-  }, [cacheVideoIndex])
 
   const { getCurrentUid } = useTMAUtils()
-
-  const firImageHeight = useMemo(() => {
-    const { width } = document.body.getBoundingClientRect()
-    const pic_width = Number(data.width)
-    const pic_height = Number(data.height)
-    return (pic_height * width) / pic_width
-  }, [data])
 
   return (
     <div className="video-card" data-id={data.id} ref={videoCardContainer}>
       <div className="relative">
         <div
           style={{
-            height: firImageHeight ? firImageHeight + 'px' : 'calc(1.5*100vw)',
-            maxHeight: 'calc(62.8vh)',
+            maxHeight: '280px',
           }}
           className={
-            'absolute items-center justify-center overflow-hidden relative object-contain video-container z-[4] flex'
+            'items-center justify-center overflow-hidden object-contain video-container z-[4] flex'
           }
-          onClick={(e) => {
-            e.stopPropagation()
-            handleVideoClick(data)
-          }}
         >
           <Image
-            src={data.mediaCover ? formatImage(data.mediaCover, false) : ''}
+            src={formatImage(data.thumbnail || data.media[0], false)}
             alt={data.title}
             wrapperClassName=" overflow-hidden z-[3]"
             errorClassName="rounded-[0px] h-[150px]"
             className="object-left w-[100%] m-[auto]"
-            // onClick={() => handleVideoClick(data)}
           />
-          {data.media?.[0] && <PlayButton onClick={() => handleVideoClick(data)} />}
         </div>
-        <div className="absolute top-3 right-3 bg-black bg-opacity-40 rounded-[4px] z-4 p-1.5 flex items-center gap-1">
+        {/* 媒体时间 */}
+        <div className="absolute top-3 right-3 bg-black bg-opacity-40 rounded-[4px] z-[4] p-1.5 flex items-center gap-1">
           <i className="iconfont icon-a-Frame2085661742 text-[12px] text-white"></i>
-          <p className="text-white text-sm">{formatTime(Number(playVideoTime))}</p>
+          <p className="text-white text-sm">{formatTime(Number(data.duration))}</p>
         </div>
         {data.type === 0 &&
           data.price > 0 &&
           !data.is_pay &&
           data.uid != getCurrentUid() &&
           data.trailer && (
-            <HStack
-              borderRadius="20px"
-              bg="rgba(0, 0, 0, 0.40)"
-              position="absolute"
-              top="12px"
-              left="12px"
-              p="6px 12px"
-              zIndex={4}
-            >
-              <Text color="white" fontSize="14px" fontWeight="500">
-                Preview
-              </Text>
-            </HStack>
+            <div className="absolute top-3 left-3 bg-black bg-opacity-40 rounded-[20px] z-[4] p-1.5">
+              <p className="text-white text-sm font-medium">Preview</p>
+            </div>
           )}
-        {data.uid !== getCurrentUid() && data.price > 0 && !data.is_pay && (
-          <>
-            <Box
-              position="absolute"
-              top="0"
-              left="0"
-              w="100%"
-              zIndex={1}
-              style={{
-                height: firImageHeight ? firImageHeight + 'px' : 'calc(1.5*100vw)',
-                maxHeight: 'calc(62.8vh)',
-              }}
-              overflow="hidden"
-            >
-              <Image
-                className="h-[100%] w-[100%]"
-                style={{
-                  height: firImageHeight ? firImageHeight + 'px' : 'calc(1.5*100vw)',
-                  maxHeight: 'calc(62.8vh)',
-                }}
-                src={data.media[0]}
-              />
-            </Box>
-            {/* <FrostedGlass
-                    price={data.price}
-                    post_id={data.id}
-                    resourcesEve={resourcesEve}
-                    maskOnClick={() => {
-                      if (data?.trailer) {
-                        handleVideoClick(data)
-                      }
-                    }}
-                    exchangeRate={exchangeRate || 0}
-                  /> */}
-          </>
-        )}
       </div>
     </div>
   )
 }
+
+// https://test-b.bae.boo/link/79b59c88b807ea64f4ca84416e6340a9a5472683907b974567e2c2c3f16ba42d
+// https://test-b.bae.boo/link/86f0c2ea7e76eaa22a3e9cd326261520eabf3b11393f77395751222157005868
+// https://test-b.bae.boo/link/dc4a814444103524299159b85b70b3e7655a5eb2d7590efdade6182a511d7d60
+// https://test-b.bae.boo/link/8731980cad20b5746532bcdee31c34f18d3fea95c23d415188020611cc60b63a
+// https://test-b.bae.boo/link/422977cef7d0b88b0551bd827628f47a598740e62e5b1861545f7b311839be59
+// https://test-b.bae.boo/link/2a7daa89f9f112643f0148d1044056dbb021236f3d9968479d14a7a94e9433a8
+// https://test-b.bae.boo/link/65158113ff850d53c1b8a4667ff3b4b0fb2727653b2f2462ef9a6542dce98ce5
+
+// https://ditto-dev.anyconn.org/link/49f851fa02c1a7e3271cae75086ee2b43e3a56cd12cb3c64562aa64c8b304985
+// https://ditto-dev.anyconn.org/link/b52dd340d3f64acd67a04c0853a3d21184840a5d52087026a9b0cace8ce23eef

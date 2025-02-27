@@ -214,20 +214,21 @@ const Tooltip: React.FC<TooltipProps> = ({
       e.stopPropagation()
       console.log('handleReply', content, content.text || content.url || '')
       let message = content.text || content.url || ''
+      const messageWindow = useStore
+        .getState()
+        .messageWindowList.filter((item) => item.channel.channelID === content.channelID)
+      const _messageLatest = messageWindow[0].messages.filter((msg) => msg.id === content.id)
       // 处理页面数组不更新问题
       if (!message) {
-        const messageWindow = useStore
-          .getState()
-          .messageWindowList.filter((item) => item.channel.channelID === content.channelID)
         if (messageWindow.length > 0) {
-          const _message = messageWindow[0].messages.filter((msg) => msg.id === content.id)
-          if (_message.length > 0) {
-            const res = _message[0]
+          if (_messageLatest.length > 0) {
+            const res = _messageLatest[0]
             message = res.text || res.url || ''
           }
         }
       }
       setReplyMessage({
+        ..._messageLatest[0],
         channel: channelId,
         messageId: content.id,
         messageSeq: content.messageSeq,

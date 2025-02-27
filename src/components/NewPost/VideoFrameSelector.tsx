@@ -293,7 +293,7 @@ const VideoFrameSelector: React.FC<VideoPlayerProps> = ({ videoRef, setCover, vi
                   display: "none"
                 }}
               ></canvas>
-              <div className='h-[442px] relative mt-[24px]'>
+              <div className='h-[442px] relative mt-[24px] overflow-hidden'>
                 <img
                   className='absolute top-[50%] left-[50%] transform -translate-x-[50%] -translate-y-[50%]'
                   style={{

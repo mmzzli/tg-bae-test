@@ -214,7 +214,7 @@ const AddPreview: React.FC<VideoPlayerProps> = ({
     }
 
     if(trailerBoll){
-      if(videoRefTrailer.name.endsWith('.mp4')){
+      if(videoRefTrailer.name.endsWith('.mp4') || videoRefTrailer.name.endsWith('.MP4')){
         const url = `${import.meta.env.VITE_APP_UPLOAD_URL}uploadall`
         // 参数
         const formData = new FormData()

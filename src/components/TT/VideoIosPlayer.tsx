@@ -200,12 +200,8 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
   }, [sourceItem?.width, sourceItem?.height]);
 
   const scale = useMemo(() => {
-    console.log(sourceItem, containerDomRef.current, 'jacob===========')
-    if (containerDomRef && containerDomRef.current && sourceItem) {
-      return videoScale({ ...sourceItem }, containerDomRef.current)
-    }
-    return 'object-contain'
-  }, [containerDomRef, containerDomRef.current, sourceItem])
+    return ''
+  }, [info, containerDomRef.current])
   const videoPlayerInit = () => {
     const videoElement = createVideoElement()
     videoElement.controls = false

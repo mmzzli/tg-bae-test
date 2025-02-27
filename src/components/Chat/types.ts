@@ -34,7 +34,7 @@ export type ReplyMessage = {
   toUid: number
   toUsername: string
   revoke: boolean
-  metadata?: PostMetadata
+  metadata?: MessageMetadata
 }
 
 export type Message = {

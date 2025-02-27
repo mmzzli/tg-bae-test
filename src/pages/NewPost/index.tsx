@@ -102,7 +102,7 @@ export const NewPost: FC = () => {
 
     while (isNotFound) {
       try {
-        const response: AxiosResponse<any> = await axios.get(url)
+        const response: AxiosResponse<any> = await axios.get(`${url}?id=${Date.now()}`)
         isNotFound = false
         return response
       } catch (error: any) {

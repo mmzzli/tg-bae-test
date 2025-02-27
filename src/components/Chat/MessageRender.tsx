@@ -21,6 +21,8 @@ import BigNumber from 'bignumber.js'
 import { evmChainList } from '@/config/wagmi-config'
 import { formatImageNew } from '@/utils/utils'
 import { useVideoPreview } from '@/hooks/useVideoPreview'
+import PostCard from './Render/PostCard'
+
 interface MessageRenderProps {
   message: WrappedMessage
   className?: string
@@ -378,6 +380,10 @@ export const MessageRender: React.FC<MessageRenderProps> = ({
     return <RewardCard message={message} />
   }
 
+  if (isPostMessage(message)) {
+    return <PostCard message={message} />
+  }
+
   return (
     <div>
       {message.reply && <ReplyCard reply={message.reply} />}
@@ -605,4 +611,10 @@ function isRewardMessage(
   message: WrappedMessage
 ): message is WrappedMessage & { metadata: RewardMetadata } {
   return message.type === MessageType.REWARD
+}
+
+function isPostMessage(
+  message: WrappedMessage
+): message is WrappedMessage & { metadata: RewardMetadata } {
+  return message.type === MessageType.POST
 }

@@ -1,6 +1,7 @@
 import Hls from 'hls.js'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
 import { useStore } from '@/store'
+import { useTMAUtils } from '@/hooks/useTMAUtils'
 
 const video = document.createElement('video')
 video.controls = false
@@ -14,16 +15,15 @@ video.setAttribute('x-webkit-airplay', 'allow')
 video.id = 'default-video-player'
 
 export const videoHls = (videoCard: FormatterListItem, videoCardContainer: HTMLElement) => {
-  console.log(videoCard,'jacob=================');
   let url = videoCard.media
   // todo trailer预告片需处理为 mp4
-  if (videoCard.price > 0 && !videoCard.is_pay && videoCard.trailer) {
+  if (videoCard.price > 0 && !videoCard.is_pay && videoCard.trailer && videoCard.currentUid !== videoCard.uid) {
     url = [videoCard.trailer]
   }
   video.setAttribute('video-id', '' + videoCard.id)
   const videoParentContainer = videoCardContainer.querySelector('.video-container')
 
-  console.log(videoParentContainer,'jacob=================');
+  console.log(videoCard.currentUid,'jacob=================');
   if (!videoParentContainer) return
 
   video.style.visibility = 'hidden'

@@ -8,6 +8,7 @@ import PostList from '@/components/PostList/PostList'
 import { useStore } from '@/store'
 import { throttle } from '@/utils/chat/schedulers'
 import { useSwipeBack } from '@/hooks/useSwipeBack'
+import { useTMAUtils } from '@/hooks/useTMAUtils'
 // import { useTMAUtils } from '@/hooks/useTMAUtils'
 
 const SCROLL_THRESHOLD = 214
@@ -30,6 +31,7 @@ const OthersProfile: FC = () => {
   const [showHeader, setShowHeader] = useState(false)
 
   const [scale, setScale] = useState(1) // 控制背景图片的缩放
+  const { getCurrentUid } = useTMAUtils()
 
   const { bind, x } = useSwipeBack({
     scrollRef: scrollDivRef,
@@ -53,7 +55,8 @@ const OthersProfile: FC = () => {
     getCacheVideoindex,
     updateCacheVideo,
     'profileScrollableDiv',
-    'video-card'
+    'video-card',
+    getCurrentUid()
   )
 
   useEffect(() => {

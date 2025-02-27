@@ -7,6 +7,7 @@ import { useStore } from '@/store'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import PostSkeleton from '../Skeketon/PostSkeleton'
 import { debounce } from '@/utils/chat/schedulers'
+import { useTMAUtils } from '@/hooks/useTMAUtils'
 
 interface PostListProps {
   className?: string
@@ -25,6 +26,7 @@ const RecommendList = forwardRef<ChildRef, PostListProps>((props, ref) => {
   const setCacheVideoIndex = useStore((state) => state.setCacheVideoIndex)
   const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
   const updateCacheVideo = useStore((state) => state.updateCacheVideo)
+  const { getCurrentUid } = useTMAUtils()
   useCacheVideo(
     list,
     page,
@@ -32,7 +34,8 @@ const RecommendList = forwardRef<ChildRef, PostListProps>((props, ref) => {
     getCacheVideoindex,
     updateCacheVideo,
     'recommendScrollableDiv',
-    'video-card'
+    'video-card',
+    getCurrentUid()
   )
 
   const parentRef = containerRef || useRef<HTMLDivElement>(null)

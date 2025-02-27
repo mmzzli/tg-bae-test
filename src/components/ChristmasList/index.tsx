@@ -5,6 +5,7 @@ import { useEffect, useRef } from 'react'
 import { useStore } from '@/store'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { debounce } from '@/utils/chat/schedulers'
+import { useTMAUtils } from '@/hooks/useTMAUtils'
 
 interface PostListProps {
   containerRef: React.RefObject<HTMLDivElement>
@@ -17,6 +18,7 @@ const RecommendList = ({ containerRef }: PostListProps) => {
   const getCacheVideoindex = useStore((state) => state.cacheVideoIndex)
   const updateCacheVideo = useStore((state) => state.updateCacheVideo)
   const videoCardContainer = useRef<HTMLDivElement>(null)
+  const { getCurrentUid } = useTMAUtils()
 
   useCacheVideo(
     list,
@@ -25,7 +27,8 @@ const RecommendList = ({ containerRef }: PostListProps) => {
     getCacheVideoindex,
     updateCacheVideo,
     'featuredScrollableDiv',
-    'video-card'
+    'video-card',
+    getCurrentUid()
   )
 
   const parentRef = containerRef || useRef<HTMLDivElement>(null)

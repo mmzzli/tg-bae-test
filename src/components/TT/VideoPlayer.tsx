@@ -94,7 +94,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props) => {
     if (elRef.current) {
       const playerConfig: any = {
         el: elRef.current,
-        url: sourceItem.r2,
+        url: sourceItem.media[0],
         poster: sourceItem.thumbnail,
         playsinline: true,
         autoplay: autoplay,

@@ -6,18 +6,21 @@ interface DialogProps {
   open?: boolean
   onOpenChange?: (open: boolean) => void
   children?: React.ReactNode
+  className?: string
+  style?: React.CSSProperties
 }
 
 interface DialogContentProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode
 }
 
-const Dialog: React.FC<DialogProps> = ({ open, onOpenChange, children }) => {
+const Dialog: React.FC<DialogProps> = ({ open, onOpenChange, children, className, style }) => {
   if (!open) return null
 
   return createPortal(
     <div
-      className="fixed inset-0 w-screen h-screen overflow-hidden z-[999]"
+      className={cn('fixed inset-0 w-screen h-screen overflow-hidden z-[999]', className)}
+      style={style}
       aria-modal="true"
       role="dialog"
       onClick={(e: any) => {

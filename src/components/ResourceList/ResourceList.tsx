@@ -33,6 +33,7 @@ import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { videoHls } from '@/utils/video/videoHls'
 import { totalAvailableInvoice } from '@/api'
 import { MP4_REGEX } from '@/utils/constants'
+import RecentChatModal from '@/components/Chat/RecentChatModal'
 
 export interface ShareDataProps {
   pid: number
@@ -63,6 +64,29 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   const { launchParams } = useTMAUtils()
   const { copy } = useCopy()
   const toast = useToast()
+  const sdk = useStore((state) => state.connection)
+  const [isRecentChatModalOpen, setIsRecentChatModalOpen] = useState(false)
+  const handleChatSelect = async (channelId: string) => {
+    if (currentShareData && sdk) {
+      try {
+        await sdk.sendMessage(links.copyLink, channelId)
+        toast({
+          render: () => {
+            return <CustomToast title="Shared Successfully!" type={typeOptions.success} />
+          },
+          position: 'bottom',
+        })
+      } catch (error) {
+        console.error('Failed to share to chat:', error)
+        toast({
+          render: () => {
+            return <CustomToast title="Failed to share" type={typeOptions.error} />
+          },
+          position: 'bottom',
+        })
+      }
+    }
+  }
 
   const { runAsync: getInlineMessageId, loading: getInlineMessageIdLoading } = useRequest(
     getShareInlineMessageId,
@@ -109,7 +133,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
     <BaseModal
       isOpen={isBaseModalOpen}
       onClose={off}
-      height="351px"
+      height="400px"
       usePortal={true}
       animation={{
         duration: 400,
@@ -124,7 +148,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       showHandle={false}
     >
       {isLoading ? (
-        <div className="mt-4 w-full">
+        <div className="w-full">
           <h3 className="font-bold text-2xl mb-[10px] text-[24px] text-[#333] dark:text-white">
             Share from Bae
           </h3>
@@ -147,7 +171,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             />
           </div>
 
-          <div className="mx-4">
+          <div className="mx-4  mb-[18px]">
             <BaseButton
               text="Copy link"
               height="48px"
@@ -164,6 +188,19 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               }}
             />
           </div>
+
+          <div className="mx-4">
+            <BaseButton
+              className="bg-[#fff] text-[#000] border-1 border-[#CDCDD4]"
+              text="Share to chat"
+              height="48px"
+              icon={<i className="iconfont icon-Frame-1 text-[22px]" />}
+              handler={async () => {
+                setIsRecentChatModalOpen(true)
+                // off()
+              }}
+            />
+          </div>
         </div>
       ) : (
         <div className="mt-4 w-full">
@@ -172,6 +209,11 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           <DrawSkeletonItem className="w-full h-[100px]"></DrawSkeletonItem>
         </div>
       )}
+      <RecentChatModal
+        isOpen={isRecentChatModalOpen}
+        onClose={() => setIsRecentChatModalOpen(false)}
+        onSelect={handleChatSelect}
+      />
     </BaseModal>
   )
 }
@@ -229,6 +271,7 @@ const ResourceList = ({ resources: initialResources, type, hasMore, setResources
   const [reportVisible, setReportVisible] = useState(false)
   const jumpToProfilePage = useProfileNavigation()
   const { runDailyWatch } = useDailyTaskActions()
+  const [isRecentChatModalOpen, setIsRecentChatModalOpen] = useState(false)
 
   const handleImageClick = useCallback((images: string[], index: number, post_id: number) => {
     runDailyWatch(post_id)
@@ -246,8 +289,7 @@ const ResourceList = ({ resources: initialResources, type, hasMore, setResources
   })
 
   useEffect(() => {
-
-    if(token) {
+    if (token) {
       const fetchExchangeRate = async () => {
         const response = await totalAvailableInvoice()
         console.log('response', response)
@@ -364,7 +406,7 @@ const ResourceList = ({ resources: initialResources, type, hasMore, setResources
             position: 'bottom',
           })
           setSaveds(data)
-        }else {
+        } else {
           toast({
             render: () => {
               return <CustomToast title="Saved!" type={typeOptions.success} />
@@ -461,9 +503,7 @@ const ResourceList = ({ resources: initialResources, type, hasMore, setResources
       <Empty
         title="No post yet."
         className="w-full min-h-[240px]"
-        icon={
-          <Icon name="icon-post" style={{ width: '120px', height: '120px' }}></Icon>
-        }
+        icon={<Icon name="icon-post" style={{ width: '120px', height: '120px' }}></Icon>}
       />
     )
   }
@@ -526,11 +566,8 @@ const ResourceList = ({ resources: initialResources, type, hasMore, setResources
                     exchangeRate={exchangeRate}
                     sourceType={type}
                   />
-                ) : ( <VideoCard
-                  data={data}
-                  resourcesEve={resourcesEve}
-                  exchangeRate={exchangeRate}
-                />
+                ) : (
+                  <VideoCard data={data} resourcesEve={resourcesEve} exchangeRate={exchangeRate} />
                 )}
               </Box>
               <ResourceFooter
@@ -562,6 +599,8 @@ const ResourceList = ({ resources: initialResources, type, hasMore, setResources
           links={links}
           isLoading={isLoading}
           setIsLoading={setIsLoading}
+          // isRecentChatModalOpen={isRecentChatModalOpen}
+          // setIsRecentChatModalOpen={setIsRecentChatModalOpen}
         ></ShareModal>
       </div>
     </>

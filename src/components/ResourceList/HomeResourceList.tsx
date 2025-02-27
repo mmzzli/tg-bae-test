@@ -33,6 +33,7 @@ import { VirtualItem, Virtualizer } from '@tanstack/react-virtual'
 import Links from '@/components/ResourceList/Links'
 import Saved from '@/components/ResourceList/Saved'
 import { MP4_REGEX } from '@/utils/constants'
+import RecentChatModal from '@/components/Chat/RecentChatModal'
 
 interface ShareDataProps {
   pid: number
@@ -62,6 +63,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 }) => {
   const { launchParams, getCurrentUid } = useTMAUtils()
   const { copy } = useCopy()
+  const [isRecentChatModalOpen, setIsRecentChatModalOpen] = useState(false)
+  const sdk = useStore((state) => state.connection)
 
   const toast = useToast()
 
@@ -74,6 +77,29 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       },
     }
   )
+
+  const handleChatSelect = async (channelId: string) => {
+    if (currentShareData && sdk) {
+      try {
+        await sdk.sendMessage(links.copyLink, channelId)
+        toast({
+          render: () => {
+            return <CustomToast title="Shared Successfully!" type={typeOptions.success} />
+          },
+          position: 'bottom',
+        })
+      } catch (error) {
+        console.error('Failed to share to chat:', error)
+        toast({
+          render: () => {
+            return <CustomToast title="Failed to share" type={typeOptions.error} />
+          },
+          position: 'bottom',
+        })
+      }
+    }
+  }
+
   const handShareWithTelegram = useMemoizedFn(async () => {
     if (currentShareData) {
       const { result } = await getInlineMessageId({
@@ -118,7 +144,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({
     <BaseModal
       isOpen={isBaseModalOpen}
       onClose={off}
-      height="351px"
+      height="400px"
+      usePortal={true}
       animation={{
         duration: 400,
         timingFunction: 'ease-in-out',
@@ -132,7 +159,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       showHandle={false}
     >
       {isLoading ? (
-        <div className="mt-4 w-full">
+        <div className="w-full">
           <h3 className="font-bold text-2xl mb-[10px] text-[24px] text-[#333] dark:text-white">
             Share from Bae
           </h3>
@@ -157,7 +184,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             />
           </div>
 
-          <div className="mx-4">
+          <div className="mx-4 mb-[18px]">
             <BaseButton
               text="Copy link"
               height="48px"
@@ -180,6 +207,18 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               }}
             />
           </div>
+
+          <div className="mx-4">
+            <BaseButton
+              className="bg-[#fff] text-[#000] border-1 border-[#CDCDD4]"
+              text="Share to chat"
+              height="48px"
+              icon={<i className="iconfont icon-Frame-1 text-[22px]" />}
+              handler={async () => {
+                setIsRecentChatModalOpen(true)
+              }}
+            />
+          </div>
         </div>
       ) : (
         <div className="mt-4 w-full">
@@ -188,6 +227,11 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           <DrawSkeletonItem className="w-full h-[100px]"></DrawSkeletonItem>
         </div>
       )}
+      <RecentChatModal
+        isOpen={isRecentChatModalOpen}
+        onClose={() => setIsRecentChatModalOpen(false)}
+        onSelect={handleChatSelect}
+      />
     </BaseModal>
   )
 }
@@ -393,9 +437,7 @@ const ResourceList = ({
       <Empty
         title="No post yet."
         className="w-full fixed top-[63%] left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-        icon={
-          <Icon name="icon-post" style={{ width: '120px', height: '120px' }}></Icon>
-        }
+        icon={<Icon name="icon-post" style={{ width: '120px', height: '120px' }}></Icon>}
       ></Empty>
     )
   }

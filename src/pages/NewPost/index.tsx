@@ -43,6 +43,7 @@ export const NewPost: FC = () => {
   const [files, setFiles] = useState<File[]>([])
   const token = useStore((state) => state.token)
   let updateUrl = ""
+  let updateType = ""
 
   const containerRef = useRef<HTMLDivElement>(null)
   const postContentRef = useRef<HTMLDivElement>(null)
@@ -368,6 +369,7 @@ export const NewPost: FC = () => {
               },
             })
             updateUrl = r2Response.data.urls[0]
+            updateType = "mp4"
           }else{
 
             const videoId = performance.timeOrigin * 1e6 + performance.now() * 1e3
@@ -385,11 +387,12 @@ export const NewPost: FC = () => {
             })
             upload.start();
             updateUrl = `${import.meta.env.VITE_APP_UPLOAD_IMG_URL}${videoId}.mp4`
+            updateType = ""
           }
           updateUploadThread({
             id: stepTwo,
             progress: 100,
-            result: updateUrl,
+            result: "",
             status: TaskStatus.COMPLETED,
           })
           // try {
@@ -507,9 +510,8 @@ export const NewPost: FC = () => {
         result: null,
         thread: async ({ upload_url, upload_video }: any) => {
           if (true) {
-            const id = upload_url.split('/').pop()
             const url = updateUrl
-            console.log(url)
+            const id = upload_url.split('/').pop()
             let percent = 0
             const timer = setInterval(() => {
               const add = 1 / Math.log(percent + Math.E)
@@ -519,8 +521,10 @@ export const NewPost: FC = () => {
                 progress: percent >= 100 ? 99 : percent,
               })
             }, 100)
-            await checkVideoURL(url)
             clearInterval(timer)
+            if(url && updateType !== 'mp4'){
+              await checkVideoURL(url)
+            }
             updateUploadThread({
               id: stepThree,
               progress: 100,

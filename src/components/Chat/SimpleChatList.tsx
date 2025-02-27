@@ -56,13 +56,12 @@ const ChatItem: FC<{ conversation: Conversation; onSelect?: (channelId: string) 
     setIsDialogOpen(true)
     if (chatPeople?.uid) {
       const { ref } = await getLinkHandlerAsync({ pid: chatPeople.uid, uid: chatPeople.uid })
-      const copyLink = encodeURIComponent(`${import.meta.env.VITE_API_URL}link/${ref}`)
+      const copyLink = `${import.meta.env.VITE_API_URL}link/${ref}`
       const newMessage = formatMessage({
-        type: MessageType.TEXT,
+        type: MessageType.POST,
         url: copyLink,
         to: Number(conversation.channel.channelID),
       })
-      console.log('newMessage', newMessage)
       setNewMessage(newMessage)
     }
   }

@@ -16,7 +16,7 @@ import { useProfileNavigation } from '@/hooks/useProfileNavigation'
 import { useDailyTaskActions } from '@/hooks/useDailyTask'
 import { debounce } from '@/utils/chat/schedulers'
 import RewardButton from '@/components/Wallet/RewardButton'
-import { ImagePreviewIcon, VideoPreviewIcon } from '@/components/Chat/MessageRender'
+import { ImagePreviewIcon, PostPreview, VideoPreviewIcon } from '@/components/Chat/MessageRender'
 import { useSwipeBack } from '@/hooks/useSwipeBack'
 import { animated, useSpring } from '@react-spring/web'
 import { FormatterListItem } from '@/store/slices/resourceListSlice'
@@ -514,24 +514,3 @@ const MessagePageIOS = () => {
 }
 
 export default MessagePageIOS
-
-const PostPreview = ({ data }: { data: FormatterListItem }) => {
-  const { getCurrentUid } = useTMAUtils()
-  let imageUrl = ''
-  if (data) {
-    imageUrl = data.thumbnail || data.media[0]
-  }
-
-  console.log(data.uid !== getCurrentUid() && data.price > 0 && !data.is_pay)
-  return (
-    <div className="relative w-10 h-10 rounded-[5px] overflow-hidden mr-[6px]">
-      <img src={formatImage(imageUrl, true)} alt="" style={{ width: '40px' }} />
-
-      {data.uid !== getCurrentUid() && data.price > 0 && !data.is_pay && (
-        <div className="absolute left-0 top-0 bottom-0 right-0 flex items-center justify-center">
-          <i className="iconfont icon-lock text-white"></i>
-        </div>
-      )}
-    </div>
-  )
-}

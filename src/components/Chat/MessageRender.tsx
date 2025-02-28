@@ -20,9 +20,10 @@ import TokenIcon from '../Wallet/TokenIcon'
 import PriceService from '@/utils/wallet/PriceService'
 import BigNumber from 'bignumber.js'
 import { evmChainList } from '@/config/wagmi-config'
-import { formatImageNew } from '@/utils/utils'
+import { formatImage, formatImageNew } from '@/utils/utils'
 import { useVideoPreview } from '@/hooks/useVideoPreview'
 import PostCard from './Render/PostCard'
+import { FormatterListItem } from '@/store/slices/resourceListSlice'
 
 interface MessageRenderProps {
   message: WrappedMessage
@@ -533,12 +534,19 @@ const RewardCard: React.FC<{ message: WrappedMessage }> = ({ message }) => {
 }
 
 const ReplyCard: React.FC<{ reply: ReplyMessage }> = ({ reply }) => {
+  if ((reply.metadata as PostMetadata)?.formattedData) {
+  }
+  if (reply.messageType === 'POST') {
+  }
   return (
     <div className="rounded-lg [.my-msg_&]:bg-[#D2CDFF] [.other-msg_&]:bg-[#D4D4F0] pl-[3px] mb-2 min-w-[230px]">
       <div className="relative flex items-center rounded-md [.my-msg_&]:bg-[#5446F4] [.other-msg_&]:bg-[#F7F9FC] px-[10px] py-2">
         {/* Media Message Preview */}
         {reply.messageType === MessageType.IMAGE && <ImagePreviewIcon url={reply.message} />}
         {reply.messageType === MessageType.VIDEO && <VideoPreviewIcon url={reply.message} />}
+        {reply?.messageType === MessageType.POST && (
+          <PostPreview data={(reply.metadata as PostMetadata)?.formattedData} />
+        )}
 
         <div className="flex flex-col flex-1 overflow-hidden text-sm">
           {/* Reply To */}
@@ -551,10 +559,19 @@ const ReplyCard: React.FC<{ reply: ReplyMessage }> = ({ reply }) => {
               {reply.messageType === MessageType.REWARD && 'Tips'}
               {reply.messageType === MessageType.IMAGE && 'Image'}
               {reply.messageType === MessageType.VIDEO && 'Video'}
+              {reply?.messageType === MessageType.POST && '[Post]'}
             </span>
             <span className="[.my-msg_&]:text-[#ffffff99] [.other-msg_&]:text-[#999]">
               {reply.messageType === MessageType.TEXT && reply.message}
             </span>
+            {reply?.messageType === MessageType.POST && (
+              <span
+                className="text-sm font-normal line-clamp-2 text-[#333333]"
+                dangerouslySetInnerHTML={{
+                  __html: processText((reply.metadata as PostMetadata)?.formattedData.title || ''),
+                }}
+              ></span>
+            )}
           </div>
         </div>
       </div>
@@ -596,6 +613,27 @@ export const ImagePreviewIcon = ({ url }: { url: string }) => {
   )
 }
 
+export const PostPreview = ({ data }: { data: FormatterListItem }) => {
+  const { getCurrentUid } = useTMAUtils()
+  let imageUrl = ''
+  if (data) {
+    imageUrl = data.thumbnail || data.media[0]
+  }
+
+  console.log(data.uid !== getCurrentUid() && data.price > 0 && !data.is_pay)
+  return (
+    <div className="relative w-10 h-10 rounded-[5px] overflow-hidden mr-[6px]">
+      <img src={formatImage(imageUrl, true)} alt="" style={{ width: '40px' }} />
+
+      {data.uid !== getCurrentUid() && data.price > 0 && !data.is_pay && (
+        <div className="absolute left-0 top-0 bottom-0 right-0 flex items-center justify-center">
+          <i className="iconfont icon-lock text-white"></i>
+        </div>
+      )}
+    </div>
+  )
+}
+
 function isImageMessage(
   message: WrappedMessage
 ): message is WrappedMessage & { metadata: FileMetadata } {
@@ -618,4 +656,23 @@ function isPostMessage(
   message: WrappedMessage
 ): message is WrappedMessage & { metadata: PostMetadata } {
   return message.type === MessageType.POST
+}
+const processText = (text: string) => {
+  const trimmedText = text.replace(/\n/g, ' ').trim()
+  const replacedText = trimmedText.replace(
+    /<span style="color: rgb\(0, 0, 0\);">(.*?)<\/span>/g,
+    '$1'
+  )
+  const parts = replacedText.split(/(@\w+)/)
+  let processedText = ''
+
+  parts.forEach((part) => {
+    if (part.startsWith('@')) {
+      processedText += `<span style="color: #6761FF; cursor: pointer;">${part}</span>`
+    } else {
+      processedText += part
+    }
+  })
+
+  return processedText
 }

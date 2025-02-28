@@ -9,6 +9,7 @@ import {
   ConversationAction,
   PullMode,
   SyncOptions,
+  CMDContent,
 } from 'wukongimjssdk'
 import { Convert } from './Convert'
 
@@ -37,6 +38,7 @@ class BaeimSDK {
   private userUid: string
   private serverAddr: string
   private messageListener?: (message: FormattedMessage) => void
+  private cmdMessageListener?: (message: Message) => void
   private syncConversationsCallback?: () => Promise<Conversation[]>
   private syncMessagesCallback?: (channel: Channel, opts: SyncOptions) => Promise<Message[]>
   private connectionStatusListeners: Set<(status: ConnectStatus) => void> = new Set()
@@ -137,6 +139,18 @@ class BaeimSDK {
   public removeMessageListener() {
     if (this.messageListener) {
       WKSDK.shared().chatManager.removeMessageListener(this.messageHandler)
+      this.messageListener = undefined
+    }
+  }
+
+  public addCMDMessageListener(listener: (message: Message) => void) {
+    this.cmdMessageListener = listener
+    WKSDK.shared().chatManager.addCMDListener(listener)
+  }
+
+  public removeCMDMessageListener() {
+    if (this.cmdMessageListener) {
+      WKSDK.shared().chatManager.removeCMDListener(this.cmdMessageListener)
       this.messageListener = undefined
     }
   }
@@ -248,5 +262,5 @@ class BaeimSDK {
   }
 }
 
-export { ConnectStatus, ConversationAction, SyncOptions, Channel, Message, PullMode }
+export { ConnectStatus, ConversationAction, SyncOptions, Channel, Message, PullMode, CMDContent }
 export default BaeimSDK

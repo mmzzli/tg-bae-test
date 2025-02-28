@@ -19,8 +19,7 @@ import RewardButton from '@/components/Wallet/RewardButton'
 import { ImagePreviewIcon, PostPreview, VideoPreviewIcon } from '@/components/Chat/MessageRender'
 import { useSwipeBack } from '@/hooks/useSwipeBack'
 import { animated, useSpring } from '@react-spring/web'
-import { FormatterListItem } from '@/store/slices/resourceListSlice'
-import { useTMAUtils } from '@/hooks/useTMAUtils'
+import { getSingleMedia } from '@/api/list'
 // const PAGE_SIZE = 20
 const isIOS = () => {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
@@ -106,8 +105,40 @@ const MessagePageIOS = () => {
     setReplyMessage(null)
   }
 
-  const handleSend = ({ type, text }: { type: MessageType; text?: string }) => {
-    const newMessage = formatMessage({
+  const handleSend = async ({ type, text }: { type: MessageType; text?: string }) => {
+    let newMessage = null
+    // if (!(replyMessage && replyMessage.channel === messageWindow?.channel.channelID)) {
+    //   const baseUrl = import.meta.env.VITE_API_URL
+    //   const urlPattern = new RegExp(`^${baseUrl}link\/[a-zA-Z0-9]+$`)
+    //   console.log(urlPattern)
+    //   if (urlPattern.test(text || '')) {
+    //     console.log('特殊处理 URL:', text)
+    //     const parsedUrl = new URL(text || '')
+
+    //     const pathSegments = parsedUrl.pathname.split('/')
+    //     const lastParam = pathSegments[pathSegments.length - 1]
+    //     // sendMessage({ type: MessageType.LINK, url: text });
+    //     try {
+    //       const data = await getSingleMedia(lastParam)
+    //       if (data.media.length > 0) {
+    //         newMessage = formatMessage({
+    //           type: MessageType.POST,
+    //           url: text,
+    //           to: Number(uid),
+    //         })
+    //         sendMessage(newMessage)
+    //         setReplyMessage(null)
+    //         setTimeout(() => {
+    //           window.dispatchEvent(new Event('message-scroll-to-bottom'))
+    //         }, 200)
+    //         return
+    //       }
+    //     } catch (err) {
+    //       console.log(err)
+    //     }
+    //   }
+    // }
+    newMessage = formatMessage({
       type,
       text,
       to: Number(uid),

@@ -159,12 +159,6 @@ export const MainLayout: React.FC = () => {
         }
       )
       tgApp.BackButton.onClick(() => {
-        console.log('location.pathname', location.pathname)
-        console.log('window.location.pathname', window.location.pathname)
-        console.log('location previous', location.state?.from)
-        console.log('location previous backToHome', useStore.getState().backToHome)
-        console.log(useStore.getState().videoResource, '=================')
-
         if (useStore.getState().videoResource) {
           setVideoResource(null)
           return // navigate('/home')

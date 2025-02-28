@@ -15,6 +15,10 @@ export interface IMSlice {
   addMessageWindowListItem: (item: MessageWindowListItem, merge: boolean) => void
   updateMessageWindowListItem: (item: MessageWindowListItem) => void
   deleteMessageWindowListItem: (chatId: string) => void
+
+  currentMessageWindowId: string
+  setCurrentMessageWindowId: (id: string) => void
+
   chatPeopleInfoList: OthersUserInfo[]
   setChatPeopleInfoList: (info: OthersUserInfo[]) => void
   addChatPeopleInfo: (info: OthersUserInfo) => void
@@ -78,6 +82,10 @@ export const createIMSlice: StateCreator<IMSlice> = (set) => ({
     set((state) => ({
       messageWindowList: state.messageWindowList.filter((item) => item.channel.channelID !== id),
     })),
+
+  currentMessageWindowId: '',
+  setCurrentMessageWindowId: (id) => set({ currentMessageWindowId: id }),
+
   chatPeopleInfoList: [],
   setChatPeopleInfoList: (info) => set({ chatPeopleInfoList: info }),
   addChatPeopleInfo: (info) =>

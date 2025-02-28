@@ -8,6 +8,7 @@ import { useToast } from '@chakra-ui/react'
 import { CustomToast, typeOptions } from '../comm/Toast'
 import { useStore } from '@/store'
 import { IUserInfo, OthersUserInfo } from '@/types'
+import { useTMAUtils } from '@/hooks/useTMAUtils'
 // import { postEvent } from '@telegram-apps/sdk'
 
 // 静态变量，用于跟踪当前活动的tooltip
@@ -62,6 +63,8 @@ const Tooltip: React.FC<TooltipProps> = ({
     }
     setVisible(false)
   }, [id])
+
+  const { getCurrentUid } = useTMAUtils()
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -214,9 +217,12 @@ const Tooltip: React.FC<TooltipProps> = ({
       e.stopPropagation()
       console.log('handleReply', content, content.text || content.url || '')
       let message = content.text || content.url || ''
+      const channelId = String(
+        content.sender === getCurrentUid() ? content.receiver : content.sender
+      )
       const messageWindow = useStore
         .getState()
-        .messageWindowList.filter((item) => item.channel.channelID === content.channelID)
+        .messageWindowList.filter((item) => item.channel.channelID === channelId)
       const _messageLatest = messageWindow[0].messages.filter((msg) => msg.id === content.id)
       // 处理页面数组不更新问题
       if (!message) {
@@ -399,7 +405,7 @@ const Tooltip: React.FC<TooltipProps> = ({
                 <span>Copy</span>
               </motion.div>
             )}
-            {config.enableRevoke && (
+            {config.enableRevoke && content.sender === getCurrentUid() && (
               <motion.div
                 className="flex flex-col items-center cursor-pointer text-[12px]"
                 onClick={handleRevokeConfirm}

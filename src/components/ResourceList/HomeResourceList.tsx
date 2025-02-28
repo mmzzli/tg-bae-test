@@ -144,7 +144,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
     <BaseModal
       isOpen={isBaseModalOpen}
       onClose={off}
-      height="400px"
+      height="351px"
       usePortal={true}
       animation={{
         duration: 400,

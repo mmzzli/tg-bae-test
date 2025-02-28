@@ -1,4 +1,4 @@
-import { FC, memo, useCallback, useEffect, useRef, useState } from 'react'
+import { FC, memo, useCallback, useEffect, useState } from 'react'
 import ConversationList from '@/components/Chat/ChatList'
 import { cn, getWrappedMessage } from '@/utils/utils'
 import { useStore } from '@/store'
@@ -21,7 +21,6 @@ import Empty from '@/components/comm/Empty'
 import Icon from '@/components/comm/Icon'
 import { sortConversations } from '@/utils/chat/util'
 import { SendackPacket } from 'wukongimjssdk'
-import { useParams } from 'react-router-dom'
 import { MessageWindowListItem } from '@/components/Chat/types'
 
 let sdk: BaeimSDK
@@ -66,7 +65,6 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
   }
   const [status, setStatus] = useState<ConnectStatus>(ConnectStatus.Disconnect)
   const [retryCount, setRetryCount] = useState(0)
-  const { uid } = useParams()
   const getStatusText = () => {
     switch (status) {
       case ConnectStatus.Connected:
@@ -146,7 +144,7 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
   const messageStatusListener = (ack: SendackPacket) => {
     console.log(ack)
     console.log(ack.messageID.toString())
-    console.log('uid', uid)
+    const uid = useStore.getState().currentMessageWindowId
     if (uid) {
       const messageWindow = getMessageWindow(uid || '')
       const messages = messageWindow?.messages

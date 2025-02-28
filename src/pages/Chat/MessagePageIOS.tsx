@@ -87,6 +87,7 @@ const MessagePageIOS = () => {
 
   useEffect(() => {
     if (uid) {
+      useStore.getState().setCurrentMessageWindowId(uid)
       const getUserInfo = (times: number) => {
         const user = getChatPeopleInfo(Number(uid))
         if (user) {

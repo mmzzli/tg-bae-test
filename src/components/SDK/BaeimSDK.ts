@@ -10,6 +10,7 @@ import {
   PullMode,
   SyncOptions,
   CMDContent,
+  MessageStatusListener,
 } from 'wukongimjssdk'
 import { Convert } from './Convert'
 
@@ -39,6 +40,7 @@ class BaeimSDK {
   private serverAddr: string
   private messageListener?: (message: FormattedMessage) => void
   private cmdMessageListener?: (message: Message) => void
+  private messageStatusListener?: MessageStatusListener
   private syncConversationsCallback?: () => Promise<Conversation[]>
   private syncMessagesCallback?: (channel: Channel, opts: SyncOptions) => Promise<Message[]>
   private connectionStatusListeners: Set<(status: ConnectStatus) => void> = new Set()
@@ -126,6 +128,7 @@ class BaeimSDK {
     try {
       const textMessage = new MessageText(content)
       await WKSDK.shared().chatManager.send(textMessage, new Channel(channelId, ChannelTypePerson))
+      return textMessage
     } catch (error) {
       console.error('sendMessage error:', error)
     }
@@ -152,6 +155,18 @@ class BaeimSDK {
     if (this.cmdMessageListener) {
       WKSDK.shared().chatManager.removeCMDListener(this.cmdMessageListener)
       this.messageListener = undefined
+    }
+  }
+
+  public addMessageStatusListener(listener: MessageStatusListener) {
+    this.messageStatusListener = listener
+    WKSDK.shared().chatManager.addMessageStatusListener(listener)
+  }
+
+  public removeMessageStatusListener() {
+    if (this.messageStatusListener) {
+      WKSDK.shared().chatManager.removeMessageStatusListener(this.messageStatusListener)
+      this.messageStatusListener = undefined
     }
   }
 

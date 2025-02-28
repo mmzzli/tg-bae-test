@@ -147,7 +147,7 @@ const MessagePageIOS = () => {
         : {}),
     })
 
-    sendMessage(newMessage)
+    sendMessage(newMessage, false)
     setReplyMessage(null)
     setTimeout(() => {
       window.dispatchEvent(new Event('message-scroll-to-bottom'))

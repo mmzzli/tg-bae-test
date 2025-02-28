@@ -20,6 +20,9 @@ import ChatSkeleton from '@/components/Skeketon/ChatSkeleton'
 import Empty from '@/components/comm/Empty'
 import Icon from '@/components/comm/Icon'
 import { sortConversations } from '@/utils/chat/util'
+import { SendackPacket } from 'wukongimjssdk'
+import { useParams } from 'react-router-dom'
+import { MessageWindowListItem } from '@/components/Chat/types'
 
 let sdk: BaeimSDK
 const MAX_RETRY_COUNT = 12
@@ -56,12 +59,14 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
   const { receiveMessage } = useIM()
   const { getCurrentUid } = useTMAUtils()
   const currentUid = getCurrentUid()
+  const { getMessageWindow } = useIM()
   const [resetTrigger, setResetTrigger] = useState(0)
   const handleContainerClick = () => {
     setResetTrigger(resetTrigger + 1)
   }
   const [status, setStatus] = useState<ConnectStatus>(ConnectStatus.Disconnect)
   const [retryCount, setRetryCount] = useState(0)
+  const { uid } = useParams()
   const getStatusText = () => {
     switch (status) {
       case ConnectStatus.Connected:
@@ -129,15 +134,47 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
     }
   }
 
+  const messageStatusListener = (ack: SendackPacket) => {
+    console.log(ack)
+    console.log(ack.messageID.toString())
+    if (uid) {
+      const messageWindow = getMessageWindow(uid || '')
+      const messages = messageWindow?.messages
+      console.log(messages)
+      if (messages) {
+        messages.forEach((m) => {
+          if (m.clientSeq == ack.clientSeq) {
+            m.messageId = ack.messageID.toString()
+            m.messageSeq = ack.messageSeq
+            return
+          }
+        })
+        useStore.getState().updateMessageWindowListItem({
+          ...messageWindow,
+          messages: [...messages],
+        } as MessageWindowListItem)
+      }
+    }
+    // useStore.getState().messageWindowList
+    // messages.value.forEach((m) => {
+    //   if (m.clientSeq == ack.clientSeq) {
+    //     m.status = ack.reasonCode == 1 ? MessageStatus.Normal : MessageStatus.Fail
+    //     return
+    //   }
+    // })
+  }
+
   useEffect(() => {
     if (connection) {
       connection.addMessageListener(handleMessage)
       connection.addCMDMessageListener(handleCMDMessage)
+      connection.addMessageStatusListener(messageStatusListener)
     }
     return () => {
       if (connection) {
         connection.removeMessageListener()
         connection.removeCMDMessageListener()
+        connection.removeMessageStatusListener()
       }
     }
   }, [connection])

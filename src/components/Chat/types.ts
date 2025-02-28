@@ -83,6 +83,7 @@ export type WrappedMessage = Message & {
   showAvatar?: boolean
   messageId?: string
   clientMessageId?: string
+  clientSeq?: number
 }
 export interface ChatListProps {
   chats: Conversation[]

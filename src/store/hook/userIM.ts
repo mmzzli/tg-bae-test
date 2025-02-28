@@ -3,6 +3,7 @@ import { useStore } from '../store'
 import { getSomeoneProfile } from '@/api'
 import { OthersUserInfo } from '@/types'
 import { WrappedMessage } from '@/components/Chat/types'
+import { receiver } from '@telegram-apps/sdk/dist/dts/scopes/components/init-data/init-data'
 export const useIM = () => {
   const { getCurrentUid } = useTMAUtils()
   const current_uid = getCurrentUid()
@@ -47,11 +48,14 @@ export const useIM = () => {
     if (messageWindowId) {
       return updateMessage(message, Number(messageWindowId))
     }
-    const sender = Array.isArray(message) ? message[0].sender : message.sender
+    const msg = Array.isArray(message) ? message[0] : message
+    const sender = msg.sender
+
     if (sender !== current_uid) {
       updateMessage(message, sender)
     } else {
       // TODO: set msg status to sent
+      updateMessage(msg, msg.receiver)
     }
   }
 

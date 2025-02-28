@@ -46,8 +46,6 @@ const PostCard: React.FC<{ message: WrappedMessage & { metadata: PostMetadata } 
   }))
   const { getCurrentUid } = useTMAUtils()
 
-  console.log(message)
-
   const getPost = useCallback(
     async (url: string) => {
       const parsedUrl = new URL(url)
@@ -139,7 +137,7 @@ const PostCard: React.FC<{ message: WrappedMessage & { metadata: PostMetadata } 
             onClick={() => {
               setSharedPostList(shareData)
               console.warn(data)
-              // navigate(`/shares?ref=${postRef.current}`)
+              navigate(`/shares?ref=${postRef.current}`)
             }}
           >
             {(data?.act_type === 1 || data?.act_type === 2) && (
@@ -183,7 +181,7 @@ const PostCard: React.FC<{ message: WrappedMessage & { metadata: PostMetadata } 
               onClick={() => {
                 setSharedPostList(shareData)
                 console.warn(data)
-                // navigate(`/shares?ref=${postRef.current}`)
+                navigate(`/shares?ref=${postRef.current}`)
               }}
             >
               <i className="iconfont icon-lock text-white"></i>

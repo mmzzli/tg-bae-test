@@ -9,6 +9,9 @@ import BaeimSDK, {
   SyncOptions,
   Channel,
   FormattedMessage,
+  Message,
+  CMDContent,
+  Conversation,
 } from '@/components/SDK/BaeimSDK'
 import { getConversationSync, getMessagesSync } from '@/api'
 import { useTMAUtils } from '@/hooks/useTMAUtils'
@@ -90,13 +93,51 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
     [receiveMessage]
   )
 
+  const handleCMDMessage = (message: Message) => {
+    const cmdContent = message.content as CMDContent
+    const cmd = cmdContent.cmd // 指令名称
+    const param = cmdContent.param // 指令参数
+    console.log('handleCMDMessage', cmdContent)
+    if (cmd === 'DeleteMessage') {
+      if (param.channel_id === currentUid) {
+        // 删除聊天窗口消息
+        const messageWindow = useStore
+          .getState()
+          .messageWindowList.filter((item) => item.channel.channelID === param.from)
+        if (messageWindow.length > 0) {
+          const newMessages = messageWindow[0].messages.filter(
+            (msg) => msg.messageId !== param.message_id
+          )
+          useStore
+            .getState()
+            .updateMessageWindowListItem({ ...messageWindow[0], messages: newMessages })
+        }
+        // 更新会话
+        const conversation = useStore.getState().conversationMap[param.from]
+        if (conversation) {
+          const recents = conversation.recents?.filter(
+            (recent) => recent.messageID !== param.message_id
+          )
+          const newConversation = {
+            ...conversation,
+            recents,
+            lastMessage: recents ? recents[0] : {},
+          }
+          useStore.getState().updateConversation(newConversation as Conversation)
+        }
+      }
+    }
+  }
+
   useEffect(() => {
     if (connection) {
       connection.addMessageListener(handleMessage)
+      connection.addCMDMessageListener(handleCMDMessage)
     }
     return () => {
       if (connection) {
         connection.removeMessageListener()
+        connection.removeCMDMessageListener()
       }
     }
   }, [connection])
@@ -273,7 +314,10 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
         <div className="flex-1 flex items-center justify-center">
           <Empty
             icon={
-              <Icon name="icon-a-Frame2085662446" style={{ width: '120px', height: '120px' }}></Icon>
+              <Icon
+                name="icon-a-Frame2085662446"
+                style={{ width: '120px', height: '120px' }}
+              ></Icon>
             }
             title="No Chat History"
           ></Empty>

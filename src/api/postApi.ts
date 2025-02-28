@@ -67,15 +67,12 @@ export const getConversationSync = (params: { uid: string; msg_count: number }) 
   })
 }
 
-export const deleteMsg = (params: {
-  message_id: string
-  channel_id: string
-  channel_type: number
-  message_seq: number
-}) => {
-  return del<{ status: number; msg: string }>(`${import.meta.env.VITE_APP_IM_URL}message`, params, {
-    headers: { token: import.meta.env.VITE_APP_IM_TOKEN },
-  })
+export const sendDeleteMsgNotification = (params: any) => {
+  return post<string>(`/api/v1/notify_delete_message`, params)
+}
+
+export const deleteMsg = (params: { message_id: string }) => {
+  return post<string>(`/api/v1/delete_message`, params)
 }
 
 export const deleteBothMsg = (params: {

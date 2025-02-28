@@ -181,7 +181,7 @@ const MessageItem = memo(
         channelId={channelId}
         delay={800}
         id={message.id}
-        config={{ enableReply: true, enableCopy: true, enableDownload: false, enableRevoke: false }}
+        config={{ enableReply: true, enableCopy: true, enableDownload: false, enableRevoke: true }}
       >
         <div
           className={`overflow-hidden rounded-lg max-w-[255px]

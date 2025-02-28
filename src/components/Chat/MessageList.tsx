@@ -257,7 +257,7 @@ const InfiniteList = ({
       window.removeEventListener('message-scroll-to-bottom', handleScrollToBottom)
     }
   }, [])
-  console.log(messageGroups)
+  // console.log(messageGroups)
   return (
     <div
       id="scrollableDiv"

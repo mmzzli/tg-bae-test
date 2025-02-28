@@ -196,37 +196,39 @@ export function DeleteMessageDialog({
           useStore.getState().updateConversation(newConversation as Conversation)
         }
       }
+
+      const buffer = Buffer.from(
+        JSON.stringify({
+          type: 99, // cmd固定type为99
+          cmd: 'DeleteMessage',
+          param: {
+            from: current_uid,
+            message_id: deleteMessage?.messageId,
+            channel_id: String(receiver?.uid),
+            channel_type: 1,
+          },
+        }),
+        'utf-8'
+      )
+      const base64 = buffer.toString('base64')
+      sendDeleteMsgNotification({
+        header: {
+          // 消息头
+          no_persist: 1, // 是否不存储消息 0.存储 1.不存储
+          red_dot: 0, // 是否显示红点计数，0.不显示 1.显示
+          sync_once: 1, // 是否是写扩散，这里一般是0，只有cmd消息才是1
+        },
+        from_uid: String(current_uid), // 发送者uid
+        channel_id: String(receiver?.uid), // 接收频道ID 如果channel_type=1 channel_id为个人uid 如果channel_type=2 channel_id为群id
+        channel_type: 1, // 接收频道类型  1.个人频道 2.群聊频道
+        payload: base64, // 消息内容，base64编码
+        subscribers: [], // 订阅者 如果此字段有值，表示消息只发给指定的订阅者,没有值则发给频道内所有订阅者
+      })
     } catch (err) {
       console.log(err)
       setPending(false)
     }
-    const buffer = Buffer.from(
-      JSON.stringify({
-        type: 99, // cmd固定type为99
-        cmd: 'DeleteMessage',
-        param: {
-          from: current_uid,
-          message_id: deleteMessage?.messageId,
-          channel_id: String(receiver?.uid),
-          channel_type: 1,
-        },
-      }),
-      'utf-8'
-    )
-    const base64 = buffer.toString('base64')
-    sendDeleteMsgNotification({
-      header: {
-        // 消息头
-        no_persist: 1, // 是否不存储消息 0.存储 1.不存储
-        red_dot: 0, // 是否显示红点计数，0.不显示 1.显示
-        sync_once: 1, // 是否是写扩散，这里一般是0，只有cmd消息才是1
-      },
-      from_uid: String(current_uid), // 发送者uid
-      channel_id: String(receiver?.uid), // 接收频道ID 如果channel_type=1 channel_id为个人uid 如果channel_type=2 channel_id为群id
-      channel_type: 1, // 接收频道类型  1.个人频道 2.群聊频道
-      payload: base64, // 消息内容，base64编码
-      subscribers: [], // 订阅者 如果此字段有值，表示消息只发给指定的订阅者,没有值则发给频道内所有订阅者
-    })
+
     setDeleteMessage(null)
     onDelete?.()
   }

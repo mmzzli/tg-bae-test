@@ -293,8 +293,20 @@ const Tooltip: React.FC<TooltipProps> = ({
     (e: React.MouseEvent | React.TouchEvent) => {
       e.preventDefault()
       e.stopPropagation()
-      console.log(content)
-      setDeleteMessage(content)
+      const channelId = String(
+        content.sender === getCurrentUid() ? content.receiver : content.sender
+      )
+      const messageWindow = useStore
+        .getState()
+        .messageWindowList.filter((item) => item.channel.channelID === channelId)
+      const _messageLatest = messageWindow[0].messages.filter((msg) => msg.id === content.id)
+      console.log(_messageLatest)
+      if (_messageLatest.length > 0) {
+        setDeleteMessage(_messageLatest[0])
+      } else {
+        setDeleteMessage(content)
+      }
+
       hideTooltip()
     },
     [hideTooltip]

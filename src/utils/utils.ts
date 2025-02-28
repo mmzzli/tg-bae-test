@@ -52,6 +52,7 @@ export const getWrappedMessage = (message: FormattedMessage): WrappedMessage => 
     channelID: message.channel.channelID,
     messageId: message.messageID,
     messageClientId: message.clientMsgNo,
+    clientSeq: message.clientSeq,
   }
 }
 

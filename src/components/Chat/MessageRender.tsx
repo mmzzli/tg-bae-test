@@ -597,7 +597,7 @@ export const VideoPreviewIcon = ({ url }: { url: string }) => {
 }
 
 export const ImagePreviewIcon = ({ url }: { url: string }) => {
-  console.log(url)
+  // console.log(url)
   return (
     <div className="mr-[6px] w-8 h-8">
       <Image
@@ -615,12 +615,12 @@ export const ImagePreviewIcon = ({ url }: { url: string }) => {
 
 export const PostPreview = ({ data }: { data: FormatterListItem }) => {
   const { getCurrentUid } = useTMAUtils()
+  // console.log('PostPreview', data)
   let imageUrl = ''
   if (data) {
     imageUrl = data.thumbnail || data.media[0]
   }
 
-  console.log(data.uid !== getCurrentUid() && data.price > 0 && !data.is_pay)
   return (
     <div className="relative w-10 h-10 rounded-[5px] overflow-hidden mr-[6px]">
       <img src={formatImage(imageUrl, true)} alt="" style={{ width: '40px' }} />

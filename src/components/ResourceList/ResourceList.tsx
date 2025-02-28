@@ -189,7 +189,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             />
           </div>
 
-          <div className="mx-4">
+          {/* <div className="mx-4">
             <BaseButton
               className="bg-[#fff] text-[#000] border-1 border-[#CDCDD4]"
               text="Share to chat"
@@ -200,7 +200,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                 // off()
               }}
             />
-          </div>
+          </div> */}
         </div>
       ) : (
         <div className="mt-4 w-full">

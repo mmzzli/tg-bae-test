@@ -146,10 +146,11 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
   const messageStatusListener = (ack: SendackPacket) => {
     console.log(ack)
     console.log(ack.messageID.toString())
+    console.log('uid', uid)
     if (uid) {
       const messageWindow = getMessageWindow(uid || '')
       const messages = messageWindow?.messages
-      console.log(messages)
+      console.log('messageStatusListener', messageWindow)
       if (messages) {
         messages.forEach((m) => {
           if (m.clientSeq == ack.clientSeq) {

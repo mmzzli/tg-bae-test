@@ -68,7 +68,11 @@ function App() {
 
       document.addEventListener('focusin', onFocusIn)
       document.addEventListener('focusout', onFocusOut)
-
+      const buildTime = process.env.BUILD_TIME
+      console.log(
+        `%cBuild Time: ${buildTime}`,
+        'background: green; color: white; padding: 4px; border-radius: 4px;'
+      )
       return () => {
         document.removeEventListener('focusin', onFocusIn)
         document.removeEventListener('focusout', onFocusOut)
@@ -78,19 +82,19 @@ function App() {
 
   return (
     // <TomoProvider theme="light" supportedProviders={['EVM']} tomoOptions={TOMO_META_DATA}>
-      <WagmiProvider config={config}>
-        <QueryClientProvider client={queryClient}>
-          <BrowserRouter>
-            <NiceModal.Provider>
-              <ChakraProvider resetCSS theme={theme}>
-                <AliveScope>
-                  <AppRoutes />
-                </AliveScope>
-              </ChakraProvider>
-            </NiceModal.Provider>
-          </BrowserRouter>
-        </QueryClientProvider>
-      </WagmiProvider>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <NiceModal.Provider>
+            <ChakraProvider resetCSS theme={theme}>
+              <AliveScope>
+                <AppRoutes />
+              </AliveScope>
+            </ChakraProvider>
+          </NiceModal.Provider>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </WagmiProvider>
     // </TomoProvider>
   )
 }

@@ -29,6 +29,9 @@ const cacheBusterPlugin = () => {
 export default defineConfig(({ mode }) => {
   return {
     plugins: [react(), nodePolyfills(), mkcert(), cacheBusterPlugin()],
+    define: {
+      'process.env.BUILD_TIME': JSON.stringify(new Date().toLocaleString()), // 设置打包时间
+    },
     css: {
       postcss: './postcss.config.js', // 引入 PostCSS 配置文件
     },

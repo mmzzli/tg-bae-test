@@ -1,4 +1,4 @@
-import React, { useEffect, ReactNode, FC } from 'react'
+import React, { useEffect, ReactNode, FC, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { CloseIcon } from '@/assets/icons'
 import { Image } from '@chakra-ui/react'
@@ -54,6 +54,9 @@ const DEFAULT_THEME: Required<ThemeConfig> = {
   handleColor: '#e5e7eb',
 }
 
+// 添加全局计数器
+let modalCount = 0
+
 export const BaseModal: FC<BottomSheetProps> = ({
   isOpen,
   onClose,
@@ -72,6 +75,9 @@ export const BaseModal: FC<BottomSheetProps> = ({
   portalContainer,
   id,
 }) => {
+  const [zIndex, setZIndex] = useState(9999)
+  const [isFirstModal, setIsFirstModal] = useState(true)
+
   const getTelegramTheme = (): { isDark: boolean; backgroundColor: string } => {
     try {
       const webApp = window.Telegram?.WebApp
@@ -97,6 +103,18 @@ export const BaseModal: FC<BottomSheetProps> = ({
       document.body.style.backgroundColor = backgroundColor
     }
   }, [isOpen, theme])
+
+  useEffect(() => {
+    if (isOpen && usePortal) {
+      modalCount++
+      setIsFirstModal(modalCount === 1)
+      setZIndex(9999 + modalCount)
+
+      return () => {
+        modalCount--
+      }
+    }
+  }, [isOpen, usePortal])
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (closeOnBackdropClick && e.target === e.currentTarget) {
@@ -124,14 +142,14 @@ export const BaseModal: FC<BottomSheetProps> = ({
 
   const modalContent = (
     <div
-      className={`fixed inset-0 z-[9999] ${
-        isOpen ? 'visible dark:bg-black/80 bg-black/70' : 'invisible'
+      className={`fixed inset-0 ${
+        isOpen ? (isFirstModal ? 'visible dark:bg-black/80 bg-black/70' : 'visible') : 'invisible'
       } transition-all duration-300 prevent-touch-back`}
       onClick={handleBackdropClick}
       role="dialog"
       aria-modal="true"
       aria-hidden={!isOpen}
-      style={{ transform: 'translateZ(50px)' }}
+      style={{ transform: 'translateZ(50px)', zIndex }}
     >
       <div
         className={`fixed z-50 bottom-0 left-0 right-0 rounded-t-2xl bg-[#fff] dark:bg-[#1C1C1C] transition-transform ${

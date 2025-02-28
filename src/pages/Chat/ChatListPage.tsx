@@ -104,11 +104,12 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
     const param = cmdContent.param // 指令参数
     console.log('handleCMDMessage', cmdContent)
     if (cmd === 'DeleteMessage') {
-      if (param.channel_id === currentUid) {
+      if (String(param.channel_id) === String(currentUid)) {
         // 删除聊天窗口消息
         const messageWindow = useStore
           .getState()
-          .messageWindowList.filter((item) => item.channel.channelID === param.from)
+          .messageWindowList.filter((item) => item.channel.channelID === String(param.from))
+        console.log(messageWindow)
         if (messageWindow.length > 0) {
           const newMessages = messageWindow[0].messages.filter(
             (msg) => msg.messageId !== param.message_id
@@ -116,9 +117,17 @@ const ChatListPage: FC<{ className?: string }> = ({ className }) => {
           useStore
             .getState()
             .updateMessageWindowListItem({ ...messageWindow[0], messages: newMessages })
+
+          setTimeout(() => {
+            console.log(
+              useStore
+                .getState()
+                .messageWindowList.filter((item) => item.channel.channelID === String(param.from))
+            )
+          })
         }
         // 更新会话
-        const conversation = useStore.getState().conversationMap[param.from]
+        const conversation = useStore.getState().conversationMap[String(param.from)]
         if (conversation) {
           const recents = conversation.recents?.filter(
             (recent) => recent.messageID !== param.message_id

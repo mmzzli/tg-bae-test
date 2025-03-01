@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import path from 'path'
-import mkcert from 'vite-plugin-mkcert'
+// import mkcert from 'vite-plugin-mkcert'
 import { createFilter } from '@rollup/pluginutils'
 import fs from "node:fs";
 const cacheBusterPlugin = () => {
@@ -29,7 +29,9 @@ const cacheBusterPlugin = () => {
 
 export default defineConfig(({ mode }) => {
   return {
-    plugins: [react(), nodePolyfills(), mkcert(), cacheBusterPlugin()],
+    plugins: [react(), nodePolyfills(),
+      // mkcert(),
+      cacheBusterPlugin()],
     define: {
       'process.env.BUILD_TIME': JSON.stringify(new Date().toLocaleString()), // 设置打包时间
     },

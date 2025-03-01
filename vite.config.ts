@@ -4,6 +4,7 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import path from 'path'
 import mkcert from 'vite-plugin-mkcert'
 import { createFilter } from '@rollup/pluginutils'
+import fs from "node:fs";
 const cacheBusterPlugin = () => {
   const filter = createFilter(['**/*.tsx', '**/*.ts', '**/*.js', '**/*.jsx'])
 
@@ -70,7 +71,13 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 3000,
       host: '0.0.0.0',
-      https: false,
+      // https: false,
+      https: mode === 'development' ? false : (()=>{
+        return {
+          cert: fs.readFileSync(path.join(__dirname,'./keys/mmzzli.site_bundle.crt')),
+          key: fs.readFileSync(path.join(__dirname,'./keys/mmzzli.site.key'))
+        }
+      })(),
       // https: (() => {
       //   if (process.env.HTTPS_CERT_PEM && process.env.HTTPS_CERT_KEY) {
       //     return {

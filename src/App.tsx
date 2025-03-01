@@ -26,7 +26,7 @@ PriceService.init()
 
 // new TomoWalletTgSdkV2({ injected: true, metaData: TOMO_META_DATA.metaData })
 const queryClient = new QueryClient()
-if (import.meta.env.MODE !== 'production') {
+if (import.meta.env.MODE === 'dev') {
   mockTelegramEnv({
     themeParams: {
       accentTextColor: '#6ab2f2',

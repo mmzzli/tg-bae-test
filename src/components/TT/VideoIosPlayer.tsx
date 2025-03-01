@@ -199,9 +199,19 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
     return 'object-contain'; // 默认使用 contain
   }, [sourceItem?.width, sourceItem?.height]);
 
+
   const scale = useMemo(() => {
+<<<<<<< Updated upstream
     return ''
   }, [info, containerDomRef.current])
+=======
+    if (info && containerDomRef.current) {
+      return videoScale({ ...info, width: 640, height: 360 }, containerDomRef.current)
+    }
+    return 'object-cover'
+  }, [info, containerDomRef.current])
+
+>>>>>>> Stashed changes
   const videoPlayerInit = () => {
     const videoElement = createVideoElement()
     videoElement.controls = false

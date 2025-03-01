@@ -201,17 +201,9 @@ const VideoPlayer: React.FC<VideoPlayerPropsAndIndex> = (props) => {
 
 
   const scale = useMemo(() => {
-<<<<<<< Updated upstream
     return ''
   }, [info, containerDomRef.current])
-=======
-    if (info && containerDomRef.current) {
-      return videoScale({ ...info, width: 640, height: 360 }, containerDomRef.current)
-    }
-    return 'object-cover'
-  }, [info, containerDomRef.current])
 
->>>>>>> Stashed changes
   const videoPlayerInit = () => {
     const videoElement = createVideoElement()
     videoElement.controls = false
